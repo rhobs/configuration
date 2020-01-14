@@ -1,0 +1,136 @@
+{
+  "dependencies": [
+    {
+      "name": "grafana-builder",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "grafana-builder"
+        }
+      },
+      "version": "58d324018dd9d41049ddc10516e1ac89d59a4d6a",
+      "sum": "ELsYwK+kGdzX1mee2Yy+/b2mdO4Y503BOCDkFzwmGbE="
+    },
+    {
+      "name": "grafonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/grafonnet-lib",
+          "subdir": "grafonnet"
+        }
+      },
+      "version": "f3ee1d810858cf556d25f045b53cb0f1fd10b94e",
+      "sum": "14YBZUP/cl8qi9u86xiuUS4eXQrEAam+4GSg6i9n9Ys="
+    },
+    {
+      "name": "jaeger-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/jaegertracing/jaeger/",
+          "subdir": "monitoring/jaeger-mixin"
+        }
+      },
+      "version": "641dd92ac3cdda8b8ad54a3ce9942beecb7dc48f",
+      "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
+    },
+    {
+      "name": "ksonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/ksonnet/ksonnet-lib",
+          "subdir": ""
+        }
+      },
+      "version": "0d2f82676817bbf9e4acf6495b2090205f323b9f",
+      "sum": "h28BXZ7+vczxYJ2sCt8JuR9+yznRtU/iA6DCpQUrtEg="
+    },
+    {
+      "name": "kube-thanos",
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos",
+          "subdir": "jsonnet/kube-thanos"
+        }
+      },
+      "version": "0c90793e469a6822c4f0c7de57ccf5ab0449f676",
+      "sum": "ASNsquhtTSMENd7OFq2IOtGQlrNQ9apnfzAJRMEFflU="
+    },
+    {
+      "name": "observatorium",
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/configuration",
+          "subdir": ""
+        }
+      },
+      "version": "87d15f22b2b0163d69bc1d63be78884ebfb2ca93",
+      "sum": "U/3e85KyNcz6pnm/YRLl0YUGx0dCtMQiehxjNTcs3DI="
+    },
+    {
+      "name": "prometheus-operator",
+      "source": {
+        "git": {
+          "remote": "https://github.com/coreos/prometheus-operator",
+          "subdir": "jsonnet/prometheus-operator"
+        }
+      },
+      "version": "8d44e0990230144177f97cf62ae4f43b1c4e3168",
+      "sum": "5U7/8MD3pF9O0YDTtUhg4vctkUBRVFxZxWUyhtNiBM8="
+    },
+    {
+      "name": "slo-libsonnet",
+      "source": {
+        "git": {
+          "remote": "https://github.com/metalmatze/slo-libsonnet",
+          "subdir": "slo-libsonnet"
+        }
+      },
+      "version": "101618191a5dae835f7c8a90e6f0df40072e2cb3",
+      "sum": "vERnAgUe02tI7S4cRK2KSEsyuVm6XFT9v8RucCG/8B8="
+    },
+    {
+      "name": "telemeter",
+      "source": {
+        "git": {
+          "remote": "https://github.com/openshift/telemeter",
+          "subdir": "jsonnet/telemeter"
+        }
+      },
+      "version": "46439efe387e426ede37ad2a87cf08d578e5ea84",
+      "sum": "k2xynRtw8CT8jnPqnALxmReIqCXFWT/NknGnYJVZ0ms="
+    },
+    {
+      "name": "thanos-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos",
+          "subdir": "jsonnet/thanos-mixin"
+        }
+      },
+      "version": "5e78521e47947bd3fc69e4e8d8f837c8561d2dca",
+      "sum": "sGk0IQJcux6rkzpuDKfBB8Of8z439K8xL7gs4yNR7EQ="
+    },
+    {
+      "name": "thanos-receive-controller",
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/thanos-receive-controller",
+          "subdir": "jsonnet/lib"
+        }
+      },
+      "version": "c4e9017b07f93690506fc675d19f3a52a9ee7b6b",
+      "sum": "EGr26vVxp0ZKDHd3EGBlsozeOa3/9sRF+L/qAMZmpw4="
+    },
+    {
+      "name": "thanos-receive-controller-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/thanos-receive-controller",
+          "subdir": "jsonnet/thanos-receive-controller-mixin"
+        }
+      },
+      "version": "c4e9017b07f93690506fc675d19f3a52a9ee7b6b",
+      "sum": "TK16wpgsxCEimR2oxw6V8TIs+BRi6Rk+mENkcaOW5m8="
+    }
+  ]
+}

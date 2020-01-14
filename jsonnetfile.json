@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    {
+      "name": "observatorium",
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/configuration",
+          "subdir": ""
+        }
+      },
+      "version": "master"
+    }
+  ]
+}

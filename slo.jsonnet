@@ -1,5 +1,21 @@
-local observatoriumSLOs = import 'observatorium/slos.libsonnet';
 local slo = import 'slo-libsonnet/slo.libsonnet';
+
+local telemeterSLOs = {
+  telemeterRead:: {
+    errors: {
+      metric: 'haproxy_server_http_responses_total',
+      selectors: ['route="observatorium-thanos-querier-cache"'],
+      errorBudget: 1.0 - 0.90,
+    },
+  },
+  telemeterWrite:: {
+    errors: {
+      metric: 'haproxy_server_http_responses_total',
+      selectors: ['route="telemeter-server"'],
+      errorBudget: 1.0 - 0.90,
+    },
+  },
+};
 
 {
   apiVersion: 'monitoring.coreos.com/v1',
@@ -14,24 +30,16 @@ local slo = import 'slo-libsonnet/slo.libsonnet';
   spec: {
     groups: [
       {
-        local errors = observatoriumSLOs.observatoriumQuery.errors {
-          labels+: ['service="telemeter"'],
-        },
-
         name: 'observatorium-thanos-querier.slo.rules',
         rules:
-          slo.errorburn(errors).recordingrules +
-          slo.errorbudget(errors).recordingrules,
+          slo.errorburn(telemeterSLOs.telemeterRead.errors).recordingrules +
+          slo.errorbudget(telemeterSLOs.telemeterRead.errors).recordingrules,
       },
       {
-        local errors = observatoriumSLOs.telemeterServerUpload.errors {
-          labels+: ['service="telemeter"'],
-        },
-
         name: 'observatorium-telemeter.slo.rules',
         rules:
-          slo.errorburn(errors).recordingrules +
-          slo.errorbudget(errors).recordingrules,
+          slo.errorburn(telemeterSLOs.telemeterWrite.errors).recordingrules +
+          slo.errorbudget(telemeterSLOs.telemeterWrite.errors).recordingrules,
       },
     ],
   },

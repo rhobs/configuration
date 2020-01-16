@@ -14,319 +14,290 @@ spec:
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[5m]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[5m]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate5m
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate5m
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[30m]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[30m]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate30m
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate30m
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[1h]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[1h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate1h
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate1h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[2h]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[2h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate2h
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate2h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[6h]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[6h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate6h
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate6h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[1d]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[1d]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate1d
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate1d
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{job="thanos-querier"}[3d]
+            rate(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[3d]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        job: thanos-querier
-      record: status_class:http_requests_total:rate3d
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:rate3d
     - expr: |
-        sum(status_class:http_requests_total:rate5m{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate5m{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate5m
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate5m
     - expr: |
-        sum(status_class:http_requests_total:rate30m{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate30m{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate30m
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate30m
     - expr: |
-        sum(status_class:http_requests_total:rate1h{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate1h{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate1h
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1h
     - expr: |
-        sum(status_class:http_requests_total:rate2h{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate2h{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate2h
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate2h
     - expr: |
-        sum(status_class:http_requests_total:rate6h{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate6h{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate6h
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate6h
     - expr: |
-        sum(status_class:http_requests_total:rate1d{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate1d{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate1d
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1d
     - expr: |
-        sum(status_class:http_requests_total:rate3d{job="thanos-querier",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="observatorium-thanos-querier-cache",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate3d{job="thanos-querier"})
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="observatorium-thanos-querier-cache"})
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate3d
+        route: observatorium-thanos-querier-cache
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate3d
     - expr: |
-        sum(label_replace(increase(http_requests_total{job="thanos-querier"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
+        sum(label_replace(increase(haproxy_server_http_responses_total{route="observatorium-thanos-querier-cache"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: status_class:http_requests_total:increase30d
+        route: observatorium-thanos-querier-cache
+      record: status_class:haproxy_server_http_responses_total:increase30d
     - expr: |
         (
-          0.010000
+          0.100000
         *
-          sum(status_class:http_requests_total:increase30d)
+          sum(status_class:haproxy_server_http_responses_total:increase30d)
         )
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: http_requests_total_errorbudget_requests
+        route: observatorium-thanos-querier-cache
+      record: haproxy_server_http_responses_total_errorbudget_requests
     - expr: |
         (
-          sum(http_requests_total_errorbudget_requests{job="thanos-querier"})
+          sum(haproxy_server_http_responses_total_errorbudget_requests{route="observatorium-thanos-querier-cache"})
         -
-          sum(status_class:http_requests_total:increase30d{job="thanos-querier",status_class="5xx"})
+          sum(status_class:haproxy_server_http_responses_total:increase30d{route="observatorium-thanos-querier-cache",status_class="5xx"})
         )
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: http_requests_total_errorbudget_remaining
+        route: observatorium-thanos-querier-cache
+      record: haproxy_server_http_responses_total_errorbudget_remaining
     - expr: |
         (
-          http_requests_total_errorbudget_remaining
+          haproxy_server_http_responses_total_errorbudget_remaining
         /
-          http_requests_total_errorbudget_requests
+          haproxy_server_http_responses_total_errorbudget_requests
         )
       labels:
-        job: thanos-querier
-        service: telemeter
-      record: http_requests_total_errorbudget
+        route: observatorium-thanos-querier-cache
+      record: haproxy_server_http_responses_total_errorbudget
   - name: observatorium-telemeter.slo.rules
     rules:
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[5m]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[5m]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate5m
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate5m
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[30m]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[30m]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate30m
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate30m
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[1h]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[1h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate1h
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate1h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[2h]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[2h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate2h
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate2h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[6h]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[6h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate6h
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate6h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[1d]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[1d]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate1d
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate1d
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(http_requests_total{service="telemeter-server",handler="upload"}[3d]
+            rate(haproxy_server_http_responses_total{route="telemeter-server"}[3d]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        handler: upload
-        service: telemeter-server
-      record: status_class:http_requests_total:rate3d
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:rate3d
     - expr: |
-        sum(status_class:http_requests_total:rate5m{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate5m{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate5m
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate5m
     - expr: |
-        sum(status_class:http_requests_total:rate30m{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate30m{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate30m
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate30m
     - expr: |
-        sum(status_class:http_requests_total:rate1h{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate1h{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate1h
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1h
     - expr: |
-        sum(status_class:http_requests_total:rate2h{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate2h{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate2h
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate2h
     - expr: |
-        sum(status_class:http_requests_total:rate6h{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate6h{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate6h
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate6h
     - expr: |
-        sum(status_class:http_requests_total:rate1d{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate1d{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate1d
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1d
     - expr: |
-        sum(status_class:http_requests_total:rate3d{service="telemeter-server",handler="upload",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server",status_class="5xx"})
         /
-        sum(status_class:http_requests_total:rate3d{service="telemeter-server",handler="upload"})
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server"})
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class_5xx:http_requests_total:ratio_rate3d
+        route: telemeter-server
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate3d
     - expr: |
-        sum(label_replace(increase(http_requests_total{service="telemeter-server",handler="upload"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
+        sum(label_replace(increase(haproxy_server_http_responses_total{route="telemeter-server"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
       labels:
-        handler: upload
-        service: telemeter
-      record: status_class:http_requests_total:increase30d
+        route: telemeter-server
+      record: status_class:haproxy_server_http_responses_total:increase30d
     - expr: |
         (
           0.100000
         *
-          sum(status_class:http_requests_total:increase30d)
+          sum(status_class:haproxy_server_http_responses_total:increase30d)
         )
       labels:
-        handler: upload
-        service: telemeter
-      record: http_requests_total_errorbudget_requests
+        route: telemeter-server
+      record: haproxy_server_http_responses_total_errorbudget_requests
     - expr: |
         (
-          sum(http_requests_total_errorbudget_requests{service="telemeter-server",handler="upload"})
+          sum(haproxy_server_http_responses_total_errorbudget_requests{route="telemeter-server"})
         -
-          sum(status_class:http_requests_total:increase30d{service="telemeter-server",handler="upload",status_class="5xx"})
+          sum(status_class:haproxy_server_http_responses_total:increase30d{route="telemeter-server",status_class="5xx"})
         )
       labels:
-        handler: upload
-        service: telemeter
-      record: http_requests_total_errorbudget_remaining
+        route: telemeter-server
+      record: haproxy_server_http_responses_total_errorbudget_remaining
     - expr: |
         (
-          http_requests_total_errorbudget_remaining
+          haproxy_server_http_responses_total_errorbudget_remaining
         /
-          http_requests_total_errorbudget_requests
+          haproxy_server_http_responses_total_errorbudget_requests
         )
       labels:
-        handler: upload
-        service: telemeter
-      record: http_requests_total_errorbudget
+        route: telemeter-server
+      record: haproxy_server_http_responses_total_errorbudget

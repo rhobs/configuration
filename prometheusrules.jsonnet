@@ -7,26 +7,8 @@ local thanosAlerts =
   (import 'thanos-mixin/alerts/compactor.libsonnet') +
   (import 'thanos-mixin/alerts/querier.libsonnet') +
   (import 'thanos-mixin/alerts/receiver.libsonnet') +
-  (import 'thanos-mixin/alerts/store.libsonnet') + {
-    compactor+:: {
-      jobPrefix: 'thanos-compactor',
-      selector: 'job=~"%s.*"' % self.jobPrefix,
-    },
-    querier+:: {
-      jobPrefix: 'thanos-querier',
-      selector: 'job=~"%s.*"' % self.jobPrefix,
-    },
-    receiver+:: {
-      jobPrefix: 'thanos-receive',
-      selector: 'job=~"%s.*"' % self.jobPrefix,
-    },
-    store+:: {
-      jobPrefix: 'thanos-store',
-      selector: 'job=~"%s.*"' % self.jobPrefix,
-    },
-  } + {
-  };
-
+  (import 'thanos-mixin/alerts/store.libsonnet') +
+  (import 'selectors.libsonnet');
 
 // Add dashboards and runbook anntotations
 // Overwrite severity to medium and high

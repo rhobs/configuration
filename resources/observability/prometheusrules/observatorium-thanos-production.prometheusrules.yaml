@@ -15,7 +15,7 @@ spec:
         message: You should never run more than one Thanos Compact at once. You have
           {{ $value }}
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanoscompactormultiplecompactsarerunning
-      expr: sum(up{job=~"thanos-compactor.*"}) > 1
+      expr: sum(up{job="thanos-compactor"}) > 1
       for: 5m
       labels:
         service: telemeter
@@ -25,7 +25,7 @@ spec:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compactor.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Compact {{$labels.job}} has failed to run and now is halted.
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanoscompactorhalted
-      expr: thanos_compactor_halted{job=~"thanos-compactor.*"} == 1
+      expr: thanos_compactor_halted{job="thanos-compactor"} == 1
       for: 5m
       labels:
         service: telemeter
@@ -38,9 +38,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanoscompactorhighcompactionfailures
       expr: |
         (
-          sum by (job) (rate(thanos_compact_group_compactions_failures_total{job=~"thanos-compactor.*"}[5m]))
+          sum by (job) (rate(thanos_compact_group_compactions_failures_total{job="thanos-compactor"}[5m]))
         /
-          sum by (job) (rate(thanos_compact_group_compactions_total{job=~"thanos-compactor.*"}[5m]))
+          sum by (job) (rate(thanos_compact_group_compactions_total{job="thanos-compactor"}[5m]))
         * 100 > 5
         )
       for: 15m
@@ -55,9 +55,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanoscompactorbuckethighoperationfailures
       expr: |
         (
-          sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job=~"thanos-compactor.*"}[5m]))
+          sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job="thanos-compactor"}[5m]))
         /
-          sum by (job) (rate(thanos_objstore_bucket_operations_total{job=~"thanos-compactor.*"}[5m]))
+          sum by (job) (rate(thanos_objstore_bucket_operations_total{job="thanos-compactor"}[5m]))
         * 100 > 5
         )
       for: 15m
@@ -69,7 +69,7 @@ spec:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compactor.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Compact {{$labels.job}} has not uploaded anything for 24 hours.
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanoscompactorhasnotrun
-      expr: (time() - max(thanos_objstore_bucket_last_successful_upload_time{job=~"thanos-compactor.*"}))
+      expr: (time() - max(thanos_objstore_bucket_last_successful_upload_time{job="thanos-compactor"}))
         / 60 / 60 > 24
       labels:
         service: telemeter
@@ -84,9 +84,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosquerierhttprequestqueryerrorratehigh
       expr: |
         (
-          sum(rate(http_requests_total{code=~"5..", job=~"thanos-querier.*", handler="query"}[5m]))
+          sum(rate(http_requests_total{code=~"5..", job="thanos-querier", handler="query"}[5m]))
         /
-          sum(rate(http_requests_total{job=~"thanos-querier.*", handler="query"}[5m]))
+          sum(rate(http_requests_total{job="thanos-querier", handler="query"}[5m]))
         ) * 100 > 5
       for: 5m
       labels:
@@ -100,9 +100,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosquerierhttprequestqueryrangeerrorratehigh
       expr: |
         (
-          sum(rate(http_requests_total{code=~"5..", job=~"thanos-querier.*", handler="query_range"}[5m]))
+          sum(rate(http_requests_total{code=~"5..", job="thanos-querier", handler="query_range"}[5m]))
         /
-          sum(rate(http_requests_total{job=~"thanos-querier.*", handler="query_range"}[5m]))
+          sum(rate(http_requests_total{job="thanos-querier", handler="query_range"}[5m]))
         ) * 100 > 5
       for: 5m
       labels:
@@ -116,9 +116,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosqueriergrpcservererrorrate
       expr: |
         (
-          sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~"thanos-querier.*"}[5m]))
+          sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job="thanos-querier"}[5m]))
         /
-          sum by (job) (rate(grpc_server_started_total{job=~"thanos-querier.*"}[5m]))
+          sum by (job) (rate(grpc_server_started_total{job="thanos-querier"}[5m]))
         * 100 > 5
         )
       for: 5m
@@ -133,9 +133,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosqueriergrpcclienterrorrate
       expr: |
         (
-          sum by (job) (rate(grpc_client_handled_total{grpc_code!="OK", job=~"thanos-querier.*"}[5m]))
+          sum by (job) (rate(grpc_client_handled_total{grpc_code!="OK", job="thanos-querier"}[5m]))
         /
-          sum by (job) (rate(grpc_client_started_total{job=~"thanos-querier.*"}[5m]))
+          sum by (job) (rate(grpc_client_started_total{job="thanos-querier"}[5m]))
         * 100 > 5
         )
       for: 5m
@@ -149,9 +149,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosquerierhighdnsfailures
       expr: |
         (
-          sum by (job) (rate(thanos_query_store_apis_dns_failures_total{job=~"thanos-querier.*"}[5m]))
+          sum by (job) (rate(thanos_query_store_apis_dns_failures_total{job="thanos-querier"}[5m]))
         /
-          sum by (job) (rate(thanos_query_store_apis_dns_lookups_total{job=~"thanos-querier.*"}[5m]))
+          sum by (job) (rate(thanos_query_store_apis_dns_lookups_total{job="thanos-querier"}[5m]))
         > 1
         )
       for: 15m
@@ -166,9 +166,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosquerierinstantlatencyhigh
       expr: |
         (
-          histogram_quantile(0.99, sum by (job, le) (http_request_duration_seconds_bucket{job=~"thanos-querier.*", handler="query"})) > 10
+          histogram_quantile(0.99, sum by (job, le) (http_request_duration_seconds_bucket{job="thanos-querier", handler="query"})) > 10
         and
-          sum by (job) (rate(http_request_duration_seconds_bucket{job=~"thanos-querier.*", handler="query"}[5m])) > 0
+          sum by (job) (rate(http_request_duration_seconds_bucket{job="thanos-querier", handler="query"}[5m])) > 0
         )
       for: 10m
       labels:
@@ -182,9 +182,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosquerierrangelatencyhigh
       expr: |
         (
-          histogram_quantile(0.99, sum by (job, le) (http_request_duration_seconds_bucket{job=~"thanos-querier.*", handler="query_range"})) > 10
+          histogram_quantile(0.99, sum by (job, le) (http_request_duration_seconds_bucket{job="thanos-querier", handler="query_range"})) > 10
         and
-          sum by (job) (rate(http_request_duration_seconds_count{job=~"thanos-querier.*", handler="query_range"}[5m])) > 0
+          sum by (job) (rate(http_request_duration_seconds_count{job="thanos-querier", handler="query_range"}[5m])) > 0
         )
       for: 10m
       labels:
@@ -280,9 +280,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosstoregrpcerrorrate
       expr: |
         (
-          sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~"thanos-store.*"}[5m]))
+          sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job="thanos-store"}[5m]))
         /
-          sum by (job) (rate(grpc_server_started_total{job=~"thanos-store.*"}[5m]))
+          sum by (job) (rate(grpc_server_started_total{job="thanos-store"}[5m]))
         * 100 > 5
         )
       for: 5m
@@ -297,9 +297,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosstoreseriesgatelatencyhigh
       expr: |
         (
-          histogram_quantile(0.9, sum by (job, le) (thanos_bucket_store_series_gate_duration_seconds_bucket{job=~"thanos-store.*"})) > 2
+          histogram_quantile(0.9, sum by (job, le) (thanos_bucket_store_series_gate_duration_seconds_bucket{job="thanos-store"})) > 2
         and
-          sum by (job) (rate(thanos_bucket_store_series_gate_duration_seconds_count{job=~"thanos-store.*"}[5m])) > 0
+          sum by (job) (rate(thanos_bucket_store_series_gate_duration_seconds_count{job="thanos-store"}[5m])) > 0
         )
       for: 10m
       labels:
@@ -313,9 +313,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosstorebuckethighoperationfailures
       expr: |
         (
-          sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job=~"thanos-store.*"}[5m]))
+          sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job="thanos-store"}[5m]))
         /
-          sum by (job) (rate(thanos_objstore_bucket_operations_total{job=~"thanos-store.*"}[5m]))
+          sum by (job) (rate(thanos_objstore_bucket_operations_total{job="thanos-store"}[5m]))
         * 100 > 5
         )
       for: 15m
@@ -330,9 +330,9 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosstoreobjstoreoperationlatencyhigh
       expr: |
         (
-          histogram_quantile(0.9, sum by (job, le) (thanos_objstore_bucket_operation_duration_seconds_bucket{job=~"thanos-store.*"})) > 15
+          histogram_quantile(0.9, sum by (job, le) (thanos_objstore_bucket_operation_duration_seconds_bucket{job="thanos-store"})) > 15
         and
-          sum by (job) (rate(thanos_objstore_bucket_operation_duration_seconds_count{job=~"thanos-store.*"}[5m])) > 0
+          sum by (job) (rate(thanos_objstore_bucket_operation_duration_seconds_count{job="thanos-store"}[5m])) > 0
         )
       for: 10m
       labels:

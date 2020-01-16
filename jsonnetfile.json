@@ -9,6 +9,16 @@
         }
       },
       "version": "master"
+    },
+    {
+      "name": "thanos-mixin",
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/thanos",
+          "subdir": "mixin/thanos"
+        }
+      },
+      "version": "master"
     }
   ]
 }

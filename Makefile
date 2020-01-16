@@ -10,6 +10,7 @@ prometheusrules: resources/observability/prometheusrules
 resources/observability/prometheusrules: prometheusrules.jsonnet
 	jsonnetfmt -i prometheusrules.jsonnet
 	jsonnet -J vendor -m resources/observability/prometheusrules prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml -- {}; rm -rf {}' -- {}
+	find resources/observability/prometheusrules/*.yaml | xargs -I {} sh -c 'echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
 .PHONY: servicemonitors
 servicemonitors: resources/observability/servicemonitors
@@ -31,3 +32,4 @@ slos: resources/observability/slo/observatorium.slo.yaml
 resources/observability/slo/observatorium.slo.yaml: slo.jsonnet
 	jsonnetfmt -i slo.jsonnet
 	jsonnet -J vendor slo.jsonnet | gojsontoyaml > resources/observability/slo/observatorium.slo.yaml
+	find resources/observability/slo/*.yaml | xargs -I {} sh -c 'echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'

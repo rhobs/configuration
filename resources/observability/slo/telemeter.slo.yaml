@@ -6,10 +6,10 @@ metadata:
   labels:
     prometheus: app-sre
     role: alert-rules
-  name: observatorium-slos
+  name: telemeter-slos
 spec:
   groups:
-  - name: observatorium-thanos-querier.slo.rules
+  - name: observatorium-telemeter-read.slo.rules
     rules:
     - expr: |
         sum by (status_class) (
@@ -155,124 +155,124 @@ spec:
       labels:
         route: observatorium-thanos-querier-cache
       record: haproxy_server_http_responses_total_errorbudget
-  - name: observatorium-telemeter.slo.rules
+  - name: observatorium-telemeter-upload.slo.rules
     rules:
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[5m]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[5m]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate5m
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[30m]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[30m]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate30m
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[1h]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[1h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate1h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[2h]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[2h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate2h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[6h]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[6h]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate6h
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[1d]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[1d]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate1d
     - expr: |
         sum by (status_class) (
           label_replace(
-            rate(haproxy_server_http_responses_total{route="telemeter-server"}[3d]
+            rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[3d]
           ), "status_class", "${1}xx", "code", "([0-9])..")
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:rate3d
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate5m
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate30m
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1h
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate2h
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate6h
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1d
     - expr: |
-        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server",status_class="5xx"})
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server-upload",status_class="5xx"})
         /
-        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server"})
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server-upload"})
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate3d
     - expr: |
-        sum(label_replace(increase(haproxy_server_http_responses_total{route="telemeter-server"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
+        sum(label_replace(increase(haproxy_server_http_responses_total{route="telemeter-server-upload"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: status_class:haproxy_server_http_responses_total:increase30d
     - expr: |
         (
@@ -281,16 +281,16 @@ spec:
           sum(status_class:haproxy_server_http_responses_total:increase30d)
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: haproxy_server_http_responses_total_errorbudget_requests
     - expr: |
         (
-          sum(haproxy_server_http_responses_total_errorbudget_requests{route="telemeter-server"})
+          sum(haproxy_server_http_responses_total_errorbudget_requests{route="telemeter-server-upload"})
         -
-          sum(status_class:haproxy_server_http_responses_total:increase30d{route="telemeter-server",status_class="5xx"})
+          sum(status_class:haproxy_server_http_responses_total:increase30d{route="telemeter-server-upload",status_class="5xx"})
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
       record: haproxy_server_http_responses_total_errorbudget_remaining
     - expr: |
         (
@@ -299,5 +299,151 @@ spec:
           haproxy_server_http_responses_total_errorbudget_requests
         )
       labels:
-        route: telemeter-server
+        route: telemeter-server-upload
+      record: haproxy_server_http_responses_total_errorbudget
+  - name: observatorium-telemeter-authorize.slo.rules
+    rules:
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[5m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate5m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[30m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate30m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[1h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate1h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[2h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate2h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[6h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate6h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[1d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate1d
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[3d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:rate3d
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate5m{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate5m
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate30m{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate30m
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate1h{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1h
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate2h{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate2h
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate6h{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate6h
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate1d{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate1d
+    - expr: |
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server-authorize",status_class="5xx"})
+        /
+        sum(status_class:haproxy_server_http_responses_total:rate3d{route="telemeter-server-authorize"})
+      labels:
+        route: telemeter-server-authorize
+      record: status_class_5xx:haproxy_server_http_responses_total:ratio_rate3d
+    - expr: |
+        sum(label_replace(increase(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[30d]), "status_class", "${1}xx", "code", "([0-9])..")) by (status_class)
+      labels:
+        route: telemeter-server-authorize
+      record: status_class:haproxy_server_http_responses_total:increase30d
+    - expr: |
+        (
+          0.100000
+        *
+          sum(status_class:haproxy_server_http_responses_total:increase30d)
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: haproxy_server_http_responses_total_errorbudget_requests
+    - expr: |
+        (
+          sum(haproxy_server_http_responses_total_errorbudget_requests{route="telemeter-server-authorize"})
+        -
+          sum(status_class:haproxy_server_http_responses_total:increase30d{route="telemeter-server-authorize",status_class="5xx"})
+        )
+      labels:
+        route: telemeter-server-authorize
+      record: haproxy_server_http_responses_total_errorbudget_remaining
+    - expr: |
+        (
+          haproxy_server_http_responses_total_errorbudget_remaining
+        /
+          haproxy_server_http_responses_total_errorbudget_requests
+        )
+      labels:
+        route: telemeter-server-authorize
       record: haproxy_server_http_responses_total_errorbudget

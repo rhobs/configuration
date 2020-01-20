@@ -1,11 +1,37 @@
-local observatoriumSLOs = import 'observatorium/slos.libsonnet';
 local slo = import 'slo-libsonnet/slo.libsonnet';
+
+local telemeterSLOs = [
+  {
+    name: 'observatorium-telemeter-read.slo.rules',
+    errors: {
+      metric: 'haproxy_server_http_responses_total',
+      selectors: ['route="observatorium-thanos-querier-cache"'],
+      errorBudget: 1.0 - 0.90,
+    },
+  },
+  {
+    name: 'observatorium-telemeter-upload.slo.rules',
+    errors: {
+      metric: 'haproxy_server_http_responses_total',
+      selectors: ['route="telemeter-server-upload"'],
+      errorBudget: 1.0 - 0.90,
+    },
+  },
+  {
+    name: 'observatorium-telemeter-authorize.slo.rules',
+    errors: {
+      metric: 'haproxy_server_http_responses_total',
+      selectors: ['route="telemeter-server-authorize"'],
+      errorBudget: 1.0 - 0.90,
+    },
+  },
+];
 
 {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PrometheusRule',
   metadata: {
-    name: 'observatorium-slos',
+    name: 'telemeter-slos',
     labels: {
       prometheus: 'app-sre',
       role: 'alert-rules',
@@ -14,25 +40,12 @@ local slo = import 'slo-libsonnet/slo.libsonnet';
   spec: {
     groups: [
       {
-        local errors = observatoriumSLOs.observatoriumQuery.errors {
-          labels+: ['service="telemeter"'],
-        },
-
-        name: 'observatorium-thanos-querier.slo.rules',
+        name: s.name,
         rules:
-          slo.errorburn(errors).recordingrules +
-          slo.errorbudget(errors).recordingrules,
-      },
-      {
-        local errors = observatoriumSLOs.telemeterServerUpload.errors {
-          labels+: ['service="telemeter"'],
-        },
-
-        name: 'observatorium-telemeter.slo.rules',
-        rules:
-          slo.errorburn(errors).recordingrules +
-          slo.errorbudget(errors).recordingrules,
-      },
+          slo.errorburn(s.errors).recordingrules +
+          slo.errorbudget(s.errors).recordingrules,
+      }
+      for s in telemeterSLOs
     ],
   },
 }

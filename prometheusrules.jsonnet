@@ -52,6 +52,16 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
     }
     for g in super.groups
   ],
+} + {
+  groups: [
+    g {
+      rules: std.filter(
+        function(r) (r.alert != 'ThanosStoreSeriesGateLatencyHigh'),
+        super.rules,
+      ),
+    }
+    for g in super.groups
+  ],
 };
 
 {

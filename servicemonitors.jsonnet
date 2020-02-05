@@ -1,103 +1,95 @@
 local prom = import 'observatorium/environments/openshift/telemeter-prometheus-ams.jsonnet';
-local tenants = import 'observatorium/tenants.libsonnet';
+local t = (import 'kube-thanos/thanos.libsonnet');
+local trc = (import 'thanos-receive-controller/thanos-receive-controller.libsonnet');
 
-local sm =
-  (import 'kube-thanos/kube-thanos-servicemonitors.libsonnet') +
-  {
-    thanos+:: {
-      querier+: {
-        serviceMonitor+: {
-          metadata: {
-            name: 'observatorium-thanos-querier',
-            labels: { prometheus: 'app-sre' },
-          },
-          spec+: {
-            selector+: {
-              matchLabels: { 'app.kubernetes.io/name': 'thanos-querier' },
-            },
+local obs = (import 'observatorium/environments/openshift/obs.jsonnet') {
+  compact+::
+    t.compact.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-compactor',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
           },
         },
-      },
-      store+: {
-        serviceMonitor+: {
-          metadata: {
-            name: 'observatorium-thanos-store',
-            labels: { prometheus: 'app-sre' },
-          },
-          spec+: {
-            selector+: {
-              matchLabels: { 'app.kubernetes.io/name': 'thanos-store' },
-            },
-          },
-        },
-      },
-      compactor+: {
-        serviceMonitor+: {
-          metadata: {
-            name: 'observatorium-thanos-compactor',
-            labels: { prometheus: 'app-sre' },
-          },
-          spec+: {
-            selector+: {
-              matchLabels: { 'app.kubernetes.io/name': 'thanos-compactor' },
-            },
-          },
-        },
-      },
-      thanosReceiveController+: {
-        serviceMonitor+: {
-          apiVersion: 'monitoring.coreos.com/v1',
-          kind: 'ServiceMonitor',
-          metadata: {
-            name: 'observatorium-thanos-receive-controller',
-            labels: { prometheus: 'app-sre' },
-          },
-          spec+: {
-            selector+: {
-              matchLabels: { 'app.kubernetes.io/name': 'thanos-receive-controller' },
-            },
-            endpoints: [
-              { port: 'http' },
-            ],
-          },
-        },
-      },
-      receive+: {
-        ['serviceMonitor' + tenant.hashring]:
-          super.serviceMonitor +
-          {
-            metadata: {
-              name: 'observatorium-thanos-receive-' + tenant.hashring,
-              labels: { prometheus: 'app-sre' },
-            },
-            spec+: {
-              selector+: {
-                matchLabels: {
-                  'app.kubernetes.io/name': 'thanos-receive',
-                  'app.kubernetes.io/instance': tenant.hashring,
-                },
-              },
-            },
-          }
-        for tenant in tenants
       },
     },
-  };
+
+  thanosReceiveController+::
+    trc.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-receive-controller',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
+
+  store+::
+    t.store.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-store',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
+
+  receivers+:: {
+    [hashring.hashring]+: t.receive.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-receive-' + hashring.hashring,
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    }
+    for hashring in obs.config.hashrings
+  },
+
+  query+::
+    t.query.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-querier',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
+};
 
 {
-  'observatorium-thanos-querier.servicemonitor': sm.thanos.querier.serviceMonitor {
+  'observatorium-thanos-querier.servicemonitor': obs.query.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
-  'observatorium-thanos-store.servicemonitor': sm.thanos.store.serviceMonitor {
+  'observatorium-thanos-store.servicemonitor': obs.store.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
-  'observatorium-thanos-compactor.servicemonitor': sm.thanos.compactor.serviceMonitor {
+  'observatorium-thanos-compactor.servicemonitor': obs.compact.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
-  'observatorium-thanos-receive-controller.servicemonitor': sm.thanos.thanosReceiveController.serviceMonitor {
+  'observatorium-thanos-receive-controller.servicemonitor': obs.thanosReceiveController.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
@@ -109,9 +101,9 @@ local sm =
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
 } {
-  ['observatorium-thanos-receive-%s.servicemonitor' % tenant.hashring]: sm.thanos.receive['serviceMonitor' + tenant.hashring] {
+  ['observatorium-thanos-receive-%s.servicemonitor' % hashring.hashring]: obs.receivers[hashring.hashring].serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   }
-  for tenant in tenants
+  for hashring in obs.config.hashrings
 }

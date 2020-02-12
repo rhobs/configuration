@@ -8,8 +8,8 @@
           "subdir": ""
         }
       },
-      "version": "2a951cceabc4bcd15a2db14bee2e06c76fc09721",
-      "sum": "Kt3fjNmkqXPdvsr5cgK4KXxHwwVcS227p+TmMQW6wrk="
+      "version": "1b96011f00502232d803c62156bd1f1e72536158",
+      "sum": "ndMLkBVpDC/Qp0ejFAf5A7E0V8Z1cmI+6D3xH/CK3VM="
     },
     {
       "name": "grafana-builder",
@@ -118,7 +118,7 @@
           "subdir": "mixin/thanos"
         }
       },
-      "version": "573eff4c205c7369edc71d785af0b251e1bfd49e",
+      "version": "508d388652810a6f39382f47b5dfcc731fbc6f8a",
       "sum": "5yFTECBZPOglLDMF15YsidLI1ZAEY5lsOXcDsL//sv4="
     },
     {

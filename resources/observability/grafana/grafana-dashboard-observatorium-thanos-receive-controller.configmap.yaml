@@ -58,7 +58,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_controller_reconcile_errors_total{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}[$interval])) / sum(rate(thanos_receive_controller_reconcile_attempts_total{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}[$interval]))",
+                  "expr": "sum(rate(thanos_receive_controller_reconcile_errors_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}[$interval])) / sum(rate(thanos_receive_controller_reconcile_attempts_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -144,7 +144,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_controller_reconcile_errors_total{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}[$interval])) by (type)",
+                  "expr": "sum(rate(thanos_receive_controller_reconcile_errors_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}[$interval])) by (type)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{type}}",
@@ -242,7 +242,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_controller_configmap_change_errors_total{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}[$interval])) / sum(rate(thanos_receive_controller_configmap_change_attempts_total{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}[$interval]))",
+                  "expr": "sum(rate(thanos_receive_controller_configmap_change_errors_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}[$interval])) / sum(rate(thanos_receive_controller_configmap_change_attempts_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -328,7 +328,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_controller_configmap_change_errors_total{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}[$interval])) by (type)",
+                  "expr": "sum(rate(thanos_receive_controller_configmap_change_errors_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}[$interval])) by (type)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{type}}",
@@ -426,7 +426,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_hashrings_file_changes_total{namespace=\"$namespace\",job=~\"thanos-receive.*\"}[$interval]))",
+                  "expr": "sum(rate(thanos_receive_hashrings_file_changes_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive.*\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all",
@@ -512,7 +512,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_hashrings_file_errors_total{namespace=\"$namespace\",job=~\"thanos-receive.*\"}[$interval])) / sum(rate(thanos_receive_hashrings_file_changes_total{namespace=\"$namespace\",job=~\"thanos-receive.*\"}[$interval]))",
+                  "expr": "sum(rate(thanos_receive_hashrings_file_errors_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive.*\"}[$interval])) / sum(rate(thanos_receive_hashrings_file_changes_total{namespace=\"$namespace\",job=~\"observatorium-thanos-receive.*\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -610,7 +610,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "avg(thanos_receive_controller_hashring_nodes{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}) by (name)",
+                  "expr": "avg(thanos_receive_controller_hashring_nodes{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}) by (name)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "receive controller {{name}}",
@@ -618,7 +618,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "avg(thanos_receive_hashring_nodes{namespace=\"$namespace\",job=~\"thanos-receive.*\"}) by (name)",
+                  "expr": "avg(thanos_receive_hashring_nodes{namespace=\"$namespace\",job=~\"observatorium-thanos-receive.*\"}) by (name)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "receive {{name}}",
@@ -704,7 +704,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "avg(thanos_receive_controller_hashring_tenants{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}) by (name)",
+                  "expr": "avg(thanos_receive_controller_hashring_tenants{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}) by (name)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "receive controller {{name}}",
@@ -712,7 +712,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "avg(thanos_receive_hashring_tenants{namespace=\"$namespace\",job=~\"thanos-receive.*\"}) by (name)",
+                  "expr": "avg(thanos_receive_hashring_tenants{namespace=\"$namespace\",job=~\"observatorium-thanos-receive.*\"}) by (name)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "receive {{name}}",
@@ -813,7 +813,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "time() - max(thanos_receive_controller_configmap_last_reload_success_timestamp_seconds{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"})",
+                  "expr": "time() - max(thanos_receive_controller_configmap_last_reload_success_timestamp_seconds{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"})",
                   "format": "time_series",
                   "instant": true,
                   "intervalFactor": 2,
@@ -899,7 +899,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "time() - max(thanos_receive_config_last_reload_success_timestamp_seconds{namespace=\"$namespace\",job=~\"thanos-receive.*\"})",
+                  "expr": "time() - max(thanos_receive_config_last_reload_success_timestamp_seconds{namespace=\"$namespace\",job=~\"observatorium-thanos-receive.*\"})",
                   "format": "time_series",
                   "instant": true,
                   "intervalFactor": 2,
@@ -1004,7 +1004,7 @@ data:
             "useTags": false
           },
           {
-            "allValue": "thanos-receive-controller.*",
+            "allValue": "observatorium-thanos-receive-controller.*",
             "current": {
               "text": "all",
               "value": "$__all"
@@ -1018,7 +1018,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(up{namespace=\"$namespace\",job=~\"thanos-receive-controller.*\"}, job)",
+            "query": "label_values(up{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-controller.*\"}, job)",
             "refresh": 1,
             "regex": "",
             "sort": 2,

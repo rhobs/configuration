@@ -1,3 +1,5 @@
+local obs = (import 'observatorium/environments/openshift/obs.jsonnet');
+
 local thanos =
   (import 'thanos-mixin/dashboards/querier.libsonnet') +
   (import 'thanos-mixin/dashboards/store.libsonnet') +
@@ -17,8 +19,8 @@ local dashboards = (thanos + selectors).grafanaDashboards;
 
 local thanosReceiveDashboards = thanosReceiveController {
   _config+:: {
-    thanosReceiveJobPrefix: 'thanos-receive',
-    thanosReceiveControllerJobPrefix: 'thanos-receive-controller',
+    thanosReceiveJobPrefix: 'observatorium-thanos-receive',
+    thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
 
     thanosReceiveSelector: 'job=~"%s.*"' % self.thanosReceiveJobPrefix,
     thanosReceiveControllerSelector: 'job=~"%s.*"' % self.thanosReceiveControllerJobPrefix,

@@ -2,6 +2,8 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet');
 
 {
   _config+:: {
+    // TODO: Move this to the new style of selectors that kube-thanos uses
+    thanosReceiveSelector: $.receiver.selector,
     thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
     thanosReceiveControllerSelector: 'job="%s"' % self.thanosReceiveControllerJobPrefix,
   },

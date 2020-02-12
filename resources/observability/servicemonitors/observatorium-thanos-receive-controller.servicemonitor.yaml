@@ -4,6 +4,7 @@ metadata:
   labels:
     prometheus: app-sre
   name: observatorium-thanos-receive-controller-{{environment}}
+  namespace: null
 spec:
   endpoints:
   - port: http
@@ -12,4 +13,8 @@ spec:
     - '{{namespace}}'
   selector:
     matchLabels:
+      app.kubernetes.io/component: kubernetes-controller
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-controller
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}

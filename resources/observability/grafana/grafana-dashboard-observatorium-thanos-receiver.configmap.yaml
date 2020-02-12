@@ -2445,8 +2445,8 @@ data:
         "list": [
           {
             "current": {
-              "text": "Prometheus",
-              "value": "Prometheus"
+              "text": "default",
+              "value": "default"
             },
             "hide": 0,
             "label": null,
@@ -2486,7 +2486,7 @@ data:
             "useTags": false
           },
           {
-            "allValue": "thanos-receive.*",
+            "allValue": "observatorium-thanos-receive-default.*",
             "current": {
               "text": "all",
               "value": "$__all"
@@ -2500,7 +2500,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(up{namespace=\"$namespace\",job=~\"thanos-receive.*\"}, job)",
+            "query": "label_values(up{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-default.*\"}, job)",
             "refresh": 1,
             "regex": "",
             "sort": 2,
@@ -2527,7 +2527,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(kube_pod_info{namespace=\"$namespace\",created_by_name=~\"thanos-receive.*\"}, pod)",
+            "query": "label_values(kube_pod_info{namespace=\"$namespace\",created_by_name=~\"observatorium-thanos-receive-default.*\"}, pod)",
             "refresh": 1,
             "regex": "",
             "sort": 2,

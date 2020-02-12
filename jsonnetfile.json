@@ -1,7 +1,7 @@
 {
   "dependencies": [
     {
-      "name": "observatorium",
+      "name": "configuration",
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/configuration",

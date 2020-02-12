@@ -1,8 +1,13 @@
-local prom = import 'observatorium/environments/openshift/telemeter-prometheus-ams.jsonnet';
-local t = (import 'kube-thanos/thanos.libsonnet');
-local trc = (import 'thanos-receive-controller/thanos-receive-controller.libsonnet');
+local prom = import 'configuration/environments/openshift/telemeter-prometheus-ams.jsonnet';
+local t =
+  (import 'kube-thanos/thanos.libsonnet') +
+  (import 'selectors.libsonnet');
 
-local obs = (import 'observatorium/environments/openshift/obs.jsonnet') {
+local trc =
+  (import 'thanos-receive-controller/thanos-receive-controller.libsonnet') +
+  (import 'selectors.libsonnet');
+
+local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
   compact+::
     t.compact.withServiceMonitor {
       serviceMonitor+: {

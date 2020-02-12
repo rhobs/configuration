@@ -1,6 +1,17 @@
 {
   "dependencies": [
     {
+      "name": "configuration",
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/configuration",
+          "subdir": ""
+        }
+      },
+      "version": "2a951cceabc4bcd15a2db14bee2e06c76fc09721",
+      "sum": "Kt3fjNmkqXPdvsr5cgK4KXxHwwVcS227p+TmMQW6wrk="
+    },
+    {
       "name": "grafana-builder",
       "source": {
         "git": {
@@ -8,8 +19,8 @@
           "subdir": "grafana-builder"
         }
       },
-      "version": "58d324018dd9d41049ddc10516e1ac89d59a4d6a",
-      "sum": "ELsYwK+kGdzX1mee2Yy+/b2mdO4Y503BOCDkFzwmGbE="
+      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
+      "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
     },
     {
       "name": "grafonnet",
@@ -19,8 +30,8 @@
           "subdir": "grafonnet"
         }
       },
-      "version": "f3ee1d810858cf556d25f045b53cb0f1fd10b94e",
-      "sum": "14YBZUP/cl8qi9u86xiuUS4eXQrEAam+4GSg6i9n9Ys="
+      "version": "c459106d2d2b583dd3a83f6c75eb52abee3af764",
+      "sum": "CeM3LRgUCUJTolTdMnerfMPGYmhClx7gX5ajrQVEY2Y="
     },
     {
       "name": "jaeger-mixin",
@@ -30,7 +41,7 @@
           "subdir": "monitoring/jaeger-mixin"
         }
       },
-      "version": "641dd92ac3cdda8b8ad54a3ce9942beecb7dc48f",
+      "version": "3ae21efe69cf5657b9b39a873edc0bcc85b84407",
       "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
     },
     {
@@ -52,19 +63,19 @@
           "subdir": "jsonnet/kube-thanos"
         }
       },
-      "version": "0c90793e469a6822c4f0c7de57ccf5ab0449f676",
-      "sum": "ASNsquhtTSMENd7OFq2IOtGQlrNQ9apnfzAJRMEFflU="
+      "version": "6f490d761448ec9390d47f1d2b6e4d4d85e1b304",
+      "sum": "19HKo7CY0BskXVBuVBZA7cKXaMm0r/j8HgwEvJxDTTk="
     },
     {
       "name": "observatorium",
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/configuration",
-          "subdir": ""
+          "remote": "https://github.com/observatorium/observatorium",
+          "subdir": "jsonnet/lib"
         }
       },
-      "version": "87d15f22b2b0163d69bc1d63be78884ebfb2ca93",
-      "sum": "U/3e85KyNcz6pnm/YRLl0YUGx0dCtMQiehxjNTcs3DI="
+      "version": "e009b4adfef6b4134073310f8e84bb3aa4215cde",
+      "sum": "fFeO0W9LXd9Qn9bF81CSQfG0+eF//rUSxZJk3LvKWN0="
     },
     {
       "name": "prometheus-operator",
@@ -74,8 +85,8 @@
           "subdir": "jsonnet/prometheus-operator"
         }
       },
-      "version": "8d44e0990230144177f97cf62ae4f43b1c4e3168",
-      "sum": "5U7/8MD3pF9O0YDTtUhg4vctkUBRVFxZxWUyhtNiBM8="
+      "version": "1aa773ddbbbd9b05405e9785e0190b975b1faadc",
+      "sum": "PlruMWn3QMjgLQVzn0DqlD1G8ijkew9icNNW4cpwRVA="
     },
     {
       "name": "slo-libsonnet",
@@ -96,8 +107,8 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "46439efe387e426ede37ad2a87cf08d578e5ea84",
-      "sum": "k2xynRtw8CT8jnPqnALxmReIqCXFWT/NknGnYJVZ0ms="
+      "version": "7853182efa4a42f44e929f54860a3c84e99e2079",
+      "sum": "1/pVyXnhpBPaeyqlRVWI7I8nngGNiSgcv7xMWjHizC4="
     },
     {
       "name": "thanos-mixin",
@@ -107,8 +118,8 @@
           "subdir": "mixin/thanos"
         }
       },
-      "version": "fbe1c750af84dd99b3f9f3c22843a427606fec1e",
-      "sum": "gcktnACoIgK9karClPS7b4fzzYDkvbsq14/GfYYtd+g="
+      "version": "573eff4c205c7369edc71d785af0b251e1bfd49e",
+      "sum": "5yFTECBZPOglLDMF15YsidLI1ZAEY5lsOXcDsL//sv4="
     },
     {
       "name": "thanos-receive-controller",
@@ -118,8 +129,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "c4e9017b07f93690506fc675d19f3a52a9ee7b6b",
-      "sum": "EGr26vVxp0ZKDHd3EGBlsozeOa3/9sRF+L/qAMZmpw4="
+      "version": "b66e0c82724007bd40ac40b054ca2cba779d5d75",
+      "sum": "iUbwzPZ/0QrozWTfoXlmRhd1CMAnkcCaWtATTlSnoMk="
     },
     {
       "name": "thanos-receive-controller-mixin",
@@ -129,7 +140,7 @@
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
-      "version": "c4e9017b07f93690506fc675d19f3a52a9ee7b6b",
+      "version": "b66e0c82724007bd40ac40b054ca2cba779d5d75",
       "sum": "TK16wpgsxCEimR2oxw6V8TIs+BRi6Rk+mENkcaOW5m8="
     }
   ]

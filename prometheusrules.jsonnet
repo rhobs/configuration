@@ -1,13 +1,13 @@
-local observatoriumSLOs = import 'observatorium/slos.libsonnet';
+local observatoriumSLOs = import 'configuration/slos.libsonnet';
 local slo = import 'slo-libsonnet/slo.libsonnet';
 
-local thanosReceiveController = (import 'thanos-receive-controller-mixin/mixin.libsonnet');
 local thanosAlerts =
   // (import 'thanos-mixin/alerts/absent.libsonnet') + // TODO: need to be fixed upstream
   (import 'thanos-mixin/alerts/compactor.libsonnet') +
   (import 'thanos-mixin/alerts/querier.libsonnet') +
   (import 'thanos-mixin/alerts/receiver.libsonnet') +
   (import 'thanos-mixin/alerts/store.libsonnet') +
+  (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
   (import 'selectors.libsonnet');
 
 // Add dashboards and runbook anntotations
@@ -80,7 +80,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
     },
     local namespace = 'telemeter-stage',
 
-    local alerts = thanosAlerts + thanosReceiveController {
+    local alerts = thanosAlerts {
       prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
     },
 
@@ -97,7 +97,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
       },
     },
     local namespace = 'telemeter-production',
-    local alerts = thanosAlerts + thanosReceiveController {
+    local alerts = thanosAlerts {
     } + {
       prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
     },

@@ -1,6 +1,11 @@
-local obs = (import 'observatorium/environments/openshift/obs.jsonnet');
+local obs = (import 'configuration/environments/openshift/obs.jsonnet');
 
 {
+  _config+:: {
+    thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
+    thanosReceiveControllerSelector: 'job="%s"' % self.thanosReceiveControllerJobPrefix,
+  },
+
   dashboard+:: {
     tags: ['thanos-mixin'],
     namespaceQuery: 'kube_pod_info',

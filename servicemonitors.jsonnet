@@ -33,6 +33,15 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
             'app.kubernetes.io/version':: 'hidden',
           },
         },
+
+        // TODO: Remove once fixed upstream
+        spec+: {
+          selector+: {
+            matchLabels+: {
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+        },
       },
     },
 

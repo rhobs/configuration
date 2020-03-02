@@ -3,9 +3,9 @@ local slo = import 'slo-libsonnet/slo.libsonnet';
 
 local thanosAlerts =
   // (import 'thanos-mixin/alerts/absent.libsonnet') + // TODO: need to be fixed upstream
-  (import 'thanos-mixin/alerts/compactor.libsonnet') +
-  (import 'thanos-mixin/alerts/querier.libsonnet') +
-  (import 'thanos-mixin/alerts/receiver.libsonnet') +
+  (import 'thanos-mixin/alerts/compact.libsonnet') +
+  (import 'thanos-mixin/alerts/query.libsonnet') +
+  (import 'thanos-mixin/alerts/receive.libsonnet') +
   (import 'thanos-mixin/alerts/store.libsonnet') +
   (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
   (import 'selectors.libsonnet');
@@ -16,11 +16,11 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
   local dashboardID = function(name) {
     id:
       if
-        name == 'thanos-querier.rules' then '98fde97ddeaf2981041745f1f2ba68c2'
+        name == 'thanos-query.rules' then '98fde97ddeaf2981041745f1f2ba68c2'
       else if
-        name == 'thanos-compactor.rules' then '651943d05a8123e32867b4673963f42b'
+        name == 'thanos-compact.rules' then '651943d05a8123e32867b4673963f42b'
       else if
-        name == 'thanos-receiver.rules' then '916a852b00ccc5ed81056644718fa4fb'
+        name == 'thanos-receive.rules' then '916a852b00ccc5ed81056644718fa4fb'
       else if
         name == 'thanos-store.rules' then 'e832e8f26403d95fac0ea1c59837588b'
       else if
@@ -58,7 +58,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
       rules: std.filter(
         function(r) !(
           r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
-          r.alert == 'ThanosQuerierHttpRequestQueryRangeErrorRateHigh'
+          r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh'
         ),
         super.rules,
       ),

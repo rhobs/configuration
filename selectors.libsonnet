@@ -3,7 +3,7 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet');
 {
   _config+:: {
     // TODO: Move this to the new style of selectors that kube-thanos uses
-    thanosReceiveSelector: $.receiver.selector,
+    thanosReceiveSelector: $.receive.selector,
     thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
     thanosReceiveControllerSelector: 'job="%s"' % self.thanosReceiveControllerJobPrefix,
   },
@@ -15,30 +15,29 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet');
   overview+:: {
     title: '%(prefix)sOverview' % $.dashboard.prefix,
   },
-  compactor+:: {
+  compact+:: {
     jobPrefix: obs.compact.service.metadata.name,
     selector: 'job="%s"' % self.jobPrefix,
-    title: '%(prefix)sCompactor' % $.dashboard.prefix,
+    title: '%(prefix)sCompact' % $.dashboard.prefix,
   },
-  querier+:: {
+  query+:: {
     jobPrefix: obs.query.service.metadata.name,
     selector: 'job="%s"' % self.jobPrefix,
-    title: '%(prefix)sQuerier' % $.dashboard.prefix,
+    title: '%(prefix)sQuery' % $.dashboard.prefix,
   },
-  receiver+:: {
+  receive+:: {
     jobPrefix: obs.receivers.default.service.metadata.name,
     selector: 'job=~"%s.*"' % self.jobPrefix,
-    title: '%(prefix)sReceiver' % $.dashboard.prefix,
+    title: '%(prefix)sReceive' % $.dashboard.prefix,
   },
   store+:: {
-    jobPrefix: obs.store.service.metadata.name,
-    selector: 'job="%s"' % self.jobPrefix,
+    jobPrefix: 'observatorium-thanos-store',
+    selector: 'job=~"%s.*"' % self.jobPrefix,
     title: '%(prefix)sStore' % $.dashboard.prefix,
-
   },
-  ruler+:: {
+  rule+:: {
     jobPrefix: obs.rule.service.metadata.name,
     selector: 'job="%s"' % self.jobPrefix,
-    title: '%(prefix)sRuler' % $.dashboard.prefix,
+    title: '%(prefix)sRule' % $.dashboard.prefix,
   },
 }

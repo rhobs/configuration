@@ -45,11 +45,11 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
       },
     },
 
-  store+::
-    t.store.withServiceMonitor {
+  store+:: {
+    ['shard' + i]+: t.store.withServiceMonitor {
       serviceMonitor+: {
         metadata+: {
-          name: 'observatorium-thanos-store',
+          name: 'observatorium-thanos-store-shard-' + i,
           namespace: null,
           labels+: {
             prometheus: 'app-sre',
@@ -57,7 +57,9 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
           },
         },
       },
-    },
+    }
+    for i in std.range(0, obs.config.store.shards - 1)
+  },
 
   receivers+:: {
     [hashring.hashring]+: t.receive.withServiceMonitor {
@@ -91,15 +93,11 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
 };
 
 {
-  'observatorium-thanos-querier.servicemonitor': obs.query.serviceMonitor {
+  'observatorium-thanos-query.servicemonitor': obs.query.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
-  'observatorium-thanos-store.servicemonitor': obs.store.serviceMonitor {
-    metadata+: { name+: '-{{environment}}' },
-    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
-  },
-  'observatorium-thanos-compactor.servicemonitor': obs.compact.serviceMonitor {
+  'observatorium-thanos-compact.servicemonitor': obs.compact.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
@@ -120,4 +118,10 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   }
   for hashring in obs.config.hashrings
+} {
+  ['observatorium-thanos-store-shard-%d.servicemonitor' % i]: obs.store['shard' + i].serviceMonitor {
+    metadata+: { name+: '-{{environment}}' },
+    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
+  }
+  for i in std.range(0, obs.config.store.shards - 1)
 }

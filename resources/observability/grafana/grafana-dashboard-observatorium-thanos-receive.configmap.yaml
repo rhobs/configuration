@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  receiver.json: |-
+  receive.json: |-
     {
       "annotations": {
         "list": [
@@ -2601,10 +2601,10 @@ data:
         ]
       },
       "timezone": "",
-      "title": "Thanos / Receiver",
-      "uid": "b5958da86b143e45752506d3c09c4f92",
+      "title": "Thanos / Receive",
+      "uid": "916a852b00ccc5ed81056644718fa4fb",
       "version": 0
     }
 kind: ConfigMap
 metadata:
-  name: grafana-dashboard-observatorium-thanos-receiver
+  name: grafana-dashboard-observatorium-thanos-receive

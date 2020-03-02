@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  querier.json: |-
+  rule.json: |-
     {
       "annotations": {
         "list": [
@@ -22,20 +22,14 @@ data:
           "panels": [
             {
               "aliasColors": {
-                "1xx": "#EAB839",
-                "2xx": "#7EB26D",
-                "3xx": "#6ED0E0",
-                "4xx": "#EF843C",
-                "5xx": "#E24D42",
-                "error": "#E24D42",
-                "success": "#7EB26D"
+
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows rate of requests against /query for the given time.",
-              "fill": 10,
+              "description": "Shows rate of dropped alerts.",
+              "fill": 1,
               "id": 1,
               "legend": {
                 "avg": false,
@@ -47,7 +41,7 @@ data:
                 "values": false
               },
               "lines": true,
-              "linewidth": 0,
+              "linewidth": 1,
               "links": [
 
               ],
@@ -60,16 +54,16 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 4,
-              "stack": true,
+              "span": 3,
+              "stack": false,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, status_code)",
+                  "expr": "sum(rate(thanos_alert_sender_alerts_dropped_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, alertmanager)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{status_code}}",
-                  "refId": "A",
+                  "legendFormat": "{{job}} {{alertmanager}}",
+                  "legendLink": null,
                   "step": 10
                 }
               ],
@@ -78,7 +72,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Rate",
+              "title": "Dropped Rate",
               "tooltip": {
                 "shared": false,
                 "sort": 0,
@@ -115,13 +109,13 @@ data:
             },
             {
               "aliasColors": {
-                "error": "#E24D42"
+
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests against /query.",
+              "description": "Shows rate of alerts that successfully sent to alert manager.",
               "fill": 10,
               "id": 2,
               "legend": {
@@ -147,16 +141,16 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 4,
+              "span": 3,
               "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query\",code=~\"5..\"}[$interval])) / sum(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval]))",
+                  "expr": "sum(rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, alertmanager)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
-                  "refId": "A",
+                  "legendFormat": "{{job}} {{alertmanager}}",
+                  "legendLink": null,
                   "step": 10
                 }
               ],
@@ -165,215 +159,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Errors",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "percentunit",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests in quantiles.",
-              "fill": 1,
-              "id": 3,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval])) by (job, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}}",
-                  "refId": "A",
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(http_request_duration_seconds_sum{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval])) by (job) * 1 / sum(rate(http_request_duration_seconds_count{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval])) by (job)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "mean {{job}}",
-                  "refId": "B",
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval])) by (job, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}}",
-                  "refId": "C",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Duration",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "s",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            }
-          ],
-          "repeat": null,
-          "repeatIteration": null,
-          "repeatRowId": null,
-          "showTitle": true,
-          "title": "Instant Query API",
-          "titleSize": "h6"
-        },
-        {
-          "collapse": false,
-          "height": "250px",
-          "panels": [
-            {
-              "aliasColors": {
-                "1xx": "#EAB839",
-                "2xx": "#7EB26D",
-                "3xx": "#6ED0E0",
-                "4xx": "#EF843C",
-                "5xx": "#E24D42",
-                "error": "#E24D42",
-                "success": "#7EB26D"
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows rate of requests against /query_range for the given time range.",
-              "fill": 10,
-              "id": 4,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, status_code)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{status_code}}",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Rate",
+              "title": "Sent Rate",
               "tooltip": {
                 "shared": false,
                 "sort": 0,
@@ -416,9 +202,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests against /query_range.",
+              "description": "Shows ratio of errors compared to the total number of sent alerts.",
               "fill": 10,
-              "id": 5,
+              "id": 3,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -442,12 +228,12 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 4,
+              "span": 3,
               "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\",code=~\"5..\"}[$interval])) / sum(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval]))",
+                  "expr": "sum(rate(thanos_alert_sender_errors_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) / sum(rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -460,7 +246,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Errors",
+              "title": "Sent Errors",
               "tooltip": {
                 "shared": false,
                 "sort": 0,
@@ -503,9 +289,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests in quantiles.",
+              "description": "Shows how long has it taken to send alerts to alert manager.",
               "fill": 1,
-              "id": 6,
+              "id": 4,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -529,12 +315,12 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 4,
+              "span": 3,
               "stack": false,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum(rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P99 {{job}}",
@@ -542,7 +328,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(http_request_duration_seconds_sum{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval])) by (job) * 1 / sum(rate(http_request_duration_seconds_count{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval])) by (job)",
+                  "expr": "sum(rate(thanos_alert_sender_latency_seconds_sum{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job) * 1 / sum(rate(thanos_alert_sender_latency_seconds_count{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "mean {{job}}",
@@ -550,7 +336,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum(rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P50 {{job}}",
@@ -563,7 +349,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Duration",
+              "title": "Sent Duration",
               "tooltip": {
                 "shared": false,
                 "sort": 0,
@@ -603,30 +389,24 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Range Query API",
+          "title": "Alert Sent",
           "titleSize": "h6"
         },
         {
-          "collapse": true,
+          "collapse": false,
           "height": "250px",
           "panels": [
             {
               "aliasColors": {
-                "1xx": "#EAB839",
-                "2xx": "#7EB26D",
-                "3xx": "#6ED0E0",
-                "4xx": "#EF843C",
-                "5xx": "#E24D42",
-                "error": "#E24D42",
-                "success": "#7EB26D"
+
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows rate of requests against /query for the given time, with handlers and codes.",
-              "fill": 10,
-              "id": 7,
+              "description": "Shows rate of queued alerts.",
+              "fill": 1,
+              "id": 5,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -637,7 +417,7 @@ data:
                 "values": false
               },
               "lines": true,
-              "linewidth": 0,
+              "linewidth": 1,
               "links": [
 
               ],
@@ -650,16 +430,16 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 4,
-              "stack": true,
+              "span": 6,
+              "stack": false,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, handler, status_code)",
+                  "expr": "sum(rate(thanos_alert_queue_alerts_dropped_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, pod)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{handler}} {{status_code}}",
-                  "refId": "A",
+                  "legendFormat": "{{job}} {{pod}}",
+                  "legendLink": null,
                   "step": 10
                 }
               ],
@@ -668,7 +448,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Rate",
+              "title": "Push Rate",
               "tooltip": {
                 "shared": false,
                 "sort": 0,
@@ -705,15 +485,15 @@ data:
             },
             {
               "aliasColors": {
-
+                "error": "#E24D42"
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests, in more detail.",
+              "description": "Shows ratio of dropped alerts compared to the total number of queued alerts.",
               "fill": 10,
-              "id": 8,
+              "id": 6,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -737,16 +517,16 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 4,
+              "span": 6,
               "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",code!~\"2..\"}[$interval])) by (job, handler, code)",
+                  "expr": "sum(rate(thanos_alert_queue_alerts_dropped_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) / sum(rate(thanos_alert_queue_alerts_pushed_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{handler}} {{code}}",
-                  "legendLink": null,
+                  "legendFormat": "error",
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -755,7 +535,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Errors",
+              "title": "Drop Ratio",
               "tooltip": {
                 "shared": false,
                 "sort": 0,
@@ -789,116 +569,13 @@ data:
                   "show": false
                 }
               ]
-            },
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests in quantiles.",
-              "fill": 1,
-              "id": 9,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}} {{handler}}",
-                  "refId": "A",
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(http_request_duration_seconds_sum{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler) * 1 / sum(rate(http_request_duration_seconds_count{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "mean {{job}} {{handler}}",
-                  "refId": "B",
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}} {{handler}}",
-                  "refId": "C",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Duration",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "s",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
             }
           ],
           "repeat": null,
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Query Detailed",
+          "title": "Alert Queue",
           "titleSize": "h6"
         },
         {
@@ -930,9 +607,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows rate of handled Unary gRPC requests from other queriers.",
+              "description": "Shows rate of handled Unary gRPC requests.",
               "fill": 10,
-              "id": 10,
+              "id": 7,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -961,7 +638,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_code)",
+                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_code)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{grpc_code}}",
@@ -1017,9 +694,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
+              "description": "Shows ratio of errors compared to the total number of handled requests.",
               "fill": 10,
-              "id": 11,
+              "id": 8,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1048,7 +725,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) / sum(rate(grpc_client_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval]))",
+                  "expr": "sum(rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) / sum(rate(grpc_server_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1104,9 +781,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests from other queriers, in quantiles.",
+              "description": "Shows how long has it taken to handle requests, in quantiles.",
               "fill": 1,
-              "id": 12,
+              "id": 9,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1135,7 +812,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P99 {{job}}",
@@ -1143,7 +820,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_client_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_client_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job)\n",
+                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "mean {{job}}",
@@ -1151,7 +828,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P50 {{job}}",
@@ -1219,9 +896,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows rate of handled Unary gRPC requests, with grpc methods and codes from other queriers.",
+              "description": "Shows rate of handled Unary gRPC requests.",
               "fill": 10,
-              "id": 13,
+              "id": 10,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1250,7 +927,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, grpc_code)",
+                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, grpc_code)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
@@ -1306,9 +983,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
+              "description": "Shows ratio of errors compared to the total number of handled requests.",
               "fill": 10,
-              "id": 14,
+              "id": 11,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1337,7 +1014,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code!=\"OK\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, grpc_code)\n",
+                  "expr": "sum(rate(grpc_server_handled_total{grpc_code!=\"OK\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, grpc_code)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
@@ -1393,9 +1070,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests from other queriers, in quantiles.",
+              "description": "Shows how long has it taken to handle requests, in quantiles.",
               "fill": 1,
-              "id": 15,
+              "id": 12,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1424,7 +1101,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P99 {{job}} {{grpc_method}}",
@@ -1432,7 +1109,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_client_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_client_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job)\n",
+                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "mean {{job}} {{grpc_method}}",
@@ -1440,7 +1117,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P50 {{job}} {{grpc_method}}",
@@ -1525,9 +1202,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows rate of handled Streamed gRPC requests from other queriers.",
+              "description": "Shows rate of handled Streamed gRPC requests.",
               "fill": 10,
-              "id": 16,
+              "id": 13,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1556,7 +1233,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_code)",
+                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_code)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{grpc_code}}",
@@ -1612,9 +1289,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
+              "description": "Shows ratio of errors compared to the total number of handled requests.",
               "fill": 10,
-              "id": 17,
+              "id": 14,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1643,7 +1320,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) / sum(rate(grpc_client_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval]))",
+                  "expr": "sum(rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) / sum(rate(grpc_server_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1699,9 +1376,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests from other queriers, in quantiles",
+              "description": "Shows how long has it taken to handle requests, in quantiles",
               "fill": 1,
-              "id": 18,
+              "id": 15,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1730,7 +1407,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P99 {{job}}",
@@ -1738,7 +1415,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_client_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_client_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job)\n",
+                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "mean {{job}}",
@@ -1746,7 +1423,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P50 {{job}}",
@@ -1814,9 +1491,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows rate of handled Streamed gRPC requests, with grpc methods and codes.",
+              "description": "Shows rate of handled Streamed gRPC requests.",
               "fill": 10,
-              "id": 19,
+              "id": 16,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1845,7 +1522,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, grpc_code)",
+                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, grpc_code)",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
@@ -1901,9 +1578,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests.",
+              "description": "Shows ratio of errors compared to the total number of handled requests.",
               "fill": 10,
-              "id": 20,
+              "id": 17,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1932,7 +1609,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code!=\"OK\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, grpc_code)\n",
+                  "expr": "sum(rate(grpc_server_handled_total{grpc_code!=\"OK\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, grpc_code)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
@@ -1988,9 +1665,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests in quantiles.",
+              "description": "Shows how long has it taken to handle requests, in quantiles",
               "fill": 1,
-              "id": 21,
+              "id": 18,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2019,7 +1696,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P99 {{job}} {{grpc_method}}",
@@ -2027,7 +1704,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_client_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_client_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job)\n",
+                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "mean {{job}} {{grpc_method}}",
@@ -2035,7 +1712,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, le)) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "P50 {{job}} {{grpc_method}}",
@@ -2092,192 +1769,6 @@ data:
           "titleSize": "h6"
         },
         {
-          "collapse": false,
-          "height": "250px",
-          "panels": [
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows rate of DNS lookups to discover stores.",
-              "fill": 1,
-              "id": 22,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 6,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(thanos_querier_store_apis_dns_lookups_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "lookups {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Rate",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-                "error": "#E24D42"
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows ratio of failures compared to the the total number of executed DNS lookups.",
-              "fill": 10,
-              "id": 23,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 6,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(thanos_querier_store_apis_dns_failures_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) / sum(rate(thanos_querier_store_apis_dns_lookups_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]))",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "error",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Errors",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "percentunit",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            }
-          ],
-          "repeat": null,
-          "repeatIteration": null,
-          "repeatRowId": null,
-          "showTitle": true,
-          "title": "DNS",
-          "titleSize": "h6"
-        },
-        {
           "collapse": true,
           "height": "250px",
           "panels": [
@@ -2290,7 +1781,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 24,
+              "id": 19,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2416,7 +1907,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 25,
+              "id": 20,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2502,7 +1993,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 26,
+              "id": 21,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2639,7 +2130,7 @@ data:
             "useTags": false
           },
           {
-            "allValue": "observatorium-thanos-query.*",
+            "allValue": "observatorium-thanos-rule.*",
             "current": {
               "text": "all",
               "value": "$__all"
@@ -2653,7 +2144,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(up{namespace=\"$namespace\",job=\"observatorium-thanos-query\"}, job)",
+            "query": "label_values(up{namespace=\"$namespace\",job=\"observatorium-thanos-rule\"}, job)",
             "refresh": 1,
             "regex": "",
             "sort": 2,
@@ -2680,7 +2171,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(kube_pod_info{namespace=\"$namespace\",created_by_name=~\"observatorium-thanos-query.*\"}, pod)",
+            "query": "label_values(kube_pod_info{namespace=\"$namespace\",created_by_name=~\"observatorium-thanos-rule.*\"}, pod)",
             "refresh": 1,
             "regex": "",
             "sort": 2,
@@ -2754,10 +2245,10 @@ data:
         ]
       },
       "timezone": "",
-      "title": "Thanos / Querier",
-      "uid": "98fde97ddeaf2981041745f1f2ba68c2",
+      "title": "Thanos / Rule",
+      "uid": "35da848f5f92b2dc612e0c3a0577b8a1",
       "version": 0
     }
 kind: ConfigMap
 metadata:
-  name: grafana-dashboard-observatorium-thanos-querier
+  name: grafana-dashboard-observatorium-thanos-rule

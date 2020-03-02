@@ -1,11 +1,11 @@
 local obs = (import 'configuration/environments/openshift/obs.jsonnet');
 
 local thanos =
-  (import 'thanos-mixin/dashboards/querier.libsonnet') +
+  (import 'thanos-mixin/dashboards/query.libsonnet') +
   (import 'thanos-mixin/dashboards/store.libsonnet') +
-  (import 'thanos-mixin/dashboards/receiver.libsonnet') +
-  (import 'thanos-mixin/dashboards/ruler.libsonnet') +
-  (import 'thanos-mixin/dashboards/compactor.libsonnet') +
+  (import 'thanos-mixin/dashboards/receive.libsonnet') +
+  (import 'thanos-mixin/dashboards/rule.libsonnet') +
+  (import 'thanos-mixin/dashboards/compact.libsonnet') +
   (import 'thanos-mixin/dashboards/overview.libsonnet') +
   (import 'thanos-mixin/dashboards/defaults.libsonnet') +
   (import 'thanos-receive-controller-mixin/mixin.libsonnet') +

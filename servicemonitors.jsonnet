@@ -90,6 +90,20 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
         },
       },
     },
+
+  rule+::
+    t.rule.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-rule',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
 };
 
 {
@@ -98,6 +112,10 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
   'observatorium-thanos-compact.servicemonitor': obs.compact.serviceMonitor {
+    metadata+: { name+: '-{{environment}}' },
+    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
+  },
+  'observatorium-thanos-rule.servicemonitor': obs.rule.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },

@@ -1,24 +1,26 @@
 {
+  "version": 1,
   "dependencies": [
     {
-      "name": "configuration",
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/configuration",
           "subdir": ""
         }
       },
-      "version": "master"
+      "version": "master",
+      "name": "configuration"
     },
     {
-      "name": "thanos-mixin",
       "source": {
         "git": {
           "remote": "https://github.com/thanos-io/thanos",
           "subdir": "mixin/thanos"
         }
       },
-      "version": "master"
+      "version": "master",
+      "name": "thanos-mixin"
     }
-  ]
+  ],
+  "legacyImports": true
 }

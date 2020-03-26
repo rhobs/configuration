@@ -1,51 +1,37 @@
 {
+  "version": 1,
   "dependencies": [
     {
-      "name": "configuration",
-      "source": {
-        "git": {
-          "remote": "https://github.com/observatorium/configuration",
-          "subdir": ""
-        }
-      },
-      "version": "de95d34f602936f794793732ca8298e3c2345e61",
-      "sum": "So0CnGIyZpW4Rs8R5pWYcTspB01vaWHwYpkbpfQms34="
-    },
-    {
-      "name": "grafana-builder",
-      "source": {
-        "git": {
-          "remote": "https://github.com/grafana/jsonnet-libs",
-          "subdir": "grafana-builder"
-        }
-      },
-      "version": "7ac7da1a0fe165b68cdb718b2521b560d51bd1f4",
-      "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
-    },
-    {
-      "name": "grafonnet",
       "source": {
         "git": {
           "remote": "https://github.com/grafana/grafonnet-lib",
           "subdir": "grafonnet"
         }
       },
-      "version": "db36a706bd1c87056759eacb686102133eb4740c",
-      "sum": "g1aMw5iYEP/Dkw1wo1pcfe7q4LIpXc4wqDZsjaCpsRc="
+      "version": "815b848ade47c2f4ee866fe5efc435acd9ad799c",
+      "sum": "J3Vp0EVbxTObr6KydLXsi4Rc0ssNVAEuwLc0NQ+4wqU="
     },
     {
-      "name": "jaeger-mixin",
       "source": {
         "git": {
-          "remote": "https://github.com/jaegertracing/jaeger/",
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "grafana-builder"
+        }
+      },
+      "version": "8418192e618c85af93d8aee53c99865faa870bbd",
+      "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jaegertracing/jaeger",
           "subdir": "monitoring/jaeger-mixin"
         }
       },
-      "version": "d5036f44cc9c2b29b4ae608b45208f2b8d74bc89",
+      "version": "e1248014988b7cde207d45f73f4e402c21dd6eae",
       "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
     },
     {
-      "name": "ksonnet",
       "source": {
         "git": {
           "remote": "https://github.com/ksonnet/ksonnet-lib",
@@ -53,43 +39,10 @@
         }
       },
       "version": "0d2f82676817bbf9e4acf6495b2090205f323b9f",
-      "sum": "h28BXZ7+vczxYJ2sCt8JuR9+yznRtU/iA6DCpQUrtEg="
+      "sum": "h28BXZ7+vczxYJ2sCt8JuR9+yznRtU/iA6DCpQUrtEg=",
+      "name": "ksonnet"
     },
     {
-      "name": "kube-thanos",
-      "source": {
-        "git": {
-          "remote": "https://github.com/thanos-io/kube-thanos",
-          "subdir": "jsonnet/kube-thanos"
-        }
-      },
-      "version": "5e7af669ee35af6c8beaa37e7a30d865368d75d8",
-      "sum": "kyza6itqcvQHoKeJqsFjFQuMpj8RZsudC5/2vVxw5R0="
-    },
-    {
-      "name": "observatorium",
-      "source": {
-        "git": {
-          "remote": "https://github.com/observatorium/observatorium",
-          "subdir": "jsonnet/lib"
-        }
-      },
-      "version": "f12953a09d50d1806d7e2c82b75b30ad9a958f0f",
-      "sum": "kchcIxpNhfWjhdZ3hCFD92P7V65dO0dPnzfrAkK782g="
-    },
-    {
-      "name": "prometheus-operator",
-      "source": {
-        "git": {
-          "remote": "https://github.com/coreos/prometheus-operator",
-          "subdir": "jsonnet/prometheus-operator"
-        }
-      },
-      "version": "1aa773ddbbbd9b05405e9785e0190b975b1faadc",
-      "sum": "PlruMWn3QMjgLQVzn0DqlD1G8ijkew9icNNW4cpwRVA="
-    },
-    {
-      "name": "slo-libsonnet",
       "source": {
         "git": {
           "remote": "https://github.com/metalmatze/slo-libsonnet",
@@ -100,29 +53,27 @@
       "sum": "vERnAgUe02tI7S4cRK2KSEsyuVm6XFT9v8RucCG/8B8="
     },
     {
-      "name": "telemeter",
       "source": {
         "git": {
-          "remote": "https://github.com/openshift/telemeter",
-          "subdir": "jsonnet/telemeter"
+          "remote": "https://github.com/observatorium/configuration",
+          "subdir": ""
         }
       },
-      "version": "7853182efa4a42f44e929f54860a3c84e99e2079",
-      "sum": "1/pVyXnhpBPaeyqlRVWI7I8nngGNiSgcv7xMWjHizC4="
+      "version": "ab03624daa2dbcd0f727a01576e3e04ccbeb16f6",
+      "sum": "Wm8owXnyhmU4akCGuwA+ssFEDTsyGefXCBdQJxHk2mA="
     },
     {
-      "name": "thanos-mixin",
       "source": {
         "git": {
-          "remote": "https://github.com/thanos-io/thanos",
-          "subdir": "mixin/thanos"
+          "remote": "https://github.com/observatorium/observatorium",
+          "subdir": "jsonnet/lib"
         }
       },
-      "version": "0a417f0f6d86f81e406d29c254339643300a0cd0",
-      "sum": "2lILUFTYJ+LTBsAFep7vHUosOar0tLfbWnbErikxRaI="
+      "version": "62d4b8e2392ea84bc49fca5582ebfdb08eb1ae47",
+      "sum": "RDdo7RnvtQafX+C9UVkviTpOGf0HnRGWTssFqANN+bs=",
+      "name": "observatorium"
     },
     {
-      "name": "thanos-receive-controller",
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/thanos-receive-controller",
@@ -130,10 +81,10 @@
         }
       },
       "version": "11e63ca1d3b9834e66ee85107df002bde29a4a59",
-      "sum": "iUbwzPZ/0QrozWTfoXlmRhd1CMAnkcCaWtATTlSnoMk="
+      "sum": "iUbwzPZ/0QrozWTfoXlmRhd1CMAnkcCaWtATTlSnoMk=",
+      "name": "thanos-receive-controller"
     },
     {
-      "name": "thanos-receive-controller-mixin",
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/thanos-receive-controller",
@@ -142,6 +93,48 @@
       },
       "version": "11e63ca1d3b9834e66ee85107df002bde29a4a59",
       "sum": "p1LX/Ox2dK0hGpa+B1xUO1s3aAS2d9zjjwHKuDKAWus="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/openshift/telemeter",
+          "subdir": "jsonnet/telemeter"
+        }
+      },
+      "version": "7246a9504c9871c18fa622ac57763b562438e7be",
+      "sum": "fuHm4rY1VFxcPshHk99q8OL6mgdiJ4ghQBZbqkOwmLU="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos",
+          "subdir": "jsonnet/kube-thanos"
+        }
+      },
+      "version": "00fe1af48041e136b81b20f179dbb63b1fffc57e",
+      "sum": "4c0Wj23A4gCjKB0LEQBlNmL1cNcntDvOg7b4fO4od8A="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos",
+          "subdir": "jsonnet/thanos-mixin"
+        }
+      },
+      "version": "00fe1af48041e136b81b20f179dbb63b1fffc57e",
+      "sum": "oZH4t/rW4Va1IF47pvbtdakgDLKrXGD1SmrqU55N4xU="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/thanos",
+          "subdir": "mixin/thanos"
+        }
+      },
+      "version": "14c9403e6b5d25a782a544ebc7792c1573cf8074",
+      "sum": "kI4Wj/kDoyAz54uI6UiRF4IrkIKEbD/Zw9VtCMjbowQ=",
+      "name": "thanos-mixin"
     }
-  ]
+  ],
+  "legacyImports": false
 }

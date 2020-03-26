@@ -1,3 +1,4 @@
+local up = import 'configuration/components/up.libsonnet';
 local prom = import 'configuration/environments/openshift/telemeter-prometheus-ams.jsonnet';
 local t =
   (import 'kube-thanos/thanos.libsonnet') +
@@ -104,6 +105,25 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
         },
       },
     },
+
+  up::
+    up +
+    up.withServiceMonitor {
+      config+:: {
+        name: 'up',
+        namespace: null,
+        version: null,
+      },
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-up',
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
 };
 
 {
@@ -120,6 +140,10 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
   'observatorium-thanos-receive-controller.servicemonitor': obs.thanosReceiveController.serviceMonitor {
+    metadata+: { name+: '-{{environment}}' },
+    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
+  },
+  'observatorium-up.servicemonitor': obs.up.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },

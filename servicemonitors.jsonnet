@@ -8,7 +8,23 @@ local trc =
   (import 'thanos-receive-controller/thanos-receive-controller.libsonnet') +
   (import 'selectors.libsonnet');
 
+local gateway = import 'observatorium/observatorium-api.libsonnet';
+
 local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
+  gateway+::
+    obs.apiGateway +
+    gateway.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-gateway',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
   compact+::
     t.compact.withServiceMonitor {
       serviceMonitor+: {
@@ -127,6 +143,10 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
 };
 
 {
+  'observatorium-gateway.servicemonitor': obs.gateway.serviceMonitor {
+    metadata+: { name+: '-{{environment}}' },
+    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
+  },
   'observatorium-thanos-query.servicemonitor': obs.query.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },

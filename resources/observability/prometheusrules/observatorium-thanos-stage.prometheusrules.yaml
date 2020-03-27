@@ -151,7 +151,7 @@ spec:
         runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#thanosqueryinstantlatencyhigh
       expr: |
         (
-          histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query"}[5m]))) > 40
+          histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query"}[5m]))) > 90
         and
           sum by (job) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query"}[5m])) > 0
         )

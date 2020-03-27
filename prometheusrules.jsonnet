@@ -8,7 +8,11 @@ local thanosAlerts =
   (import 'thanos-mixin/alerts/receive.libsonnet') +
   (import 'thanos-mixin/alerts/store.libsonnet') +
   (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
-  (import 'selectors.libsonnet');
+  (import 'selectors.libsonnet') {
+    query+:: {
+      p99QueryLatencyThreshold: 90,
+    },
+  };
 
 // Add dashboards and runbook anntotations
 // Overwrite severity to medium and high

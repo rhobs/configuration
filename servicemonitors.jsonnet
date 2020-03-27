@@ -110,7 +110,9 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
     up +
     up.withServiceMonitor {
       config+:: {
-        name: 'up',
+        local cfg = self,
+
+        name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
         namespace: null,
         version: null,
       },

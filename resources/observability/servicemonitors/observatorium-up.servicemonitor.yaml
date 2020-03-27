@@ -14,5 +14,5 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: blackbox-prober
-      app.kubernetes.io/instance: up
+      app.kubernetes.io/instance: observatorium-observatorium-up
       app.kubernetes.io/name: observatorium-up

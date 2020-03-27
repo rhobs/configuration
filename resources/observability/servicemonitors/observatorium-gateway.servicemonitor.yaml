@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    prometheus: app-sre
+  name: observatorium-gateway-{{environment}}
+  namespace: null
+spec:
+  endpoints:
+  - port: http
+  namespaceSelector:
+    matchNames:
+    - '{{namespace}}'
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: api-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api-gateway
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2020-03-19-62d4b8e

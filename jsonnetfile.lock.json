@@ -59,8 +59,8 @@
           "subdir": ""
         }
       },
-      "version": "c93c81de0f7cc5b7c1b36b86903ca7108139a188",
-      "sum": "eFO1F5QdOSmiDbtGi/Dr4iIPXuiyhVF/S787KqzwAlM="
+      "version": "eb2c2426b7d813708a3168dc6ad9ddf176a82c95",
+      "sum": "ql54JvEnXLjkXfJ28Gq5d1XbZiXeP3VNt9BFvh6juzw="
     },
     {
       "source": {
@@ -101,8 +101,8 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "7246a9504c9871c18fa622ac57763b562438e7be",
-      "sum": "fuHm4rY1VFxcPshHk99q8OL6mgdiJ4ghQBZbqkOwmLU="
+      "version": "b512aa4a0512f54b3fd1f2bee850e2ceed51299a",
+      "sum": "LG7mr5TOA/pXTeWO/Pdn9MQgazWJi//iLJdfglyCDnc="
     },
     {
       "source": {
@@ -131,7 +131,7 @@
           "subdir": "mixin/thanos"
         }
       },
-      "version": "14c9403e6b5d25a782a544ebc7792c1573cf8074",
+      "version": "465b55aa3f975eedf32ade60ed36a279a1862a98",
       "sum": "kI4Wj/kDoyAz54uI6UiRF4IrkIKEbD/Zw9VtCMjbowQ=",
       "name": "thanos-mixin"
     }

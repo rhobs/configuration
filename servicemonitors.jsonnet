@@ -106,19 +106,12 @@ local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
       },
     },
 
-  up::
-    up +
+  up+::
     up.withServiceMonitor {
-      config+:: {
-        local cfg = self,
-
-        name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
-        namespace: null,
-        version: null,
-      },
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-up',
+          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',

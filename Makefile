@@ -40,3 +40,7 @@ resources/observability/slo/telemeter.slo.yaml: slo.jsonnet
 	jsonnetfmt -i slo.jsonnet
 	jsonnet -J vendor slo.jsonnet | gojsontoyaml > resources/observability/slo/telemeter.slo.yaml
 	find resources/observability/slo/*.yaml | xargs -I {} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
+
+.PHONY: deps
+deps:
+	@jb install

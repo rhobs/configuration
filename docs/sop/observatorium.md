@@ -27,6 +27,8 @@
     - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
     - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
     - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
+    - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
+    - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
 
 <!-- /TOC -->
 
@@ -699,6 +701,64 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/858503cdeb29690fd8946e038f01ba85/thanos-receive-controller?orgId=1&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.app-sre.devshift.net/graph?g0.range_input=15m&g0.expr=avg(thanos_receive_config_hash%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D)%20BY%20(namespace%2C%20job)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20on%20(namespace)%0A%20%20%20%20%20%20%20%20group_left%0A%20%20%20%20%20%20%20%20thanos_receive_controller_configmap_hash%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/deployments/thanos-receive-controller/pods).
 - Inspect logs and events of `receive` jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/thanos-receive-default/pods). (There maybe more than one receive component deployed, check all other [statefulsets](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+
+---
+
+## ThanosRuleHighRuleEvaluationFailures
+
+### Impact
+
+Non-revertable gap in recording rules' data (dropped sample) or not evaluates alerts (missed alert).    
+
+### Summary
+
+Both Thanos Rule replicas fail to evaluate certain recording rules or alerts. 
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [app-sre OSD](https://admin-console.app-sre.openshift.com/status/ns/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `telemeter-stage`
+  - `telemeter-production`
+
+### Steps
+
+- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
+- Check if Thanos Query is available. This is the most often root cause of failed rule evaluation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+
+--- 
+
+## ThanosRuleTSDBNotIngestingSamples
+
+### Impact
+
+Non-revertable gap in recording rules' data (dropped sample) or not evaluates alerts (missed alert).    
+
+### Summary
+
+Both Thanos Rule replicas internal TSDB failed to ingest samples. 
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [app-sre OSD](https://admin-console.app-sre.openshift.com/status/ns/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `telemeter-stage`
+  - `telemeter-production`
+
+### Steps
+
+- Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: https://issues.redhat.com/browse/OBS-210
+- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
 ---

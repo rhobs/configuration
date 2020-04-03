@@ -8,7 +8,7 @@
           "subdir": "grafonnet"
         }
       },
-      "version": "815b848ade47c2f4ee866fe5efc435acd9ad799c",
+      "version": "906768d46973e022594d3f03d82c5a51d86de2cc",
       "sum": "J3Vp0EVbxTObr6KydLXsi4Rc0ssNVAEuwLc0NQ+4wqU="
     },
     {
@@ -18,7 +18,7 @@
           "subdir": "grafana-builder"
         }
       },
-      "version": "8418192e618c85af93d8aee53c99865faa870bbd",
+      "version": "e347979bbe1e89fa0f48ea61fb486fdbaec42b74",
       "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
     },
     {
@@ -28,7 +28,7 @@
           "subdir": "monitoring/jaeger-mixin"
         }
       },
-      "version": "e1248014988b7cde207d45f73f4e402c21dd6eae",
+      "version": "87b191027f73d6301d21ec2bd5f76f30560b0fa7",
       "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
     },
     {
@@ -59,8 +59,8 @@
           "subdir": ""
         }
       },
-      "version": "eb2c2426b7d813708a3168dc6ad9ddf176a82c95",
-      "sum": "ql54JvEnXLjkXfJ28Gq5d1XbZiXeP3VNt9BFvh6juzw="
+      "version": "a903305df5468a727828102195f4db52066c0b02",
+      "sum": "nNiF0bY8vMjjng/jqcqGcIXxsEZbHFYfuXfsT/w4POE="
     },
     {
       "source": {
@@ -69,7 +69,7 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "62d4b8e2392ea84bc49fca5582ebfdb08eb1ae47",
+      "version": "a9d65aed73c2e5353056388333c704cde14d09ff",
       "sum": "RDdo7RnvtQafX+C9UVkviTpOGf0HnRGWTssFqANN+bs=",
       "name": "observatorium"
     },
@@ -131,8 +131,8 @@
           "subdir": "mixin/thanos"
         }
       },
-      "version": "465b55aa3f975eedf32ade60ed36a279a1862a98",
-      "sum": "kI4Wj/kDoyAz54uI6UiRF4IrkIKEbD/Zw9VtCMjbowQ=",
+      "version": "7da8da931a86806ed5373e08b074cc8164928467",
+      "sum": "JyGD4v7VQ4ZMM0GgkM55jFtBHCeUGGxcL64gzxukp44=",
       "name": "thanos-mixin"
     }
   ],

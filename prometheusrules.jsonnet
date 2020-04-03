@@ -54,7 +54,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
             },
             labels+: {
               service: 'telemeter',
-              severity: if r.labels.severity == 'warning' then 'medium' else 'high',
+              severity: if r.labels.severity == 'critical' then r.labels.severity else if r.labels.severity == 'warning' then 'medium' else 'high',
             },
           } else r
         for r in super.rules

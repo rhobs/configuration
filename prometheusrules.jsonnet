@@ -31,26 +31,29 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
         name == 'thanos-receive-controller.rules' then 'no-dashboard'
       else if
         name == 'thanos-component-absent.rules' then 'no-dashboard'
+      else if
+        std.startsWith(name, 'observatorium-gateway') then 'Tg-mH0rizaSJDKSADX'
       else error 'no dashboard id for group %s' % name,
   },
 
   groups: [
     g {
       rules: [
-        r {
-          annotations+: {
-            runbook: 'https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-            dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=%s&var-job=All&var-pod=All&var-interval=5m' % [
-              dashboardID(g.name).id,
-              g.name,
-              namespace,
-            ],
-          },
-          labels+: {
-            service: 'telemeter',
-            severity: if r.labels.severity == 'warning' then 'medium' else 'high',
-          },
-        }
+        if std.objectHas(r, 'alert') then
+          r {
+            annotations+: {
+              runbook: 'https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+              dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=%s&var-job=All&var-pod=All&var-interval=5m' % [
+                dashboardID(g.name).id,
+                g.name,
+                namespace,
+              ],
+            },
+            labels+: {
+              service: 'telemeter',
+              severity: if r.labels.severity == 'warning' then 'medium' else 'high',
+            },
+          } else r
         for r in super.rules
       ],
     }
@@ -61,8 +64,10 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
     g {
       rules: std.filter(
         function(r) !(
-          r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
-          r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh'
+          std.objectHas(r, 'alert') && (
+            r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
+            r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh'
+          )
         ),
         super.rules,
       ),
@@ -71,41 +76,177 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
   ],
 };
 
-{
-  'observatorium-thanos-stage.prometheusrules': {
-    apiVersion: 'monitoring.coreos.com/v1',
-    kind: 'PrometheusRule',
-    metadata: {
-      name: 'observatorium-thanos-stage',
-      labels: {
-        prometheus: 'app-sre',
-        role: 'alert-rules',
-      },
-    },
-    local namespace = 'telemeter-stage',
+local obsSLOs = {
 
-    local alerts = thanosAlerts {
-      prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
-    },
-
-    spec: alerts.prometheusAlerts,
+  local metricLatency = 'http_request_duration_seconds',
+  local metricError = 'http_requests_total',
+  local writeSelector = {
+    selectors: ['handler="write"'],
   },
-  'observatorium-thanos-production.prometheusrules': {
+  local querySelector = {
+    selectors: ['handler="query"'],
+  },
+  local queryRangeSelector = {
+    selectors: ['handler="query_range"'],
+  },
+
+
+  local alertNameErrors = 'ObservatoriumGatewayErrorsSLOBudgetBurn',
+  local alertNameLatency = 'ObservatoriumGatewayLatencySLOBudgetBurn',
+
+  errorBurn:: [
+    {
+      name: 'observatorium-gateway-write-errors.slo.rules',
+      config: writeSelector {
+        alertName: alertNameErrors,
+        metric: metricError,
+        errorBudget: 1 - 0.99,
+      },
+    },
+    {
+      name: 'observatorium-gateway-query-errors.slo.rules',
+      config: querySelector {
+        alertName: alertNameErrors,
+        metric: metricError,
+        errorBudget: 1 - 0.95,
+      },
+    },
+    {
+      name: 'observatorium-gateway-query-range-errors.slo.rules',
+      config: queryRangeSelector {
+        alertName: alertNameErrors,
+        metric: metricError,
+        errorBudget: 1 - 0.90,
+      },
+    },
+  ],
+
+  // TODO: add these only when we have enough metrics to have an SLO
+  //   latencyBurn:: [
+  //     {
+  //       name: 'observatorium-gateway-write-latency-low.slo.rules',
+  //       config: writeSelector {
+  //         alertName: alertNameLatency,
+  //         metric: metricLatency,
+  //         latencyTarget: '0.2',
+  //         latencyBudget: 1 - 0.95,
+  //       },
+  //     },
+  //     {
+  //       name: 'observatorium-gateway-write-latency-high.slo.rules',
+  //       config: writeSelector {
+  //         alertName: alertNameLatency,
+  //         metric: metricLatency,
+  //         latencyTarget: '1',
+  //         latencyBudget: 1 - 0.99,
+  //       },
+  //     },
+  //     {
+  //       name: 'observatorium-gateway-query-latency-low.slo.rules',
+  //       config: querySelector {
+  //         alertName: alertNameLatency,
+  //         metric: metricLatency,
+  //         latencyTarget: '1',
+  //         latencyBudget: 1 - 0.95,
+  //       },
+  //     },
+  //     {
+  //       name: 'observatorium-gateway-query-latency-high.slo.rules',
+  //       config: querySelector {
+  //         alertName: alertNameLatency,
+  //         metric: metricLatency,
+  //         latencyTarget: '2.5',
+  //         latencyBudget: 1 - 0.99,
+  //       },
+  //     },
+  //     {
+  //       name: 'observatorium-gateway-query-range-latency-low.slo.rules',
+  //       config: queryRangeSelector {
+  //         alertName: alertNameLatency,
+  //         metric: metricLatency,
+  //         latencyTarget: '60',
+  //         latencyBudget: 1 - 0.90,
+  //       },
+  //     },
+  //     {
+  //       name: 'observatorium-gateway-query-range-latency-high.slo.rules',
+  //       config: queryRangeSelector {
+  //         alertName: alertNameLatency,
+  //         metric: metricLatency,
+  //         latencyTarget: '120',
+  //         latencyBudget: 1 - 0.95,
+  //       },
+  //     },
+  //   ],
+};
+
+
+{
+  'observatorium-thanos-stage.prometheusrules': renderThanos('observatorium-thanos-stage', 'telemeter-stage'),
+
+  'observatorium-thanos-production.prometheusrules': renderThanos('observatorium-thanos-production', 'telemeter-production'),
+
+  local renderThanos(name, namespace) = {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
     metadata: {
-      name: 'observatorium-thanos-production',
+      name: name,
       labels: {
         prometheus: 'app-sre',
         role: 'alert-rules',
       },
     },
-    local namespace = 'telemeter-production',
+
     local alerts = thanosAlerts {
     } + {
       prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
     },
 
     spec: alerts.prometheusAlerts,
+  },
+
+  'observatorium-gateway-stage.prometheusrules': renderGateway('observatorium-gateway-stage', 'telemeter-stage'),
+
+  'observatorium-gateway-production.prometheusrules': renderGateway('observatorium-gateway-production', 'telemeter-production'),
+
+  local renderGateway(name, namespace) = {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: name,
+      labels: {
+        prometheus: 'app-sre',
+        role: 'alert-rules',
+      },
+    },
+
+    local a = {
+      all+:: {
+        groups: [
+          // TODO: add these only when we have enough metrics to have an SLO
+          //   {
+          //     name: s.name,
+          //     local d = slo.latencyburn(s.config),
+          //     rules:
+          //       d.recordingrules +
+          //       d.alerts,
+          //   }
+          //   for s in obsSLOs.latencyBurn
+          // ] + [
+          {
+            local d = slo.errorburn(s.config),
+            name: s.name,
+            rules:
+              d.recordingrules +
+              d.alerts,
+          }
+          for s in obsSLOs.errorBurn
+        ],
+      },
+    } + {
+      all+:: appSREOverwrites(super.all, namespace),
+    },
+
+    spec: a.all,
   },
 }

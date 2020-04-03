@@ -4,6 +4,15 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/metalmatze/slo-libsonnet",
+          "subdir": "slo-libsonnet"
+        }
+      },
+      "version": "9baab703bb8a55f990f3b6a74c80987036938f64"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/observatorium/configuration",
           "subdir": ""
         }

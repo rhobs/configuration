@@ -1,0 +1,485 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: observatorium-gateway-production
+spec:
+  groups:
+  - name: observatorium-gateway-write-errors.slo.rules
+    rules:
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[5m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate5m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[30m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate30m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[1h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate1h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[2h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate2h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[6h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate6h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[1d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate1d
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="write"}[3d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: write
+      record: status_class:http_requests_total:rate3d
+    - expr: |
+        sum(status_class:http_requests_total:rate5m{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate5m{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate5m
+    - expr: |
+        sum(status_class:http_requests_total:rate30m{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate30m{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate30m
+    - expr: |
+        sum(status_class:http_requests_total:rate1h{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate1h{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate1h
+    - expr: |
+        sum(status_class:http_requests_total:rate2h{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate2h{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate2h
+    - expr: |
+        sum(status_class:http_requests_total:rate6h{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate6h{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate6h
+    - expr: |
+        sum(status_class:http_requests_total:rate1d{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate1d{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate1d
+    - expr: |
+        sum(status_class:http_requests_total:rate3d{handler="write",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate3d{handler="write"})
+      labels:
+        handler: write
+      record: status_class_5xx:http_requests_total:ratio_rate3d
+    - alert: ObservatoriumGatewayErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-gateway-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests error budget burn for handler=write (current value:
+          {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#observatoriumgatewayerrorsslobudgetburn
+      expr: |
+        (
+          status_class_5xx:http_requests_total:ratio_rate1h{handler="write"} > (14.4*0.010000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate5m{handler="write"} > (14.4*0.010000)
+        )
+        or
+        (
+          status_class_5xx:http_requests_total:ratio_rate6h{handler="write"} > (6*0.010000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate30m{handler="write"} > (6*0.010000)
+        )
+      labels:
+        handler: write
+        service: telemeter
+        severity: high
+    - alert: ObservatoriumGatewayErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-gateway-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests error budget burn for handler=write (current value:
+          {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#observatoriumgatewayerrorsslobudgetburn
+      expr: |
+        (
+          status_class_5xx:http_requests_total:ratio_rate1d{handler="write"} > (3*0.010000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate2h{handler="write"} > (3*0.010000)
+        )
+        or
+        (
+          status_class_5xx:http_requests_total:ratio_rate3d{handler="write"} > (0.010000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate6h{handler="write"} > (0.010000)
+        )
+      labels:
+        handler: write
+        service: telemeter
+        severity: medium
+  - name: observatorium-gateway-query-errors.slo.rules
+    rules:
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[5m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate5m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[30m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate30m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[1h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate1h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[2h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate2h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[6h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate6h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[1d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate1d
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query"}[3d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query
+      record: status_class:http_requests_total:rate3d
+    - expr: |
+        sum(status_class:http_requests_total:rate5m{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate5m{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate5m
+    - expr: |
+        sum(status_class:http_requests_total:rate30m{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate30m{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate30m
+    - expr: |
+        sum(status_class:http_requests_total:rate1h{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate1h{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate1h
+    - expr: |
+        sum(status_class:http_requests_total:rate2h{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate2h{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate2h
+    - expr: |
+        sum(status_class:http_requests_total:rate6h{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate6h{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate6h
+    - expr: |
+        sum(status_class:http_requests_total:rate1d{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate1d{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate1d
+    - expr: |
+        sum(status_class:http_requests_total:rate3d{handler="query",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate3d{handler="query"})
+      labels:
+        handler: query
+      record: status_class_5xx:http_requests_total:ratio_rate3d
+    - alert: ObservatoriumGatewayErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-gateway-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests error budget burn for handler=query (current value:
+          {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#observatoriumgatewayerrorsslobudgetburn
+      expr: |
+        (
+          status_class_5xx:http_requests_total:ratio_rate1h{handler="query"} > (14.4*0.050000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate5m{handler="query"} > (14.4*0.050000)
+        )
+        or
+        (
+          status_class_5xx:http_requests_total:ratio_rate6h{handler="query"} > (6*0.050000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate30m{handler="query"} > (6*0.050000)
+        )
+      labels:
+        handler: query
+        service: telemeter
+        severity: high
+    - alert: ObservatoriumGatewayErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-gateway-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests error budget burn for handler=query (current value:
+          {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#observatoriumgatewayerrorsslobudgetburn
+      expr: |
+        (
+          status_class_5xx:http_requests_total:ratio_rate1d{handler="query"} > (3*0.050000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate2h{handler="query"} > (3*0.050000)
+        )
+        or
+        (
+          status_class_5xx:http_requests_total:ratio_rate3d{handler="query"} > (0.050000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate6h{handler="query"} > (0.050000)
+        )
+      labels:
+        handler: query
+        service: telemeter
+        severity: medium
+  - name: observatorium-gateway-query-range-errors.slo.rules
+    rules:
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[5m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate5m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[30m]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate30m
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[1h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate1h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[2h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate2h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[6h]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate6h
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[1d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate1d
+    - expr: |
+        sum by (status_class) (
+          label_replace(
+            rate(http_requests_total{handler="query_range"}[3d]
+          ), "status_class", "${1}xx", "code", "([0-9])..")
+        )
+      labels:
+        handler: query_range
+      record: status_class:http_requests_total:rate3d
+    - expr: |
+        sum(status_class:http_requests_total:rate5m{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate5m{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate5m
+    - expr: |
+        sum(status_class:http_requests_total:rate30m{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate30m{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate30m
+    - expr: |
+        sum(status_class:http_requests_total:rate1h{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate1h{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate1h
+    - expr: |
+        sum(status_class:http_requests_total:rate2h{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate2h{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate2h
+    - expr: |
+        sum(status_class:http_requests_total:rate6h{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate6h{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate6h
+    - expr: |
+        sum(status_class:http_requests_total:rate1d{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate1d{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate1d
+    - expr: |
+        sum(status_class:http_requests_total:rate3d{handler="query_range",status_class="5xx"})
+        /
+        sum(status_class:http_requests_total:rate3d{handler="query_range"})
+      labels:
+        handler: query_range
+      record: status_class_5xx:http_requests_total:ratio_rate3d
+    - alert: ObservatoriumGatewayErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-gateway-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests error budget burn for handler=query_range (current
+          value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#observatoriumgatewayerrorsslobudgetburn
+      expr: |
+        (
+          status_class_5xx:http_requests_total:ratio_rate1h{handler="query_range"} > (14.4*0.100000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate5m{handler="query_range"} > (14.4*0.100000)
+        )
+        or
+        (
+          status_class_5xx:http_requests_total:ratio_rate6h{handler="query_range"} > (6*0.100000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate30m{handler="query_range"} > (6*0.100000)
+        )
+      labels:
+        handler: query_range
+        service: telemeter
+        severity: high
+    - alert: ObservatoriumGatewayErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-gateway-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests error budget burn for handler=query_range (current
+          value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#observatoriumgatewayerrorsslobudgetburn
+      expr: |
+        (
+          status_class_5xx:http_requests_total:ratio_rate1d{handler="query_range"} > (3*0.100000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate2h{handler="query_range"} > (3*0.100000)
+        )
+        or
+        (
+          status_class_5xx:http_requests_total:ratio_rate3d{handler="query_range"} > (0.100000)
+          and
+          status_class_5xx:http_requests_total:ratio_rate6h{handler="query_range"} > (0.100000)
+        )
+      labels:
+        handler: query_range
+        service: telemeter
+        severity: medium

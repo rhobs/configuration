@@ -45,7 +45,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
         if std.objectHas(r, 'alert') then
           r {
             annotations+: {
-              runbook: 'https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/telemeter/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+              runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
               dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=%s&var-job=All&var-pod=All&var-interval=5m' % [
                 dashboardID(g.name).id,
                 g.name,

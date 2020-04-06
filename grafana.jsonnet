@@ -1,4 +1,4 @@
-local obs = (import 'configuration/environments/openshift/obs.jsonnet');
+local obs = (import 'openshift/obs.jsonnet');
 
 local thanos =
   (import 'thanos-mixin/dashboards/query.libsonnet') +

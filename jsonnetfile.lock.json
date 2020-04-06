@@ -18,7 +18,7 @@
           "subdir": "grafana-builder"
         }
       },
-      "version": "e347979bbe1e89fa0f48ea61fb486fdbaec42b74",
+      "version": "07c0a29599a9fae1b93849206c2df66e1aa19bd6",
       "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
     },
     {
@@ -56,11 +56,11 @@
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/configuration",
-          "subdir": ""
+          "subdir": "components"
         }
       },
       "version": "a903305df5468a727828102195f4db52066c0b02",
-      "sum": "nNiF0bY8vMjjng/jqcqGcIXxsEZbHFYfuXfsT/w4POE="
+      "sum": "ngvZ7FJCwwMyFzS1TczniBB9/ey89cN8pe8OEh8tpt8="
     },
     {
       "source": {
@@ -113,16 +113,6 @@
       },
       "version": "00fe1af48041e136b81b20f179dbb63b1fffc57e",
       "sum": "4c0Wj23A4gCjKB0LEQBlNmL1cNcntDvOg7b4fO4od8A="
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/thanos-io/kube-thanos",
-          "subdir": "jsonnet/thanos-mixin"
-        }
-      },
-      "version": "00fe1af48041e136b81b20f179dbb63b1fffc57e",
-      "sum": "oZH4t/rW4Va1IF47pvbtdakgDLKrXGD1SmrqU55N4xU="
     },
     {
       "source": {

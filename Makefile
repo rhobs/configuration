@@ -2,7 +2,7 @@
 all: generate
 
 .PHONY: generate
-generate: deps prometheusrules servicemonitors grafana slos saas-telemeter
+generate: deps prometheusrules servicemonitors grafana slos manifests
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
@@ -41,16 +41,16 @@ resources/observability/slo/telemeter.slo.yaml: slo.jsonnet
 	jsonnet -J vendor slo.jsonnet | gojsontoyaml > resources/observability/slo/telemeter.slo.yaml
 	find resources/observability/slo/*.yaml | xargs -I {} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
-.PHONY: saas-telemeter
-saas-telemeter:
+.PHONY: manifests
+manifests:
 	# Make sure to start with a clean 'manifests' dir
-	rm -rf saas-telemeter/*
-	mkdir -p saas-telemeter
+	rm -rf openshift/manifests/*
+	mkdir -p openshift/manifests
 	jsonnetfmt -i openshift/main.jsonnet
 	jsonnetfmt -i openshift/jaeger.jsonnet
-	jsonnet -J vendor openshift/main.jsonnet | gojsontoyaml >saas-telemeter/observatorium-template.yaml
-	jsonnet -J vendor openshift/jaeger.jsonnet | gojsontoyaml >saas-telemeter/jaeger-template.yaml
-	find saas-telemeter -type f ! -name '*.yaml' -delete
+	jsonnet -J vendor openshift/main.jsonnet | gojsontoyaml >openshift/manifests/observatorium-template.yaml
+	jsonnet -J vendor openshift/jaeger.jsonnet | gojsontoyaml >openshift/manifests/jaeger-template.yaml
+	find openshift/manifests -type f ! -name '*.yaml' -delete
 
 
 .PHONY: deps

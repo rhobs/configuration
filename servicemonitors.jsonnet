@@ -1,4 +1,4 @@
-local up = import 'components/up.libsonnet';
+local up = import 'configuration/components/up.libsonnet';
 local prom = import 'openshift/telemeter-prometheus-ams.jsonnet';
 local t =
   (import 'kube-thanos/thanos.libsonnet') +

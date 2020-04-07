@@ -1,10 +1,10 @@
 local t = (import 'kube-thanos/thanos.libsonnet');
 local trc = (import 'thanos-receive-controller/thanos-receive-controller.libsonnet');
 local gw = (import 'observatorium/observatorium-api.libsonnet');
-local cqf = (import 'components/cortex-query-frontend.libsonnet');
-local up = (import 'components/up.libsonnet');
+local cqf = (import 'configuration/components/cortex-query-frontend.libsonnet');
+local up = (import 'configuration/components/up.libsonnet');
 
-(import 'components/observatorium.libsonnet') {
+(import 'configuration/components/observatorium.libsonnet') {
   local obs = self,
 
   local s3EnvVars = [
@@ -31,8 +31,8 @@ local up = (import 'components/up.libsonnet');
   compact+::
     t.compact.withVolumeClaimTemplate +
     t.compact.withResources +
-    (import 'components/oauth-proxy.libsonnet') +
-    (import 'components/oauth-proxy.libsonnet').statefulSetMixin {
+    (import 'configuration/components/oauth-proxy.libsonnet') +
+    (import 'configuration/components/oauth-proxy.libsonnet').statefulSetMixin {
       statefulSet+: {
         spec+: {
           template+: {
@@ -54,7 +54,7 @@ local up = (import 'components/up.libsonnet');
 
   rule+::
     t.rule.withResources +
-    (import 'components/jaeger-agent.libsonnet').statefulSetMixin {
+    (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
       statefulSet+: {
         spec+: {
           template+: {
@@ -86,7 +86,7 @@ local up = (import 'components/up.libsonnet');
     ['shard' + i]+:
       t.store.withVolumeClaimTemplate +
       t.store.withResources +
-      (import 'components/jaeger-agent.libsonnet').statefulSetMixin {
+      (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
         statefulSet+: {
           spec+: {
             template+: {
@@ -124,30 +124,30 @@ local up = (import 'components/up.libsonnet');
             },
           },
         },
-      } + (import 'components/jaeger-agent.libsonnet').statefulSetMixin
+      } + (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin
     for hashring in obs.config.hashrings
   },
 
   query+::
     t.query.withResources +
-    (import 'components/oauth-proxy.libsonnet') +
-    (import 'components/oauth-proxy.libsonnet').deploymentMixin +
-    (import 'components/jaeger-agent.libsonnet').deploymentMixin,
+    (import 'configuration/components/oauth-proxy.libsonnet') +
+    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin +
+    (import 'configuration/components/jaeger-agent.libsonnet').deploymentMixin,
 
   queryCache+::
     cqf.withResources +
-    (import 'components/oauth-proxy.libsonnet') +
-    (import 'components/oauth-proxy.libsonnet').deploymentMixin,
+    (import 'configuration/components/oauth-proxy.libsonnet') +
+    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
   apiGateway+::
     gw.withResources +
-    (import 'components/oauth-proxy.libsonnet') +
-    (import 'components/oauth-proxy.libsonnet').deploymentMixin,
+    (import 'configuration/components/oauth-proxy.libsonnet') +
+    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
   apiGatewayQuery+::
     t.query.withResources +
-    (import 'components/oauth-proxy.libsonnet') +
-    (import 'components/oauth-proxy.libsonnet').deploymentMixin,
+    (import 'configuration/components/oauth-proxy.libsonnet') +
+    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
   up+::
     up + up.withResources,
@@ -515,7 +515,7 @@ local up = (import 'components/up.libsonnet');
       commonLabels+:: obs.config.commonLabels,
     },
   },
-} + (import 'components/observatorium-configure.libsonnet') + {
+} + (import 'configuration/components/observatorium-configure.libsonnet') + {
   local obs = self,
   up+:: {
     config+:: obs.config.up,

@@ -14,7 +14,7 @@
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/configuration",
-          "subdir": "components"
+          "subdir": ""
         }
       },
       "version": "master"

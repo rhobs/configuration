@@ -56,11 +56,11 @@
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/configuration",
-          "subdir": "components"
+          "subdir": ""
         }
       },
       "version": "a903305df5468a727828102195f4db52066c0b02",
-      "sum": "ngvZ7FJCwwMyFzS1TczniBB9/ey89cN8pe8OEh8tpt8="
+      "sum": "nNiF0bY8vMjjng/jqcqGcIXxsEZbHFYfuXfsT/w4POE="
     },
     {
       "source": {
@@ -113,6 +113,16 @@
       },
       "version": "00fe1af48041e136b81b20f179dbb63b1fffc57e",
       "sum": "4c0Wj23A4gCjKB0LEQBlNmL1cNcntDvOg7b4fO4od8A="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/thanos-io/kube-thanos",
+          "subdir": "jsonnet/thanos-mixin"
+        }
+      },
+      "version": "00fe1af48041e136b81b20f179dbb63b1fffc57e",
+      "sum": "oZH4t/rW4Va1IF47pvbtdakgDLKrXGD1SmrqU55N4xU="
     },
     {
       "source": {

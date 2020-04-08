@@ -29,6 +29,7 @@
     - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
     - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
     - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
+    - [ObservatoriumGatewayErrorsSLOBudgetBurn](#observatoriumgatewayerrorsslobudgetburn)
 
 <!-- /TOC -->
 
@@ -760,6 +761,37 @@ Both Thanos Rule replicas internal TSDB failed to ingest samples.
 - Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: https://issues.redhat.com/browse/OBS-210
 - Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+
+---
+
+## ObservatoriumGatewayErrorsSLOBudgetBurn
+
+### Impact
+
+SLO breach or complete outage for ingesting and/or querying data. 
+For users this is means that the service as being unavailable due to returning too many errors.
+
+### Summary
+
+For the set availability guarantees the observatorium gateway or the thanos receiver/qerier are returning too many http errors when processing requests. 
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [app-sre OSD](https://admin-console.app-sre.openshift.com/status/ns/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `telemeter-stage`
+  - `telemeter-production`
+
+### Steps
+
+- The gateway proxies requests to the thanos querier and the thanos receiver so check the logs of all components.
+- Inspect the metrics for the gateway [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/gateway?orgId=1&refresh=1m)
+- Inspect the metrics for the thanos querier [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&refresh=10s&var-datasource=app-sre-prometheus)
+- Inspect the metrics for the thanos receiver [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=app-sre-prometheus)
 
 ---
 

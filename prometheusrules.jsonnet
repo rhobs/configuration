@@ -1,4 +1,4 @@
-local observatoriumSLOs = import 'openshift/slos.libsonnet';
+local observatoriumSLOs = import 'environments/production/slos.libsonnet';
 local slo = import 'slo-libsonnet/slo.libsonnet';
 
 local thanosAlerts =

@@ -44,13 +44,13 @@ resources/observability/slo/telemeter.slo.yaml: slo.jsonnet
 .PHONY: manifests
 manifests:
 	# Make sure to start with a clean 'manifests' dir
-	rm -rf openshift/manifests/*
-	mkdir -p openshift/manifests
-	jsonnetfmt -i openshift/main.jsonnet
-	jsonnetfmt -i openshift/jaeger.jsonnet
-	jsonnet -J vendor openshift/main.jsonnet | gojsontoyaml >openshift/manifests/observatorium-template.yaml
-	jsonnet -J vendor openshift/jaeger.jsonnet | gojsontoyaml >openshift/manifests/jaeger-template.yaml
-	find openshift/manifests -type f ! -name '*.yaml' -delete
+	rm -rf manifests/production/*
+	mkdir -p manifests/production
+	jsonnetfmt -i environments/production/main.jsonnet
+	jsonnetfmt -i environments/production/jaeger.jsonnet
+	jsonnet -J vendor environments/production/main.jsonnet | gojsontoyaml >manifests/production/observatorium-template.yaml
+	jsonnet -J vendor environments/production/jaeger.jsonnet | gojsontoyaml >manifests/production/jaeger-template.yaml
+	find manifests/production -type f ! -name '*.yaml' -delete
 
 
 .PHONY: deps

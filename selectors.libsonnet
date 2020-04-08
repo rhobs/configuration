@@ -1,4 +1,4 @@
-local obs = (import 'openshift/obs.jsonnet');
+local obs = (import 'environments/production/obs.jsonnet');
 
 {
   _config+:: {

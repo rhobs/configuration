@@ -2,7 +2,7 @@
 all: generate
 
 .PHONY: generate
-generate: prometheusrules servicemonitors grafana slos
+generate: deps prometheusrules servicemonitors grafana slos manifests
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
@@ -40,6 +40,18 @@ resources/observability/slo/telemeter.slo.yaml: slo.jsonnet
 	jsonnetfmt -i slo.jsonnet
 	jsonnet -J vendor slo.jsonnet | gojsontoyaml > resources/observability/slo/telemeter.slo.yaml
 	find resources/observability/slo/*.yaml | xargs -I {} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
+
+.PHONY: manifests
+manifests:
+	# Make sure to start with a clean 'manifests' dir
+	rm -rf manifests/production/*
+	mkdir -p manifests/production
+	jsonnetfmt -i environments/production/main.jsonnet
+	jsonnetfmt -i environments/production/jaeger.jsonnet
+	jsonnet -J vendor environments/production/main.jsonnet | gojsontoyaml >manifests/production/observatorium-template.yaml
+	jsonnet -J vendor environments/production/jaeger.jsonnet | gojsontoyaml >manifests/production/jaeger-template.yaml
+	find manifests/production -type f ! -name '*.yaml' -delete
+
 
 .PHONY: deps
 deps:

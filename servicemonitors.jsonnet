@@ -1,5 +1,5 @@
 local up = import 'configuration/components/up.libsonnet';
-local prom = import 'configuration/environments/openshift/telemeter-prometheus-ams.jsonnet';
+local prom = import 'environments/production/telemeter-prometheus-ams.jsonnet';
 local t =
   (import 'kube-thanos/thanos.libsonnet') +
   (import 'selectors.libsonnet');
@@ -10,7 +10,7 @@ local trc =
 
 local gateway = import 'observatorium/observatorium-api.libsonnet';
 
-local obs = (import 'configuration/environments/openshift/obs.jsonnet') {
+local obs = (import 'environments/production/obs.jsonnet') {
   gateway+::
     obs.apiGateway +
     gateway.withServiceMonitor {

@@ -4,6 +4,24 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/grafonnet-lib",
+          "subdir": "grafonnet"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jaegertracing/jaeger",
+          "subdir": "monitoring/jaeger-mixin"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/metalmatze/slo-libsonnet",
           "subdir": "slo-libsonnet"
         }
@@ -32,18 +50,27 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/thanos-io/thanos",
-          "subdir": "mixin/thanos"
+          "remote": "https://github.com/observatorium/thanos-receive-controller",
+          "subdir": "jsonnet/lib"
         }
       },
       "version": "master",
-      "name": "thanos-mixin"
+      "name": "thanos-receive-controller"
     },
     {
       "source": {
         "git": {
           "remote": "https://github.com/observatorium/thanos-receive-controller",
           "subdir": "jsonnet/thanos-receive-controller-mixin"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/openshift/telemeter",
+          "subdir": "jsonnet/telemeter"
         }
       },
       "version": "master"
@@ -60,39 +87,12 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/thanos-receive-controller",
-          "subdir": "jsonnet/lib"
+          "remote": "https://github.com/thanos-io/thanos",
+          "subdir": "mixin/thanos"
         }
       },
       "version": "master",
-      "name": "thanos-receive-controller"
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/jaegertracing/jaeger",
-          "subdir": "monitoring/jaeger-mixin"
-        }
-      },
-      "version": "master"
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/grafana/grafonnet-lib",
-          "subdir": "grafonnet"
-        }
-      },
-      "version": "master"
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/openshift/telemeter",
-          "subdir": "jsonnet/telemeter"
-        }
-      },
-      "version": "master"
+      "name": "thanos-mixin"
     }
   ],
   "legacyImports": true

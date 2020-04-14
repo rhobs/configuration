@@ -1,4 +1,133 @@
 apiVersion: v1
+data:
+  config.yaml: |-
+    "auth_enabled": false
+    "frontend":
+      "compress_responses": true
+      "log_queries_longer_than": "5s"
+    "http_prefix": ""
+    "query_range":
+      "align_queries_with_step": true
+      "cache_results": true
+      "results_cache":
+        "cache":
+          "enable_fifocache": true
+          "fifocache":
+            "size": 2048
+            "validity": "6h"
+        "max_freshness": "1m"
+      "split_queries_by_interval": "24h"
+    "server":
+      "http_listen_port": 9090
+    "target": "query-frontend"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: query-cache
+    app.kubernetes.io/instance: observatorium
+    app.kubernetes.io/name: cortex-query-frontend
+    app.kubernetes.io/part-of: observatorium
+  name: observatorium-cortex-query-frontend
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    prometheus: ams
+  name: prometheus-remote-write-proxy-config
+data:
+  nginx.conf: |
+    daemon off;
+    worker_processes 1;
+    error_log /dev/stderr;
+    pid /tmp/nginx.pid;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+      log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+
+      server {
+        listen *:8080;
+        server_name _;
+        access_log  /dev/stdout  main;
+        error_log /dev/stderr;
+
+        location / {
+          proxy_set_header THANOS-TENANT FB870BF3-9F3A-44FF-9BF7-D7A047A52F43;
+          proxy_pass http://observatorium-thanos-receive.telemeter-stage.svc.cluster.local:19291;
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: observatorium-tenants
+  labels:
+    app.kubernetes.io/name: thanos-receive-controller
+data:
+  hashrings.json: |-
+    [
+      {
+        "hashring": "default",
+        "tenants": []
+      }
+    ]
+---
+apiVersion: v1
+data:
+  hashrings.json: |-
+    [
+      {
+        "hashring": "default",
+        "tenants": [
+
+        ]
+      }
+    ]
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: kubernetes-controller
+    app.kubernetes.io/instance: observatorium
+    app.kubernetes.io/name: thanos-receive-controller
+    app.kubernetes.io/part-of: observatorium
+  name: observatorium-thanos-receive-controller-tenants
+---
+apiVersion: v1
+data:
+  telemeter-rules.yaml: |-
+    groups:
+    - name: telemeter.rules
+      interval: 1m
+      rules:
+      - expr: |
+          count by (name,reason) (cluster_operator_conditions{condition="Degraded"} == 1)
+        record: name_reason:cluster_operator_degraded:count
+      - expr: |
+          count by (name,reason) (cluster_operator_conditions{condition="Available"} == 0)
+        record: name_reason:cluster_operator_unavailable:count
+      - expr: |
+          sort_desc(max by (_id,code) (code:apiserver_request_count:rate:sum{code=~"(4|5)\\d\\d"}) > 0.5)
+        record: id_code:apiserver_request_error_rate_sum:max
+      - expr: |
+          bottomk by (_id) (1, max by (_id, version) (0 * cluster_version{type="failure"}) or max by (_id, version) (1 + 0 * cluster_version{type="current"}))
+        record: id_version:cluster_available
+      - expr: |
+          topk by (_id) (1, max by (_id, managed, ebs_account, internal) (label_replace(label_replace((subscription_labels{support=~"Standard|Premium|Layered"} * 0 + 1) or subscription_labels * 0, "internal", "true", "email_domain", "redhat.com|(.*\\.|^)ibm.com"), "managed", "", "managed", "false")) + on(_id) group_left(version) (topk by (_id) (1, 0*cluster_version{type="current"})))
+        record: id_version_ebs_account_internal:cluster_subscribed
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: thanos-ruler
+  name: telemeter-rules-config
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:

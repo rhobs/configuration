@@ -1669,7 +1669,6 @@ objects:
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
-          - --experimental.enable-index-header
           - --ignore-deletion-marks-delay=24h
           - |
             --selector.relabel-config=
@@ -1856,7 +1855,6 @@ objects:
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
-          - --experimental.enable-index-header
           - --ignore-deletion-marks-delay=24h
           - |
             --selector.relabel-config=
@@ -2043,7 +2041,6 @@ objects:
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
-          - --experimental.enable-index-header
           - --ignore-deletion-marks-delay=24h
           - |
             --selector.relabel-config=

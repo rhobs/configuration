@@ -52,7 +52,6 @@ manifests:
 	jsonnet -J vendor environments/production/jaeger.jsonnet | gojsontoyaml >manifests/production/jaeger-template.yaml
 	find manifests/production -type f ! -name '*.yaml' -delete
 
-
 .PHONY: deps
 deps:
 	@jb install

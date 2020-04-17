@@ -2,6 +2,7 @@ local t = (import 'kube-thanos/thanos.libsonnet');
 local trc = (import 'thanos-receive-controller/thanos-receive-controller.libsonnet');
 local gw = (import 'observatorium/observatorium-api.libsonnet');
 local cqf = (import 'configuration/components/cortex-query-frontend.libsonnet');
+local mc = (import 'configuration/components/memcached.libsonnet');
 local up = (import 'configuration/components/up.libsonnet');
 
 (import 'configuration/components/observatorium.libsonnet') {
@@ -104,6 +105,9 @@ local up = (import 'configuration/components/up.libsonnet');
       }
     for i in std.range(0, obs.config.store.shards - 1)
   },
+
+  storeCache+::
+    mc.withResources,
 
   receivers+:: {
     [hashring.hashring]+:
@@ -337,6 +341,39 @@ local up = (import 'configuration/components/up.libsonnet');
       jaegerAgent: {
         image: obs.config.jaegerAgentImage,
         collectorAddress: obs.config.jaegerAgentCollectorAddress,
+      },
+    },
+
+    storeCache+: {
+      local scConfig = self,
+      version: '${MEMCACHED_IMAGE_TAG}',
+      image: '%s:%s' % ['${MEMCACHED_IMAGE}', scConfig.version],
+      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', scConfig.exporterVersion],
+      memoryLimitMb: '${{THANOS_STORE_CACHE_MEMORY_LIMIT_MB}}',
+      replicas: '${{THANOS_STORE_CACHE_REPLICAS}}',
+      resources: {
+        memcached: {
+          requests: {
+            cpu: '${THANOS_STORE_MEMCACHED_CPU_REQUEST}',
+            memory: '${THANOS_STORE_MEMCACHED_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${THANOS_STORE_MEMCACHED_CPU_LIMIT}',
+            memory: '${THANOS_STORE_MEMCACHED_MEMORY_LIMIT}',
+          },
+        },
+
+        exporter: {
+          requests: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+          },
+        },
       },
     },
 
@@ -661,6 +698,30 @@ local up = (import 'configuration/components/up.libsonnet');
       {
         name: 'THANOS_STORE_MEMORY_LIMIT',
         value: '8Gi',
+      },
+      {
+        name: 'THANOS_STORE_CACHE_REPLICAS',
+        value: '3',
+      },
+      {
+        name: 'THANOS_STORE_CACHE_MEMORY_LIMIT_MB',
+        value: '2048',
+      },
+      {
+        name: 'THANOS_STORE_MEMCACHED_CPU_REQUEST',
+        value: '500m',
+      },
+      {
+        name: 'THANOS_STORE_MEMCACHED_CPU_LIMIT',
+        value: '3',
+      },
+      {
+        name: 'THANOS_STORE_MEMCACHED_MEMORY_REQUEST',
+        value: '2558Mi',
+      },
+      {
+        name: 'THANOS_STORE_MEMCACHED_MEMORY_LIMIT',
+        value: '3Gi',
       },
       {
         name: 'THANOS_RECEIVE_CPU_REQUEST',

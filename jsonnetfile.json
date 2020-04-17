@@ -13,6 +13,15 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "memcached-mixin"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jaegertracing/jaeger",
           "subdir": "monitoring/jaeger-mixin"
         }
@@ -35,7 +44,7 @@
           "subdir": ""
         }
       },
-      "version": "d1516bace8da3386af5d8a2e6effed21e37984ea"
+      "version": "97d80db2dbb727721c218bcb9742908dfd62abbe"
     },
     {
       "source": {

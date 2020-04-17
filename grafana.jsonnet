@@ -1,5 +1,3 @@
-local obs = (import 'environments/production/obs.jsonnet');
-
 local thanos =
   (import 'thanos-mixin/dashboards/query.libsonnet') +
   (import 'thanos-mixin/dashboards/store.libsonnet') +
@@ -13,6 +11,7 @@ local thanos =
 
 local jaeger = (import 'jaeger-mixin/mixin.libsonnet');
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
+local memcached = (import 'memcached-mixin/mixin.libsonnet');
 
 {
   ['grafana-dashboard-observatorium-thanos-%s.configmap' % std.split(name, '.')[0]]:
@@ -32,4 +31,13 @@ local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
       [name]: std.manifestJsonEx(jaeger.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
     })
   for name in std.objectFields(jaeger.grafanaDashboards)
+} + {
+  ['grafana-dashboard-observatorium-memcached-%s.configmap' % std.split(name, '.')[0]]:
+    local configmap = k.core.v1.configMap;
+    configmap.new() +
+    configmap.mixin.metadata.withName('grafana-dashboard-observatorium-memcached-%s' % std.split(name, '.')[0]) +
+    configmap.withData({
+      [name]: std.manifestJsonEx(memcached.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
+    })
+  for name in std.objectFields(memcached.grafanaDashboards)
 }

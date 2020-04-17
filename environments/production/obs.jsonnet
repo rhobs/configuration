@@ -350,7 +350,7 @@ local up = (import 'configuration/components/up.libsonnet');
       image: '%s:%s' % ['${MEMCACHED_IMAGE}', scConfig.version],
       exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
       exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', scConfig.exporterVersion],
-      memoryLimitMb: '${{THANOS_STORE_CACHE_MEMORY_LIMIT_MB}}',
+      memoryLimitMb: '${THANOS_STORE_CACHE_MEMORY_LIMIT_MB}',
       replicas: '${{THANOS_STORE_CACHE_REPLICAS}}',
       resources: {
         memcached: {

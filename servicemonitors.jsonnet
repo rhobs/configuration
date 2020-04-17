@@ -9,6 +9,7 @@ local trc =
   (import 'selectors.libsonnet');
 
 local gateway = import 'observatorium/observatorium-api.libsonnet';
+local mc = import 'configuration/components/memcached.libsonnet';
 
 local obs = (import 'environments/production/obs.jsonnet') {
   gateway+::
@@ -77,6 +78,20 @@ local obs = (import 'environments/production/obs.jsonnet') {
     }
     for i in std.range(0, obs.config.store.shards - 1)
   },
+
+  storeCache+::
+    mc.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-store-cache',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
 
   receivers+:: {
     [hashring.hashring]+: t.receive.withServiceMonitor {
@@ -151,6 +166,10 @@ local obs = (import 'environments/production/obs.jsonnet') {
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
   'observatorium-thanos-rule.servicemonitor': obs.rule.serviceMonitor {
+    metadata+: { name+: '-{{environment}}' },
+    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
+  },
+  'observatorium-thanos-store-cache.servicemonitor': obs.storeCache.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },

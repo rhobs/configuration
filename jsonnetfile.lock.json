@@ -24,6 +24,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs",
+          "subdir": "memcached-mixin"
+        }
+      },
+      "version": "cb6bc2780a39afbbf9d4ee64fec8d1152023aee9",
+      "sum": "ZMKDjnebXqWjqONT6Yz5jvRjOH3+8861NsHEo0/dMwQ="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jaegertracing/jaeger",
           "subdir": "monitoring/jaeger-mixin"
         }
@@ -59,8 +69,8 @@
           "subdir": ""
         }
       },
-      "version": "d1516bace8da3386af5d8a2e6effed21e37984ea",
-      "sum": "BRoAG9K9KJLVyOikMp0LZSR+Wpa1jep9eekyvaiMReo="
+      "version": "97d80db2dbb727721c218bcb9742908dfd62abbe",
+      "sum": "VmiQjhVqutB5VqUIArJDuGBMnESJhkHXyli87kzM120="
     },
     {
       "source": {
@@ -69,8 +79,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "3c53e88fe4b5ea1cab0e0f8f5e57119ae400dc2c",
-      "sum": "RDdo7RnvtQafX+C9UVkviTpOGf0HnRGWTssFqANN+bs=",
+      "version": "775082722a0ee8d29c7c4fd778389a203384ec14",
+      "sum": "B5Fwdatirf5LQcHp8VLLo0rcTTb7fJjclgIUuhIzoLs=",
       "name": "observatorium"
     },
     {

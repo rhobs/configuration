@@ -681,7 +681,7 @@ objects:
       spec:
         containers:
         - args:
-          - -m ${{THANOS_STORE_CACHE_MEMORY_LIMIT_MB}}
+          - -m ${THANOS_STORE_CACHE_MEMORY_LIMIT_MB}
           - -I 1m
           - -c 1024
           - -v

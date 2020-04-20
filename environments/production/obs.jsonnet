@@ -454,8 +454,8 @@ local up = (import 'configuration/components/up.libsonnet');
 
     apiGateway+: {
       local gwConfig = self,
-      version: 'master-2020-03-19-62d4b8e',
-      image: 'quay.io/observatorium/observatorium:' + gwConfig.version,
+      version: '${OBSERVATORIUM_API_IMAGE_TAG}',
+      image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', gwConfig.version],
       replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
       resources: {
         requests: {
@@ -782,6 +782,14 @@ local up = (import 'configuration/components/up.libsonnet');
       {
         name: 'THANOS_QUERIER_SVC_URL',
         value: 'http://thanos-querier.observatorium.svc:9090',
+      },
+      {
+        name: 'OBSERVATORIUM_API_IMAGE',
+        value: 'quay.io/observatorium/observatorium',
+      },
+      {
+        name: 'OBSERVATORIUM_API_IMAGE_TAG',
+        value: 'v0.1.1',
       },
       {
         name: 'OBSERVATORIUM_API_REPLICAS',

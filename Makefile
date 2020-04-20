@@ -2,7 +2,7 @@
 all: generate
 
 .PHONY: generate
-generate: deps prometheusrules servicemonitors grafana manifests # slos Disabled for now, dependency is broken.
+generate: deps prometheusrules servicemonitors grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
@@ -40,6 +40,20 @@ resources/observability/slo/telemeter.slo.yaml: slo.jsonnet
 	jsonnetfmt -i slo.jsonnet
 	jsonnet -J vendor slo.jsonnet | gojsontoyaml > resources/observability/slo/telemeter.slo.yaml
 	find resources/observability/slo/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
+
+.PHONY: whitelisted_metrics
+whitelisted_metrics:
+	# Download the latest metrics file to extract the new added metrics.
+	curl -q https://raw.githubusercontent.com/openshift/cluster-monitoring-operator/master/manifests/0000_50_cluster_monitoring_operator_04-config.yaml | \
+	gojsontoyaml -yamltojson | \
+	jq -r '.data["metrics.yaml"]' | \
+	gojsontoyaml -yamltojson | \
+	jq  -r '.matches' > /tmp/metrics-new.json
+	# Append new metrics to the existing ones.
+	# The final results is sorted to show nicely in the diff.
+	# First copy current file, as in-place doesn't work.
+	cp environments/production/metrics.json /tmp/metrics.json
+	jq -s 'add | unique' /tmp/metrics-new.json /tmp/metrics.json > environments/production/metrics.json
 
 .PHONY: manifests
 manifests:

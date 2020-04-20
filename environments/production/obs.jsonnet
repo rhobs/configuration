@@ -494,7 +494,7 @@ local up = (import 'configuration/components/up.libsonnet');
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       replicas: 1,
-      externalPrefix: '/ui/v1/metrics',
+      externalPrefix: '/ui/metrics/v1',
       resources: {
         requests: {
           cpu: '${THANOS_QUERIER_CPU_REQUEST}',

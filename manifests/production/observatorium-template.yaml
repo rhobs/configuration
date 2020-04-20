@@ -2395,6 +2395,7 @@ objects:
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
+          - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}

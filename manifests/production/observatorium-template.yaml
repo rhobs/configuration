@@ -15,7 +15,7 @@ objects:
     name: observatorium-observatorium-api-gateway
     namespace: ${NAMESPACE}
   spec:
-    replicas: 1
+    replicas: ${{OBSERVATORIUM_API_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: api-gateway
@@ -2858,7 +2858,7 @@ parameters:
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/observatorium
 - name: OBSERVATORIUM_API_IMAGE_TAG
-  value: v0.1.1
+  value: master-2020-04-21-v0.1.1-3-gfd8b3bb
 - name: OBSERVATORIUM_API_REPLICAS
   value: "3"
 - name: OBSERVATORIUM_API_CPU_REQUEST

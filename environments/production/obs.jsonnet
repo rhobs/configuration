@@ -317,6 +317,9 @@ local up = (import 'configuration/components/up.libsonnet');
       shards: 3,
       objectStorageConfig: obs.config.objectStorageConfig,
       replicas: '${{THANOS_STORE_REPLICAS}}',
+      memcached+: {
+        maxAsyncBufferSize: 10000000,
+      },
       resources: {
         requests: {
           cpu: '${THANOS_STORE_CPU_REQUEST}',
@@ -350,6 +353,7 @@ local up = (import 'configuration/components/up.libsonnet');
       image: '%s:%s' % ['${MEMCACHED_IMAGE}', scConfig.version],
       exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
       exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', scConfig.exporterVersion],
+      connectionLimit: '${THANOS_STORE_CACHE_CONNECTION_LIMIT}',
       memoryLimitMb: '${THANOS_STORE_CACHE_MEMORY_LIMIT_MB}',
       replicas: '${{THANOS_STORE_CACHE_REPLICAS}}',
       resources: {
@@ -706,6 +710,10 @@ local up = (import 'configuration/components/up.libsonnet');
       {
         name: 'THANOS_STORE_CACHE_MEMORY_LIMIT_MB',
         value: '2048',
+      },
+      {
+        name: 'THANOS_STORE_CACHE_CONNECTION_LIMIT',
+        value: '3072',
       },
       {
         name: 'THANOS_STORE_MEMCACHED_CPU_REQUEST',

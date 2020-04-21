@@ -22,6 +22,37 @@ local list = import 'telemeter/lib/list.libsonnet';
         },
       },
     },
+
+    statefulSetCanary: self.statefulSet {
+      metadata+: {
+        name: super.name + '-canary',
+      },
+      spec+: {
+        replicas: '${{REPLICAS_CANARY}}',
+        selector+: {
+          matchLabels+: {
+            track: 'canary',
+          },
+        },
+        template+: {
+          metadata+: {
+            labels+: {
+              track: 'canary',
+            },
+          },
+          spec+: {
+            containers: [
+              if c.name == 'telemeter-server' then c {
+                image: '${IMAGE_CANARY}:${IMAGE_CANARY_TAG}',
+                command+: ["--log-level=debug"], // Always enable debug logging for canary deployments
+              }
+              for c in super.containers
+            ],
+          },
+        },
+      },
+    },
+
   },
 } + {
   local ts = super.telemeterServer,

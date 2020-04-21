@@ -789,7 +789,7 @@ local up = (import 'configuration/components/up.libsonnet');
       },
       {
         name: 'OBSERVATORIUM_API_IMAGE_TAG',
-        value: 'v0.1.1',
+        value: 'master-2020-04-21-v0.1.1-3-gfd8b3bb',
       },
       {
         name: 'OBSERVATORIUM_API_REPLICAS',

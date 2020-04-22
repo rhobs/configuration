@@ -852,6 +852,10 @@ local up = (import 'configuration/components/up.libsonnet');
         value: 'v4.0',
       },
       {
+        name: 'REPLICAS',
+        value: '10',
+      },
+      {
         name: 'IMAGE_CANARY',
         value: 'quay.io/openshift/origin-telemeter',
       },

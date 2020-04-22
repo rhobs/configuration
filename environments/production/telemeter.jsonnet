@@ -5,7 +5,7 @@ local list = import 'telemeter/lib/list.libsonnet';
   telemeterServer+:: {
     statefulSet+: {
       spec+: {
-        replicas: 10,
+        replicas: '${{REPLICAS}}',
 
         template+: {
           spec+: {

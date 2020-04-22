@@ -713,7 +713,6 @@ objects:
             requests:
               cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-    volumeClaimTemplates: []
 - apiVersion: v1
   data:
     session_secret: ""

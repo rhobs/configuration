@@ -44,7 +44,7 @@ local list = import 'telemeter/lib/list.libsonnet';
             containers: [
               if c.name == 'telemeter-server' then c {
                 image: '${IMAGE_CANARY}:${IMAGE_CANARY_TAG}',
-                command+: ["--log-level=debug"], // Always enable debug logging for canary deployments
+                command+: ['--log-level=debug'],  // Always enable debug logging for canary deployments
               }
               for c in super.containers
             ],

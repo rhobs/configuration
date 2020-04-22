@@ -2356,7 +2356,7 @@ objects:
     namespace: ${NAMESPACE}
   spec:
     podManagementPolicy: Parallel
-    replicas: 10
+    replicas: ${{REPLICAS}}
     selector:
       matchLabels:
         k8s-app: telemeter-server
@@ -3030,6 +3030,8 @@ parameters:
   value: quay.io/openshift/origin-telemeter
 - name: IMAGE_TAG
   value: v4.0
+- name: REPLICAS
+  value: "10"
 - name: IMAGE_CANARY
   value: quay.io/openshift/origin-telemeter
 - name: IMAGE_CANARY_TAG

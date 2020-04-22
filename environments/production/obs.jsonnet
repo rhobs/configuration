@@ -325,6 +325,7 @@ local up = (import 'configuration/components/up.libsonnet');
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
         timeout: '10s',
+        maxGetMultiBatchSize: 100,
         maxAsyncBufferSize: 10000000,
       },
       resources: {

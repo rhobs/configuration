@@ -1770,7 +1770,7 @@ objects:
               "max_get_multi_concurrency": 900
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
-              "timeout": "2s"
+              "timeout": "10s"
             "type": "MEMCACHED"
           - --ignore-deletion-marks-delay=24h
           - |
@@ -1970,7 +1970,7 @@ objects:
               "max_get_multi_concurrency": 900
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
-              "timeout": "2s"
+              "timeout": "10s"
             "type": "MEMCACHED"
           - --ignore-deletion-marks-delay=24h
           - |
@@ -2170,7 +2170,7 @@ objects:
               "max_get_multi_concurrency": 900
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
-              "timeout": "2s"
+              "timeout": "10s"
             "type": "MEMCACHED"
           - --ignore-deletion-marks-delay=24h
           - |

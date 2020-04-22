@@ -318,6 +318,7 @@ local up = (import 'configuration/components/up.libsonnet');
       objectStorageConfig: obs.config.objectStorageConfig,
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
+        timeout: '10s',
         maxAsyncBufferSize: 10000000,
       },
       resources: {

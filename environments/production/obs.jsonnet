@@ -107,7 +107,13 @@ local up = (import 'configuration/components/up.libsonnet');
   },
 
   storeCache+::
-    mc.withResources,
+    mc.withResources {
+      statefulSet+: {
+        spec+: {
+          volumeClaimTemplates:: null,
+        },
+      },
+    },
 
   receivers+:: {
     [hashring.hashring]+:

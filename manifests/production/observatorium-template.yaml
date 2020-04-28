@@ -2606,7 +2606,7 @@ objects:
               secretKeyRef:
                 key: client_id
                 name: telemeter-server
-          image: ${IMAGE}:${IMAGE_TAG}
+          image: ${IMAGE_CANARY}:${IMAGE_CANARY_TAG}
           livenessProbe:
             httpGet:
               path: /healthz

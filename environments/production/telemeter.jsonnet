@@ -10,7 +10,8 @@ local list = import 'telemeter/lib/list.libsonnet';
         template+: {
           spec+: {
             containers: [
-              c {
+              if c.name == 'telemeter-server' then c {
+                image: '${IMAGE}:${IMAGE_TAG}',
                 command: [
                   if std.startsWith(c, '--forward-url=') then '--forward-url=${TELEMETER_FORWARD_URL}' else c
                   for c in super.command
@@ -59,7 +60,6 @@ local list = import 'telemeter/lib/list.libsonnet';
   local m = super.memcached,
   local tsList = list.asList('telemeter', ts, [])
                  + list.withNamespace($._config)
-                 + list.withServerImage($._config)
                  + list.withResourceRequestsAndLimits('telemeter-server', $._config.telemeterServer.resourceRequests, $._config.telemeterServer.resourceLimits),
   local mList = list.asList('memcached', m, [
                   {

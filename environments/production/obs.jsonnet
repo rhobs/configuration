@@ -126,7 +126,15 @@ local up = (import 'configuration/components/up.libsonnet');
               spec+: {
                 containers: [
                   if c.name == 'thanos-receive' then c {
+                    args+: [
+                      '--receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
+                    ],
                     env+: s3EnvVars,
+                  } + {
+                    args: [
+                      if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}' else a
+                      for a in super.args
+                    ],
                   } else c
                   for c in super.containers
                 ],
@@ -966,6 +974,10 @@ local up = (import 'configuration/components/up.libsonnet');
       {
         name: 'PROMETHEUS_AMS_MEMORY_LIMIT',
         value: '0',
+      },
+      {
+        name: 'THANOS_RECEIVE_TSDB_PATH',
+        value: '/var/thanos/receive',
       },
     ],
   },

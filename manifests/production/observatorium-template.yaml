@@ -1371,12 +1371,13 @@ objects:
           - --remote-write.address=0.0.0.0:19291
           - --receive.replication-factor=3
           - --objstore.config=$(OBJSTORE_CONFIG)
-          - --tsdb.path=/var/thanos/receive
+          - --tsdb.path=${THANOS_RECEIVE_TSDB_PATH}
           - --label=replica="$(NAME)"
           - --label=receive="true"
           - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --tsdb.retention=6h
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
+          - --receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
           - |
             --tracing.config=
               type: JAEGER
@@ -3088,3 +3089,5 @@ parameters:
   value: "0"
 - name: PROMETHEUS_AMS_MEMORY_LIMIT
   value: "0"
+- name: THANOS_RECEIVE_TSDB_PATH
+  value: /var/thanos/receive

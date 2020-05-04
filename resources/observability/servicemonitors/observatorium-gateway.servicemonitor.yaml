@@ -17,4 +17,4 @@ spec:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api-gateway
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2020-03-19-62d4b8e
+      app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}

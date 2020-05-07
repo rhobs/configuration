@@ -2,7 +2,7 @@
 all: generate
 
 .PHONY: generate
-generate: deps prometheusrules servicemonitors grafana manifests-deployments whitelisted_metrics # slos Disabled for now, dependency is broken.
+generate: deps prometheusrules servicemonitors grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
@@ -55,10 +55,11 @@ whitelisted_metrics:
 	cp environments/production/metrics.json /tmp/metrics.json
 	jq -s 'add | unique' /tmp/metrics-new.json /tmp/metrics.json > environments/production/metrics.json
 
-.PHONY: manifests-deployments
-manifests-deployments:
+.PHONY: manifests
+manifests:
 	# Make sure to start with a clean 'manifests' dir
-	rm -rf manifests/production/*template.yaml
+	rm -rf manifests/production/*
+	mkdir -p manifests/production
 	jsonnetfmt -i environments/production/main.jsonnet
 	jsonnetfmt -i environments/production/jaeger.jsonnet
 	jsonnet -J vendor environments/production/main.jsonnet | gojsontoyaml >manifests/production/observatorium-template.yaml

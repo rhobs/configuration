@@ -1668,7 +1668,7 @@ objects:
           - mountPath: /var/thanos/rule
             name: data
             readOnly: false
-          - mountPath: /var/thanos/config/rules/observatorium.yaml
+          - mountPath: /var/thanos/config/rules
             name: observatorium-rule
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250

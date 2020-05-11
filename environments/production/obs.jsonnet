@@ -68,7 +68,7 @@ local up = (import 'configuration/components/up.libsonnet');
                   args+: ['--rule-file=/var/thanos/config/rules/'+nameFile],
                   volumeMounts+: [{
                     name: nameResource,
-                    mountPath: '/var/thanos/config/rules/'+nameFile,
+                    mountPath: '/var/thanos/config/rules',
                   }],
                 } else c
                 for c in super.containers

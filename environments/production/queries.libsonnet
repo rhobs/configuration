@@ -73,8 +73,20 @@
       query: 'count(((count by (_id) (count_over_time(cluster_version{from_version=~"4\\\\.2\\\\.\\\\d+",version=~"4\\\\.3\\\\.\\\\d+",type="updating"}[7d])))*0+1) + on(_id) group_left(_blah) (topk by (_id) (1, 0*subscription_labels{email_domain!~"redhat.com|(.*\\\\.|^)ibm.com"})))',
     },
     {
+      name: 'Clusters upgrading to 4.4',
+      query: 'count(((count by (_id) (count_over_time(cluster_version{from_version=~\"4\\\\.2\\\\.\\\\d+\",version=~\"4\\\\.4\\\\.\\\\d+\",type=\"updating\"}[7d])))*0+1) + on(_id) group_left(_blah) (topk by (_id) (1, 0*subscription_labels{email_domain!~\"redhat.com|(.*\\\\.|^)ibm.com\"})))',
+    },
+    {
       name: 'Failed 4.3 upgrades',
       query: 'count(((max by (_id) (sum_over_time((1+0*cluster_version{from_version=~"4\\\\.2\\\\.\\\\d+",version=~"4\\\\.3\\\\.\\\\d+",type="failure"})[7d:15m]))) > 2) + on(_id) group_left(_blah) (topk by (_id) (1, 0*subscription_labels{email_domain!~"redhat.com|(.*\\\\.|^)ibm.com"})))',
+    },
+    {
+      name: 'Failed 4.4 upgrades',
+      query: 'count(((max by (_id) (sum_over_time((1+0*cluster_version{from_version=~\"4\\\\.2\\\\.\\\\d+\",version=~\"4\\\\.4\\\\.\\\\d+\",type=\"failure\"})[7d:15m]))) > 2) + on(_id) group_left(_blah) (topk by (_id) (1, 0*subscription_labels{email_domain!~\"redhat.com|(.*\\\\.|^)ibm.com\"})))',
+    },
+    {
+      name: '4.4 clusters',
+      query: 'avg_over_time(count(count by (_id) (max without (prometheus,receive,instance) ( cluster_version{type=\"current\",version=~\"4\\\\.4\\\\.\\\\d+\"} )) + on (_id) group_left(_blah) (topk by (_id) (1, 0 *subscription_labels{email_domain!~\"redhat.com|(^|.*\\\\.)ibm.com\"})))[1d:12h])',
     },
     {
       name: '4.3 clusters',

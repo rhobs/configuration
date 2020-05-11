@@ -18,7 +18,7 @@ local list = import 'telemeter/lib/list.libsonnet';
     ams+:: {
       proxyPort: 8080,
       remoteWriteTarget: 'http://%s.%s.svc.cluster.local:%d' % [
-        '${AMS_REMOTE_WRITE_PROXY_TARGET}',
+        '${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET}',
         '${NAMESPACE}',
         19291,
       ],

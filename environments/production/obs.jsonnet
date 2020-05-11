@@ -1018,6 +1018,10 @@ local up = (import 'configuration/components/up.libsonnet');
         name: 'THANOS_RECEIVE_TSDB_PATH',
         value: '/var/thanos/receive',
       },
+      {
+        name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET',
+        value: 'observatorium-thanos-receive',
+      },
     ],
   },
 }

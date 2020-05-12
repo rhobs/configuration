@@ -68,29 +68,29 @@ objects:
           app.kubernetes.io/version: ${IMAGE_TAG}
       spec:
         containers:
-        - - args:
-            - all
-            - --storage.tsdb.path=/conprof
-            - --config.file=/etc/conprof/conprof.yaml
-            image: ${IMAGE}:${IMAGE_TAG}
-            name: conprof
-            ports:
-            - containerPort: 8080
-              name: http
-            resources:
-              limits:
-                cpu: ${CONPROF_CPU_LIMITS}
-                memory: ${CONPROF_MEMORY_LIMITS}
-              requests:
-                cpu: ${CONPROF_CPU_REQUEST}
-                memory: ${CONPROF_MEMORY_REQUEST}
-            volumeMounts:
-            - mountPath: /conprof
-              name: storage
-              readOnly: false
-            - mountPath: /etc/conprof
-              name: config
-              readOnly: false
+        - args:
+          - all
+          - --storage.tsdb.path=/conprof
+          - --config.file=/etc/conprof/conprof.yaml
+          image: ${IMAGE}:${IMAGE_TAG}
+          name: conprof
+          ports:
+          - containerPort: 8080
+            name: http
+          resources:
+            limits:
+              cpu: ${CONPROF_CPU_LIMITS}
+              memory: ${CONPROF_MEMORY_LIMITS}
+            requests:
+              cpu: ${CONPROF_CPU_REQUEST}
+              memory: ${CONPROF_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /conprof
+            name: storage
+            readOnly: false
+          - mountPath: /etc/conprof
+            name: config
+            readOnly: false
         - args:
           - -provider=openshift
           - -https-address=:8443

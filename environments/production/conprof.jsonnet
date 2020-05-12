@@ -70,58 +70,57 @@ local conprof = c {
       replicas: '${{CONPROF_REPLICAS}}',
       template+: {
         spec+: {
-          containers: [
-            std.map(
-              function(c) if c.name == 'conprof' then c {
-                resources: {
-                  requests: {
-                    cpu: '${CONPROF_CPU_REQUEST}',
-                    memory: '${CONPROF_MEMORY_REQUEST}',
-                  },
-                  limits: {
-                    cpu: '${CONPROF_CPU_LIMITS}',
-                    memory: '${CONPROF_MEMORY_LIMITS}',
-                  },
-                },
-              } else c,
-              super.containers
-            ),
-          ] + [
-            container.new('proxy', '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}') +
-            container.withArgs([
-              '-provider=openshift',
-              '-https-address=:%d' % conprof.service.spec.ports[1].port,
-              '-http-address=',
-              '-email-domain=*',
-              '-upstream=http://localhost:%d' % conprof.service.spec.ports[0].port,
-              '-openshift-service-account=prometheus-telemeter',
-              '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
-              '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
-              '-tls-cert=/etc/tls/private/tls.crt',
-              '-tls-key=/etc/tls/private/tls.key',
-              '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token',
-              '-cookie-secret-file=/etc/proxy/secrets/session_secret',
-              '-openshift-ca=/etc/pki/tls/cert.pem',
-              '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
-            ]) +
-            container.withPorts([
-              { name: 'https', containerPort: conprof.service.spec.ports[1].port },
-            ]) +
-            container.withVolumeMounts(
-              [
-                volumeMount.new('secret-conprof-tls', '/etc/tls/private'),
-                volumeMount.new('secret-conprof-proxy', '/etc/proxy/secrets'),
-              ]
-            ) +
-            container.mixin.resources.withRequests({
-              cpu: '${CONPROF_PROXY_CPU_REQUEST}',
-              memory: '${CONPROF_PROXY_MEMORY_REQUEST}',
-            }) +
-            container.mixin.resources.withLimits({
-              cpu: '${CONPROF_PROXY_CPU_LIMITS}',
-              memory: '${CONPROF_PROXY_MEMORY_LIMITS}',
-            }),
-          ],
+          containers: std.map(
+                        function(c) if c.name == 'conprof' then c {
+                          resources: {
+                            requests: {
+                              cpu: '${CONPROF_CPU_REQUEST}',
+                              memory: '${CONPROF_MEMORY_REQUEST}',
+                            },
+                            limits: {
+                              cpu: '${CONPROF_CPU_LIMITS}',
+                              memory: '${CONPROF_MEMORY_LIMITS}',
+                            },
+                          },
+                        } else c,
+                        super.containers
+                      )
+                      + [
+                        container.new('proxy', '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}') +
+                        container.withArgs([
+                          '-provider=openshift',
+                          '-https-address=:%d' % conprof.service.spec.ports[1].port,
+                          '-http-address=',
+                          '-email-domain=*',
+                          '-upstream=http://localhost:%d' % conprof.service.spec.ports[0].port,
+                          '-openshift-service-account=prometheus-telemeter',
+                          '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
+                          '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
+                          '-tls-cert=/etc/tls/private/tls.crt',
+                          '-tls-key=/etc/tls/private/tls.key',
+                          '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token',
+                          '-cookie-secret-file=/etc/proxy/secrets/session_secret',
+                          '-openshift-ca=/etc/pki/tls/cert.pem',
+                          '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
+                        ]) +
+                        container.withPorts([
+                          { name: 'https', containerPort: conprof.service.spec.ports[1].port },
+                        ]) +
+                        container.withVolumeMounts(
+                          [
+                            volumeMount.new('secret-conprof-tls', '/etc/tls/private'),
+                            volumeMount.new('secret-conprof-proxy', '/etc/proxy/secrets'),
+                          ]
+                        ) +
+                        container.mixin.resources.withRequests({
+                          cpu: '${CONPROF_PROXY_CPU_REQUEST}',
+                          memory: '${CONPROF_PROXY_MEMORY_REQUEST}',
+                        }) +
+                        container.mixin.resources.withLimits({
+                          cpu: '${CONPROF_PROXY_CPU_LIMITS}',
+                          memory: '${CONPROF_PROXY_MEMORY_LIMITS}',
+                        }),
+                      ],
 
           serviceAccount: 'prometheus-telemeter',
           serviceAccountName: 'prometheus-telemeter',

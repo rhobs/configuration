@@ -1,4 +1,5 @@
 local c = import 'conprof/conprof.libsonnet';
+local k3 = import 'ksonnet/ksonnet.beta.3/k.libsonnet';
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
 local conprof = c {
@@ -46,6 +47,22 @@ local conprof = c {
       }],
     },
   },
+
+  roleBindings:
+    local roleBinding = k.rbac.v1.roleBinding;
+
+    local newSpecificRoleBinding(namespace) =
+      roleBinding.new() +
+      roleBinding.mixin.metadata.withName(conprof.config.name) +
+      roleBinding.mixin.metadata.withNamespace(namespace) +
+      roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
+      roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
+      roleBinding.mixin.roleRef.withName(conprof.config.name) +
+      roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
+      roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
+
+    local roleBindingList = k3.rbac.v1.roleBindingList;
+    roleBindingList.new([newSpecificRoleBinding(x) for x in conprof.config.namespaces]),
 
   service+: {
     metadata+: {
@@ -146,8 +163,8 @@ local conprof = c {
       conprof.statefulset,
       conprof.service,
     ] +
-    conprof.roleBindings.items +
-    conprof.roles.items,
+    conprof.roles.items +
+    conprof.roleBindings.items,
   parameters: [
     { name: 'NAMESPACE', value: 'telemeter' },
     { name: 'IMAGE', value: 'quay.io/conprof/conprof' },

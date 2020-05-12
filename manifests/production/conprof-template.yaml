@@ -167,23 +167,6 @@ objects:
       app.kubernetes.io/instance: conprof
       app.kubernetes.io/name: conprof
 - apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
-      app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof
-    namespace: ${NAMESPACE}
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: conprof
-  subjects:
-  - kind: ServiceAccount
-    name: conprof
-    namespace: ${NAMESPACE}
-- apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
     labels:
@@ -203,6 +186,23 @@ objects:
     - get
     - list
     - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof
+    namespace: ${NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: conprof
+  subjects:
+  - kind: ServiceAccount
+    name: prometheus-telemeter
+    namespace: ${NAMESPACE}
 parameters:
 - name: NAMESPACE
   value: telemeter

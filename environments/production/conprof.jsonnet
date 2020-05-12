@@ -1,0 +1,168 @@
+local c = import 'conprof/conprof.libsonnet';
+local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
+
+local conprof = c {
+  local conprof = self,
+
+  config+:: {
+    name: 'conprof',
+    namespace: '${NAMESPACE}',
+    image: '${IMAGE}:${IMAGE_TAG}',
+    version: '${IMAGE_TAG}',
+
+    rawconfig+:: {
+      scrape_configs: [{
+        job_name: 'thanos',
+        kubernetes_sd_configs: [{
+          namespaces: { names: ['${NAMESPACE}'] },
+          role: 'pod',
+        }],
+        relabel_configs: [
+          {
+            action: 'keep',
+            regex: 'observatorium-thanos-.+',
+            source_labels: ['__meta_kubernetes_pod_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'metrics',
+            source_labels: ['__meta_kubernetes_pod_container_port_name'],
+          },
+          {
+            source_labels: ['__meta_kubernetes_namespace'],
+            target_label: 'namespace',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_name'],
+            target_label: 'pod',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+            target_label: 'container',
+          },
+        ],
+        scrape_interval: '30s',
+        scrape_timeout: '1m',
+      }],
+    },
+  },
+
+  service+: {
+    metadata+: {
+      annotations+: {
+        'service.alpha.openshift.io/serving-cert-secret-name': 'conprof-tls',
+      },
+    },
+    spec+: {
+      ports+: [
+        { name: 'https', port: 8443, targetPort: 8443 },
+      ],
+    },
+  },
+
+  local statefulset = k.apps.v1.statefulSet,
+  local volume = statefulset.mixin.spec.template.spec.volumesType,
+  local container = statefulset.mixin.spec.template.spec.containersType,
+  local volumeMount = container.volumeMountsType,
+
+  statefulset+: {
+    spec+: {
+      replicas: '${{CONPROF_REPLICAS}}',
+      template+: {
+        spec+: {
+          containers: [
+            std.map(
+              function(c) if c.name == 'conprof' then c {
+                resources: {
+                  requests: {
+                    cpu: '${CONPROF_CPU_REQUEST}',
+                    memory: '${CONPROF_MEMORY_REQUEST}',
+                  },
+                  limits: {
+                    cpu: '${CONPROF_CPU_LIMITS}',
+                    memory: '${CONPROF_MEMORY_LIMITS}',
+                  },
+                },
+              } else c,
+              super.containers
+            ),
+          ] + [
+            container.new('proxy', '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}') +
+            container.withArgs([
+              '-provider=openshift',
+              '-https-address=:%d' % conprof.service.spec.ports[1].port,
+              '-http-address=',
+              '-email-domain=*',
+              '-upstream=http://localhost:%d' % conprof.service.spec.ports[0].port,
+              '-openshift-service-account=prometheus-telemeter',
+              '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
+              '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
+              '-tls-cert=/etc/tls/private/tls.crt',
+              '-tls-key=/etc/tls/private/tls.key',
+              '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token',
+              '-cookie-secret-file=/etc/proxy/secrets/session_secret',
+              '-openshift-ca=/etc/pki/tls/cert.pem',
+              '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
+            ]) +
+            container.withPorts([
+              { name: 'https', containerPort: conprof.service.spec.ports[1].port },
+            ]) +
+            container.withVolumeMounts(
+              [
+                volumeMount.new('secret-conprof-tls', '/etc/tls/private'),
+                volumeMount.new('secret-conprof-proxy', '/etc/proxy/secrets'),
+              ]
+            ) +
+            container.mixin.resources.withRequests({
+              cpu: '${CONPROF_PROXY_CPU_REQUEST}',
+              memory: '${CONPROF_PROXY_MEMORY_REQUEST}',
+            }) +
+            container.mixin.resources.withLimits({
+              cpu: '${CONPROF_PROXY_CPU_LIMITS}',
+              memory: '${CONPROF_PROXY_MEMORY_LIMITS}',
+            }),
+          ],
+
+          serviceAccount: 'prometheus-telemeter',
+          serviceAccountName: 'prometheus-telemeter',
+          volumes+: [
+            { name: 'secret-conprof-tls', secret: { secretName: 'conprof-tls' } },
+            { name: 'secret-conprof-proxy', secret: { secretName: 'conprof-proxy' } },
+          ],
+        },
+      },
+    },
+  },
+};
+
+{
+  apiVersion: 'v1',
+  kind: 'Template',
+  metadata: {
+    name: 'conprof',
+  },
+  objects:
+    [
+      conprof.secret,
+      conprof.statefulset,
+      conprof.service,
+    ] +
+    conprof.roleBindings.items +
+    conprof.roles.items,
+  parameters: [
+    { name: 'NAMESPACE', value: 'telemeter' },
+    { name: 'IMAGE', value: 'quay.io/conprof/conprof' },
+    { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
+    { name: 'CONPROF_REPLICAS', value: '1' },
+    { name: 'CONPROF_CPU_REQUEST', value: '1' },
+    { name: 'CONPROF_MEMORY_REQUEST', value: '4Gi' },
+    { name: 'CONPROF_CPU_LIMITS', value: '4' },
+    { name: 'CONPROF_MEMORY_LIMITS', value: '8Gi' },
+    { name: 'PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
+    { name: 'PROXY_IMAGE_TAG', value: '4.4.0' },
+    { name: 'CONPROF_PROXY_CPU_REQUEST', value: '100m' },
+    { name: 'CONPROF_PROXY_MEMORY_REQUEST', value: '100Mi' },
+    { name: 'CONPROF_PROXY_CPU_LIMITS', value: '200m' },
+    { name: 'CONPROF_PROXY_MEMORY_LIMITS', value: '200Mi' },
+  ],
+}

@@ -1,0 +1,234 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: conprof
+objects:
+- apiVersion: v1
+  data: {}
+  kind: Secret
+  metadata:
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof-config
+    namespace: ${NAMESPACE}
+  stringData:
+    conprof.yaml: |-
+      "scrape_configs":
+      - "job_name": "thanos"
+        "kubernetes_sd_configs":
+        - "namespaces":
+            "names":
+            - "${NAMESPACE}"
+          "role": "pod"
+        "relabel_configs":
+        - "action": "keep"
+          "regex": "observatorium-thanos-.+"
+          "source_labels":
+          - "__meta_kubernetes_pod_name"
+        - "action": "keep"
+          "regex": "metrics"
+          "source_labels":
+          - "__meta_kubernetes_pod_container_port_name"
+        - "source_labels":
+          - "__meta_kubernetes_namespace"
+          "target_label": "namespace"
+        - "source_labels":
+          - "__meta_kubernetes_pod_name"
+          "target_label": "pod"
+        - "source_labels":
+          - "__meta_kubernetes_pod_container_name"
+          "target_label": "container"
+        "scrape_interval": "30s"
+        "scrape_timeout": "1m"
+  type: Opaque
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof
+    namespace: ${NAMESPACE}
+  spec:
+    podManagementPolicy: Parallel
+    replicas: ${{CONPROF_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: conprof
+        app.kubernetes.io/name: conprof
+    serviceName: conprof
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: conprof
+          app.kubernetes.io/name: conprof
+          app.kubernetes.io/version: ${IMAGE_TAG}
+      spec:
+        containers:
+        - - args:
+            - all
+            - --storage.tsdb.path=/conprof
+            - --config.file=/etc/conprof/conprof.yaml
+            image: ${IMAGE}:${IMAGE_TAG}
+            name: conprof
+            ports:
+            - containerPort: 8080
+              name: http
+            resources:
+              limits:
+                cpu: ${CONPROF_CPU_LIMITS}
+                memory: ${CONPROF_MEMORY_LIMITS}
+              requests:
+                cpu: ${CONPROF_CPU_REQUEST}
+                memory: ${CONPROF_MEMORY_REQUEST}
+            volumeMounts:
+            - mountPath: /conprof
+              name: storage
+              readOnly: false
+            - mountPath: /etc/conprof
+              name: config
+              readOnly: false
+        - args:
+          - -provider=openshift
+          - -https-address=:8443
+          - -http-address=
+          - -email-domain=*
+          - -upstream=http://localhost:8080
+          - -openshift-service-account=prometheus-telemeter
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}",
+            "namespace": "${NAMESPACE}"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
+            "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
+          - -tls-cert=/etc/tls/private/tls.crt
+          - -tls-key=/etc/tls/private/tls.key
+          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret-file=/etc/proxy/secrets/session_secret
+          - -openshift-ca=/etc/pki/tls/cert.pem
+          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          image: ${PROXY_IMAGE}:${PROXY_IMAGE_TAG}
+          name: proxy
+          ports:
+          - containerPort: 8443
+            name: https
+          resources:
+            limits:
+              cpu: ${CONPROF_PROXY_CPU_LIMITS}
+              memory: ${CONPROF_PROXY_MEMORY_LIMITS}
+            requests:
+              cpu: ${CONPROF_PROXY_CPU_REQUEST}
+              memory: ${CONPROF_PROXY_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: secret-conprof-tls
+            readOnly: false
+          - mountPath: /etc/proxy/secrets
+            name: secret-conprof-proxy
+            readOnly: false
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccount: prometheus-telemeter
+        serviceAccountName: prometheus-telemeter
+        volumes:
+        - emptyDir: {}
+          name: storage
+        - name: config
+          secret:
+            secretName: conprof-config
+        - name: secret-conprof-tls
+          secret:
+            secretName: conprof-tls
+        - name: secret-conprof-proxy
+          secret:
+            secretName: conprof-proxy
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: conprof-tls
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof
+    namespace: ${NAMESPACE}
+  spec:
+    clusterIP: None
+    ports:
+    - name: http
+      port: 8080
+      targetPort: http
+    - name: https
+      port: 8443
+      targetPort: 8443
+    selector:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof
+    namespace: ${NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: conprof
+  subjects:
+  - kind: ServiceAccount
+    name: conprof
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof
+    namespace: ${NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+parameters:
+- name: NAMESPACE
+  value: telemeter
+- name: IMAGE
+  value: quay.io/conprof/conprof
+- name: IMAGE_TAG
+  value: master-2020-04-29-73bf4f0
+- name: CONPROF_REPLICAS
+  value: "1"
+- name: CONPROF_CPU_REQUEST
+  value: "1"
+- name: CONPROF_MEMORY_REQUEST
+  value: 4Gi
+- name: CONPROF_CPU_LIMITS
+  value: "4"
+- name: CONPROF_MEMORY_LIMITS
+  value: 8Gi
+- name: PROXY_IMAGE
+  value: quay.io/openshift/origin-oauth-proxy
+- name: PROXY_IMAGE_TAG
+  value: 4.4.0
+- name: CONPROF_PROXY_CPU_REQUEST
+  value: 100m
+- name: CONPROF_PROXY_MEMORY_REQUEST
+  value: 100Mi
+- name: CONPROF_PROXY_CPU_LIMITS
+  value: 200m
+- name: CONPROF_PROXY_MEMORY_LIMITS
+  value: 200Mi

@@ -111,11 +111,11 @@ local up = (import 'configuration/components/up.libsonnet');
                 {
                   expr: "bottomk by (_id) (1, max by (_id, version) (0 * cluster_version{type='failure'}) or max by (_id, version) (1 + 0 * cluster_version{type='current'}))",
                   record: "id_version:cluster_available",
-                }
+                },
                 {
                   expr: "topk by (_id) (1, max by (_id, managed, ebs_account, internal) (label_replace(label_replace((subscription_labels{support=~'Standard|Premium|Layered'} * 0 + 1) or subscription_labels * 0, 'internal', 'true', 'email_domain', 'redhat.com|(.*\\\\.|^)ibm.com'), 'managed', '', 'managed', 'false')) + on(_id) group_left(version) (topk by (_id) (1, 0*cluster_version{type='current'})))",
                   record: "id_version_ebs_account_internal:cluster_subscribed",
-                }
+                },
               ]
             }]
           }),

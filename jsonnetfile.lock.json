@@ -4,6 +4,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/conprof/conprof",
+          "subdir": "deployments/jsonnet/conprof"
+        }
+      },
+      "version": "7c0d12e5c567682de81dedb9f5eceb9ae3577310",
+      "sum": "NnfpdZpJWLCBcpyBCrveWiApgjz8/eZ8MAQEimfRpws="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/grafonnet-lib",
           "subdir": "grafonnet"
         }

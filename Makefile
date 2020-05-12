@@ -62,8 +62,10 @@ manifests:
 	mkdir -p manifests/production
 	jsonnetfmt -i environments/production/main.jsonnet
 	jsonnetfmt -i environments/production/jaeger.jsonnet
-	jsonnet -J vendor environments/production/main.jsonnet | gojsontoyaml >manifests/production/observatorium-template.yaml
-	jsonnet -J vendor environments/production/jaeger.jsonnet | gojsontoyaml >manifests/production/jaeger-template.yaml
+	jsonnetfmt -i environments/production/conprof.jsonnet
+	jsonnet -J vendor environments/production/main.jsonnet | gojsontoyaml > manifests/production/observatorium-template.yaml
+	jsonnet -J vendor environments/production/jaeger.jsonnet | gojsontoyaml > manifests/production/jaeger-template.yaml
+	jsonnet -J vendor environments/production/conprof.jsonnet | gojsontoyaml > manifests/production/conprof-template.yaml
 	find manifests/production -type f ! -name '*.yaml' -delete
 
 .PHONY: deps

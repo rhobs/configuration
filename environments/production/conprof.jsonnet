@@ -26,7 +26,7 @@ local conprof = c + c.withConfigMap {
           },
           {
             action: 'keep',
-            regex: 'metrics',
+            regex: 'http',
             source_labels: ['__meta_kubernetes_pod_container_port_name'],
           },
           {

@@ -4,16 +4,7 @@ metadata:
   name: conprof
 objects:
 - apiVersion: v1
-  data: {}
-  kind: Secret
-  metadata:
-    labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
-      app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-config
-    namespace: ${NAMESPACE}
-  stringData:
+  data:
     conprof.yaml: |-
       "scrape_configs":
       - "job_name": "thanos"
@@ -42,7 +33,14 @@ objects:
           "target_label": "container"
         "scrape_interval": "30s"
         "scrape_timeout": "1m"
-  type: Opaque
+  kind: ConfigMap
+  metadata:
+    labels:
+      app.kubernetes.io/instance: conprof
+      app.kubernetes.io/name: conprof
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: conprof-config
+    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:

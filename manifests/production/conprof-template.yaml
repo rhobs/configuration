@@ -132,9 +132,9 @@ objects:
         volumes:
         - emptyDir: {}
           name: storage
-        - name: config
-          secret:
-            secretName: conprof-config
+        - configMap:
+            name: conprof-config
+          name: config
         - name: secret-conprof-tls
           secret:
             secretName: conprof-tls

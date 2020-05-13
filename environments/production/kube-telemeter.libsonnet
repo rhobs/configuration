@@ -18,7 +18,7 @@
                 command+: [
                   '--token-expire-seconds=3600',
                   '--limit-bytes=5242880',
-                  '--forward-url=http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
+                  '--forward-url=http://%s.%s.svc:%d/api/metrics/v1/api/v1/receive' % [
                     'thanos-receive',
                     $._config.namespace,
                     19291,

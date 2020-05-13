@@ -1,6 +1,6 @@
 local t = (import 'kube-thanos/thanos.libsonnet');
 local trc = (import 'thanos-receive-controller/thanos-receive-controller.libsonnet');
-local gw = (import 'observatorium/observatorium-api.libsonnet');
+local api = (import 'observatorium/observatorium-api.libsonnet');
 local cqf = (import 'configuration/components/cortex-query-frontend.libsonnet');
 local mc = (import 'configuration/components/memcached.libsonnet');
 local up = (import 'configuration/components/up.libsonnet');
@@ -197,13 +197,8 @@ local up = (import 'configuration/components/up.libsonnet');
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
-  apiGateway+::
-    gw.withResources +
-    (import 'configuration/components/oauth-proxy.libsonnet') +
-    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
-
-  apiGatewayQuery+::
-    t.query.withResources +
+  api+::
+    api.withResources +
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
@@ -512,10 +507,10 @@ local up = (import 'configuration/components/up.libsonnet');
       },
     },
 
-    apiGateway+: {
-      local gwConfig = self,
+    api+: {
+      local api = self,
       version: '${OBSERVATORIUM_API_IMAGE_TAG}',
-      image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', gwConfig.version],
+      image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', api.version],
       replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
       resources: {
         requests: {
@@ -530,7 +525,7 @@ local up = (import 'configuration/components/up.libsonnet');
       oauthProxy: {
         image: obs.config.oauthProxyImage,
         httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.apiGateway.service.spec.ports[0].port,
+        upstream: 'http://localhost:' + obs.api.service.spec.ports[0].port,
         tlsSecretName: 'observatorium-api-tls',
         sessionSecretName: 'observatorium-api-proxy',
         sessionSecret: '',
@@ -548,53 +543,11 @@ local up = (import 'configuration/components/up.libsonnet');
       },
     },
 
-    // NOTICE: There is an additional Thanos Querier with an additional argument to configure externalPrefix for Thanos Query UI.
-    // This dedicated component only used by api gateway UI.
-    apiGatewayQuery+: {
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      replicas: 1,
-      externalPrefix: '/ui/metrics/v1',
-      resources: {
-        requests: {
-          cpu: '${THANOS_QUERIER_CPU_REQUEST}',
-          memory: '${THANOS_QUERIER_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_QUERIER_CPU_LIMIT}',
-          memory: '${THANOS_QUERIER_MEMORY_LIMIT}',
-        },
-      },
-      oauthProxy: {
-        image: obs.config.oauthProxyImage,
-        httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.apiGatewayQuery.service.spec.ports[1].port,
-        tlsSecretName: 'query-tls',
-        sessionSecretName: 'query-proxy',
-        sessionSecret: '',
-        serviceAccountName: 'prometheus-telemeter',
-        resources: {
-          requests: {
-            cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-            memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-            memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-          },
-        },
-      },
-      jaegerAgent: {
-        image: obs.config.jaegerAgentImage,
-        collectorAddress: obs.config.jaegerAgentCollectorAddress,
-      },
-    },
-
     up: {
       local cfg = self,
       name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
       namespace: obs.config.namespace,
-      readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryCache.service.metadata.name, obs.queryCache.service.metadata.namespace],
+      readEndpoint: 'http://%s.%s.svc:9090/api/metrics/v1/api/v1/query' % [obs.queryCache.service.metadata.name, obs.queryCache.service.metadata.namespace],
       version: 'master-2020-03-25-6d4f944',
       image: 'quay.io/observatorium/up:' + cfg.version,
       queryConfig: (import 'queries.libsonnet'),

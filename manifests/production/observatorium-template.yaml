@@ -7,20 +7,20 @@ objects:
   kind: Deployment
   metadata:
     labels:
-      app.kubernetes.io/component: api-gateway
+      app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-api-gateway
+      app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api-gateway
+    name: observatorium-observatorium-api
     namespace: ${NAMESPACE}
   spec:
     replicas: ${{OBSERVATORIUM_API_REPLICAS}}
     selector:
       matchLabels:
-        app.kubernetes.io/component: api-gateway
+        app.kubernetes.io/component: api
         app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: observatorium-api-gateway
+        app.kubernetes.io/name: observatorium-api
         app.kubernetes.io/part-of: observatorium
     strategy:
       rollingUpdate:
@@ -29,36 +29,38 @@ objects:
     template:
       metadata:
         labels:
-          app.kubernetes.io/component: api-gateway
+          app.kubernetes.io/component: api
           app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: observatorium-api-gateway
+          app.kubernetes.io/name: observatorium-api
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
       spec:
         containers:
         - args:
           - --web.listen=0.0.0.0:8080
-          - --metrics.ui.endpoint=http://observatorium-observatorium-api-gateway-thanos-query.${NAMESPACE}.svc.cluster.local:9090
-          - --metrics.read.endpoint=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc.cluster.local:9090/api/v1
-          - --metrics.write.endpoint=http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive
+          - --web.internal.listen=0.0.0.0:8081
+          - --metrics.read.endpoint=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc.cluster.local:9090
+          - --metrics.write.endpoint=http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291
           - --log.level=warn
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
-            failureThreshold: 8
+            failureThreshold: 10
             httpGet:
-              path: /-/healthy
-              port: 8080
+              path: /live
+              port: 8081
               scheme: HTTP
             periodSeconds: 30
-          name: observatorium-api-gateway
+          name: observatorium-api
           ports:
+          - containerPort: 8081
+            name: internal
           - containerPort: 8080
-            name: http
+            name: public
           readinessProbe:
-            failureThreshold: 20
+            failureThreshold: 12
             httpGet:
-              path: /-/ready
-              port: 8080
+              path: /ready
+              port: 8081
               scheme: HTTP
             periodSeconds: 5
           resources:
@@ -73,7 +75,7 @@ objects:
           - -https-address=:9091
           - -http-address=
           - -email-domain=*
-          - -upstream=http://localhost:8080
+          - -upstream=http://localhost:8081
           - -openshift-service-account=prometheus-telemeter
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}",
             "namespace": "${NAMESPACE}"}'
@@ -118,9 +120,9 @@ objects:
   kind: Secret
   metadata:
     labels:
-      app.kubernetes.io/component: api-gateway
+      app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-api-gateway
+      app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api-proxy
@@ -132,199 +134,28 @@ objects:
     annotations:
       service.alpha.openshift.io/serving-cert-secret-name: observatorium-api-tls
     labels:
-      app.kubernetes.io/component: api-gateway
+      app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-api-gateway
+      app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api-gateway
+    name: observatorium-observatorium-api
     namespace: ${NAMESPACE}
   spec:
     ports:
-    - name: http
+    - name: internal
+      port: 8081
+      targetPort: 8081
+    - name: public
       port: 8080
       targetPort: 8080
     - name: https
       port: 9091
       targetPort: https
     selector:
-      app.kubernetes.io/component: api-gateway
+      app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-api-gateway
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium-api-gateway
-      app.kubernetes.io/name: thanos-query
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-    name: observatorium-observatorium-api-gateway-thanos-query
-    namespace: ${NAMESPACE}
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: query-layer
-        app.kubernetes.io/instance: observatorium-api-gateway
-        app.kubernetes.io/name: thanos-query
-        app.kubernetes.io/part-of: observatorium
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: query-layer
-          app.kubernetes.io/instance: observatorium-api-gateway
-          app.kubernetes.io/name: thanos-query
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-      spec:
-        affinity:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - thanos-query
-                namespaces:
-                - ${NAMESPACE}
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-        containers:
-        - args:
-          - query
-          - --grpc-address=0.0.0.0:10901
-          - --http-address=0.0.0.0:9090
-          - --query.replica-label=prometheus_replica
-          - --query.replica-label=rule_replica
-          - --query.replica-label=ruler_replica
-          - --query.replica-label=replica
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
-          - --web.external-prefix=/ui/metrics/v1
-          image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
-          livenessProbe:
-            failureThreshold: 4
-            httpGet:
-              path: /-/healthy
-              port: 9090
-              scheme: HTTP
-            periodSeconds: 30
-          name: thanos-query
-          ports:
-          - containerPort: 10901
-            name: grpc
-          - containerPort: 9090
-            name: http
-          readinessProbe:
-            failureThreshold: 20
-            httpGet:
-              path: /-/ready
-              port: 9090
-              scheme: HTTP
-            periodSeconds: 5
-          resources:
-            limits:
-              cpu: ${THANOS_QUERIER_CPU_LIMIT}
-              memory: ${THANOS_QUERIER_MEMORY_LIMIT}
-            requests:
-              cpu: ${THANOS_QUERIER_CPU_REQUEST}
-              memory: ${THANOS_QUERIER_MEMORY_REQUEST}
-          terminationMessagePolicy: FallbackToLogsOnError
-        - args:
-          - -provider=openshift
-          - -https-address=:9091
-          - -http-address=
-          - -email-domain=*
-          - -upstream=http://localhost:9090
-          - -openshift-service-account=prometheus-telemeter
-          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}",
-            "namespace": "${NAMESPACE}"}'
-          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-            "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
-          - -tls-cert=/etc/tls/private/tls.crt
-          - -tls-key=/etc/tls/private/tls.key
-          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-          - -cookie-secret-file=/etc/proxy/secrets/session_secret
-          - -openshift-ca=/etc/pki/tls/cert.pem
-          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: ${PROXY_IMAGE}:${PROXY_IMAGE_TAG}
-          name: oauth-proxy
-          ports:
-          - containerPort: 9091
-            name: https
-          resources:
-            limits:
-              cpu: ${JAEGER_PROXY_CPU_LIMITS}
-              memory: ${JAEGER_PROXY_MEMORY_LIMITS}
-            requests:
-              cpu: ${JAEGER_PROXY_CPU_REQUEST}
-              memory: ${JAEGER_PROXY_MEMORY_REQUEST}
-          volumeMounts:
-          - mountPath: /etc/tls/private
-            name: query-tls
-            readOnly: false
-          - mountPath: /etc/proxy/secrets
-            name: query-proxy
-            readOnly: false
-        serviceAccountName: prometheus-telemeter
-        terminationGracePeriodSeconds: 120
-        volumes:
-        - name: query-tls
-          secret:
-            secretName: query-tls
-        - name: query-proxy
-          secret:
-            secretName: query-proxy
-- apiVersion: v1
-  data:
-    session_secret: ""
-  kind: Secret
-  metadata:
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium-api-gateway
-      app.kubernetes.io/name: thanos-query
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-    name: query-proxy
-    namespace: ${NAMESPACE}
-  type: Opaque
-- apiVersion: v1
-  kind: Service
-  metadata:
-    annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: query-tls
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium-api-gateway
-      app.kubernetes.io/name: thanos-query
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-    name: observatorium-observatorium-api-gateway-thanos-query
-    namespace: ${NAMESPACE}
-  spec:
-    ports:
-    - name: grpc
-      port: 10901
-      targetPort: grpc
-    - name: http
-      port: 9090
-      targetPort: http
-    - name: https
-      port: 9091
-      targetPort: https
-    selector:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium-api-gateway
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
@@ -414,10 +245,10 @@ objects:
       spec:
         containers:
         - args:
-          - --endpoint-read=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc:9090/api/v1/query
           - --duration=0
           - --queries-file=/etc/up/queries.yaml
           - --log.level=debug
+          - --endpoint-read=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc:9090/api/metrics/v1/api/v1/query
           image: quay.io/observatorium/up:master-2020-03-25-6d4f944
           name: observatorium-up
           ports:
@@ -964,6 +795,7 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
+          - --web.external-prefix=.
           - |
             --tracing.config=
               type: JAEGER

@@ -8,8 +8,8 @@
           "subdir": "deployments/jsonnet/conprof"
         }
       },
-      "version": "5a60a4e481f72d43f4732dd8ccee0bb7f75c7cd0",
-      "sum": "iW7bS0aep/8NNPUrzzDtB8YIHZbP6z1H/U9jhM6QF/A="
+      "version": "57ea8704ed36836d9e95c3491326037bc7af503e",
+      "sum": "W504WTLbswF5uCaxjOMCGP9UpMY7zmMbwuU1UcVIy24="
     },
     {
       "source": {
@@ -18,8 +18,8 @@
           "subdir": "grafonnet"
         }
       },
-      "version": "906768d46973e022594d3f03d82c5a51d86de2cc",
-      "sum": "J3Vp0EVbxTObr6KydLXsi4Rc0ssNVAEuwLc0NQ+4wqU="
+      "version": "7f971cae3e4dc5dc26d1a1991868e4810f73d6fb",
+      "sum": "/7/gQuDrIcbpbpFCMWhe63RtZ66iT5ECTlJdhVTtUTM="
     },
     {
       "source": {
@@ -28,7 +28,7 @@
           "subdir": "grafana-builder"
         }
       },
-      "version": "fe0f55cb0119c6365982fc2ada95226b49b076f1",
+      "version": "461d09cbda1bf520f94628c8159b444d4467862f",
       "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
     },
     {
@@ -38,7 +38,7 @@
           "subdir": "memcached-mixin"
         }
       },
-      "version": "cb6bc2780a39afbbf9d4ee64fec8d1152023aee9",
+      "version": "461d09cbda1bf520f94628c8159b444d4467862f",
       "sum": "ZMKDjnebXqWjqONT6Yz5jvRjOH3+8861NsHEo0/dMwQ="
     },
     {
@@ -48,7 +48,7 @@
           "subdir": "monitoring/jaeger-mixin"
         }
       },
-      "version": "bf870d9e2bffaf4758045919446be75ac9fc9783",
+      "version": "6e085a1fe3a1582f978983975f2c5d70a1078f25",
       "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
     },
     {
@@ -79,8 +79,8 @@
           "subdir": ""
         }
       },
-      "version": "97d80db2dbb727721c218bcb9742908dfd62abbe",
-      "sum": "VmiQjhVqutB5VqUIArJDuGBMnESJhkHXyli87kzM120="
+      "version": "2ad96d1af187d1158578af51fbb52efe26a489f7",
+      "sum": "g/BSrHyhwk0wqafcf31jOA5JHrmJz6bbt9c/uIzZQ80="
     },
     {
       "source": {
@@ -89,8 +89,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "fd8b3bb9bf705bcdc83ad6bdb9916485781b7a2f",
-      "sum": "fqa8XsCgxd4WEQlgZA98lIhyOinDJm7uBmwOvuY/yYA=",
+      "version": "3c24d9b889db8ca18a0fb3edc80cd394bbf99d82",
+      "sum": "IZ//jf+XChTDqXSmVA5triydUDHLlBgS84skIRScqaY=",
       "name": "observatorium"
     },
     {
@@ -100,7 +100,7 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "11e63ca1d3b9834e66ee85107df002bde29a4a59",
+      "version": "44c6beac8534a340011c137594d6c2e8f545dd1e",
       "sum": "iUbwzPZ/0QrozWTfoXlmRhd1CMAnkcCaWtATTlSnoMk=",
       "name": "thanos-receive-controller"
     },
@@ -111,7 +111,7 @@
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
-      "version": "11e63ca1d3b9834e66ee85107df002bde29a4a59",
+      "version": "44c6beac8534a340011c137594d6c2e8f545dd1e",
       "sum": "p1LX/Ox2dK0hGpa+B1xUO1s3aAS2d9zjjwHKuDKAWus="
     },
     {
@@ -121,7 +121,7 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "f076f4019663b6bce3e70aadafe2dda370a5b451",
+      "version": "a4e24da59f8472def293c3b7096f2fe0cc108b23",
       "sum": "GHXmISw+ggGkJJHHVkXHTAQA5aZ8MWpSKmoHsKkw2gU="
     },
     {
@@ -141,8 +141,8 @@
           "subdir": "mixin/thanos"
         }
       },
-      "version": "1a2edf19475b854181e5abaa4b6f1c9caf2a1547",
-      "sum": "JyGD4v7VQ4ZMM0GgkM55jFtBHCeUGGxcL64gzxukp44=",
+      "version": "afbb63c766125806f3cb6cfd24d1f0bdbc4037d6",
+      "sum": "ccOXFTsbwxQZM9qF6iDK3lroGZusftCTSk9gbmkl8Qo=",
       "name": "thanos-mixin"
     }
   ],

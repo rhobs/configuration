@@ -7,13 +7,13 @@ local trc =
   (import 'thanos-receive-controller/thanos-receive-controller.libsonnet') +
   (import 'selectors.libsonnet');
 
-local gateway = import 'observatorium/observatorium-api.libsonnet';
+local api = import 'observatorium/observatorium-api.libsonnet';
 local mc = import 'configuration/components/memcached.libsonnet';
 
 local obs = (import 'environments/production/obs.jsonnet') {
-  gateway+::
-    obs.apiGateway +
-    gateway.withServiceMonitor {
+  api+::
+    obs.api +
+    api.withServiceMonitor {
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-gateway',

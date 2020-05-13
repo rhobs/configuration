@@ -2,7 +2,7 @@ local c = import 'conprof/conprof.libsonnet';
 local k3 = import 'ksonnet/ksonnet.beta.3/k.libsonnet';
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 
-local conprof = c {
+local conprof = c + c.withConfigMap {
   local conprof = self,
 
   config+:: {
@@ -159,7 +159,7 @@ local conprof = c {
   },
   objects:
     [
-      conprof.secret,
+      conprof.configmap,
       conprof.statefulset,
       conprof.service,
     ] +

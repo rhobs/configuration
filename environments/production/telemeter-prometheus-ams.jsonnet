@@ -29,133 +29,7 @@ local list = import 'telemeter/lib/list.libsonnet';
       ],
       receiveTenantId: 'FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
 
-      prometheus+:: {
-        namespaces: [$._config.namespace],
-        name: 'ams',
-        replicas: 1,
-        rules: {},
-        renderedRules: {},
-        resourceLimits: {},
-        resourceRequests: {},
-        remoteWrite: [
-          {
-            url: $._config.ams.remoteWriteProxy,
-            writeRelabelConfigs: [
-              {
-                sourceLabels: ['__name__'],
-                regex: 'subscription_labels',
-                action: 'keep',
-              },
-            ],
-          },
-        ],
-      },
     },
-  },
-
-  prometheusAms+:: {
-    local commonLabels = {
-      'app.kubernetes.io/part-of': 'prometheus-ams',
-      'app.kubernetes.io/name': 'prometheus',
-      'app.kubernetes.io/instance': 'ams',
-    },
-    service:
-      local service = k.core.v1.service;
-      local servicePort = k.core.v1.service.mixin.spec.portsType;
-
-      local prometheusPort = servicePort.newNamed('web', 9090, 'web');
-
-      service.new('prometheus-' + $._config.ams.prometheus.name, { prometheus: $._config.ams.prometheus.name }, prometheusPort) +
-      service.mixin.spec.withSessionAffinity('ClientIP') +
-      service.mixin.metadata.withNamespace($._config.namespace) +
-      service.mixin.metadata.withLabels(commonLabels { prometheus: $._config.ams.prometheus.name }),
-    [if $._config.ams.prometheus.rules != null && $._config.ams.prometheus.rules != {} then 'rules']:
-      {
-        apiVersion: 'monitoring.coreos.com/v1',
-        kind: 'PrometheusRule',
-        metadata: {
-          labels: commonLabels {
-            prometheus: $._config.ams.prometheus.name,
-            role: 'alert-rules',
-          },
-          name: 'prometheus-' + $._config.ams.prometheus.name + '-rules',
-          namespace: $._config.namespace,
-        },
-        spec: {
-          groups: $._config.ams.prometheus.rules.groups,
-        },
-      },
-    prometheus:
-      local statefulSet = k.apps.v1.statefulSet;
-      local container = statefulSet.mixin.spec.template.spec.containersType;
-      local resourceRequirements = container.mixin.resourcesType;
-      local selector = statefulSet.mixin.spec.selectorType;
-      local deployment = k.apps.v1.deployment;
-
-      local resources =
-        resourceRequirements.new() +
-        resourceRequirements.withLimits({
-          cpu: '${PROMETHEUS_AMS_CPU_LIMIT}',
-          memory: '${PROMETHEUS_AMS_MEMORY_LIMIT}',
-        }) +
-        resourceRequirements.withRequests({
-          cpu: '${PROMETHEUS_AMS_CPU_REQUEST}',
-          memory: '${PROMETHEUS_AMS_MEMORY_REQUEST}',
-        });
-
-      {
-        apiVersion: 'monitoring.coreos.com/v1',
-        kind: 'Prometheus',
-        metadata: {
-          name: $._config.ams.prometheus.name,
-          namespace: $._config.namespace,
-          labels: commonLabels {
-            prometheus: $._config.ams.prometheus.name,
-          },
-        },
-        spec: {
-          replicas: $._config.ams.prometheus.replicas,
-          version: '${PROMETHEUS_AMS_IMAGE_TAG}',
-          baseImage: '${PROMETHEUS_AMS_IMAGE}',
-          securityContext: {},
-          serviceAccount: 'prometheus-telemeter',
-          serviceAccountName: 'prometheus-telemeter',
-          serviceMonitorSelector: selector.withMatchLabels({
-            prometheus: $._config.ams.prometheus.name,
-          }),
-          ruleSelector: selector.withMatchLabels({
-            role: 'alert-rules',
-            prometheus: $._config.ams.prometheus.name,
-          }),
-          resources: resources,
-          remoteWrite: $._config.ams.prometheus.remoteWrite,
-          containers: [],
-        },
-      },
-    serviceMonitor:
-      {
-        apiVersion: 'monitoring.coreos.com/v1',
-        kind: 'ServiceMonitor',
-        metadata: {
-          name: 'prometheus-' + $._config.ams.prometheus.name,
-          namespace: $._config.namespace,
-          labels: commonLabels,
-        },
-        spec: {
-          selector: {
-            matchLabels: {
-              'app.kubernetes.io/name': 'prometheus',
-              'app.kubernetes.io/instance': 'ams',
-            },
-          },
-          endpoints: [
-            {
-              port: 'web',
-              interval: '30s',
-            },
-          ],
-        },
-      },
   },
 
   prometheusRemoteWriteProxy+:: {
@@ -175,7 +49,7 @@ local list = import 'telemeter/lib/list.libsonnet';
 
       local port = servicePort.newNamed('http', 8080, 'http');
 
-      service.new('prometheus-%s-remote-write-proxy' % $._config.ams.prometheus.name, selectorLabels, port) +
+      service.new('prometheus-%s-remote-write-proxy' % "ams", selectorLabels, port) +
       service.mixin.metadata.withNamespace($._config.namespace) +
       service.mixin.metadata.withLabels(commonLabels),
     deployment:
@@ -223,11 +97,10 @@ local list = import 'telemeter/lib/list.libsonnet';
       }),
   },
 } + {
-  local prom = super.prometheusAms,
   local proxy = super.prometheusRemoteWriteProxy,
   prometheusAms+:: {
     template+:
-      list.asList('prometheus-observatorium-ams', prom + proxy, [
+      list.asList('prometheus-observatorium-ams', proxy, [
         {
           name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE',
           value: $._config.imageRepos.remoteWriteProxy,
@@ -235,30 +108,6 @@ local list = import 'telemeter/lib/list.libsonnet';
         {
           name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION',
           value: $._config.versions.remoteWriteProxy,
-        },
-        {
-          name: 'PROMETHEUS_AMS_IMAGE',
-          value: $._config.imageRepos.prometheusAms,
-        },
-        {
-          name: 'PROMETHEUS_AMS_IMAGE_TAG',
-          value: $._config.versions.prometheusAms,
-        },
-        {
-          name: 'PROMETHEUS_AMS_CPU_REQUEST',
-          value: if std.objectHas($._config.ams.prometheus.resourceRequests, 'cpu') then $._config.ams.prometheus.resourceRequests.cpu else '0',
-        },
-        {
-          name: 'PROMETHEUS_AMS_CPU_LIMIT',
-          value: if std.objectHas($._config.ams.prometheus.resourceLimits, 'cpu') then $._config.ams.prometheus.resourceLimits.cpu else '0',
-        },
-        {
-          name: 'PROMETHEUS_AMS_MEMORY_REQUEST',
-          value: if std.objectHas($._config.ams.prometheus.resourceRequests, 'memory') then $._config.ams.prometheus.resourceRequests.memory else '0',
-        },
-        {
-          name: 'PROMETHEUS_AMS_MEMORY_LIMIT',
-          value: if std.objectHas($._config.ams.prometheus.resourceLimits, 'memory') then $._config.ams.prometheus.resourceLimits.memory else '0',
         },
       ]) +
       list.withNamespace($._config),

@@ -2840,45 +2840,6 @@ objects:
         - configMap:
             name: prometheus-remote-write-proxy-config
           name: prometheus-remote-write-proxy-config
-- apiVersion: monitoring.coreos.com/v1
-  kind: Prometheus
-  metadata:
-    labels:
-      app.kubernetes.io/instance: ams
-      app.kubernetes.io/name: prometheus
-      app.kubernetes.io/part-of: prometheus-ams
-      prometheus: ams
-    name: ams
-    namespace: ${NAMESPACE}
-  spec:
-    baseImage: ${PROMETHEUS_AMS_IMAGE}
-    containers: []
-    remoteWrite:
-    - url: http://prometheus-ams-remote-write-proxy.${NAMESPACE}.svc.cluster.local:8080/api/v1/receive
-      writeRelabelConfigs:
-      - action: keep
-        regex: subscription_labels
-        sourceLabels:
-        - __name__
-    replicas: 1
-    resources:
-      limits:
-        cpu: ${PROMETHEUS_AMS_CPU_LIMIT}
-        memory: ${PROMETHEUS_AMS_MEMORY_LIMIT}
-      requests:
-        cpu: ${PROMETHEUS_AMS_CPU_REQUEST}
-        memory: ${PROMETHEUS_AMS_MEMORY_REQUEST}
-    ruleSelector:
-      matchLabels:
-        prometheus: ams
-        role: alert-rules
-    securityContext: {}
-    serviceAccount: prometheus-telemeter
-    serviceAccountName: prometheus-telemeter
-    serviceMonitorSelector:
-      matchLabels:
-        prometheus: ams
-    version: ${PROMETHEUS_AMS_IMAGE_TAG}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2896,41 +2857,6 @@ objects:
     selector:
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/instance: ams
-      app.kubernetes.io/name: prometheus
-      app.kubernetes.io/part-of: prometheus-ams
-      prometheus: ams
-    name: prometheus-ams
-    namespace: ${NAMESPACE}
-  spec:
-    ports:
-    - name: web
-      port: 9090
-      targetPort: web
-    selector:
-      prometheus: ams
-    sessionAffinity: ClientIP
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      app.kubernetes.io/instance: ams
-      app.kubernetes.io/name: prometheus
-      app.kubernetes.io/part-of: prometheus-ams
-    name: prometheus-ams
-    namespace: ${NAMESPACE}
-  spec:
-    endpoints:
-    - interval: 30s
-      port: web
-    selector:
-      matchLabels:
-        app.kubernetes.io/instance: ams
-        app.kubernetes.io/name: prometheus
 parameters:
 - name: NAMESPACE
   value: telemeter
@@ -3106,18 +3032,6 @@ parameters:
   value: quay.io/app-sre/observatorium-receive-proxy
 - name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION
   value: 14e844d
-- name: PROMETHEUS_AMS_IMAGE
-  value: quay.io/prometheus/prometheus
-- name: PROMETHEUS_AMS_IMAGE_TAG
-  value: v2.12.0
-- name: PROMETHEUS_AMS_CPU_REQUEST
-  value: "0"
-- name: PROMETHEUS_AMS_CPU_LIMIT
-  value: "0"
-- name: PROMETHEUS_AMS_MEMORY_REQUEST
-  value: "0"
-- name: PROMETHEUS_AMS_MEMORY_LIMIT
-  value: "0"
 - name: THANOS_RECEIVE_TSDB_PATH
   value: /var/thanos/receive
 - name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET

@@ -991,30 +991,6 @@ local up = (import 'configuration/components/up.libsonnet');
         value: '14e844d',
       },
       {
-        name: 'PROMETHEUS_AMS_IMAGE',
-        value: 'quay.io/prometheus/prometheus',
-      },
-      {
-        name: 'PROMETHEUS_AMS_IMAGE_TAG',
-        value: 'v2.12.0',
-      },
-      {
-        name: 'PROMETHEUS_AMS_CPU_REQUEST',
-        value: '0',
-      },
-      {
-        name: 'PROMETHEUS_AMS_CPU_LIMIT',
-        value: '0',
-      },
-      {
-        name: 'PROMETHEUS_AMS_MEMORY_REQUEST',
-        value: '0',
-      },
-      {
-        name: 'PROMETHEUS_AMS_MEMORY_LIMIT',
-        value: '0',
-      },
-      {
         name: 'THANOS_RECEIVE_TSDB_PATH',
         value: '/var/thanos/receive',
       },

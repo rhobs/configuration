@@ -1,5 +1,4 @@
 local up = import 'configuration/components/up.libsonnet';
-local prom = import 'environments/production/telemeter-prometheus-ams.jsonnet';
 local t =
   (import 'kube-thanos/thanos.libsonnet') +
   (import 'selectors.libsonnet');
@@ -179,13 +178,6 @@ local obs = (import 'environments/production/obs.jsonnet') {
   },
   'observatorium-up.servicemonitor': obs.up.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
-    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
-  },
-  'observatorium-prometheus-ams.servicemonitor': prom.prometheusAms.serviceMonitor {
-    metadata: {
-      name: prom.prometheusAms.serviceMonitor.metadata.name + '-{{environment}}',
-      labels: { prometheus: 'app-sre' },
-    },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
 } {

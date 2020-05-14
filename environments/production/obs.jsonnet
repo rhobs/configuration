@@ -55,7 +55,7 @@ local up = (import 'configuration/components/up.libsonnet');
 
   rule+::
     local nameResource = obs.config.name + '-rule';
-    local nameFile = obs.config.name+'.yaml';
+    local nameFile = obs.config.name + '.yaml';
     t.rule.withResources +
     (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
       statefulSet+: {
@@ -65,7 +65,7 @@ local up = (import 'configuration/components/up.libsonnet');
               containers: [
                 if c.name == 'thanos-rule' then c {
                   env+: s3EnvVars,
-                  args+: ['--rule-file=/var/thanos/config/rules/'+nameFile],
+                  args+: ['--rule-file=/var/thanos/config/rules/' + nameFile],
                   volumeMounts+: [{
                     name: nameResource,
                     mountPath: '/var/thanos/config/rules',
@@ -83,7 +83,7 @@ local up = (import 'configuration/components/up.libsonnet');
           },
         },
       },
-    }+{
+    } + {
       configmap:
         local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
         local configmap = k.core.v1.configMap;
@@ -91,33 +91,33 @@ local up = (import 'configuration/components/up.libsonnet');
         configmap.mixin.metadata.withName(nameResource) +
         configmap.mixin.metadata.withLabels(obs.config.commonLabels) +
         configmap.withData({
-          [nameFile] : std.manifestYamlDoc({
+          [nameFile]: std.manifestYamlDoc({
             groups: [{
               name: 'observatorium.rules',
               interval: '1m',
-              rules:[
+              rules: [
                 {
                   expr: "count by (name,reason) (cluster_operator_conditions{condition='Degraded'} == 1)",
                   record: 'name_reason:cluster_operator_degraded:count',
                 },
                 {
                   expr: "count by (name,reason) (cluster_operator_conditions{condition='Available'} == 0)",
-                  record: "name_reason:cluster_operator_unavailable:count",
+                  record: 'name_reason:cluster_operator_unavailable:count',
                 },
                 {
                   expr: "sort_desc(max by (_id,code) (code:apiserver_request_count:rate:sum{code=~'(4|5)\\\\d\\\\d'}) > 0.5)",
-                  record: "id_code:apiserver_request_error_rate_sum:max"
+                  record: 'id_code:apiserver_request_error_rate_sum:max',
                 },
                 {
                   expr: "bottomk by (_id) (1, max by (_id, version) (0 * cluster_version{type='failure'}) or max by (_id, version) (1 + 0 * cluster_version{type='current'}))",
-                  record: "id_version:cluster_available",
+                  record: 'id_version:cluster_available',
                 },
                 {
                   expr: "topk by (_id) (1, max by (_id, managed, ebs_account, internal) (label_replace(label_replace((subscription_labels{support=~'Standard|Premium|Layered'} * 0 + 1) or subscription_labels * 0, 'internal', 'true', 'email_domain', 'redhat.com|(.*\\\\.|^)ibm.com'), 'managed', '', 'managed', 'false')) + on(_id) group_left(version) (topk by (_id) (1, 0*cluster_version{type='current'})))",
-                  record: "id_version_ebs_account_internal:cluster_subscribed",
+                  record: 'id_version_ebs_account_internal:cluster_subscribed',
                 },
-              ]
-            }]
+              ],
+            }],
           }),
         }),
     },
@@ -171,7 +171,8 @@ local up = (import 'configuration/components/up.libsonnet');
                     env+: s3EnvVars,
                   } + {
                     args: [
-                      if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}' else a
+                      if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}'
+                      else if std.startsWith(a, '--tsdb.retention') then '--tsdb.retention=15d' else a
                       for a in super.args
                     ],
                   } else c

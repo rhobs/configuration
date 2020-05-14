@@ -1369,6 +1369,17 @@ objects:
                 - ${NAMESPACE}
                 topologyKey: kubernetes.io/hostname
               weight: 100
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: topology.kubernetes.io/zone
+              weight: 100
         containers:
         - args:
           - receive
@@ -1381,7 +1392,7 @@ objects:
           - --label=replica="$(NAME)"
           - --label=receive="true"
           - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
-          - --tsdb.retention=6h
+          - --tsdb.retention=15d
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
           - --receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
           - |
@@ -1487,7 +1498,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        terminationGracePeriodSeconds: 120
+        terminationGracePeriodSeconds: 900
         volumes:
         - configMap:
             name: observatorium-thanos-receive-controller-tenants-generated

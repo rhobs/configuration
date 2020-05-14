@@ -202,12 +202,12 @@ local up = (import 'configuration/components/up.libsonnet');
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
-  up+::
-    up + up.withResources,
+  up+:: up,
 
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
+    if obs.up[name] != null
   },
 } + {
   local obs = self,
@@ -568,7 +568,9 @@ local up = (import 'configuration/components/up.libsonnet');
 } + (import 'configuration/components/observatorium-configure.libsonnet') + {
   local obs = self,
   up+:: {
-    config+:: obs.config.up,
+    config+:: obs.config.up {
+      queryConfig: (import 'queries.libsonnet'),
+    },
   },
 } + {
   local obs = self,

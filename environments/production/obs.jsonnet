@@ -525,7 +525,7 @@ local up = (import 'configuration/components/up.libsonnet');
       oauthProxy: {
         image: obs.config.oauthProxyImage,
         httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.api.service.spec.ports[0].port,
+        upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
         tlsSecretName: 'observatorium-api-tls',
         sessionSecretName: 'observatorium-api-proxy',
         sessionSecret: '',

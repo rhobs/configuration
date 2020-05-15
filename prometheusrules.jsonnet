@@ -18,6 +18,16 @@ local thanosAlerts =
 // Add dashboards and runbook anntotations.
 // Overwrite severity to medium and high.
 local appSREOverwrites = function(prometheusAlerts, namespace) {
+  local setSeverity = function(label, alertName) {
+    label: if label == 'critical' then
+      // For thanos page only for `ThanosNoRuleEvaluations`.
+      if std.startsWith(alertName, 'Thanos') then
+        if alertName != 'ThanosNoRuleEvaluations' then 'high' else label
+      else label
+    else if label == 'warning' then 'medium'
+    else 'high',
+  },
+
   local dashboardID = function(name) {
     id:
       if
@@ -54,7 +64,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
             },
             labels+: {
               service: 'telemeter',
-              severity: if r.labels.severity == 'critical' then r.labels.severity else if r.labels.severity == 'warning' then 'medium' else 'high',
+              severity: setSeverity(r.labels.severity, r.alert).label,
             },
           } else r
         for r in super.rules

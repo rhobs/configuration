@@ -28,6 +28,7 @@
     - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
     - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
     - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
+    - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
     - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
     - [ObservatoriumGatewayErrorsSLOBudgetBurn](#observatoriumgatewayerrorsslobudgetburn)
 
@@ -707,10 +708,11 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 ---
 
 ## ThanosRuleHighRuleEvaluationFailures
+## ThanosNoRuleEvaluations
 
 ### Impact
 
-Non-revertable gap in recording rules' data (dropped sample) or not evaluates alerts (missed alert).    
+If the evaluation failures are too high, a *symptom* is, that we may end up **losing data** or are **unable to alert**. 
 
 ### Summary
 
@@ -729,9 +731,14 @@ Both Thanos Rule replicas fail to evaluate certain recording rules or alerts.
 
 ### Steps
 
-- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
-- Check if Thanos Query is available. This is the most often root cause of failed rule evaluation.
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in turn the Thanos Querier reaches out to the Thanos Store and Thanos Receivers.
+
+1. Check the [Thanos Ruler dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule?orgId=1&refresh=10s&var-datasource=app-sre-prod-02-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) to get a general overview. 
+1. Check the [Thanos Querier dashboard](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&refresh=10s&var-datasource=app-sre-prod-02-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Most likely you can focus on the Instant Query API RED metrics.
+1. Drill down into the [Thanos Store dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&refresh=10s&var-datasource=app-sre-prod-02-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) and [Thanos Receiver dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=app-sre-prod-02-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Depending on which one of them has the same elevated error rate, concentrate on that component.
+    1. Probably, the Thanos Receiver is the problem, as the Thanos Ruler mostly looks at very recent data (like last 5min).
+1. Now that you, hopefully, know which component is causing the errors, dive into its logs, query it's raw metrics (check the dashboards as examples).
+    1. Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
 --- 
 

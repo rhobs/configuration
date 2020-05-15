@@ -8,8 +8,8 @@
           "subdir": "deployments/jsonnet/conprof"
         }
       },
-      "version": "57ea8704ed36836d9e95c3491326037bc7af503e",
-      "sum": "W504WTLbswF5uCaxjOMCGP9UpMY7zmMbwuU1UcVIy24="
+      "version": "5a60a4e481f72d43f4732dd8ccee0bb7f75c7cd0",
+      "sum": "iW7bS0aep/8NNPUrzzDtB8YIHZbP6z1H/U9jhM6QF/A="
     },
     {
       "source": {
@@ -141,8 +141,8 @@
           "subdir": "mixin/thanos"
         }
       },
-      "version": "afbb63c766125806f3cb6cfd24d1f0bdbc4037d6",
-      "sum": "ccOXFTsbwxQZM9qF6iDK3lroGZusftCTSk9gbmkl8Qo=",
+      "version": "ecf78247e920698e3c6942cde51f71b01ef5f2d6",
+      "sum": "2ptPLIrh7LRNRD5+0bkhPO/8+ooVUkETTsUuqh1etv4=",
       "name": "thanos-mixin"
     }
   ],

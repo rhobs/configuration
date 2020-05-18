@@ -780,7 +780,7 @@ For users this is means that the service as being unavailable due to returning t
 
 ### Summary
 
-For the set availability guarantees the observatorium gateway or the thanos receiver/qerier are returning too many http errors when processing requests. 
+For the set availability guarantees the observatorium api or the thanos receiver/qerier are returning too many http errors when processing requests.
 
 ### Severity
 
@@ -795,8 +795,8 @@ For the set availability guarantees the observatorium gateway or the thanos rece
 
 ### Steps
 
-- The gateway proxies requests to the thanos querier and the thanos receiver so check the logs of all components.
-- Inspect the metrics for the gateway [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/gateway?orgId=1&refresh=1m)
+- The api proxies requests to the thanos querier and the thanos receiver so check the logs of all components.
+- Inspect the metrics for the api [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m)
 - Inspect the metrics for the thanos querier [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&refresh=10s&var-datasource=app-sre-prometheus)
 - Inspect the metrics for the thanos receiver [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=app-sre-prometheus)
 

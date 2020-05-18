@@ -8,8 +8,7 @@ generate: deps prometheusrules servicemonitors grafana manifests whitelisted_met
 prometheusrules: resources/observability/prometheusrules
 
 resources/observability/prometheusrules: prometheusrules.jsonnet
-	rm -f resources/observability/prometheusrules/observatorium-thanos-production.prometheusrules.yaml
-	rm -f resources/observability/prometheusrules/observatorium-thanos-stage.prometheusrules.yaml
+	rm -f resources/observability/prometheusrules/*.yaml
 	jsonnetfmt -i prometheusrules.jsonnet
 	jsonnet -J vendor -m resources/observability/prometheusrules prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml' -- {}
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete

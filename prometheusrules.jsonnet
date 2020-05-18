@@ -45,7 +45,7 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
       else if
         name == 'thanos-component-absent.rules' then 'no-dashboard'
       else if
-        std.startsWith(name, 'observatorium-gateway') then 'Tg-mH0rizaSJDKSADX'
+        std.startsWith(name, 'observatorium-api') then 'Tg-mH0rizaSJDKSADX'
       else error 'no dashboard id for group %s' % name,
   },
 
@@ -109,7 +109,7 @@ local obsSLOs = {
 
   errorBurn:: [
     {
-      name: 'observatorium-gateway-write-errors.slo.rules',
+      name: 'observatorium-api-write-errors.slo.rules',
       config: writeSelector {
         alertName: alertNameErrors,
         metric: metricError,
@@ -117,7 +117,7 @@ local obsSLOs = {
       },
     },
     {
-      name: 'observatorium-gateway-query-errors.slo.rules',
+      name: 'observatorium-api-query-errors.slo.rules',
       config: querySelector {
         alertName: alertNameErrors,
         metric: metricError,
@@ -125,7 +125,7 @@ local obsSLOs = {
       },
     },
     {
-      name: 'observatorium-gateway-query-range-errors.slo.rules',
+      name: 'observatorium-api-query-range-errors.slo.rules',
       config: queryRangeSelector {
         alertName: alertNameErrors,
         metric: metricError,
@@ -137,7 +137,7 @@ local obsSLOs = {
   // TODO: add these only when we have enough metrics to have an SLO
   //   latencyBurn:: [
   //     {
-  //       name: 'observatorium-gateway-write-latency-low.slo.rules',
+  //       name: 'observatorium-api-write-latency-low.slo.rules',
   //       config: writeSelector {
   //         alertName: alertNameLatency,
   //         metric: metricLatency,
@@ -146,7 +146,7 @@ local obsSLOs = {
   //       },
   //     },
   //     {
-  //       name: 'observatorium-gateway-write-latency-high.slo.rules',
+  //       name: 'observatorium-api-write-latency-high.slo.rules',
   //       config: writeSelector {
   //         alertName: alertNameLatency,
   //         metric: metricLatency,
@@ -155,7 +155,7 @@ local obsSLOs = {
   //       },
   //     },
   //     {
-  //       name: 'observatorium-gateway-query-latency-low.slo.rules',
+  //       name: 'observatorium-api-query-latency-low.slo.rules',
   //       config: querySelector {
   //         alertName: alertNameLatency,
   //         metric: metricLatency,
@@ -164,7 +164,7 @@ local obsSLOs = {
   //       },
   //     },
   //     {
-  //       name: 'observatorium-gateway-query-latency-high.slo.rules',
+  //       name: 'observatorium-api-query-latency-high.slo.rules',
   //       config: querySelector {
   //         alertName: alertNameLatency,
   //         metric: metricLatency,
@@ -173,7 +173,7 @@ local obsSLOs = {
   //       },
   //     },
   //     {
-  //       name: 'observatorium-gateway-query-range-latency-low.slo.rules',
+  //       name: 'observatorium-api-query-range-latency-low.slo.rules',
   //       config: queryRangeSelector {
   //         alertName: alertNameLatency,
   //         metric: metricLatency,
@@ -182,7 +182,7 @@ local obsSLOs = {
   //       },
   //     },
   //     {
-  //       name: 'observatorium-gateway-query-range-latency-high.slo.rules',
+  //       name: 'observatorium-api-query-range-latency-high.slo.rules',
   //       config: queryRangeSelector {
   //         alertName: alertNameLatency,
   //         metric: metricLatency,
@@ -218,9 +218,9 @@ local obsSLOs = {
     spec: alerts.prometheusAlerts,
   },
 
-  'observatorium-gateway-stage.prometheusrules': renderGateway('observatorium-gateway-stage', 'telemeter-stage'),
+  'observatorium-api-stage.prometheusrules': renderGateway('observatorium-api-stage', 'telemeter-stage'),
 
-  'observatorium-gateway-production.prometheusrules': renderGateway('observatorium-gateway-production', 'telemeter-production'),
+  'observatorium-api-production.prometheusrules': renderGateway('observatorium-api-production', 'telemeter-production'),
 
   local renderGateway(name, namespace) = {
     apiVersion: 'monitoring.coreos.com/v1',

@@ -290,6 +290,20 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: observatorium-observatorium-up
+    namespace: ${NAMESPACE}
+  spec:
+    endpoints:
+    - port: http
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     config.yaml: |-

@@ -551,6 +551,7 @@ local up = (import 'configuration/components/up.libsonnet');
       version: 'master-2020-03-25-6d4f944',
       image: 'quay.io/observatorium/up:' + cfg.version,
       queryConfig: (import 'queries.libsonnet'),
+      serviceMonitor: true,
       resources: {
         requests: {
           cpu: '5m',

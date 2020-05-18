@@ -3,7 +3,7 @@ kind: ServiceMonitor
 metadata:
   labels:
     prometheus: app-sre
-  name: observatorium-gateway-{{environment}}
+  name: observatorium-api-{{environment}}
   namespace: null
 spec:
   endpoints:

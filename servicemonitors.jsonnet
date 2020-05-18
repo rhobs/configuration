@@ -11,12 +11,12 @@ local api = import 'observatorium/observatorium-api.libsonnet';
 local mc = import 'configuration/components/memcached.libsonnet';
 
 local obs = (import 'environments/production/obs.jsonnet') {
-  api+::
+  _api+::
     obs.api +
     api.withServiceMonitor {
       serviceMonitor+: {
         metadata+: {
-          name: 'observatorium-gateway',
+          name: 'observatorium-api',
           namespace: null,
           labels+: {
             prometheus: 'app-sre',
@@ -136,23 +136,22 @@ local obs = (import 'environments/production/obs.jsonnet') {
       },
     },
 
-  up+::
-    up.withServiceMonitor {
-      serviceMonitor+: {
-        metadata+: {
-          name: 'observatorium-up',
-          namespace: null,
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-          },
+  up+:: {
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-up',
+        namespace: null,
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
         },
       },
     },
+  },
 };
 
 {
-  'observatorium-gateway.servicemonitor': obs.gateway.serviceMonitor {
+  'observatorium-api.servicemonitor': obs._api.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },

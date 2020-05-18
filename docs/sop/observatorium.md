@@ -30,7 +30,7 @@
     - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
     - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
     - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
-    - [ObservatoriumGatewayErrorsSLOBudgetBurn](#observatoriumgatewayerrorsslobudgetburn)
+    - [ObservatoriumAPIErrorsSLOBudgetBurn](#observatoriumapierrorsslobudgetburn)
 
 <!-- /TOC -->
 
@@ -771,7 +771,7 @@ Both Thanos Rule replicas internal TSDB failed to ingest samples.
 
 ---
 
-## ObservatoriumGatewayErrorsSLOBudgetBurn
+## ObservatoriumAPIErrorsSLOBudgetBurn
 
 ### Impact
 

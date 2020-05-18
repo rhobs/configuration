@@ -1,4 +1,4 @@
-local observatoriumSLOs = import 'environments/production/slos.libsonnet';
+local obs = import 'environments/production/obs.jsonnet';
 local slo = import 'slo-libsonnet/slo.libsonnet';
 
 local thanosAlerts =
@@ -97,15 +97,15 @@ local obsSLOs = {
     selectors: ['handler="write"'],
   },
   local querySelector = {
-    selectors: ['handler="query"'],
+    selectors: ['handler="query|query_legacy"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
   },
   local queryRangeSelector = {
     selectors: ['handler="query_range"'],
   },
 
 
-  local alertNameErrors = 'ObservatoriumGatewayErrorsSLOBudgetBurn',
-  local alertNameLatency = 'ObservatoriumGatewayLatencySLOBudgetBurn',
+  local alertNameErrors = 'ObservatoriumAPIErrorsSLOBudgetBurn',
+  local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
 
   errorBurn:: [
     {
@@ -218,11 +218,11 @@ local obsSLOs = {
     spec: alerts.prometheusAlerts,
   },
 
-  'observatorium-api-stage.prometheusrules': renderGateway('observatorium-api-stage', 'telemeter-stage'),
+  'observatorium-api-stage.prometheusrules': renderAPI('observatorium-api-stage', 'telemeter-stage'),
 
-  'observatorium-api-production.prometheusrules': renderGateway('observatorium-api-production', 'telemeter-production'),
+  'observatorium-api-production.prometheusrules': renderAPI('observatorium-api-production', 'telemeter-production'),
 
-  local renderGateway(name, namespace) = {
+  local renderAPI(name, namespace) = {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
     metadata: {

@@ -2230,13 +2230,13 @@ objects:
       port: internal
       scheme: https
       tlsConfig:
-        caFile: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+        caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
         serverName: telemeter-server.${NAMESPACE}.svc
     jobLabel: k8s-app
     selector:
       matchLabels:
         k8s-app: telemeter-server
-- apiVersion: apps/v1beta2
+- apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     name: telemeter-server
@@ -2381,7 +2381,7 @@ objects:
         - name: telemeter-server-tls
           secret:
             secretName: telemeter-server-shared
-- apiVersion: apps/v1beta2
+- apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     name: telemeter-server-canary
@@ -2562,7 +2562,7 @@ objects:
     selector:
       matchLabels:
         app.kubernetes.io/name: memcached
-- apiVersion: apps/v1beta2
+- apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     labels:

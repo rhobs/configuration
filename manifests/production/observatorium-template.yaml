@@ -2159,7 +2159,7 @@ objects:
   kind: Service
   metadata:
     labels:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-index-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -2176,7 +2176,7 @@ objects:
       port: 9150
       targetPort: 9150
     selector:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-index-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -2184,7 +2184,7 @@ objects:
   kind: StatefulSet
   metadata:
     labels:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-index-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -2195,7 +2195,7 @@ objects:
     replicas: ${{THANOS_STORE_INDEX_CACHE_REPLICAS}}
     selector:
       matchLabels:
-        app.kubernetes.io/component: store-cache
+        app.kubernetes.io/component: store-index-cache
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
@@ -2203,7 +2203,7 @@ objects:
     template:
       metadata:
         labels:
-          app.kubernetes.io/component: store-cache
+          app.kubernetes.io/component: store-index-cache
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: memcached
           app.kubernetes.io/part-of: observatorium
@@ -2247,7 +2247,7 @@ objects:
   kind: Service
   metadata:
     labels:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-bucket-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -2264,7 +2264,7 @@ objects:
       port: 9150
       targetPort: 9150
     selector:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-bucket-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -2272,7 +2272,7 @@ objects:
   kind: StatefulSet
   metadata:
     labels:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-bucket-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -2283,7 +2283,7 @@ objects:
     replicas: ${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}
     selector:
       matchLabels:
-        app.kubernetes.io/component: store-cache
+        app.kubernetes.io/component: store-bucket-cache
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
@@ -2291,7 +2291,7 @@ objects:
     template:
       metadata:
         labels:
-          app.kubernetes.io/component: store-cache
+          app.kubernetes.io/component: store-bucket-cache
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: memcached
           app.kubernetes.io/part-of: observatorium

@@ -2700,7 +2700,10 @@ objects:
       port: 9150
       targetPort: 9150
     selector:
+      app.kubernetes.io/component: telemeter-cache
+      app.kubernetes.io/instance: telemeter
       app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: telemeter
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -2712,27 +2715,39 @@ objects:
     endpoints:
     - interval: 30s
       port: metrics
-    jobLabel: app.kubernetes.io/name
+    jobLabel: app.kubernetes.io/component
     selector:
       matchLabels:
+        app.kubernetes.io/component: telemeter-cache
+        app.kubernetes.io/instance: telemeter
         app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: telemeter
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     labels:
+      app.kubernetes.io/component: telemeter-cache
+      app.kubernetes.io/instance: telemeter
       app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: telemeter
     name: memcached
     namespace: ${NAMESPACE}
   spec:
     replicas: 1
     selector:
       matchLabels:
+        app.kubernetes.io/component: telemeter-cache
+        app.kubernetes.io/instance: telemeter
         app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: telemeter
     serviceName: memcached
     template:
       metadata:
         labels:
+          app.kubernetes.io/component: telemeter-cache
+          app.kubernetes.io/instance: telemeter
           app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: telemeter
       spec:
         containers:
         - args:

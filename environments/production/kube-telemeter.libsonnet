@@ -35,6 +35,14 @@
     replicas:: 1,
 
     statefulSet+: {
+      metadata+: {
+        labels+: {
+          'app.kubernetes.io/component': 'telemeter-cache',
+          'app.kubernetes.io/instance': 'telemeter',
+          'app.kubernetes.io/name': 'memcached',
+          'app.kubernetes.io/part-of': 'telemeter',
+        },
+      },
       spec+: {
         template+: {
           spec+: {
@@ -44,6 +52,20 @@
                 name: 'memcached-exporter',
               },
             ],
+          },
+        },
+      },
+    },
+
+    serviceMonitor+: {
+      spec+: {
+        jobLabel: 'app.kubernetes.io/component',
+        selector+: {
+          matchLabels+: {
+            'app.kubernetes.io/component': 'telemeter-cache',
+            'app.kubernetes.io/instance': 'telemeter',
+            'app.kubernetes.io/name': 'memcached',
+            'app.kubernetes.io/part-of': 'telemeter',
           },
         },
       },

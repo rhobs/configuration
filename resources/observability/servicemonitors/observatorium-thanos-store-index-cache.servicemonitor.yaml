@@ -13,7 +13,7 @@ spec:
     - '{{namespace}}'
   selector:
     matchLabels:
-      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/component: store-index-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium

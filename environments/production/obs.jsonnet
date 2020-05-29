@@ -166,7 +166,9 @@ local up = (import 'configuration/components/up.libsonnet');
         local cfg = self,
         name: obs.config.name + '-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
         namespace: obs.config.namespace,
-        commonLabels+:: obs.config.commonLabels,
+        commonLabels+:: obs.config.commonLabels {
+          'app.kubernetes.io/component': 'store-index-cache',
+        },
       },
       statefulSet+: {
         spec+: {
@@ -182,7 +184,9 @@ local up = (import 'configuration/components/up.libsonnet');
         local cfg = self,
         name: obs.config.name + '-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
         namespace: obs.config.namespace,
-        commonLabels+:: obs.config.commonLabels,
+        commonLabels+:: obs.config.commonLabels {
+          'app.kubernetes.io/component': 'store-bucket-cache',
+        },
       },
       statefulSet+: {
         spec+: {

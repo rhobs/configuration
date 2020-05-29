@@ -78,11 +78,11 @@ local obs = (import 'environments/production/obs.jsonnet') {
     for i in std.range(0, obs.config.store.shards - 1)
   },
 
-  storeCache+::
+  storeIndexCache+::
     mc.withServiceMonitor {
       serviceMonitor+: {
         metadata+: {
-          name: 'observatorium-thanos-store-cache',
+          name: 'observatorium-thanos-store-index-cache',
           namespace: null,
           labels+: {
             prometheus: 'app-sre',
@@ -91,6 +91,21 @@ local obs = (import 'environments/production/obs.jsonnet') {
         },
       },
     },
+
+  storeBucketCache+::
+    mc.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-store-bucket-cache',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+      },
+    },
+
 
   receivers+:: {
     [hashring.hashring]+: t.receive.withServiceMonitor {
@@ -167,7 +182,11 @@ local obs = (import 'environments/production/obs.jsonnet') {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },
-  'observatorium-thanos-store-cache.servicemonitor': obs.storeCache.serviceMonitor {
+  'observatorium-thanos-store-index-cache.servicemonitor': obs.storeIndexCache.serviceMonitor {
+    metadata+: { name+: '-{{environment}}' },
+    spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
+  },
+  'observatorium-thanos-store-bucket-cache.servicemonitor': obs.storeBucketCache.serviceMonitor {
     metadata+: { name+: '-{{environment}}' },
     spec+: { namespaceSelector+: { matchNames: ['{{namespace}}'] } },
   },

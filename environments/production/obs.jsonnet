@@ -125,7 +125,19 @@ local up = (import 'configuration/components/up.libsonnet');
   store+:: {
     ['shard' + i]+:
       t.store.withVolumeClaimTemplate +
-      t.store.withResources +
+      t.store.withResources + {
+        config+:: {
+          memcached+: {
+            local memcached = obs.store['shard' + i].config.memcached,
+            indexCache: memcached {
+              addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [obs.storeIndexCache.service.metadata.name, obs.storeIndexCache.service.metadata.namespace]],
+            },
+            bucketCache: memcached {
+              addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [obs.storeBucketCache.service.metadata.name, obs.storeBucketCache.service.metadata.namespace]],
+            },
+          },
+        },
+      } +
       (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
         statefulSet+: {
           spec+: {
@@ -145,8 +157,33 @@ local up = (import 'configuration/components/up.libsonnet');
     for i in std.range(0, obs.config.store.shards - 1)
   },
 
-  storeCache+::
+  storeCache:: {},
+
+  storeIndexCache::
+    mc +
     mc.withResources {
+      config+:: {
+        local cfg = self,
+        name: obs.config.name + '-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+        namespace: obs.config.namespace,
+        commonLabels+:: obs.config.commonLabels,
+      },
+      statefulSet+: {
+        spec+: {
+          volumeClaimTemplates:: null,
+        },
+      },
+    },
+
+  storeBucketCache::
+    mc +
+    mc.withResources {
+      config+:: {
+        local cfg = self,
+        name: obs.config.name + '-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+        namespace: obs.config.namespace,
+        commonLabels+:: obs.config.commonLabels,
+      },
       statefulSet+: {
         spec+: {
           volumeClaimTemplates:: null,
@@ -367,9 +404,14 @@ local up = (import 'configuration/components/up.libsonnet');
       objectStorageConfig: obs.config.objectStorageConfig,
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
-        timeout: '10s',
-        maxGetMultiBatchSize: 100,
-        maxAsyncBufferSize: 10000000,
+        indexCache+: {
+          timeout: '10s',  // TODO(kakkoyun): Adjust using metrics!
+          maxAsyncBufferSize: 10000000,
+          maxGetMultiBatchSize: 100,
+        },
+        bucketCache+: {
+          timeout: '2s',  // TODO(kakkoyun): Adjust using metrics after running for awhile!
+        },
       },
       resources: {
         requests: {
@@ -398,24 +440,58 @@ local up = (import 'configuration/components/up.libsonnet');
       },
     },
 
-    storeCache+: {
+    storeIndexCache+: {
       local scConfig = self,
       version: '${MEMCACHED_IMAGE_TAG}',
       image: '%s:%s' % ['${MEMCACHED_IMAGE}', scConfig.version],
       exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
       exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', scConfig.exporterVersion],
-      connectionLimit: '${THANOS_STORE_CACHE_CONNECTION_LIMIT}',
-      memoryLimitMb: '${THANOS_STORE_CACHE_MEMORY_LIMIT_MB}',
-      replicas: '${{THANOS_STORE_CACHE_REPLICAS}}',
+      connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
+      memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
+      replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
       resources: {
         memcached: {
           requests: {
-            cpu: '${THANOS_STORE_MEMCACHED_CPU_REQUEST}',
-            memory: '${THANOS_STORE_MEMCACHED_MEMORY_REQUEST}',
+            cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}',
+            memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}',
           },
           limits: {
-            cpu: '${THANOS_STORE_MEMCACHED_CPU_LIMIT}',
-            memory: '${THANOS_STORE_MEMCACHED_MEMORY_LIMIT}',
+            cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}',
+            memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}',
+          },
+        },
+
+        exporter: {
+          requests: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+          },
+        },
+      },
+    },
+
+    storeBucketCache+: {
+      local scConfig = self,
+      version: '${MEMCACHED_IMAGE_TAG}',
+      image: '%s:%s' % ['${MEMCACHED_IMAGE}', scConfig.version],
+      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', scConfig.exporterVersion],
+      connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
+      memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
+      replicas: '${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}',
+      resources: {
+        memcached: {
+          requests: {
+            cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}',
+            memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}',
+            memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}',
           },
         },
 
@@ -573,6 +649,14 @@ local up = (import 'configuration/components/up.libsonnet');
       queryConfig: (import 'queries.libsonnet'),
     },
   },
+
+  storeIndexCache+:: {
+    config+:: obs.config.storeIndexCache,
+  },
+
+  storeBucketCache+:: {
+    config+:: obs.config.storeBucketCache,
+  },
 } + {
   local obs = self,
 
@@ -594,10 +678,21 @@ local up = (import 'configuration/components/up.libsonnet');
     metadata: {
       name: 'observatorium',
     },
-    objects: [
-      obs.manifests[name]
-      for name in std.objectFields(obs.manifests)
-    ] + telemeter.objects + prometheusAMS.objects,
+    objects:
+      [
+        obs.manifests[name]
+        for name in std.objectFields(obs.manifests)
+      ] +
+      [
+        obs.storeIndexCache[name]
+        for name in std.objectFields(obs.storeIndexCache)
+      ] +
+      [
+        obs.storeBucketCache[name]
+        for name in std.objectFields(obs.storeBucketCache)
+      ] +
+      telemeter.objects +
+      prometheusAMS.objects,
     parameters: [
       {
         name: 'NAMESPACE',
@@ -609,7 +704,7 @@ local up = (import 'configuration/components/up.libsonnet');
       },
       {
         name: 'THANOS_IMAGE_TAG',
-        value: 'v0.12.0-rc.1',
+        value: 'master-2020-05-25-c733564d',  // Right after v0.13.0-rc.0
       },
       {
         name: 'STORAGE_CLASS',
@@ -716,31 +811,59 @@ local up = (import 'configuration/components/up.libsonnet');
         value: '8Gi',
       },
       {
-        name: 'THANOS_STORE_CACHE_REPLICAS',
+        name: 'THANOS_STORE_INDEX_CACHE_REPLICAS',
         value: '3',
       },
       {
-        name: 'THANOS_STORE_CACHE_MEMORY_LIMIT_MB',
+        name: 'THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB',
         value: '2048',
       },
       {
-        name: 'THANOS_STORE_CACHE_CONNECTION_LIMIT',
+        name: 'THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT',
         value: '3072',
       },
       {
-        name: 'THANOS_STORE_MEMCACHED_CPU_REQUEST',
+        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST',
         value: '500m',
       },
       {
-        name: 'THANOS_STORE_MEMCACHED_CPU_LIMIT',
+        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT',
         value: '3',
       },
       {
-        name: 'THANOS_STORE_MEMCACHED_MEMORY_REQUEST',
+        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST',
         value: '2558Mi',
       },
       {
-        name: 'THANOS_STORE_MEMCACHED_MEMORY_LIMIT',
+        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT',
+        value: '3Gi',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_REPLICAS',
+        value: '3',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB',
+        value: '2048',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT',
+        value: '3072',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST',
+        value: '500m',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT',
+        value: '3',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST',
+        value: '2558Mi',
+      },
+      {
+        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT',
         value: '3Gi',
       },
       {

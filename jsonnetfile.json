@@ -4,7 +4,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/conprof/conprof",
+          "remote": "https://github.com/conprof/conprof.git",
           "subdir": "deployments/jsonnet/conprof"
         }
       },
@@ -13,7 +13,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/grafana/grafonnet-lib",
+          "remote": "https://github.com/grafana/grafonnet-lib.git",
           "subdir": "grafonnet"
         }
       },
@@ -22,7 +22,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/grafana/jsonnet-libs",
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "memcached-mixin"
         }
       },
@@ -31,7 +31,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/jaegertracing/jaeger",
+          "remote": "https://github.com/jaegertracing/jaeger.git",
           "subdir": "monitoring/jaeger-mixin"
         }
       },
@@ -40,7 +40,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/metalmatze/slo-libsonnet",
+          "remote": "https://github.com/metalmatze/slo-libsonnet.git",
           "subdir": "slo-libsonnet"
         }
       },
@@ -49,16 +49,16 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/configuration",
+          "remote": "https://github.com/observatorium/configuration.git",
           "subdir": ""
         }
       },
-      "version": "97d80db2dbb727721c218bcb9742908dfd62abbe"
+      "version": "0497090841338aad662c9d1af174ecad132a6c6e"
     },
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/observatorium",
+          "remote": "https://github.com/observatorium/observatorium.git",
           "subdir": "jsonnet/lib"
         }
       },
@@ -68,7 +68,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/thanos-receive-controller",
+          "remote": "https://github.com/observatorium/thanos-receive-controller.git",
           "subdir": "jsonnet/lib"
         }
       },
@@ -78,7 +78,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/thanos-receive-controller",
+          "remote": "https://github.com/observatorium/thanos-receive-controller.git",
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
@@ -87,7 +87,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/openshift/telemeter",
+          "remote": "https://github.com/openshift/telemeter.git",
           "subdir": "jsonnet/telemeter"
         }
       },
@@ -96,7 +96,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/thanos-io/kube-thanos",
+          "remote": "https://github.com/thanos-io/kube-thanos.git",
           "subdir": "jsonnet/kube-thanos"
         }
       },
@@ -105,7 +105,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/thanos-io/thanos",
+          "remote": "https://github.com/thanos-io/thanos.git",
           "subdir": "mixin/thanos"
         }
       },

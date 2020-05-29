@@ -248,7 +248,7 @@ objects:
           - --duration=0
           - --log.level=debug
           - --queries-file=/etc/up/queries.yaml
-          - --endpoint-read=http://observatorium-observatorium-api.${NAMESPACE}.svc:8080/api/metrics/v1/api/v1/query
+          - --endpoint-read=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc:9090/api/metrics/v1/api/v1/query
           image: quay.io/observatorium/up:master-2020-03-25-6d4f944
           name: observatorium-up
           ports:

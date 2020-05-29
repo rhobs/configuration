@@ -409,12 +409,13 @@ local up = (import 'configuration/components/up.libsonnet');
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
         indexCache+: {
-          timeout: '10s',  // TODO(kakkoyun): Adjust using metrics!
+          timeout: '10s',  // TODO(kakkoyun): Adjust using metrics after running for awhile!
           maxAsyncBufferSize: 10000000,
           maxGetMultiBatchSize: 100,
         },
         bucketCache+: {
-          timeout: '2s',  // TODO(kakkoyun): Adjust using metrics after running for awhile!
+          timeout: '10s',  // TODO(kakkoyun): Adjust using metrics after running for awhile!
+          maxGetMultiBatchSize: 500,
         },
       },
       resources: {

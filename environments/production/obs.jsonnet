@@ -623,7 +623,7 @@ local up = (import 'configuration/components/up.libsonnet');
       local cfg = self,
       name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
       namespace: obs.config.namespace,
-      readEndpoint: 'http://%s.%s.svc:9090/api/metrics/v1/api/v1/query' % [obs.api.service.metadata.name, obs.api.service.metadata.namespace],
+      readEndpoint: 'http://%s.%s.svc:8080/api/metrics/v1/api/v1/query' % [obs.api.service.metadata.name, obs.api.service.metadata.namespace],
       version: 'master-2020-03-25-6d4f944',
       image: 'quay.io/observatorium/up:' + cfg.version,
       queryConfig: (import 'queries.libsonnet'),

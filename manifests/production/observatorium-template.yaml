@@ -246,8 +246,8 @@ objects:
         containers:
         - args:
           - --duration=0
-          - --queries-file=/etc/up/queries.yaml
           - --log.level=debug
+          - --queries-file=/etc/up/queries.yaml
           - --endpoint-read=http://observatorium-observatorium-api.${NAMESPACE}.svc:9090/api/metrics/v1/api/v1/query
           image: quay.io/observatorium/up:master-2020-03-25-6d4f944
           name: observatorium-up
@@ -476,94 +476,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: cortex-query-frontend
       app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-memcached
-    namespace: ${NAMESPACE}
-  spec:
-    clusterIP: None
-    ports:
-    - name: client
-      port: 11211
-      targetPort: 11211
-    - name: metrics
-      port: 9150
-      targetPort: 9150
-    selector:
-      app.kubernetes.io/component: store-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: apps/v1
-  kind: StatefulSet
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-memcached
-    namespace: ${NAMESPACE}
-  spec:
-    replicas: ${{THANOS_STORE_CACHE_REPLICAS}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-thanos-store-memcached
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: store-cache
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: memcached
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-      spec:
-        containers:
-        - args:
-          - -m ${THANOS_STORE_CACHE_MEMORY_LIMIT_MB}
-          - -I 1m
-          - -c ${THANOS_STORE_CACHE_CONNECTION_LIMIT}
-          - -v
-          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
-          name: memcached
-          ports:
-          - containerPort: 11211
-            name: client
-          resources:
-            limits:
-              cpu: ${THANOS_STORE_MEMCACHED_CPU_LIMIT}
-              memory: ${THANOS_STORE_MEMCACHED_MEMORY_LIMIT}
-            requests:
-              cpu: ${THANOS_STORE_MEMCACHED_CPU_REQUEST}
-              memory: ${THANOS_STORE_MEMCACHED_MEMORY_REQUEST}
-          terminationMessagePolicy: FallbackToLogsOnError
-        - args:
-          - --memcached.address=localhost:11211
-          - --web.listen-address=0.0.0.0:9150
-          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
-          name: exporter
-          ports:
-          - containerPort: 9150
-            name: metrics
-          resources:
-            limits:
-              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
-            requests:
-              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
 - apiVersion: v1
   data:
     session_secret: ""
@@ -1469,7 +1381,7 @@ objects:
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --data-dir=/var/thanos/rule
           - --label=rule_replica="$(NAME)"
-          - --alert.label-drop="rule_replica"
+          - --alert.label-drop=rule_replica
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
           - |
             --tracing.config=
@@ -1648,7 +1560,7 @@ objects:
           - |-
             --index-cache.config="config":
               "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-memcached.${NAMESPACE}.svc.cluster.local"
+              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 10000000
               "max_async_concurrency": 100
@@ -1657,7 +1569,29 @@ objects:
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
               "timeout": "10s"
-            "type": "MEMCACHED"
+            "type": "memcached"
+          - |-
+            --store.caching-bucket.config="blocks_iter_ttl": "5m"
+            "chunk_object_attrs_ttl": "24h"
+            "chunk_subrange_size": 16000
+            "chunk_subrange_ttl": "24h"
+            "config":
+              "addresses":
+              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
+              "dns_provider_update_interval": "10s"
+              "max_async_buffer_size": 100000
+              "max_async_concurrency": 100
+              "max_get_multi_batch_size": 1000
+              "max_get_multi_concurrency": 900
+              "max_idle_connections": 1000
+              "max_item_size": "1MiB"
+              "timeout": "2s"
+            "max_chunks_get_range_requests": 3
+            "metafile_content_ttl": "24h"
+            "metafile_doesnt_exist_ttl": "15m"
+            "metafile_exists_ttl": "2h"
+            "metafile_max_size": "1MiB"
+            "type": "memcached"
           - --ignore-deletion-marks-delay=24h
           - |
             --selector.relabel-config=
@@ -1848,7 +1782,7 @@ objects:
           - |-
             --index-cache.config="config":
               "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-memcached.${NAMESPACE}.svc.cluster.local"
+              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 10000000
               "max_async_concurrency": 100
@@ -1857,7 +1791,29 @@ objects:
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
               "timeout": "10s"
-            "type": "MEMCACHED"
+            "type": "memcached"
+          - |-
+            --store.caching-bucket.config="blocks_iter_ttl": "5m"
+            "chunk_object_attrs_ttl": "24h"
+            "chunk_subrange_size": 16000
+            "chunk_subrange_ttl": "24h"
+            "config":
+              "addresses":
+              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
+              "dns_provider_update_interval": "10s"
+              "max_async_buffer_size": 100000
+              "max_async_concurrency": 100
+              "max_get_multi_batch_size": 1000
+              "max_get_multi_concurrency": 900
+              "max_idle_connections": 1000
+              "max_item_size": "1MiB"
+              "timeout": "2s"
+            "max_chunks_get_range_requests": 3
+            "metafile_content_ttl": "24h"
+            "metafile_doesnt_exist_ttl": "15m"
+            "metafile_exists_ttl": "2h"
+            "metafile_max_size": "1MiB"
+            "type": "memcached"
           - --ignore-deletion-marks-delay=24h
           - |
             --selector.relabel-config=
@@ -2048,7 +2004,7 @@ objects:
           - |-
             --index-cache.config="config":
               "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-memcached.${NAMESPACE}.svc.cluster.local"
+              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 10000000
               "max_async_concurrency": 100
@@ -2057,7 +2013,29 @@ objects:
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
               "timeout": "10s"
-            "type": "MEMCACHED"
+            "type": "memcached"
+          - |-
+            --store.caching-bucket.config="blocks_iter_ttl": "5m"
+            "chunk_object_attrs_ttl": "24h"
+            "chunk_subrange_size": 16000
+            "chunk_subrange_ttl": "24h"
+            "config":
+              "addresses":
+              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
+              "dns_provider_update_interval": "10s"
+              "max_async_buffer_size": 100000
+              "max_async_concurrency": 100
+              "max_get_multi_batch_size": 1000
+              "max_get_multi_concurrency": 900
+              "max_idle_connections": 1000
+              "max_item_size": "1MiB"
+              "timeout": "2s"
+            "max_chunks_get_range_requests": 3
+            "metafile_content_ttl": "24h"
+            "metafile_doesnt_exist_ttl": "15m"
+            "metafile_exists_ttl": "2h"
+            "metafile_max_size": "1MiB"
+            "type": "memcached"
           - --ignore-deletion-marks-delay=24h
           - |
             --selector.relabel-config=
@@ -2177,6 +2155,182 @@ objects:
           requests:
             storage: 50Gi
         storageClassName: ${STORAGE_CLASS}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-store-index-cache-memcached
+    namespace: ${NAMESPACE}
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-store-index-cache-memcached
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: ${{THANOS_STORE_INDEX_CACHE_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-thanos-store-index-cache-memcached
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: store-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - -m ${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}
+          - -I 1m
+          - -c ${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}
+          - -v
+          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+          resources:
+            limits:
+              cpu: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}
+              memory: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}
+            requests:
+              cpu: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}
+              memory: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+          resources:
+            limits:
+              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
+            requests:
+              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-store-bucket-cache-memcached
+    namespace: ${NAMESPACE}
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: store-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-store-bucket-cache-memcached
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: ${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-thanos-store-bucket-cache-memcached
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: store-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - -m ${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}
+          - -I 1m
+          - -c ${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}
+          - -v
+          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+          resources:
+            limits:
+              cpu: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}
+              memory: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}
+            requests:
+              cpu: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}
+              memory: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+          resources:
+            limits:
+              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
+            requests:
+              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
 - apiVersion: v1
   data:
     authorize_url: ""
@@ -2720,7 +2874,7 @@ parameters:
 - name: THANOS_IMAGE
   value: quay.io/thanos/thanos
 - name: THANOS_IMAGE_TAG
-  value: v0.12.0-rc.1
+  value: master-2020-05-25-c733564d
 - name: STORAGE_CLASS
   value: gp2
 - name: PROXY_IMAGE
@@ -2773,19 +2927,33 @@ parameters:
   value: 1Gi
 - name: THANOS_STORE_MEMORY_LIMIT
   value: 8Gi
-- name: THANOS_STORE_CACHE_REPLICAS
+- name: THANOS_STORE_INDEX_CACHE_REPLICAS
   value: "3"
-- name: THANOS_STORE_CACHE_MEMORY_LIMIT_MB
+- name: THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB
   value: "2048"
-- name: THANOS_STORE_CACHE_CONNECTION_LIMIT
+- name: THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT
   value: "3072"
-- name: THANOS_STORE_MEMCACHED_CPU_REQUEST
+- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST
   value: 500m
-- name: THANOS_STORE_MEMCACHED_CPU_LIMIT
+- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT
   value: "3"
-- name: THANOS_STORE_MEMCACHED_MEMORY_REQUEST
+- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST
   value: 2558Mi
-- name: THANOS_STORE_MEMCACHED_MEMORY_LIMIT
+- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT
+  value: 3Gi
+- name: THANOS_STORE_BUCKET_CACHE_REPLICAS
+  value: "3"
+- name: THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB
+  value: "2048"
+- name: THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT
+  value: "3072"
+- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST
+  value: 500m
+- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT
+  value: "3"
+- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST
+  value: 2558Mi
+- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT
   value: 3Gi
 - name: THANOS_RECEIVE_CPU_REQUEST
   value: "1"

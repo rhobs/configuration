@@ -49,7 +49,7 @@ local list = import 'telemeter/lib/list.libsonnet';
 
       local port = servicePort.newNamed('http', 8080, 'http');
 
-      service.new('prometheus-%s-remote-write-proxy' % "ams", selectorLabels, port) +
+      service.new('prometheus-%s-remote-write-proxy' % 'ams', selectorLabels, port) +
       service.mixin.metadata.withNamespace($._config.namespace) +
       service.mixin.metadata.withLabels(commonLabels),
     deployment:

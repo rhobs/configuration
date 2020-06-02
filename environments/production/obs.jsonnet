@@ -414,8 +414,10 @@ local up = (import 'configuration/components/up.libsonnet');
           maxGetMultiBatchSize: 100,
         },
         bucketCache+: {
-          timeout: '10s',  // TODO(kakkoyun): Adjust using metrics after running for awhile!
-          maxGetMultiBatchSize: 500,
+          timeout: '200ms',
+          maxGetMultiBatchSize: 100,
+          maxAsyncBufferSize: 25000,
+          maxAsyncConcurrency: 50,
         },
       },
       resources: {

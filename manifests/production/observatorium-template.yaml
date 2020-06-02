@@ -1579,13 +1579,13 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 100000
-              "max_async_concurrency": 100
-              "max_get_multi_batch_size": 500
+              "max_async_buffer_size": 25000
+              "max_async_concurrency": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 900
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
-              "timeout": "10s"
+              "timeout": "200ms"
             "max_chunks_get_range_requests": 3
             "metafile_content_ttl": "24h"
             "metafile_doesnt_exist_ttl": "15m"
@@ -1801,13 +1801,13 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 100000
-              "max_async_concurrency": 100
-              "max_get_multi_batch_size": 500
+              "max_async_buffer_size": 25000
+              "max_async_concurrency": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 900
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
-              "timeout": "10s"
+              "timeout": "200ms"
             "max_chunks_get_range_requests": 3
             "metafile_content_ttl": "24h"
             "metafile_doesnt_exist_ttl": "15m"
@@ -2023,13 +2023,13 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 100000
-              "max_async_concurrency": 100
-              "max_get_multi_batch_size": 500
+              "max_async_buffer_size": 25000
+              "max_async_concurrency": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 900
               "max_idle_connections": 1000
               "max_item_size": "1MiB"
-              "timeout": "10s"
+              "timeout": "200ms"
             "max_chunks_get_range_requests": 3
             "metafile_content_ttl": "24h"
             "metafile_doesnt_exist_ttl": "15m"

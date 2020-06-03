@@ -101,10 +101,8 @@ objects:
           - -email-domain=*
           - -upstream=http://localhost:16686
           - -openshift-service-account=prometheus-telemeter
-          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}",
-            "namespace": "${NAMESPACE}"}'
-          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-            "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
           - -tls-cert=/etc/tls/private/tls.crt
           - -tls-key=/etc/tls/private/tls.key
           - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
@@ -172,9 +170,7 @@ objects:
         annotations:
           message: |
             {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% HTTP errors.
-        expr: 100 * sum(rate(jaeger_agent_http_server_errors_total[1m])) by (instance,
-          job, namespace) / sum(rate(jaeger_agent_http_server_total[1m])) by (instance,
-          job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_agent_http_server_errors_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_http_server_total[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -182,9 +178,7 @@ objects:
         annotations:
           message: |
             {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% RPC HTTP errors.
-        expr: 100 * sum(rate(jaeger_client_jaeger_rpc_http_requests{status_code=~"4xx|5xx"}[1m]))
-          by (instance, job, namespace) / sum(rate(jaeger_client_jaeger_rpc_http_requests[1m]))
-          by (instance, job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_client_jaeger_rpc_http_requests{status_code=~"4xx|5xx"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_client_jaeger_rpc_http_requests[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -192,9 +186,7 @@ objects:
         annotations:
           message: |
             service {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
-        expr: 100 * sum(rate(jaeger_reporter_spans{result=~"dropped|err"}[1m])) by
-          (instance, job, namespace) / sum(rate(jaeger_reporter_spans[1m])) by (instance,
-          job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_reporter_spans{result=~"dropped|err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_reporter_spans[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -202,9 +194,7 @@ objects:
         annotations:
           message: |
             agent {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
-        expr: 100 * sum(rate(jaeger_agent_reporter_batches_failures_total[1m])) by
-          (instance, job, namespace) / sum(rate(jaeger_agent_reporter_batches_submitted_total[1m]))
-          by (instance, job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_agent_reporter_batches_failures_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_reporter_batches_submitted_total[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -212,9 +202,7 @@ objects:
         annotations:
           message: |
             collector {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
-        expr: 100 * sum(rate(jaeger_collector_spans_dropped_total[1m])) by (instance,
-          job, namespace) / sum(rate(jaeger_collector_spans_received_total[1m])) by
-          (instance, job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_collector_spans_dropped_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_collector_spans_received_total[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -222,9 +210,7 @@ objects:
         annotations:
           message: |
             {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating sampling policies.
-        expr: 100 * sum(rate(jaeger_sampler_queries{result="err"}[1m])) by (instance,
-          job, namespace) / sum(rate(jaeger_sampler_queries[1m])) by (instance, job,
-          namespace)> 1
+        expr: 100 * sum(rate(jaeger_sampler_queries{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_sampler_queries[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -232,9 +218,7 @@ objects:
         annotations:
           message: |
             {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating throttling policies.
-        expr: 100 * sum(rate(jaeger_throttler_updates{result="err"}[1m])) by (instance,
-          job, namespace) / sum(rate(jaeger_throttler_updates[1m])) by (instance,
-          job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_throttler_updates{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_throttler_updates[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning
@@ -242,9 +226,7 @@ objects:
         annotations:
           message: |
             {{ $labels.job }} {{ $labels.instance }} is seeing {{ printf "%.2f" $value }}% query errors on {{ $labels.operation }}.
-        expr: 100 * sum(rate(jaeger_query_requests_total{result="err"}[1m])) by (instance,
-          job, namespace) / sum(rate(jaeger_query_requests_total[1m])) by (instance,
-          job, namespace)> 1
+        expr: 100 * sum(rate(jaeger_query_requests_total{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_query_requests_total[1m])) by (instance, job, namespace)> 1
         for: 15m
         labels:
           severity: warning

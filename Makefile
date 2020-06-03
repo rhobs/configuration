@@ -1,72 +1,71 @@
-.PHONY: all
-all: generate
+include .bingo/Variables.mk
+
+VENDOR_DIR = vendor
+$(VENDOR_DIR): $(JB) jsonnetfile.json jsonnetfile.lock.json
+	@$(JB) install
 
 .PHONY: generate
-generate: deps prometheusrules servicemonitors grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
+generate: $(VENDOR_DIR) prometheusrules servicemonitors grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
 
-resources/observability/prometheusrules: prometheusrules.jsonnet
+resources/observability/prometheusrules: prometheusrules.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	rm -f resources/observability/prometheusrules/*.yaml
-	jsonnetfmt -i prometheusrules.jsonnet
-	jsonnet -J vendor -m resources/observability/prometheusrules prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml' -- {}
+	$(JSONNETFMT) -i prometheusrules.jsonnet
+	$(JSONNET) -J vendor -m resources/observability/prometheusrules prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
 .PHONY: servicemonitors
 servicemonitors: resources/observability/servicemonitors
 
-resources/observability/servicemonitors: servicemonitors.jsonnet
+resources/observability/servicemonitors: servicemonitors.jsonnet $(JSONNET) $(JSONNETFMT)
 	rm -f resources/observability/servicemonitors/*.yaml
-	jsonnetfmt -i servicemonitors.jsonnet
-	jsonnet -J vendor -m resources/observability/servicemonitors servicemonitors.jsonnet | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml' -- {}
+	$(JSONNETFMT) -i servicemonitors.jsonnet
+	$(JSONNET) -J vendor -m resources/observability/servicemonitors servicemonitors.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/servicemonitors -type f ! -name '*.yaml' -delete
 
 .PHONY: grafana
 grafana: resources/observability/grafana
 
-resources/observability/grafana: grafana.jsonnet
+resources/observability/grafana: grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	rm -f resources/observability/grafana/*.yaml
-	jsonnetfmt -i grafana.jsonnet
-	jsonnet -J vendor -m resources/observability/grafana grafana.jsonnet | xargs -I{} sh -c 'cat {} | gojsontoyaml > {}.yaml' -- {}
+	$(JSONNETFMT) -i grafana.jsonnet
+	$(JSONNET) -J vendor -m resources/observability/grafana grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/grafana -type f ! -name '*.yaml' -delete
 
 .PHONY: slos
 slos: resources/observability/slo/telemeter.slo.yaml
 
-resources/observability/slo/telemeter.slo.yaml: slo.jsonnet
-	jsonnetfmt -i slo.jsonnet
-	jsonnet -J vendor slo.jsonnet | gojsontoyaml > resources/observability/slo/telemeter.slo.yaml
+resources/observability/slo/telemeter.slo.yaml: slo.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	$(JSONNETFMT) -i slo.jsonnet
+	$(JSONNET) -J vendor slo.jsonnet | $(GOJSONTOYAML) > resources/observability/slo/telemeter.slo.yaml
 	find resources/observability/slo/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
 .PHONY: whitelisted_metrics
-whitelisted_metrics:
+whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 	# Download the latest metrics file to extract the new added metrics.
+	# NOTE: Metric whitelisting should be only append on server side: (environments/production/metrics.json).
+	# We want to be sure, we are fully compatible with old clusters as well. is append only.
 	curl -q https://raw.githubusercontent.com/openshift/cluster-monitoring-operator/master/manifests/0000_50_cluster_monitoring_operator_04-config.yaml | \
-	gojsontoyaml -yamltojson | \
-	jq -r '.data["metrics.yaml"]' | \
-	gojsontoyaml -yamltojson | \
-	jq  -r '.matches' > /tmp/metrics-new.json
-	# Append new metrics to the existing ones.
-	# The final results is sorted to show nicely in the diff.
-	# First copy current file, as in-place doesn't work.
-	cp environments/production/metrics.json /tmp/metrics.json
-	jq -s 'add | unique' /tmp/metrics-new.json /tmp/metrics.json > environments/production/metrics.json
+		$(GOJSONTOYAML) -yamltojson | \
+		$(GOJQ) -r '.data["metrics.yaml"]' | \
+		$(GOJSONTOYAML) -yamltojson | \
+		$(GOJQ) -r '.matches | sort' | \
+		cat environments/production/metrics.json - | \
+		$(GOJQ) -s '.[0] + .[1] | sort | unique' > /tmp/metrics.json
+	cp /tmp/metrics.json environments/production/metrics.json
 
 .PHONY: manifests
-manifests:
+manifests: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	# Make sure to start with a clean 'manifests' dir
 	rm -rf manifests/production/*
 	mkdir -p manifests/production
-	jsonnetfmt -i environments/production/main.jsonnet
-	jsonnetfmt -i environments/production/jaeger.jsonnet
-	jsonnetfmt -i environments/production/conprof.jsonnet
-	jsonnet -J vendor environments/production/main.jsonnet | gojsontoyaml > manifests/production/observatorium-template.yaml
-	jsonnet -J vendor environments/production/jaeger.jsonnet | gojsontoyaml > manifests/production/jaeger-template.yaml
-	jsonnet -J vendor environments/production/conprof.jsonnet | gojsontoyaml > manifests/production/conprof-template.yaml
+	$(JSONNETFMT) -i environments/production/main.jsonnet
+	$(JSONNETFMT) -i environments/production/jaeger.jsonnet
+	$(JSONNETFMT) -i environments/production/conprof.jsonnet
+	$(JSONNET) -J vendor environments/production/main.jsonnet | $(GOJSONTOYAML) > manifests/production/observatorium-template.yaml
+	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
+	$(JSONNET) -J vendor environments/production/conprof.jsonnet | $(GOJSONTOYAML) > manifests/production/conprof-template.yaml
 	find manifests/production -type f ! -name '*.yaml' -delete
-
-.PHONY: deps
-deps:
-	@jb install

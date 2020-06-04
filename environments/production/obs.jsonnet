@@ -411,8 +411,8 @@ local up = (import 'configuration/components/up.libsonnet');
         indexCache+: {
           timeout: '200ms',
           maxGetMultiBatchSize: 100,
-          maxAsyncBufferSize: 25000,
-          maxAsyncConcurrency: 50,
+          maxAsyncBufferSize: 200000,
+          maxAsyncConcurrency: 100,
           maxItemSize: '5MiB',
         },
         bucketCache+: {

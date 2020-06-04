@@ -409,9 +409,11 @@ local up = (import 'configuration/components/up.libsonnet');
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
         indexCache+: {
-          timeout: '10s',  // TODO(kakkoyun): Adjust using metrics after running for awhile!
-          maxAsyncBufferSize: 10000000,
+          timeout: '200ms',
           maxGetMultiBatchSize: 100,
+          maxAsyncBufferSize: 25000,
+          maxAsyncConcurrency: 50,
+          maxItemSize: '5MiB',
         },
         bucketCache+: {
           timeout: '200ms',
@@ -455,6 +457,7 @@ local up = (import 'configuration/components/up.libsonnet');
       exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', scConfig.exporterVersion],
       connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
       memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
+      maxItemSize: '5m',
       replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
       resources: {
         memcached: {

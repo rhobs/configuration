@@ -142,17 +142,7 @@
         }
       },
       "version": "f7802edbf8306c07cc51435425d8f61b7fb94716",
-      "sum": "wq3CdvpwGatRRG5cCUb8DG4DSK6hfVl5MK9OGm9+y0w="
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/thanos-io/thanos.git",
-          "subdir": "mixin/thanos"
-        }
-      },
-      "version": "ecf78247e920698e3c6942cde51f71b01ef5f2d6",
-      "sum": "2ptPLIrh7LRNRD5+0bkhPO/8+ooVUkETTsUuqh1etv4=",
+      "sum": "wq3CdvpwGatRRG5cCUb8DG4DSK6hfVl5MK9OGm9+y0w=",
       "name": "thanos-mixin"
     }
   ],

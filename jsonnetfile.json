@@ -106,7 +106,7 @@
       "source": {
         "git": {
           "remote": "https://github.com/thanos-io/thanos.git",
-          "subdir": "mixin/thanos"
+          "subdir": "mixin"
         }
       },
       "version": "master",

@@ -714,7 +714,7 @@ local up = (import 'configuration/components/up.libsonnet');
       },
       {
         name: 'THANOS_IMAGE_TAG',
-        value: 'master-2020-05-25-c733564d',  // Right after v0.13.0-rc.0
+        value: 'master-2020-06-03-20004510',  // Master around the time v0.13.0-rc.1 was released.
       },
       {
         name: 'STORAGE_CLASS',

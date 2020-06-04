@@ -213,7 +213,7 @@ local up = (import 'configuration/components/up.libsonnet');
                   } + {
                     args: [
                       if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}'
-                      else if std.startsWith(a, '--tsdb.retention') then '--tsdb.retention=15d' else a
+                      else if std.startsWith(a, '--tsdb.retention') then '--tsdb.retention=4d' else a
                       for a in super.args
                     ],
                   } else c

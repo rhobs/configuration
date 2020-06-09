@@ -4,6 +4,12 @@ VENDOR_DIR = vendor
 $(VENDOR_DIR): $(JB) jsonnetfile.json jsonnetfile.lock.json
 	@$(JB) install
 
+JSONNET_SRC = $(shell find . -type f -not -path './*vendor/*' \( -name '*.libsonnet' -o -name '*.jsonnet' \))
+
+.PHONY: jsonnetfmt
+jsonnetfmt: $(JSONNET_SRC) $(JSONNETFMT)
+	$(JSONNETFMT) -n 2 --max-blank-lines 2 --string-style s --comment-style s -i $(JSONNET_SRC)
+
 .PHONY: generate
 generate: $(VENDOR_DIR) prometheusrules servicemonitors grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
 
@@ -20,7 +26,7 @@ resources/observability/prometheusrules: prometheusrules.jsonnet $(JSONNET) $(GO
 .PHONY: servicemonitors
 servicemonitors: resources/observability/servicemonitors
 
-resources/observability/servicemonitors: servicemonitors.jsonnet $(JSONNET) $(JSONNETFMT)
+resources/observability/servicemonitors: servicemonitors.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	rm -f resources/observability/servicemonitors/*.yaml
 	$(JSONNETFMT) -i servicemonitors.jsonnet
 	$(JSONNET) -J vendor -m resources/observability/servicemonitors servicemonitors.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}

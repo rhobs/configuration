@@ -448,6 +448,7 @@ spec:
         sum(rate(prometheus_rule_evaluations_total{job="observatorium-thanos-rule"}[2m])) <= 0
           and
         sum(thanos_rule_loaded_rules{job="observatorium-thanos-rule"}) > 0
+      for: 3m
       labels:
         service: telemeter
         severity: critical

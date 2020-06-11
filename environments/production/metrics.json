@@ -50,6 +50,7 @@
   "{__name__=\"openshift:memory_usage_bytes:sum\"}",
   "{__name__=\"openshift:prometheus_tsdb_head_samples_appended_total:sum\"}",
   "{__name__=\"openshift:prometheus_tsdb_head_series:sum\"}",
+  "{__name__=\"rhmi_status\"}",
   "{__name__=\"subscription_sync_total\"}",
   "{__name__=\"up\"}",
   "{__name__=\"workload:cpu_usage_cores:sum\"}",

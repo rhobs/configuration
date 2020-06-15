@@ -204,16 +204,19 @@ spec:
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivehighforwardrequestfailures
       expr: |
         (
-          sum by (job) (rate(thanos_receive_forward_requests_total{result="error", job=~"observatorium-thanos-receive-default.*"}[5m]))
-        /
-          sum by (job) (rate(thanos_receive_forward_requests_total{job=~"observatorium-thanos-receive-default.*"}[5m]))
-        )
-        >
-        (
-          max by (job) (floor((thanos_receive_replication_factor{job=~"observatorium-thanos-receive-default.*"}+1) / 2))
-        /
-          max by (job) (thanos_receive_hashring_nodes{job=~"observatorium-thanos-receive-default.*"})
-        )
+          (
+            sum by (job) (rate(thanos_receive_forward_requests_total{result="error", job=~"observatorium-thanos-receive-default.*"}[5m]))
+          /
+            sum by (job) (rate(thanos_receive_forward_requests_total{job=~"observatorium-thanos-receive-default.*"}[5m]))
+          )
+          >
+          (
+            max by (job) (floor((thanos_receive_replication_factor{job=~"observatorium-thanos-receive-default.*"}+1) / 2))
+          /
+            max by (job) (thanos_receive_hashring_nodes{job=~"observatorium-thanos-receive-default.*"})
+          )
+        ) * 100
+      for: 5m
       labels:
         service: telemeter
         severity: medium
@@ -249,10 +252,10 @@ spec:
         message: Thanos Receive {{$labels.job}} has not uploaded latest data to object storage.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivenoupload
       expr: increase(thanos_shipper_uploads_total{job=~"observatorium-thanos-receive-default.*"}[2h]) == 0
-      for: 30m
+      for: 2h
       labels:
         service: telemeter
-        severity: medium
+        severity: high
   - name: thanos-store.rules
     rules:
     - alert: ThanosStoreGrpcErrorRate

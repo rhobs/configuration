@@ -111,8 +111,8 @@
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
-      "version": "44c6beac8534a340011c137594d6c2e8f545dd1e",
-      "sum": "p1LX/Ox2dK0hGpa+B1xUO1s3aAS2d9zjjwHKuDKAWus="
+      "version": "a9d9169ef2c4da1eafd6badbc90a4b4804c8c101",
+      "sum": "/m671jdzWQfkKGuPN2jN6W8/rnbzEBgG6bLzr4erRGs="
     },
     {
       "source": {
@@ -141,8 +141,8 @@
           "subdir": "mixin"
         }
       },
-      "version": "778077e3058a7846d73bc3ab368b879157feb451",
-      "sum": "gvVuOImQZMM8oO5C4BUlv1siCu3Urn2Axa+pyePMcVI=",
+      "version": "aa6014039483af0f0c0c0f630e2e4d4312903dc3",
+      "sum": "J96ToqOHJ82cJqne/cqrhR+FNSshT3orLLjU7mWC88Y=",
       "name": "thanos-mixin"
     }
   ],

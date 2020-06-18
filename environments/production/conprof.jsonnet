@@ -44,6 +44,38 @@ local conprof = c + c.withConfigMap {
         ],
         scrape_interval: '30s',
         scrape_timeout: '1m',
+      }, {
+        job_name: 'telemeter',
+        kubernetes_sd_configs: [{
+          namespaces: { names: ['${NAMESPACE}'] },
+          role: 'pod',
+        }],
+        relabel_configs: [
+          {
+            action: 'keep',
+            regex: 'telemeter-server-.+',
+            source_labels: ['__meta_kubernetes_pod_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'internal',
+            source_labels: ['__meta_kubernetes_pod_container_port_name'],
+          },
+          {
+            source_labels: ['__meta_kubernetes_namespace'],
+            target_label: 'namespace',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_name'],
+            target_label: 'pod',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+            target_label: 'container',
+          },
+        ],
+        scrape_interval: '30s',
+        scrape_timeout: '1m',
       }],
     },
   },

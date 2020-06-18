@@ -231,7 +231,26 @@ local up = (import 'configuration/components/up.libsonnet');
     t.query.withResources +
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin +
-    (import 'configuration/components/jaeger-agent.libsonnet').deploymentMixin,
+    (import 'configuration/components/jaeger-agent.libsonnet').deploymentMixin + {
+      // Hack to remove the external prefix until we can use master of github.com/observatorium/deployments.
+      deployment+: {
+        spec+: {
+          template+: {
+            spec+: {
+              containers: [
+                if c.name == 'thanos-query' then c {
+                  args: [
+                    if std.startsWith(a, '--web.external-prefix') then '--web.external-prefix=' else a
+                    for a in super.args
+                  ],
+                } else c
+                for c in super.containers
+              ],
+            },
+          },
+        },
+      },
+    },
 
   queryCache+::
     cqf.withResources +

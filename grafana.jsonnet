@@ -1979,7 +1979,7 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               '30d',
             ],
           },
-          timezone: '',
+          timezone: 'UTC',
           title: 'API',
           uid: 'Tg-mH0rizaSJDKSADX',
           version: 1,

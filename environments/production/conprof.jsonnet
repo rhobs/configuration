@@ -76,6 +76,7 @@ local conprof = c + c.withConfigMap {
         ],
         scrape_interval: '30s',
         scrape_timeout: '1m',
+        scheme: 'https',
       }],
     },
   },

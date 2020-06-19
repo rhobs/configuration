@@ -1,6 +1,6 @@
 local jaeger = (import 'jaeger-mixin/mixin.libsonnet');
 
-(import 'configuration/components/jaeger-collector.libsonnet') + {
+(import 'github.com/observatorium/deployments/components/jaeger-collector.libsonnet') + {
   jaeger+:: {
     namespace:: 'observatorium',
     image:: 'jaegertracing/all-in-one:1.14.0',

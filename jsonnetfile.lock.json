@@ -8,7 +8,7 @@
           "subdir": "deployments/jsonnet/conprof"
         }
       },
-      "version": "5a60a4e481f72d43f4732dd8ccee0bb7f75c7cd0",
+      "version": "e85e9896cefe2aeb5ae03f7ba9b5d07bc18103e0",
       "sum": "iW7bS0aep/8NNPUrzzDtB8YIHZbP6z1H/U9jhM6QF/A="
     },
     {
@@ -18,8 +18,8 @@
           "subdir": "grafonnet"
         }
       },
-      "version": "7f971cae3e4dc5dc26d1a1991868e4810f73d6fb",
-      "sum": "/7/gQuDrIcbpbpFCMWhe63RtZ66iT5ECTlJdhVTtUTM="
+      "version": "8fb95bd89990e493a8534205ee636bfcb8db67bd",
+      "sum": "tDuuSKE9f4Ew2bjBM33Rs6behLEAzkmKkShSt+jpAak="
     },
     {
       "source": {
@@ -28,7 +28,7 @@
           "subdir": "grafana-builder"
         }
       },
-      "version": "461d09cbda1bf520f94628c8159b444d4467862f",
+      "version": "881db2241f0c5007c3e831caf34b0c645202b4ab",
       "sum": "slxrtftVDiTlQK22ertdfrg4Epnq97gdrLI63ftUfaE="
     },
     {
@@ -38,7 +38,7 @@
           "subdir": "memcached-mixin"
         }
       },
-      "version": "461d09cbda1bf520f94628c8159b444d4467862f",
+      "version": "881db2241f0c5007c3e831caf34b0c645202b4ab",
       "sum": "ZMKDjnebXqWjqONT6Yz5jvRjOH3+8861NsHEo0/dMwQ="
     },
     {
@@ -48,7 +48,7 @@
           "subdir": "monitoring/jaeger-mixin"
         }
       },
-      "version": "6e085a1fe3a1582f978983975f2c5d70a1078f25",
+      "version": "126701a4650325080f36e4a4fd8d8e6fd95023c1",
       "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
     },
     {
@@ -75,7 +75,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/configuration.git",
+          "remote": "https://github.com/observatorium/deployments.git",
           "subdir": ""
         }
       },
@@ -89,8 +89,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "3c24d9b889db8ca18a0fb3edc80cd394bbf99d82",
-      "sum": "IZ//jf+XChTDqXSmVA5triydUDHLlBgS84skIRScqaY=",
+      "version": "4420cccb4899129205b1782cf99b94aef9dd7537",
+      "sum": "OhouSCA8Oox/yVsDfZAL2fjVLzGNwJ3kWKsqyeYhbmA=",
       "name": "observatorium"
     },
     {
@@ -100,7 +100,7 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "44c6beac8534a340011c137594d6c2e8f545dd1e",
+      "version": "a9d9169ef2c4da1eafd6badbc90a4b4804c8c101",
       "sum": "iUbwzPZ/0QrozWTfoXlmRhd1CMAnkcCaWtATTlSnoMk=",
       "name": "thanos-receive-controller"
     },
@@ -121,7 +121,7 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "ca9c4f2c12e19e6fb0dc7b5bb545c7a5b8b193c8",
+      "version": "e801ab5a64b15c42f8a72e16f43a6b4fa654fd4a",
       "sum": "kRmy6o72BuzkFCJ24DzYIA7PW5OhXoDpXvizLSDLnJE="
     },
     {
@@ -131,8 +131,8 @@
           "subdir": "jsonnet/kube-thanos"
         }
       },
-      "version": "3b7d80d643dec546f1bfa8dc18b38460d0d57f53",
-      "sum": "7/1r2u+6v5g5FRTIRavrVopLC+hRqPWT5sU70OEh+R8="
+      "version": "6b6e22f00f28ce20f9964ac8dde1565dd2463475",
+      "sum": "RUWR7Nk56LMGh5p508BtAlQWwZgO609YVULxW5l5CA0="
     },
     {
       "source": {
@@ -141,7 +141,7 @@
           "subdir": "mixin"
         }
       },
-      "version": "aa6014039483af0f0c0c0f630e2e4d4312903dc3",
+      "version": "6c513e5f5c5fb74d0810d5c1d680408854c9c931",
       "sum": "J96ToqOHJ82cJqne/cqrhR+FNSshT3orLLjU7mWC88Y=",
       "name": "thanos-mixin"
     }

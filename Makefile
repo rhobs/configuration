@@ -55,13 +55,14 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 		$(GOJQ) -s '.[0] + .[1] | sort | unique' > /tmp/metrics.json
 	cp /tmp/metrics.json environments/production/metrics.json
 
-.PHONY: manifests
-manifests: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	# Make sure to start with a clean 'manifests' dir
-	rm -rf manifests/production/*
-	mkdir -p manifests/production
-	$(JSONNETFMT) -i environments/production/*.jsonnet
-	$(JSONNET) -J vendor environments/production/main.jsonnet | $(GOJSONTOYAML) > manifests/production/observatorium-template.yaml
-	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
+manifests: manifests/production/conprof-template.yaml manifests/production/jaeger-template.yaml manifests/production/observatorium-template.yaml
+	touch $@
+
+manifests/production/conprof-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	$(JSONNET) -J vendor environments/production/conprof.jsonnet | $(GOJSONTOYAML) > manifests/production/conprof-template.yaml
-	find manifests/production -type f ! -name '*.yaml' -delete
+
+manifests/production/jaeger-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
+
+manifests/production/observatorium-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	$(JSONNET) -J vendor environments/production/main.jsonnet | $(GOJSONTOYAML) > manifests/production/observatorium-template.yaml

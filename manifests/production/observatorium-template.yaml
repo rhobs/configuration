@@ -1704,6 +1704,24 @@ objects:
           app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
           store.observatorium.io/shard: shard-0
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-store
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - store
@@ -1951,6 +1969,24 @@ objects:
           app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
           store.observatorium.io/shard: shard-1
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-store
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - store
@@ -2198,6 +2234,24 @@ objects:
           app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
           store.observatorium.io/shard: shard-2
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-store
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - store

@@ -1,11 +1,12 @@
-local t = (import 'kube-thanos/thanos.libsonnet');
-local trc = (import 'thanos-receive-controller/thanos-receive-controller.libsonnet');
-local api = (import 'observatorium/observatorium-api.libsonnet');
-local cqf = (import 'configuration/components/cortex-query-frontend.libsonnet');
-local mc = (import 'configuration/components/memcached.libsonnet');
-local up = (import 'configuration/components/up.libsonnet');
+local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet');
+local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
+local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
+local cqf = (import 'github.com/observatorium/deployments/components/cortex-query-frontend.libsonnet');
+local mc = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
+local up = (import 'github.com/observatorium/deployments/components/up.libsonnet');
 
-(import 'configuration/components/observatorium.libsonnet') {
+
+(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') {
   local obs = self,
 
   local s3EnvVars = [
@@ -45,8 +46,8 @@ local up = (import 'configuration/components/up.libsonnet');
         spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
       },
     } +
-    (import 'configuration/components/oauth-proxy.libsonnet') +
-    (import 'configuration/components/oauth-proxy.libsonnet').statefulSetMixin {
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').statefulSetMixin {
       statefulSet+: {
         spec+: {
           template+: {
@@ -104,7 +105,8 @@ local up = (import 'configuration/components/up.libsonnet');
         },
         spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
       },
-    } + (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
+    } +
+    (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin {
       statefulSet+: {
         spec+: {
           template+: {
@@ -198,7 +200,7 @@ local up = (import 'configuration/components/up.libsonnet');
           },
         },
       } +
-      (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
+      (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin {
         statefulSet+: {
           spec+: {
             template+: {
@@ -322,7 +324,7 @@ local up = (import 'configuration/components/up.libsonnet');
             },
           },
         },
-      } + (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin
+      } + (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin
     for hashring in obs.config.hashrings
   },
 
@@ -341,9 +343,9 @@ local up = (import 'configuration/components/up.libsonnet');
         spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
       },
     } +
-    (import 'configuration/components/oauth-proxy.libsonnet') +
-    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin +
-    (import 'configuration/components/jaeger-agent.libsonnet').deploymentMixin + {
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
+    (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').deploymentMixin + {
       // Hack to remove the external prefix until we can use master of github.com/observatorium/deployments.
       deployment+: {
         spec+: {
@@ -366,8 +368,8 @@ local up = (import 'configuration/components/up.libsonnet');
 
   queryCache+::
     cqf.withResources +
-    (import 'configuration/components/oauth-proxy.libsonnet') +
-    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin,
 
   api+::
     api.withResources +
@@ -392,8 +394,8 @@ local up = (import 'configuration/components/up.libsonnet');
         },
       },
     } +
-    (import 'configuration/components/oauth-proxy.libsonnet') +
-    (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin,
 
   up+:: up {
     serviceMonitor+: {
@@ -816,7 +818,7 @@ local up = (import 'configuration/components/up.libsonnet');
       commonLabels+:: obs.config.commonLabels,
     },
   },
-} + (import 'configuration/components/observatorium-configure.libsonnet') + {
+} + (import 'github.com/observatorium/deployments/components/observatorium-configure.libsonnet') + {
   local obs = self,
   up+:: {
     config+:: obs.config.up {
@@ -856,6 +858,7 @@ local up = (import 'configuration/components/up.libsonnet');
       [
         obs.manifests[name]
         for name in std.objectFields(obs.manifests)
+        if obs.manifests[name] != null
       ] +
       [
         obs.storeIndexCache[name]

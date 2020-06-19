@@ -3,6 +3,33 @@ kind: Template
 metadata:
   name: observatorium
 objects:
+- apiVersion: v1
+  data:
+    rbac.yaml: |-
+      "roleBindings":
+      - "name": "github-rhobs"
+        "roles":
+        - "read-write"
+        "subjects": []
+      "roles":
+      - "name": "github-rhobs"
+        "permissions":
+        - "read"
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "github-rhobs"
+  kind: ConfigMap
+  metadata:
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
+    name: observatorium-observatorium-api
+    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -39,9 +66,14 @@ objects:
         - args:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
+          - --logs.read.endpoint=http://127.0.0.1
+          - --logs.tail.endpoint=http://127.0.0.1
+          - --logs.write.endpoint=http://127.0.0.1
           - --metrics.read.endpoint=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc.cluster.local:9090
           - --metrics.write.endpoint=http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291
           - --log.level=warn
+          - --rbac.config=/etc/observatorium/rbac.yaml
+          - --tenants.config=/etc/observatorium/tenants.yaml
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -70,6 +102,15 @@ objects:
             requests:
               cpu: ${OBSERVATORIUM_API_CPU_REQUEST}
               memory: ${OBSERVATORIUM_API_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/observatorium/rbac.yaml
+            name: rbac
+            readOnly: true
+            subPath: rbac.yaml
+          - mountPath: /etc/observatorium/tenants.yaml
+            name: tenants
+            readOnly: true
+            subPath: tenants.yaml
         - args:
           - -provider=openshift
           - -https-address=:9091
@@ -106,6 +147,12 @@ objects:
             readOnly: false
         serviceAccountName: prometheus-telemeter
         volumes:
+        - configMap:
+            name: observatorium-observatorium-api
+          name: rbac
+        - name: tenants
+          secret:
+            secretName: observatorium-observatorium-api
         - name: observatorium-api-tls
           secret:
             secretName: observatorium-api-tls
@@ -126,6 +173,27 @@ objects:
     name: observatorium-api-proxy
     namespace: ${NAMESPACE}
   type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
+    name: observatorium-observatorium-api
+    namespace: ${NAMESPACE}
+  stringData:
+    tenants.yaml: |-
+      "tenants":
+      - "id": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+        "name": "github-rhobs"
+        "oidc":
+          "clientID": "id"
+          "clientSecret": "secret"
+          "issuerURL": "https://rhobs.tenants.observatorium.io"
+          "usernameClaim": "email"
 - apiVersion: v1
   kind: Service
   metadata:

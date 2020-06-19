@@ -764,6 +764,64 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       version: '${OBSERVATORIUM_API_IMAGE_TAG}',
       image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', api.version],
       replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
+      logs: {
+        // Fake logs endpoints to satisfy Observatorium flag parsing.
+        readEndpoint: 'http://127.0.0.1',
+        writeEndpoint: 'http://127.0.0.1',
+        tailEndpoint: 'http://127.0.0.1',
+      },
+      metrics: {
+        readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+          obs.queryCache.service.metadata.name,
+          obs.queryCache.service.metadata.namespace,
+          obs.queryCache.service.spec.ports[0].port,
+        ],
+        writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+          obs.receiveService.metadata.name,
+          obs.receiveService.metadata.namespace,
+          obs.receiveService.spec.ports[2].port,
+        ],
+      },
+      rbac: {
+        roles: [
+          {
+            name: 'github-rhobs',
+            resources: [
+              'metrics',
+            ],
+            tenants: [
+              'github-rhobs',
+            ],
+            permissions: [
+              'read',
+              'write',
+            ],
+          },
+        ],
+        roleBindings: [
+          {
+            name: 'github-rhobs',
+            roles: [
+              'read-write',
+            ],
+            subjects: [],
+          },
+        ],
+      },
+      tenants: {
+        tenants: [
+          {
+            name: 'github-rhobs',
+            id: '770c1124-6ae8-4324-a9d4-9ce08590094b',
+            oidc: {
+              clientID: 'id',
+              clientSecret: 'secret',
+              issuerURL: 'https://rhobs.tenants.observatorium.io',
+              usernameClaim: 'email',
+            },
+          },
+        ],
+      },
       resources: {
         requests: {
           cpu: '${OBSERVATORIUM_API_CPU_REQUEST}',

@@ -11,7 +11,7 @@ jsonnetfmt: $(JSONNET_SRC) $(JSONNETFMT)
 	$(JSONNETFMT) -n 2 --max-blank-lines 2 --string-style s --comment-style s -i $(JSONNET_SRC)
 
 .PHONY: generate
-generate: $(VENDOR_DIR) prometheusrules servicemonitors grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
+generate: $(VENDOR_DIR) prometheusrules grafana manifests whitelisted_metrics # slos Disabled for now, dependency is broken.
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
@@ -23,14 +23,6 @@ resources/observability/prometheusrules: prometheusrules.jsonnet $(JSONNET) $(GO
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
-.PHONY: servicemonitors
-servicemonitors: resources/observability/servicemonitors
-
-resources/observability/servicemonitors: servicemonitors.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	rm -f resources/observability/servicemonitors/*.yaml
-	$(JSONNETFMT) -i servicemonitors.jsonnet
-	$(JSONNET) -J vendor -m resources/observability/servicemonitors servicemonitors.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	find resources/observability/servicemonitors -type f ! -name '*.yaml' -delete
 
 .PHONY: grafana
 grafana: resources/observability/grafana
@@ -68,9 +60,7 @@ manifests: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	# Make sure to start with a clean 'manifests' dir
 	rm -rf manifests/production/*
 	mkdir -p manifests/production
-	$(JSONNETFMT) -i environments/production/main.jsonnet
-	$(JSONNETFMT) -i environments/production/jaeger.jsonnet
-	$(JSONNETFMT) -i environments/production/conprof.jsonnet
+	$(JSONNETFMT) -i environments/production/*.jsonnet
 	$(JSONNET) -J vendor environments/production/main.jsonnet | $(GOJSONTOYAML) > manifests/production/observatorium-template.yaml
 	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
 	$(JSONNET) -J vendor environments/production/conprof.jsonnet | $(GOJSONTOYAML) > manifests/production/conprof-template.yaml

@@ -155,6 +155,25 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-api
+    namespace: null
+  spec:
+    endpoints:
+    - port: internal
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     queries.yaml: |-
@@ -291,11 +310,16 @@ objects:
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
-    name: observatorium-observatorium-up
-    namespace: ${NAMESPACE}
+    labels:
+      prometheus: app-sre
+    name: observatorium-up
+    namespace: null
   spec:
     endpoints:
     - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: blackbox-prober
@@ -512,6 +536,29 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-thanos-compactor
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-compactor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-compact
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -874,6 +921,29 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-thanos-querier
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     hashrings.json: |-
@@ -1028,6 +1098,25 @@ objects:
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller
     namespace: ${NAMESPACE}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-thanos-receive-controller
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: kubernetes-controller
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-controller
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: policy/v1beta1
   kind: PodDisruptionBudget
   metadata:
@@ -1072,6 +1161,31 @@ objects:
       app.kubernetes.io/name: thanos-receive
       app.kubernetes.io/part-of: observatorium
       controller.receive.thanos.io/hashring: default
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: database-write-hashring
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive
+      app.kubernetes.io/part-of: observatorium
+      controller.receive.thanos.io/hashring: default
+      prometheus: app-sre
+    name: observatorium-thanos-receive-default
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive
+        app.kubernetes.io/part-of: observatorium
+        controller.receive.thanos.io/hashring: default
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -1336,6 +1450,29 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-thanos-rule
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rule-evaluation-engine
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-rule
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -1509,6 +1646,31 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       store.observatorium.io/shard: shard-0
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+      store.observatorium.io/shard: shard-0
+    name: observatorium-thanos-store-shard-0
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
+        store.observatorium.io/shard: shard-0
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -1731,6 +1893,31 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       store.observatorium.io/shard: shard-1
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+      store.observatorium.io/shard: shard-1
+    name: observatorium-thanos-store-shard-1
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
+        store.observatorium.io/shard: shard-1
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -1953,6 +2140,31 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       store.observatorium.io/shard: shard-2
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+      store.observatorium.io/shard: shard-2
+    name: observatorium-thanos-store-shard-2
+    namespace: null
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
+        store.observatorium.io/shard: shard-2
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -2173,6 +2385,25 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-thanos-store-index-cache
+    namespace: null
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-index-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -2261,6 +2492,25 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-thanos-store-bucket-cache
+    namespace: null
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-bucket-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:

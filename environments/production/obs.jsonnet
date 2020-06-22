@@ -32,6 +32,19 @@ local up = (import 'configuration/components/up.libsonnet');
   compact+::
     t.compact.withVolumeClaimTemplate +
     t.compact.withResources +
+    t.compact.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-compactor',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+      },
+    } +
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').statefulSetMixin {
       statefulSet+: {
@@ -51,13 +64,47 @@ local up = (import 'configuration/components/up.libsonnet');
     },
 
   thanosReceiveController+::
-    trc.withResources,
+    trc.withResources +
+    trc.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-receive-controller',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+
+        spec+: {
+          selector+: {
+            // TODO: Remove once fixed upstream
+            matchLabels+: {
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
+    },
 
   rule+::
     local nameResource = obs.config.name + '-rule';
     local nameFile = obs.config.name + '.yaml';
     t.rule.withResources +
-    (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
+    t.rule.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-rule',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+      },
+    } + (import 'configuration/components/jaeger-agent.libsonnet').statefulSetMixin {
       statefulSet+: {
         spec+: {
           template+: {
@@ -125,7 +172,20 @@ local up = (import 'configuration/components/up.libsonnet');
   store+:: {
     ['shard' + i]+:
       t.store.withVolumeClaimTemplate +
-      t.store.withResources + {
+      t.store.withResources +
+      t.store.withServiceMonitor {
+        serviceMonitor+: {
+          metadata+: {
+            name: 'observatorium-thanos-store-shard-' + i,
+            namespace: null,
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+      } + {
         config+:: {
           memcached+: {
             local memcached = obs.store['shard' + i].config.memcached,
@@ -161,7 +221,20 @@ local up = (import 'configuration/components/up.libsonnet');
 
   storeIndexCache::
     mc +
-    mc.withResources {
+    mc.withResources +
+    mc.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-store-index-cache',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+      },
+    } + {
       config+:: {
         local cfg = self,
         name: obs.config.name + '-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
@@ -179,7 +252,20 @@ local up = (import 'configuration/components/up.libsonnet');
 
   storeBucketCache::
     mc +
-    mc.withResources {
+    mc.withResources +
+    mc.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-store-bucket-cache',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+      },
+    } + {
       config+:: {
         local cfg = self,
         name: obs.config.name + '-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
@@ -199,7 +285,20 @@ local up = (import 'configuration/components/up.libsonnet');
     [hashring.hashring]+:
       t.receive.withVolumeClaimTemplate +
       t.receive.withPodDisruptionBudget +
-      t.receive.withResources {
+      t.receive.withResources +
+      t.receive.withServiceMonitor {
+        serviceMonitor+: {
+          metadata+: {
+            name: 'observatorium-thanos-receive-' + hashring.hashring,
+            namespace: null,
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+      } + {
         statefulSet+: {
           spec+: {
             template+: {
@@ -229,6 +328,19 @@ local up = (import 'configuration/components/up.libsonnet');
 
   query+::
     t.query.withResources +
+    t.query.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-thanos-querier',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+      },
+    } +
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin +
     (import 'configuration/components/jaeger-agent.libsonnet').deploymentMixin + {
@@ -259,10 +371,43 @@ local up = (import 'configuration/components/up.libsonnet');
 
   api+::
     api.withResources +
+    api.withServiceMonitor {
+      local api = self,
+      serviceMonitor+: {
+        metadata+: {
+          name: 'observatorium-api',
+          namespace: null,
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: {
+          selector+: {
+            matchLabels+: {
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
+    } +
     (import 'configuration/components/oauth-proxy.libsonnet') +
     (import 'configuration/components/oauth-proxy.libsonnet').deploymentMixin,
 
-  up+:: up,
+  up+:: up {
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-up',
+        namespace: null,
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+    },
+  },
 
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
@@ -722,6 +867,7 @@ local up = (import 'configuration/components/up.libsonnet');
       ] +
       telemeter.objects +
       prometheusAMS.objects,
+
     parameters: [
       {
         name: 'NAMESPACE',

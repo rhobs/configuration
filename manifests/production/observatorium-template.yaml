@@ -10,7 +10,8 @@ objects:
       - "name": "github-rhobs"
         "roles":
         - "read-write"
-        "subjects": []
+        "subjects":
+        - "github-rhobs"
       "roles":
       - "name": "github-rhobs"
         "permissions":

@@ -804,7 +804,9 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
             roles: [
               'read-write',
             ],
-            subjects: [],
+            subjects: [
+              'github-rhobs',
+            ],
           },
         ],
       },

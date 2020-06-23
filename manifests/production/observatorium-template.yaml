@@ -11,7 +11,12 @@ objects:
         "roles":
         - "read-write"
         "subjects":
-        - "github-rhobs"
+        - "brancz"
+        - "bwplotka"
+        - "kakkoyun"
+        - "krasi-georgiev"
+        - "metalmatze"
+        - "squat"
       "roles":
       - "name": "github-rhobs"
         "permissions":

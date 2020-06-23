@@ -805,7 +805,12 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
               'read-write',
             ],
             subjects: [
-              'github-rhobs',
+              'brancz',
+              'bwplotka',
+              'kakkoyun',
+              'krasi-georgiev',
+              'metalmatze',
+              'squat',
             ],
           },
         ],

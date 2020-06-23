@@ -49,7 +49,7 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/configuration.git",
+          "remote": "https://github.com/observatorium/deployments.git",
           "subdir": ""
         }
       },

@@ -55,8 +55,8 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 		$(GOJQ) -s '.[0] + .[1] | sort | unique' > /tmp/metrics.json
 	cp /tmp/metrics.json environments/production/metrics.json
 
+.PHONY: manifests
 manifests: manifests/production/conprof-template.yaml manifests/production/jaeger-template.yaml manifests/production/observatorium-template.yaml
-	touch $@
 
 manifests/production/conprof-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	$(JSONNET) -J vendor environments/production/conprof.jsonnet | $(GOJSONTOYAML) > manifests/production/conprof-template.yaml

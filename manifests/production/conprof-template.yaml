@@ -60,6 +60,8 @@ objects:
         "scheme": "https"
         "scrape_interval": "30s"
         "scrape_timeout": "1m"
+        "tls_config":
+          "insecure_skip_verify": true
   kind: ConfigMap
   metadata:
     labels:

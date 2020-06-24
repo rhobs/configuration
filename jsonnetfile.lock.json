@@ -79,8 +79,8 @@
           "subdir": ""
         }
       },
-      "version": "5f109066429b4a7ef5ba5b9abeba2719126c3f93",
-      "sum": "FOKIY29odHRNpSZnbzo5kg2eiiDdS6ZyiTYcunDSw60="
+      "version": "9e7fe2b54bd2fefc93da411ab6c7a64102ceef7d",
+      "sum": "v79saR7icmB+wf3Q5vB3QbFoCz/FNDLS/WgqhFR/FV8="
     },
     {
       "source": {
@@ -89,7 +89,7 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "4420cccb4899129205b1782cf99b94aef9dd7537",
+      "version": "571ce24dcf2753f7995e764dcf6d39233b986a27",
       "sum": "OhouSCA8Oox/yVsDfZAL2fjVLzGNwJ3kWKsqyeYhbmA=",
       "name": "observatorium"
     },

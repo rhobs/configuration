@@ -35,7 +35,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-observatorium-api
-    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -46,7 +45,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-observatorium-api
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{OBSERVATORIUM_API_REPLICAS}}
     selector:
@@ -177,7 +175,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api-proxy
-    namespace: ${NAMESPACE}
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -189,7 +186,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-observatorium-api
-    namespace: ${NAMESPACE}
   stringData:
     tenants.yaml: |-
       "tenants":
@@ -212,7 +208,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-observatorium-api
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: internal
@@ -311,12 +306,10 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-2020-03-25-6d4f944
     name: observatorium-observatorium-up
-    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     name: observatorium-observatorium-up
-    namespace: ${NAMESPACE}
   spec:
     replicas: 1
     selector:
@@ -370,7 +363,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-2020-03-25-6d4f944
     name: observatorium-observatorium-up
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: http
@@ -431,7 +423,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-fdcd992f
     name: observatorium-cortex-query-frontend
-    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -442,7 +433,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-fdcd992f
     name: observatorium-cortex-query-frontend
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_QUERIER_CACHE_REPLICAS}}
     selector:
@@ -542,7 +532,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-fdcd992f
     name: query-cache-proxy
-    namespace: ${NAMESPACE}
   type: Opaque
 - apiVersion: v1
   kind: Service
@@ -556,7 +545,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-fdcd992f
     name: observatorium-cortex-query-frontend
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: http
@@ -582,7 +570,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: compact-proxy
-    namespace: ${NAMESPACE}
   type: Opaque
 - apiVersion: v1
   kind: Service
@@ -596,7 +583,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-compact
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: http
@@ -643,7 +629,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-compact
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_COMPACTOR_REPLICAS}}
     selector:
@@ -790,7 +775,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-query
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_QUERIER_REPLICAS}}
     selector:
@@ -963,7 +947,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: query-proxy
-    namespace: ${NAMESPACE}
   type: Opaque
 - apiVersion: v1
   kind: Service
@@ -977,7 +960,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-query
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: grpc
@@ -1037,7 +1019,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller-tenants
-    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1048,7 +1029,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller
-    namespace: ${NAMESPACE}
   spec:
     replicas: 1
     selector:
@@ -1100,7 +1080,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller
-    namespace: ${NAMESPACE}
   rules:
   - apiGroups:
     - ""
@@ -1130,7 +1109,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller
-    namespace: ${NAMESPACE}
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -1138,7 +1116,6 @@ objects:
   subjects:
   - kind: ServiceAccount
     name: observatorium-thanos-receive-controller
-    namespace: ${NAMESPACE}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -1149,7 +1126,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: http
@@ -1170,7 +1146,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
     name: observatorium-thanos-receive-controller
-    namespace: ${NAMESPACE}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -1194,7 +1169,6 @@ objects:
   kind: PodDisruptionBudget
   metadata:
     name: observatorium-thanos-receive-default
-    namespace: ${NAMESPACE}
   spec:
     maxUnavailable: 1
     selector:
@@ -1215,7 +1189,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       controller.receive.thanos.io/hashring: default
     name: observatorium-thanos-receive-default
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -1271,7 +1244,6 @@ objects:
       controller.receive.thanos.io: thanos-receive-controller
       controller.receive.thanos.io/hashring: default
     name: observatorium-thanos-receive-default
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_RECEIVE_REPLICAS}}
     selector:
@@ -1461,7 +1433,6 @@ objects:
   kind: Service
   metadata:
     name: observatorium-thanos-receive
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: grpc
@@ -1508,7 +1479,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-rule
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -1556,7 +1526,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-rule
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_RULER_REPLICAS}}
     selector:
@@ -1703,7 +1672,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       store.observatorium.io/shard: shard-0
     name: observatorium-thanos-store-shard-0
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -1755,7 +1723,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       store.observatorium.io/shard: shard-0
     name: observatorium-thanos-store-shard-0
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_STORE_REPLICAS}}
     selector:
@@ -1968,7 +1935,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       store.observatorium.io/shard: shard-1
     name: observatorium-thanos-store-shard-1
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -2020,7 +1986,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       store.observatorium.io/shard: shard-1
     name: observatorium-thanos-store-shard-1
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_STORE_REPLICAS}}
     selector:
@@ -2233,7 +2198,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       store.observatorium.io/shard: shard-2
     name: observatorium-thanos-store-shard-2
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -2285,7 +2249,6 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       store.observatorium.io/shard: shard-2
     name: observatorium-thanos-store-shard-2
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_STORE_REPLICAS}}
     selector:
@@ -2497,7 +2460,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
     name: observatorium-thanos-store-index-cache-memcached
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -2541,7 +2503,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
     name: observatorium-thanos-store-index-cache-memcached
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_STORE_INDEX_CACHE_REPLICAS}}
     selector:
@@ -2604,7 +2565,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
     name: observatorium-thanos-store-bucket-cache-memcached
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -2648,7 +2608,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
     name: observatorium-thanos-store-bucket-cache-memcached
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}
     selector:
@@ -2712,7 +2671,6 @@ objects:
     labels:
       k8s-app: telemeter-server
     name: telemeter-server
-    namespace: ${NAMESPACE}
   type: Opaque
 - apiVersion: v1
   kind: Service
@@ -2722,7 +2680,6 @@ objects:
     labels:
       k8s-app: telemeter-server
     name: telemeter-server
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -2738,7 +2695,6 @@ objects:
   kind: ServiceAccount
   metadata:
     name: telemeter-server
-    namespace: ${NAMESPACE}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -2746,7 +2702,6 @@ objects:
       endpoint: metrics
       k8s-app: telemeter-server
     name: telemeter-server
-    namespace: ${NAMESPACE}
   spec:
     endpoints:
     - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
@@ -2764,7 +2719,6 @@ objects:
   kind: StatefulSet
   metadata:
     name: telemeter-server
-    namespace: ${NAMESPACE}
   spec:
     podManagementPolicy: Parallel
     replicas: ${{REPLICAS}}
@@ -2914,7 +2868,6 @@ objects:
   kind: StatefulSet
   metadata:
     name: telemeter-server-canary
-    namespace: ${NAMESPACE}
   spec:
     podManagementPolicy: Parallel
     replicas: ${{REPLICAS_CANARY}}
@@ -3069,7 +3022,6 @@ objects:
     labels:
       app.kubernetes.io/name: memcached
     name: memcached
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -3090,7 +3042,6 @@ objects:
     labels:
       app.kubernetes.io/name: memcached
     name: memcached
-    namespace: ${NAMESPACE}
   spec:
     endpoints:
     - interval: 30s
@@ -3111,7 +3062,6 @@ objects:
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: telemeter
     name: memcached
-    namespace: ${NAMESPACE}
   spec:
     replicas: 1
     selector:
@@ -3198,7 +3148,6 @@ objects:
       app.kubernetes.io/name: nginx
       app.kubernetes.io/part-of: prometheus-ams
     name: prometheus-remote-write-proxy-config
-    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -3207,7 +3156,6 @@ objects:
       app.kubernetes.io/name: nginx
       app.kubernetes.io/part-of: prometheus-ams
     name: prometheus-remote-write-proxy
-    namespace: ${NAMESPACE}
   spec:
     replicas: 1
     selector:
@@ -3254,7 +3202,6 @@ objects:
       app.kubernetes.io/name: nginx
       app.kubernetes.io/part-of: prometheus-ams
     name: prometheus-ams-remote-write-proxy
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: http

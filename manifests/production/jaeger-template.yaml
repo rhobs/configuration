@@ -9,7 +9,6 @@ objects:
     labels:
       app.kubernetes.io/name: jaeger-all-in-one
     name: jaeger-admin
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: admin-http
@@ -23,7 +22,6 @@ objects:
     labels:
       app.kubernetes.io/name: jaeger-agent
     name: jaeger-agent-discovery
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: metrics
@@ -37,7 +35,6 @@ objects:
     labels:
       app.kubernetes.io/name: jaeger-all-in-one
     name: jaeger-all-in-one
-    namespace: ${NAMESPACE}
   spec:
     replicas: ${{REPLICAS}}
     selector:
@@ -146,7 +143,6 @@ objects:
     labels:
       app.kubernetes.io/name: jaeger-all-in-one
     name: jaeger-collector-headless
-    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -238,7 +234,6 @@ objects:
     labels:
       app.kubernetes.io/name: jaeger-all-in-one
     name: jaeger-query
-    namespace: ${NAMESPACE}
   spec:
     ports:
     - name: query
@@ -255,7 +250,6 @@ objects:
     labels:
       app.kubernetes.io/name: jaeger-all-in-one
     name: jaeger-store-data
-    namespace: ${NAMESPACE}
   spec:
     accessModes:
     - ReadWriteOnce

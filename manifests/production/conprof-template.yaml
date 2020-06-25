@@ -57,8 +57,11 @@ objects:
         - "source_labels":
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
+        "scheme": "https"
         "scrape_interval": "30s"
         "scrape_timeout": "1m"
+        "tls_config":
+          "insecure_skip_verify": true
   kind: ConfigMap
   metadata:
     labels:

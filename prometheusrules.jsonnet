@@ -78,8 +78,9 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
       rules: std.filter(
         function(r) !(
           std.objectHas(r, 'alert') && (
-            r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
-            r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh'
+            r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh' ||
+            r.alert == 'ThanosQueryRangeLatencyHigh' ||
+            r.alert == 'ThanosStoreSeriesGateLatencyHigh'
           )
         ),
         super.rules,

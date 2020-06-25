@@ -150,21 +150,6 @@ spec:
       labels:
         service: telemeter
         severity: high
-    - alert: ThanosQueryRangeLatencyHigh
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Query {{$labels.job}} has a 99th percentile latency of {{ $value }} seconds for range queries.
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosqueryrangelatencyhigh
-      expr: |
-        (
-          histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query_range"}[5m]))) > 90
-        and
-          sum by (job) (rate(http_request_duration_seconds_count{job="observatorium-thanos-query", handler="query_range"}[5m])) > 0
-        )
-      for: 10m
-      labels:
-        service: telemeter
-        severity: high
   - name: thanos-receive.rules
     rules:
     - alert: ThanosReceiveHttpRequestErrorRateHigh

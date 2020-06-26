@@ -143,7 +143,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
           [nameFile]: std.manifestYamlDoc({
             groups: [{
               name: 'observatorium.rules',
-              interval: '1m',
+              interval: '3m',
               rules: [
                 {
                   expr: "count by (name,reason) (cluster_operator_conditions{condition='Degraded'} == 1)",

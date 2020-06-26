@@ -195,12 +195,36 @@ local conprof = c + c.withConfigMap {
   },
   objects:
     [
-      conprof.configmap,
-      conprof.statefulset,
-      conprof.service,
-    ] +
-    conprof.roles.items +
-    conprof.roleBindings.items,
+      conprof.configmap {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      },
+      conprof.statefulset {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      },
+      conprof.service {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      },
+    ] + [
+      object {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for object in conprof.roles.items
+    ] + [
+      object {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for object in conprof.roleBindings.items
+    ],
   parameters: [
     { name: 'NAMESPACE', value: 'telemeter' },
     { name: 'IMAGE', value: 'quay.io/conprof/conprof' },

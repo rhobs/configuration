@@ -3,6 +3,17 @@ local list = import 'telemeter/lib/list.libsonnet';
 (import 'kube-telemeter.libsonnet') +
 {
   telemeterServer+:: {
+    serviceMonitor+: {
+        metadata+: {
+          labels+: {
+            prometheus: 'app-sre',
+          },
+        },
+        spec+: {
+          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
+    
     statefulSet+: {
       spec+: {
         replicas: '${{REPLICAS}}',

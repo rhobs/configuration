@@ -222,6 +222,7 @@ objects:
   subjects:
   - kind: ServiceAccount
     name: prometheus-telemeter
+    namespace: ${NAMESPACE}
 parameters:
 - name: NAMESPACE
   value: telemeter

@@ -230,7 +230,6 @@ objects:
     labels:
       prometheus: app-sre
     name: observatorium-api
-    namespace: null
   spec:
     endpoints:
     - port: internal
@@ -379,7 +378,6 @@ objects:
     labels:
       prometheus: app-sre
     name: observatorium-up
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -606,7 +604,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
     name: observatorium-thanos-compactor
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -986,7 +983,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
     name: observatorium-thanos-querier
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -1116,6 +1112,7 @@ objects:
   subjects:
   - kind: ServiceAccount
     name: observatorium-thanos-receive-controller
+    namespace: ${NAMESPACE}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -1152,7 +1149,6 @@ objects:
     labels:
       prometheus: app-sre
     name: observatorium-thanos-receive-controller
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -1218,7 +1214,6 @@ objects:
       controller.receive.thanos.io/hashring: default
       prometheus: app-sre
     name: observatorium-thanos-receive-default
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -1503,7 +1498,6 @@ objects:
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
     name: observatorium-thanos-rule
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -1698,7 +1692,6 @@ objects:
       prometheus: app-sre
       store.observatorium.io/shard: shard-0
     name: observatorium-thanos-store-shard-0
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -1961,7 +1954,6 @@ objects:
       prometheus: app-sre
       store.observatorium.io/shard: shard-1
     name: observatorium-thanos-store-shard-1
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -2224,7 +2216,6 @@ objects:
       prometheus: app-sre
       store.observatorium.io/shard: shard-2
     name: observatorium-thanos-store-shard-2
-    namespace: null
   spec:
     endpoints:
     - port: http
@@ -2480,7 +2471,6 @@ objects:
     labels:
       prometheus: app-sre
     name: observatorium-thanos-store-index-cache
-    namespace: null
   spec:
     endpoints:
     - port: metrics
@@ -2585,7 +2575,6 @@ objects:
     labels:
       prometheus: app-sre
     name: observatorium-thanos-store-bucket-cache
-    namespace: null
   spec:
     endpoints:
     - port: metrics
@@ -2701,6 +2690,7 @@ objects:
     labels:
       endpoint: metrics
       k8s-app: telemeter-server
+      prometheus: app-sre
     name: telemeter-server
   spec:
     endpoints:
@@ -2712,6 +2702,9 @@ objects:
         caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
         serverName: telemeter-server.${NAMESPACE}.svc
     jobLabel: k8s-app
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
     selector:
       matchLabels:
         k8s-app: telemeter-server

@@ -850,7 +850,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       namespace: obs.config.namespace,
       endpointType: 'metrics',
       readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryCache.service.metadata.name, obs.queryCache.service.metadata.namespace],
-      version: 'master-2020-03-25-6d4f944',
+      version: 'master-2020-06-15-d763595',
       image: 'quay.io/observatorium/up:' + cfg.version,
       queryConfig: (import 'queries.libsonnet'),
       serviceMonitor: true,

@@ -271,6 +271,7 @@ objects:
         - args:
           - --duration=0
           - --log.level=debug
+          - --endpoint-type=metrics
           - --queries-file=/etc/up/queries.yaml
           - --endpoint-read=http://observatorium-cortex-query-frontend.${NAMESPACE}.svc:9090/api/v1/query
           image: quay.io/observatorium/up:master-2020-03-25-6d4f944
@@ -1240,6 +1241,7 @@ objects:
           - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --tsdb.retention=4d
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
+          - --log.level=${THANOS_RECEIVE_LOG_LEVEL}
           - --receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
           - |
             --tracing.config=
@@ -1262,6 +1264,8 @@ objects:
               secretKeyRef:
                 key: thanos.yaml
                 name: ${THANOS_CONFIG_SECRET}
+          - name: DEBUG
+            value: ${THANOS_RECEIVE_DEBUG_ENV}
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -3239,6 +3243,10 @@ parameters:
   value: 1Gi
 - name: THANOS_RECEIVE_MEMORY_LIMIT
   value: 1Gi
+- name: THANOS_RECEIVE_DEBUG_ENV
+  value: ""
+- name: THANOS_RECEIVE_LOG_LEVEL
+  value: info
 - name: THANOS_COMPACTOR_CPU_REQUEST
   value: 100m
 - name: THANOS_COMPACTOR_CPU_LIMIT

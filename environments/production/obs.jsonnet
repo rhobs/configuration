@@ -483,11 +483,14 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     },
 
     receivers+: {
+      logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
+      debug: '${THANOS_RECEIVE_DEBUG_ENV}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       objectStorageConfig: obs.config.objectStorageConfig,
       hashrings: obs.config.hashrings,
       replicas: '${{THANOS_RECEIVE_REPLICAS}}',
+      replicationFactor: 3,
       resources: {
         requests: {
           cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
@@ -829,10 +832,23 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       },
     },
 
+    loki+:: {
+      version: 'xxx',
+      replicas: {
+          distributor: 'xxx',
+        },
+        image: 'xxxx',
+        objectStorageConfig: {
+          name: 'xxx',
+          key: 'endpoint',
+        },
+    },
+
     up: {
       local cfg = self,
       name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
       namespace: obs.config.namespace,
+      endpointType: 'metrics',
       readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryCache.service.metadata.name, obs.queryCache.service.metadata.namespace],
       version: 'master-2020-03-25-6d4f944',
       image: 'quay.io/observatorium/up:' + cfg.version,
@@ -896,7 +912,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
           },
         }
         for name in std.objectFields(obs.manifests)
-        if obs.manifests[name] != null
+        if obs.manifests[name] != null && !std.startsWith(name, "loki")
       ] +
       [
         obs.storeIndexCache[name] {
@@ -1116,6 +1132,14 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       {
         name: 'THANOS_RECEIVE_MEMORY_LIMIT',
         value: '1Gi',
+      },
+      {
+        name: 'THANOS_RECEIVE_DEBUG_ENV',
+        value: '',
+      },
+       {
+        name: 'THANOS_RECEIVE_LOG_LEVEL',
+        value: 'info',
       },
       {
         name: 'THANOS_COMPACTOR_CPU_REQUEST',

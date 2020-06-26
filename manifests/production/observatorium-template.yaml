@@ -7,21 +7,21 @@ objects:
   data:
     rbac.yaml: |-
       "roleBindings":
-      - "name": "github-rhobs"
+      - "name": "rhobs"
         "roles":
-        - "read-write"
+        - "rhobs"
         "subjects":
         - "kind": "group"
           "name": "rhobs"
       "roles":
-      - "name": "github-rhobs"
+      - "name": "rhobs"
         "permissions":
         - "read"
         - "write"
         "resources":
         - "metrics"
         "tenants":
-        - "github-rhobs"
+        - "rhobs"
   kind: ConfigMap
   metadata:
     labels:
@@ -132,12 +132,11 @@ objects:
     tenants.yaml: |-
       "tenants":
       - "id": "770c1124-6ae8-4324-a9d4-9ce08590094b"
-        "name": "github-rhobs"
+        "name": "rhobs"
         "oidc":
           "clientID": "id"
           "clientSecret": "secret"
           "issuerURL": "https://rhobs.tenants.observatorium.io"
-          "usernameClaim": "email"
 - apiVersion: v1
   kind: Service
   metadata:

@@ -757,12 +757,12 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       rbac: {
         roles: [
           {
-            name: 'github-rhobs',
+            name: 'rhobs',
             resources: [
               'metrics',
             ],
             tenants: [
-              'github-rhobs',
+              'rhobs',
             ],
             permissions: [
               'read',
@@ -772,9 +772,9 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         ],
         roleBindings: [
           {
-            name: 'github-rhobs',
+            name: 'rhobs',
             roles: [
-              'read-write',
+              'rhobs',
             ],
             subjects: [
               {
@@ -788,13 +788,12 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       tenants: {
         tenants: [
           {
-            name: 'github-rhobs',
+            name: 'rhobs',
             id: '770c1124-6ae8-4324-a9d4-9ce08590094b',
             oidc: {
               clientID: 'id',
               clientSecret: 'secret',
               issuerURL: 'https://rhobs.tenants.observatorium.io',
-              usernameClaim: 'email',
             },
           },
         ],

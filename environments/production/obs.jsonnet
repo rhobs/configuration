@@ -365,9 +365,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
           namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
         },
       },
-    } +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin,
+    },
 
   up+:: up {
     serviceMonitor+: {

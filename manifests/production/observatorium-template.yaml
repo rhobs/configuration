@@ -11,12 +11,8 @@ objects:
         "roles":
         - "read-write"
         "subjects":
-        - "brancz"
-        - "bwplotka"
-        - "kakkoyun"
-        - "krasi-georgiev"
-        - "metalmatze"
-        - "squat"
+        - "kind": "group"
+          "name": "rhobs"
       "roles":
       - "name": "github-rhobs"
         "permissions":
@@ -3272,7 +3268,7 @@ parameters:
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/observatorium
 - name: OBSERVATORIUM_API_IMAGE_TAG
-  value: master-2020-04-21-v0.1.1-3-gfd8b3bb
+  value: master-2020-06-26-v0.1.1-105-gc784d77
 - name: OBSERVATORIUM_API_REPLICAS
   value: "3"
 - name: OBSERVATORIUM_API_CPU_REQUEST

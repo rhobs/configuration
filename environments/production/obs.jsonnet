@@ -777,12 +777,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
               'read-write',
             ],
             subjects: [
-              'brancz',
-              'bwplotka',
-              'kakkoyun',
-              'krasi-georgiev',
-              'metalmatze',
-              'squat',
+              {
+                name: 'rhobs',
+                kind: 'group',
+              },
             ],
           },
         ],
@@ -835,13 +833,13 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     loki+:: {
       version: 'xxx',
       replicas: {
-          distributor: 'xxx',
-        },
-        image: 'xxxx',
-        objectStorageConfig: {
-          name: 'xxx',
-          key: 'endpoint',
-        },
+        distributor: 'xxx',
+      },
+      image: 'xxxx',
+      objectStorageConfig: {
+        name: 'xxx',
+        key: 'endpoint',
+      },
     },
 
     up: {
@@ -912,7 +910,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
           },
         }
         for name in std.objectFields(obs.manifests)
-        if obs.manifests[name] != null && !std.startsWith(name, "loki")
+        if obs.manifests[name] != null && !std.startsWith(name, 'loki')
       ] +
       [
         obs.storeIndexCache[name] {
@@ -1137,7 +1135,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         name: 'THANOS_RECEIVE_DEBUG_ENV',
         value: '',
       },
-       {
+      {
         name: 'THANOS_RECEIVE_LOG_LEVEL',
         value: 'info',
       },
@@ -1191,7 +1189,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       },
       {
         name: 'OBSERVATORIUM_API_IMAGE_TAG',
-        value: 'master-2020-04-21-v0.1.1-3-gfd8b3bb',
+        value: 'master-2020-06-26-v0.1.1-105-gc784d77',
       },
       {
         name: 'OBSERVATORIUM_API_REPLICAS',

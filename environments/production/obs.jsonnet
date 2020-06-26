@@ -37,7 +37,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-compactor',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -70,7 +69,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-receive-controller',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -97,7 +95,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-rule',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -179,7 +176,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         serviceMonitor+: {
           metadata+: {
             name: 'observatorium-thanos-store-shard-' + i,
-            namespace: null,
             labels+: {
               prometheus: 'app-sre',
               'app.kubernetes.io/version':: 'hidden',
@@ -228,7 +224,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-store-index-cache',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -259,7 +254,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-store-bucket-cache',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -292,7 +286,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         serviceMonitor+: {
           metadata+: {
             name: 'observatorium-thanos-receive-' + hashring.hashring,
-            namespace: null,
             labels+: {
               prometheus: 'app-sre',
               'app.kubernetes.io/version':: 'hidden',
@@ -334,7 +327,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-querier',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -359,7 +351,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-api',
-          namespace: null,
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
@@ -382,7 +373,6 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     serviceMonitor+: {
       metadata+: {
         name: 'observatorium-up',
-        namespace: null,
         labels+: {
           prometheus: 'app-sre',
           'app.kubernetes.io/version':: 'hidden',
@@ -902,21 +892,44 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     },
     objects:
       [
-        obs.manifests[name]
+        obs.manifests[name] {
+          metadata+: {
+            namespace:: 'hidden',
+          },
+        }
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null
       ] +
       [
-        obs.storeIndexCache[name]
+        obs.storeIndexCache[name] {
+          metadata+: {
+            namespace:: 'hidden',
+          },
+        }
         for name in std.objectFields(obs.storeIndexCache)
       ] +
       [
-        obs.storeBucketCache[name]
+        obs.storeBucketCache[name] {
+          metadata+: {
+            namespace:: 'hidden',
+          },
+        }
         for name in std.objectFields(obs.storeBucketCache)
-      ] +
-      telemeter.objects +
-      prometheusAMS.objects,
-
+      ] + [
+        object {
+          metadata+: {
+            namespace:: 'hidden',
+          },
+        }
+        for object in telemeter.objects
+      ] + [
+        object {
+          metadata+: {
+            namespace:: 'hidden',
+          },
+        }
+        for object in prometheusAMS.objects
+      ],
     parameters: [
       {
         name: 'NAMESPACE',

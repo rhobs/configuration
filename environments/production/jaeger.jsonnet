@@ -105,7 +105,11 @@ local app =
     name: 'jaeger',
   },
   objects: [
-    app.jaeger[name]
+    app.jaeger[name] {
+      metadata+: {
+        namespace:: 'hidden',
+      },
+    }
     for name in std.objectFields(app.jaeger)
   ],
   parameters: [

@@ -4,26 +4,26 @@ local list = import 'telemeter/lib/list.libsonnet';
 {
   telemeterServer+:: {
     serviceMonitor+: {
-        metadata+: {
-          labels+: {
-            prometheus: 'app-sre',
-          },
-        },
-        spec+: {
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-          endpoints: [
-            {
-              interval: '60s',
-              port: 'internal',
-              scheme: 'https',
-              tlsConfig: {
-                insecureSkipVerify: true,
-              },
-            },
-          ],
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
         },
       },
-    
+      spec+: {
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        endpoints: [
+          {
+            interval: '60s',
+            port: 'internal',
+            scheme: 'https',
+            tlsConfig: {
+              insecureSkipVerify: true,
+            },
+          },
+        ],
+      },
+    },
+
     statefulSet+: {
       spec+: {
         replicas: '${{REPLICAS}}',

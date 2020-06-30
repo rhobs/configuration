@@ -171,19 +171,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
   store+:: {
     ['shard' + i]+:
       t.store.withVolumeClaimTemplate +
-      t.store.withResources +
-      t.store.withServiceMonitor {
-        serviceMonitor+: {
-          metadata+: {
-            name: 'observatorium-thanos-store-shard-' + i,
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-      } + {
+      t.store.withResources + {
         config+:: {
           memcached+: {
             local memcached = obs.store['shard' + i].config.memcached,
@@ -214,6 +202,33 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       }
     for i in std.range(0, obs.config.store.shards - 1)
   },
+
+  storeMonitor:: [
+    t.store.withServiceMonitor {
+      config:: obs.store.shard0.config {
+        commonLabels+: {
+          'store.observatorium.io/shard':: 'hidden',
+        },
+        podLabelSelector+: {
+          'store.observatorium.io/shard':: 'hidden',
+        },
+      },
+      serviceMonitor+: {
+        metadata+: {
+          namespace:: 'hidden',
+          name: 'observatorium-thanos-store-shard',
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+
+          },
+        },
+        spec+: {
+          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
+    },
+  ],
 
   storeCache:: {},
 
@@ -281,19 +296,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     [hashring.hashring]+:
       t.receive.withVolumeClaimTemplate +
       t.receive.withPodDisruptionBudget +
-      t.receive.withResources +
-      t.receive.withServiceMonitor {
-        serviceMonitor+: {
-          metadata+: {
-            name: 'observatorium-thanos-receive-' + hashring.hashring,
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-      } + {
+      t.receive.withResources + {
         statefulSet+: {
           spec+: {
             template+: {
@@ -320,6 +323,24 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       } + (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin
     for hashring in obs.config.hashrings
   },
+
+  recevierMonitor:: [
+    t.store.withServiceMonitor {
+      config:: obs.receivers.default.config,
+      serviceMonitor+: {
+        metadata+: {
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+          namespace:: 'hidden',
+        },
+        spec+: {
+          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
+    },
+  ],
 
   query+::
     t.query.withResources +
@@ -911,6 +932,8 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null && !std.startsWith(name, 'loki')
       ] +
+      obs.storeMonitor +
+      obs.recevierMonitor +
       [
         obs.storeIndexCache[name] {
           metadata+: {

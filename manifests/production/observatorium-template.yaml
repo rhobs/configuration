@@ -2634,13 +2634,11 @@ objects:
     name: telemeter-server
   spec:
     endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      interval: 30s
+    - interval: 60s
       port: internal
       scheme: https
       tlsConfig:
-        caFile: /etc/prometheus/configmaps/serving-certs-ca-bundle/service-ca.crt
-        serverName: telemeter-server.${NAMESPACE}.svc
+        insecureSkipVerify: true
     jobLabel: k8s-app
     namespaceSelector:
       matchNames:

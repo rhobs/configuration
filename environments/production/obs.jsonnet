@@ -203,32 +203,30 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     for i in std.range(0, obs.config.store.shards - 1)
   },
 
-  storeMonitor:: [
-    t.store.withServiceMonitor {
-      config:: obs.store.shard0.config {
-        commonLabels+: {
-          'store.observatorium.io/shard':: 'hidden',
-        },
-        podLabelSelector+: {
-          'store.observatorium.io/shard':: 'hidden',
-        },
+  storeMonitor: t.store.withServiceMonitor {
+    config:: obs.store.shard0.config {
+      commonLabels+: {
+        'store.observatorium.io/shard':: 'hidden',
       },
-      serviceMonitor+: {
-        metadata+: {
-          namespace:: 'hidden',
-          name: 'observatorium-thanos-store-shard',
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-
-          },
-        },
-        spec+: {
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-        },
+      podLabelSelector+: {
+        'store.observatorium.io/shard':: 'hidden',
       },
     },
-  ],
+    serviceMonitor+: {
+      metadata+: {
+        namespace:: 'hidden',
+        name: 'observatorium-thanos-store-shard',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+
+        },
+      },
+      spec+: {
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+      },
+    },
+  },
 
   storeCache:: {},
 
@@ -324,23 +322,21 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     for hashring in obs.config.hashrings
   },
 
-  recevierMonitor:: [
-    t.store.withServiceMonitor {
-      config:: obs.receivers.default.config,
-      serviceMonitor+: {
-        metadata+: {
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-          },
-          namespace:: 'hidden',
+  receiversMonitor:: t.store.withServiceMonitor {
+    config:: obs.receivers.default.config,
+    serviceMonitor+: {
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
         },
-        spec+: {
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-        },
+        namespace:: 'hidden',
+      },
+      spec+: {
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
       },
     },
-  ],
+  },
 
   query+::
     t.query.withResources +
@@ -932,8 +928,8 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null && !std.startsWith(name, 'loki')
       ] +
-      obs.storeMonitor +
-      obs.recevierMonitor +
+      [obs.storeMonitor.serviceMonitor] +
+      [obs.receiversMonitor.serviceMonitor] +
       [
         obs.storeIndexCache[name] {
           metadata+: {

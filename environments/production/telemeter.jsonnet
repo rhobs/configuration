@@ -11,6 +11,16 @@ local list = import 'telemeter/lib/list.libsonnet';
         },
         spec+: {
           namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+          endpoints: [
+            {
+              interval: '60s',
+              port: 'internal',
+              scheme: 'https',
+              tlsConfig: {
+                insecureSkipVerify: true,
+              },
+            },
+          ],
         },
       },
     

@@ -27,6 +27,7 @@
     - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
     - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
     - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
+    - [ThanosReceiveNoUpload](#thanosreceivenoupload)
     - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
     - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
     - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
@@ -741,6 +742,31 @@ Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in tur
     1. Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
 --- 
+
+## ThanosReceiveNoUpload
+
+### Impact
+
+### Summary
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [app-sre OSD](https://admin-console.app-sre.openshift.com/status/ns/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `telemeter-stage`
+  - `telemeter-production`
+
+### Steps
+
+- Log onto the cluster and run: `oc rollout restart statefulset observatorium-thanos-receive-default`
+
+NOTE: This must be done with a 4.x version of the oc client.
+
+---
 
 ## ThanosRuleTSDBNotIngestingSamples
 

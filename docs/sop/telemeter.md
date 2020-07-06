@@ -132,12 +132,9 @@ Most likely the metrics payload is broken and thus possibly the telemeter metric
 on a cluster that is failing to push metrics.
 - To enable telemeter client verbosity on a given cluster, execute the following steps:
 
-1. Disable CVO, by i.e. `oc -n openshift-cluster-version delete deployment cluster-version-operator`
-2. Disable CMO, by i.e. `on -n openshift-monitoring delete deployment cluster-monitoring-operator`.
-3. Edit the telemeter client deployment, by i.e. `on -n openshift-monitoring edit deployment telemeter-client`.
-4. Add `--verbose` to the CLI arguments of telemeter client.
-
-Note that the above steps should be performed on a throw-away cluster, as the operator deployments have been removed.
+1. Open the Observatorium [Thanos Overview dashboard](https://grafana.app-sre.devshift.net/d/0cb8830a6e957978796729870f560cda/thanos-overview?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-interval=5m&from=now-3h&to=now) and look for elevated errors in each section. The alert name and each section on the Grafana dashboard correlates to a particular Deployment or StatefulSet.
+2. Once you've identified the section, you can drill down into a more specific dashboard in the Observatorium Grafana folder. For example, elevated rates in Receive section of the Overview board should have you referencing the [Thanos Receive dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&from=now-3h&to=now).
+3. Using the alert name to extract the Deployment or StatefulSet name on the cluster, you can now begin to debug the containers on the cluster. Check logs to see what's happened. If the telemeter team has engineering available, allow them the time to debug the container to find a root cause. If they are not available, replace the pod. Note that StatefulSets require more time to shutdown and require the necessary stoage quota to be replaced.
 
 ---
 

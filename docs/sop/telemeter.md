@@ -47,7 +47,12 @@ Telemeter is recieving errors at a high rate from Tollbooth
 
 ### Steps:
 
-- Contact Tollbooth team, investigate why Tollbooth is failing to authorize cluster IDs.
+1. Go to the [Telemeter dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now) and check the /authorize errors. Are the error rates elevated?
+1. Check if the issues come from us or upstream with this [Prometheus Query](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=3h&g0.expr=sum(rate(client_api_requests_total%7Bclient%3D%22authorize%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%2Cstatus%3D~%225..%22%7D%5B5m%5D))%20or%20vector(0)%0A%2F%0Asum(rate(client_api_requests_total%7Bclient%3D%22authorize%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D))&g0.tab=0)
+    1. If you see similar error rates here, compared to the Telemeter dashboard, then this is actually a Tollbooth problem. Please contact them for further troubleshooting.
+    1. If you don't see any errors or significantly lower error rates, then the problems is most likely within Telemeter.
+1. Check the logs for the Telemeter pods. Maybe networking is down?
+1. If the problem persists then escalate to the Telemetry team to help in the investigation.
 
 ---
 
@@ -62,7 +67,7 @@ Clusters are not able to fetch a new authorization token or renew it.
 Telemeter server itself uses OAuth to authorize against tollbooth.
 It uses an access token, issued by RedHat's OAuth server (Keycloak).
 Telemeter is receiving error responses when trying to refresh the access token
-at a high rate from Keycloak.
+at a high rate from Toolbooth.
 
 ### Access required:
 
@@ -75,7 +80,12 @@ at a high rate from Keycloak.
 
 ### Steps:
 
-- Contact Keycloak team, investigate why Keycloack is failing to authorize Telemeter server.
+1. Go to the [Telemeter dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now) and check the /authorize errors. Are the error rates elevated?
+1. Check if the issues come from us or upstream with this [Prometheus Query](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=3h&g0.expr=sum(rate(client_api_requests_total%7Bclient%3D%22oauth%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%2Cstatus%3D~%225..%22%7D%5B5m%5D))%20or%20vector(0)%0A%2F%0Asum(rate(client_api_requests_total%7Bclient%3D%22oauth%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D))&g0.tab=0)
+    1. If you see similar error rates here, compared to the Telemeter dashboard, then this is actually a Tollbooth problem. Please contact them for further troubleshooting.
+    1. If you don't see any errors or significantly lower error rates, then the problems is most likely within Telemeter.
+1. Check the logs for the Telemeter pods. Maybe networking is down?
+1. If the problem persists then escalate to the Telemetry team to help in the investigation.
 
 ---
 
@@ -83,11 +93,11 @@ at a high rate from Keycloak.
 
 ### Impact:
 
-Clusters are not able to push metrics.
+If Telemeter is down for too long, then OpenShift clusters are not able to push metrics anymor and we start losing data.
 
 ### Summary:
 
-Telemeter Server is down and not serving any requests.
+Telemeter Server might be down and not serving any requests.
 
 ### Access required:
 
@@ -98,9 +108,14 @@ Telemeter Server is down and not serving any requests.
 
 ### Steps:
 
-- Contact monitoring engineering team to help in the investigation.
-- Investigate failure of Telemeter server.
-- Check Telemeter server logs.
+
+1. Check if this problem is visibile to the outside. Can you see elevated error rates on [the Telemeter dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now)?
+1. Are there still Telemeter Pods? Are they crash looping? Are they ready? Check the OpenShift console for the `telemeter-production` namespace.
+1. Check the [Prometheus target page](https://prometheus.telemeter-prod-01.devshift.net/targets). Are there are still `job="telemeter-server"` available? 
+    1. Check if Telemeter still answers on the port scraped for metrics. 
+    1. Check the logs - anything suspicious?
+    1. Check the ServiceMonitors. 
+1. If the problem persists then escalate to the Telemetry team to help in the investigation.
 
 ---
 

@@ -6,7 +6,7 @@ local telemeterSLOs = [
     name: 'telemeter-upload.slo.rules',
     slos: [
       slo.errorburn({
-        alertName: 'TelemeterUploadErrorBurning',
+        alertName: 'TelemeterUploadErrorBudgetBurning',
         alertMessage: 'Telemeter /upload is burning too much error budget to gurantee overall availability',
         metric: 'haproxy_server_http_responses_total',
         selectors: ['route="telemeter-server-upload"'],
@@ -19,7 +19,7 @@ local telemeterSLOs = [
     name: 'telemeter-authorize.slo.rules',
     slos: [
       slo.errorburn({
-        alertName: 'TelemeterAuthorizeErrorBurning',
+        alertName: 'TelemeterAuthorizeErrorBudgetBurning',
         alertMessage: 'Telemeter /authorize is burning too much error budget to gurantee overall availability',
         metric: 'haproxy_server_http_responses_total',
         selectors: ['route="telemeter-server-authorize"'],

@@ -247,6 +247,10 @@ local obsSLOs = {
                 labels+: {
                   service: 'telemeter',
                   severity: if alert.labels.severity == 'warning' then 'medium' else alert.labels.severity,
+                  annotations+: {
+                    runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(alert.alert),
+                    dashboard: 'https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus',
+                  },
                 },
               }
               for alert in slo.alerts

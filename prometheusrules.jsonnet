@@ -1,5 +1,34 @@
 local obs = import 'environments/production/obs.jsonnet';
-local slo = import 'slo-libsonnet/slo.libsonnet';
+local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
+
+local telemeterSLOs = [
+  {
+    name: 'telemeter-upload.slo.rules',
+    slos: [
+      slo.errorburn({
+        alertName: 'TelemeterUploadErrorBudgetBurning',
+        alertMessage: 'Telemeter /upload is burning too much error budget to gurantee overall availability',
+        metric: 'haproxy_server_http_responses_total',
+        selectors: ['route="telemeter-server-upload"'],
+        errorSelectors: ['code="5xx"'],
+        target: 0.98,
+      }),
+    ],
+  },
+  {
+    name: 'telemeter-authorize.slo.rules',
+    slos: [
+      slo.errorburn({
+        alertName: 'TelemeterAuthorizeErrorBudgetBurning',
+        alertMessage: 'Telemeter /authorize is burning too much error budget to gurantee overall availability',
+        metric: 'haproxy_server_http_responses_total',
+        selectors: ['route="telemeter-server-authorize"'],
+        errorSelectors: ['code="5xx"'],
+        target: 0.98,
+      }),
+    ],
+  },
+];
 
 local thanosAlerts =
   // (import 'thanos-mixin/alerts/absent.libsonnet') + // TODO: need to be fixed upstream.
@@ -196,8 +225,50 @@ local obsSLOs = {
 
 
 {
-  'observatorium-thanos-stage.prometheusrules': renderThanos('observatorium-thanos-stage', 'telemeter-stage'),
+  'telemeter-slos-production.prometheusrules': renderTelemeterSLOs('telemeter-slos-production'),
+  'telemeter-slos-stage.prometheusrules': renderTelemeterSLOs('telemeter-slos-stage'),
 
+  local renderTelemeterSLOs(name) = {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: name,
+      labels: {
+        prometheus: 'app-sre',
+        role: 'alert-rules',
+      },
+    },
+    spec: {
+      groups: [
+        {
+          local slos = [
+            [
+              alert {
+                labels+: {
+                  service: 'telemeter',
+                  severity: if alert.labels.severity == 'warning' then 'medium' else alert.labels.severity,
+                  annotations+: {
+                    runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(alert.alert),
+                    dashboard: 'https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus',
+                  },
+                },
+              }
+              for alert in slo.alerts
+            ]
+            +
+            slo.recordingrules
+            for slo in group.slos
+          ],
+
+          name: group.name,
+          rules: std.flattenArrays(slos),
+        }
+        for group in telemeterSLOs
+      ],
+    },
+  },
+
+  'observatorium-thanos-stage.prometheusrules': renderThanos('observatorium-thanos-stage', 'telemeter-stage'),
   'observatorium-thanos-production.prometheusrules': renderThanos('observatorium-thanos-production', 'telemeter-production'),
 
   local renderThanos(name, namespace) = {

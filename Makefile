@@ -33,14 +33,6 @@ resources/observability/grafana: grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JS
 	$(JSONNET) -J vendor -m resources/observability/grafana grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/grafana -type f ! -name '*.yaml' -delete
 
-.PHONY: slos
-slos: resources/observability/slo/telemeter.slo.yaml
-
-resources/observability/slo/telemeter.slo.yaml: slo.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	$(JSONNETFMT) -i slo.jsonnet
-	$(JSONNET) -J vendor slo.jsonnet | $(GOJSONTOYAML) > resources/observability/slo/telemeter.slo.yaml
-	find resources/observability/slo/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
-
 .PHONY: whitelisted_metrics
 whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 	# Download the latest metrics file to extract the new added metrics.

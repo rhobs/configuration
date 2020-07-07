@@ -95,13 +95,13 @@ local obsSLOs = {
   local metricLatency = 'http_request_duration_seconds',
   local metricError = 'http_requests_total',
   local writeSelector = {
-    selectors: ['handler="write"'],
+    selectors: ['handler="receive"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
   },
   local querySelector = {
-    selectors: ['handler="query|query_legacy"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    selectors: ['handler=~"query|query_legacy"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
   },
   local queryRangeSelector = {
-    selectors: ['handler="query_range"'],
+    selectors: ['handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
   },
 
 
@@ -114,7 +114,7 @@ local obsSLOs = {
       config: writeSelector {
         alertName: alertNameErrors,
         metric: metricError,
-        errorBudget: 1 - 0.99,
+        target: 0.99,
       },
     },
     {
@@ -122,7 +122,7 @@ local obsSLOs = {
       config: querySelector {
         alertName: alertNameErrors,
         metric: metricError,
-        errorBudget: 1 - 0.95,
+        target: 0.95,
       },
     },
     {
@@ -130,7 +130,7 @@ local obsSLOs = {
       config: queryRangeSelector {
         alertName: alertNameErrors,
         metric: metricError,
-        errorBudget: 1 - 0.90,
+        target: 0.90,
       },
     },
   ],

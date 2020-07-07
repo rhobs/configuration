@@ -234,10 +234,13 @@ spec:
     - alert: ThanosReceiveNoUpload
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} has not uploaded latest data to object storage.
+        message: Thanos Receive {{ $labels.instance }} of {{$labels.job}} has not uploaded latest data to object storage.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivenoupload
-      expr: increase(thanos_shipper_uploads_total{job=~"observatorium-thanos-receive-default.*"}[2h]) == 0
-      for: 2h
+      expr: |
+        (up{job=~"observatorium-thanos-receive-default.*"} - 1)
+        + on (instance) # filters to only alert on current instance last 3h
+        (sum by (instance) (increase(thanos_shipper_uploads_total{job=~"observatorium-thanos-receive-default.*"}[3h])) == 0)
+      for: 3h
       labels:
         service: telemeter
         severity: high

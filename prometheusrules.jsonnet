@@ -225,11 +225,14 @@ local obsSLOs = {
 
 
 {
-  'telemeter-slos-production.prometheusrules': {
+  'telemeter-slos-production.prometheusrules': renderTelemeterSLOs('telemeter-slos-production'),
+  'telemeter-slos-stage.prometheusrules': renderTelemeterSLOs('telemeter-slos-stage'),
+
+  local renderTelemeterSLOs(name) = {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
     metadata: {
-      name: 'telemeter-slos-production',
+      name: name,
       labels: {
         prometheus: 'app-sre',
         role: 'alert-rules',

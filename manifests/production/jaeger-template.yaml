@@ -254,7 +254,8 @@ objects:
     endpoints:
     - port: admin-http
     namespaceSelector:
-      matchNames: ${NAMESPACE}
+      matchNames:
+      - ${NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/name: jaeger-all-in-one
@@ -268,7 +269,8 @@ objects:
     endpoints:
     - port: metrics
     namespaceSelector:
-      matchNames: ${NAMESPACE}
+      matchNames:
+      - ${NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/name: jaeger-agent

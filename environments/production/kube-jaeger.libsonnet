@@ -29,7 +29,7 @@ local jaeger = (import 'jaeger-mixin/mixin.libsonnet');
       },
       spec: {
         namespaceSelector: {
-          matchNames: j.namespace,
+          matchNames: [j.namespace],
         },
         selector: {
           matchLabels: {
@@ -54,7 +54,7 @@ local jaeger = (import 'jaeger-mixin/mixin.libsonnet');
       },
       spec: {
         namespaceSelector: {
-          matchNames: j.namespace,
+          matchNames: [j.namespace],
         },
         selector: {
           matchLabels: {

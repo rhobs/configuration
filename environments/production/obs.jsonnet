@@ -358,6 +358,19 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
 
   queryCache+::
     cqf.withResources +
+    cqf.withServiceMonitor {
+      serviceMonitor+: {
+        metadata+: {
+          labels+: {
+            prometheus: 'app-sre',
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        spec+: {
+          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
+    } +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin,
 

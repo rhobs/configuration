@@ -244,6 +244,34 @@ objects:
       targetPort: 16687
     selector:
       app.kubernetes.io/name: jaeger-all-in-one
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-jaeger-collector
+  spec:
+    endpoints:
+    - port: admin-http
+    namespaceSelector:
+      matchNames: ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: jaeger-all-in-one
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-jaeger-agent
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames: ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: jaeger-agent
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:

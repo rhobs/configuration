@@ -493,6 +493,28 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: cortex-query-frontend
       app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: cortex-query-frontend
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-cortex-query-frontend
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: cortex-query-frontend
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     session_secret: ""

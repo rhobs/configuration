@@ -566,6 +566,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -945,6 +951,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -1201,6 +1213,10 @@ objects:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-receive
                   - key: app.kubernetes.io/instance
                     operator: In
                     values:
@@ -1212,6 +1228,10 @@ objects:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-receive
                   - key: app.kubernetes.io/instance
                     operator: In
                     values:
@@ -1439,6 +1459,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -2320,6 +2346,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -2343,6 +2375,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}

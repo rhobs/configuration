@@ -566,6 +566,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -945,6 +951,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -1201,6 +1213,10 @@ objects:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-receive
                   - key: app.kubernetes.io/instance
                     operator: In
                     values:
@@ -1212,6 +1228,10 @@ objects:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-receive
                   - key: app.kubernetes.io/instance
                     operator: In
                     values:
@@ -1439,6 +1459,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -2320,6 +2346,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -2343,6 +2375,12 @@ objects:
   spec:
     endpoints:
     - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -2667,6 +2705,8 @@ objects:
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}
           - --whitelist={__name__="cluster_installer"}
+          - --whitelist={__name__="cluster_legacy_scheduler_policy"}
+          - --whitelist={__name__="cluster_master_schedulable"}
           - --whitelist={__name__="cluster_operator_conditions"}
           - --whitelist={__name__="cluster_operator_up"}
           - --whitelist={__name__="cluster_version"}
@@ -2674,6 +2714,7 @@ objects:
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
           - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
+          - --whitelist={__name__="code:apiserver_request_total:rate:sum"}
           - --whitelist={__name__="console_url"}
           - --whitelist={__name__="count:up0"}
           - --whitelist={__name__="count:up1"}
@@ -2818,6 +2859,8 @@ objects:
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}
           - --whitelist={__name__="cluster_installer"}
+          - --whitelist={__name__="cluster_legacy_scheduler_policy"}
+          - --whitelist={__name__="cluster_master_schedulable"}
           - --whitelist={__name__="cluster_operator_conditions"}
           - --whitelist={__name__="cluster_operator_up"}
           - --whitelist={__name__="cluster_version"}
@@ -2825,6 +2868,7 @@ objects:
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
           - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
+          - --whitelist={__name__="code:apiserver_request_total:rate:sum"}
           - --whitelist={__name__="console_url"}
           - --whitelist={__name__="count:up0"}
           - --whitelist={__name__="count:up1"}

@@ -17,7 +17,7 @@
 ## Verify it's working
 
 - `telemeter-server` targets are UP in info-gw: https://infogw-data.api.openshift.com/targets#job-telemeter-server
-- `telemeter-server` targets are UP in app-sre prom: https://prometheus.app-sre.devshift.net/targets#job-telemeter-server
+- `telemeter-server` targets are UP in app-sre prom: https://prometheus.telemeter-prod-01.devshift.net/targets#job-telemeter-server
 - `Upload Handler` is returning 200s: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&from=now-6h&to=now
 
 ## AuthorizeClientErrorsHigh

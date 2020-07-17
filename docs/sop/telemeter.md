@@ -4,9 +4,11 @@
 
 - [SOP : OpenShift Telemeter](#sop--openshift-telemeter)
     - [Verify it's working](#verify-its-working)
+    - [TelemeterAuthorizeErrorBudgetBurning](#telemeterauthorizeerrorbudgetburning)
     - [AuthorizeClientErrorsHigh](#authorizeclienterrorshigh)
     - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
     - [TelemeterDown](#telemeterdown)
+    - [TelemeterUploadErrorBudgetBurning][#telemeteruploaderrorbudgetburning]
     - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
     - [Escalations](#escalations)
 
@@ -53,6 +55,15 @@ Telemeter is recieving errors at a high rate from Keycloak.
     1. If you don't see any errors or significantly lower error rates, then the problems is most likely within Telemeter.
 1. Check the logs for the Telemeter pods. Maybe networking is down?
 1. If the problem persists then escalate to the Telemetry team to help in the investigation.
+
+---
+
+## TelemeterAuthorizeErrorBudgetBurning
+
+Please check the [OAuthClientErrorsHigh](#telemeterauthorizeerrorbudgetburning) alert below!  
+Both alert on the same underlying symptoms.
+
+_Note: Soon this new alert will replace the inferior one below._
 
 ---
 
@@ -117,6 +128,15 @@ Telemeter Server might be down and not serving any requests.
     1. Check the logs - anything suspicious?
     1. Check the ServiceMonitors. 
 1. If the problem persists then escalate with [PagerDuty to the Telemetry](https://redhat.pagerduty.com/teams/PQL1RZA/subteams) team to help in the investigation.
+
+---
+
+## TelemeterUploadErrorBudgetBurning
+
+Please check the [UploadHandlerErrorsHigh](#uploadhandlererrorshigh) alert below!  
+Both alert on the same underlying symptoms.
+
+_Note: Soon this new alert will replace the inferior one below._
 
 ---
 

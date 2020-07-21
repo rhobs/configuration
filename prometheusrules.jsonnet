@@ -38,7 +38,7 @@ local thanosAlerts =
   (import 'thanos-mixin/alerts/store.libsonnet') +
   (import 'thanos-mixin/alerts/rule.libsonnet') +
   (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
-  (import 'selectors.libsonnet') {
+  (import 'environments/production/selectors.libsonnet') {
     query+:: {
       p99QueryLatencyThreshold: 90,
     },

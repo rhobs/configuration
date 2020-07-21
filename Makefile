@@ -24,7 +24,7 @@ resources/observability/prometheusrules: prometheusrules.jsonnet $(JSONNET) $(GO
 	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
 
-.PHONY: manifests/production/grafana
+.PHONY: grafana
 grafana: manifests/production/grafana
 
 manifests/production/grafana: environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)

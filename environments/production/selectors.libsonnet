@@ -1,4 +1,4 @@
-local obs = (import 'environments/production/obs.jsonnet');
+local obs = (import 'obs.jsonnet');
 
 {
   _config+:: {

@@ -24,14 +24,14 @@ resources/observability/prometheusrules: prometheusrules.jsonnet $(JSONNET) $(GO
 	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
 
 
-.PHONY: grafana
-grafana: resources/observability/grafana
+.PHONY: manifests/production/grafana
+grafana: manifests/production/grafana
 
-resources/observability/grafana: grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	rm -f resources/observability/grafana/*.yaml
-	$(JSONNETFMT) -i grafana.jsonnet
-	$(JSONNET) -J vendor -m resources/observability/grafana grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	find resources/observability/grafana -type f ! -name '*.yaml' -delete
+manifests/production/grafana: environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	rm -f manifests/production/grafana/*.yaml
+	$(JSONNETFMT) -i environments/production/grafana.jsonnet
+	$(JSONNET) -J vendor -m manifests/production/grafana environments/production/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find manifests/production/grafana -type f ! -name '*.yaml' -delete
 
 .PHONY: whitelisted_metrics
 whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)

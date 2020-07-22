@@ -8,7 +8,7 @@
     - [AuthorizeClientErrorsHigh](#authorizeclienterrorshigh)
     - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
     - [TelemeterDown](#telemeterdown)
-    - [TelemeterUploadErrorBudgetBurning][#telemeteruploaderrorbudgetburning]
+    - [TelemeterUploadErrorBudgetBurning](#telemeteruploaderrorbudgetburning)
     - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
     - [Escalations](#escalations)
 

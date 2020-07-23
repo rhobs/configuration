@@ -215,7 +215,7 @@ Indicated query job/pod having issues.
 ### Steps
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1y&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_server_handled_total%7Bgrpc_code%3D~%22Unknown%7CResourceExhausted%7CInternal%7CUnavailable%22%2C%20job%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_server_started_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
-- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/deployments/thanos-querier/pods).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
 ---
@@ -246,7 +246,7 @@ Certain amount of the requests that querier makes to other Store API components 
 ### Steps
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1y&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_client_handled_total%7Bgrpc_code!%3D%22OK%22%2C%20job%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_client_started_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
-- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/deployments/thanos-querier/pods).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Inspect logs and events of depending jobs, like [store](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/thanos-store), [receivers](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/thanos-receive-default) (There maybe more than one receive component deployed, check all other [statefulsets](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets) to find available receive components).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
@@ -278,7 +278,7 @@ Queriers use DNS Service discovery to discover related components.
 ### Steps
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_querier_store_apis_dns_failures_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_querier_store_apis_dns_lookups_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
-- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/deployments/thanos-querier/pods).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Inspect logs and events of depending jobs, like [store](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/thanos-store), [receivers](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets/thanos-receive-default) (There maybe more than one receive component deployed, check all other [statefulsets](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/statefulsets) to find available receive components).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
@@ -309,7 +309,7 @@ Thanos Queriers are slower than expected to conduct instant vector queries.
 ### Steps
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(http_request_duration_seconds_bucket%7Bjob%3D~"thanos-querier.*"%2Cnamespace%3D"telemeter-production"%2C%20handler%3D"query"%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)&g0.tab=0).
-- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/deployments/thanos-querier/pods).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
 ---
@@ -339,7 +339,7 @@ Thanos Queriers are slower than expected to conduct range vector queries.
 ### Steps
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(http_request_duration_seconds_bucket%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%2C%20handler%3D%22query_range%22%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)%20&g0.tab=0).
-- Inspect logs and events of failing jobs, using [OpenShift console](https://admin-console.app-sre.openshift.com/k8s/ns/telemeter-production/deployments/thanos-querier/pods).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
 
 ---

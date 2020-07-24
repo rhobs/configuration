@@ -19,7 +19,7 @@
 ## Verify it's working
 
 - `telemeter-server` targets are UP in info-gw: https://infogw-data.api.openshift.com/targets#job-telemeter-server
-- `telemeter-server` targets are UP in app-sre prom: https://prometheus.telemeter-prod-01.devshift.net/targets#job-telemeter-server
+- `telemeter-server` targets are UP in `telemeter-prod-01` prom: https://prometheus.telemeter-prod-01.devshift.net/targets#job-telemeter-server
 - `Upload Handler` is returning 200s: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&from=now-6h&to=now
 
 ## AuthorizeClientErrorsHigh
@@ -42,7 +42,7 @@ Telemeter is recieving errors at a high rate from Keycloak.
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently app-sre OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
 - Edit access to the Telemeter namespaces:
     - telemeter-stage
     - telemeter-production
@@ -82,7 +82,7 @@ at a high rate from Keycloak.
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently app-sre OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
 - Edit access to the Telemeter namespaces:
     - telemeter-stage
     - telemeter-production
@@ -113,7 +113,7 @@ Telemeter Server might be down and not serving any requests.
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently app-sre OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
 - Edit access to the Telemeter namespaces:
     - telemeter-stage
     - telemeter-production### Severity: Critical
@@ -153,7 +153,7 @@ Most likely the metrics payload is broken and thus possibly the telemeter metric
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently app-sre OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
 - Edit access to the Telemeter namespaces:
     - telemeter-stage
     - telemeter-production
@@ -186,7 +186,7 @@ Telemeter Prometheus is reaching to its limit of active timeseries and will be u
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently app-sre OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
 - Edit access to the Telemeter namespaces:
     - telemeter-stage
     - telemeter-production### Severity: Critical

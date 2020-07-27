@@ -726,8 +726,8 @@ data:
           {
             "current": {
               "selected": true,
-              "text": "app-sre-stage-01-prometheus",
-              "value": "app-sre-stage-01-prometheus"
+              "text": "telemeter-prod-01-prometheus",
+              "value": "telemeter-prod-01-prometheus"
             },
             "hide": 0,
             "includeAll": false,
@@ -746,9 +746,8 @@ data:
           {
             "allValue": null,
             "current": {
-              "selected": true,
-              "text": "telemeter-stage",
-              "value": "telemeter-stage"
+              "text": "telemeter-production",
+              "value": "telemeter-production"
             },
             "datasource": "$datasource",
             "definition": "label_values(kube_pod_info, namespace)",

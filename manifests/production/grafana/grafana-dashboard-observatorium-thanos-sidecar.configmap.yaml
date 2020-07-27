@@ -1941,11 +1941,14 @@ data:
         "list": [
           {
             "current": {
-              "text": "Prometheus",
-              "value": "Prometheus"
+              "selected": true,
+              "text": "telemeter-prod-01-prometheus",
+              "value": "telemeter-prod-01-prometheus"
             },
             "hide": 0,
+            "includeAll": false,
             "label": null,
+            "multi": false,
             "name": "datasource",
             "options": [
 
@@ -1953,14 +1956,17 @@ data:
             "query": "prometheus",
             "refresh": 1,
             "regex": "",
+            "skipUrlSync": false,
             "type": "datasource"
           },
           {
             "allValue": null,
             "current": {
-
+              "text": "telemeter-production",
+              "value": "telemeter-production"
             },
             "datasource": "$datasource",
+            "definition": "label_values(kube_pod_info, namespace)",
             "hide": 0,
             "includeAll": false,
             "label": "namespace",
@@ -1969,9 +1975,9 @@ data:
             "options": [
 
             ],
-            "query": "label_values(kube_pod_info{}, namespace)",
+            "query": "label_values(kube_pod_info, namespace)",
             "refresh": 1,
-            "regex": "",
+            "regex": "^telemeter.*",
             "sort": 2,
             "tagValuesQuery": "",
             "tags": [

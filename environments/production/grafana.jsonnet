@@ -13,6 +13,9 @@ local jaeger = (import 'jaeger-mixin/mixin.libsonnet');
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
 local memcached = (import 'memcached-mixin/mixin.libsonnet');
 
+local obsDatasource = 'telemeter-prod-01-prometheus';
+local obsNamespace = 'telemeter-production';
+
 {
   ['grafana-dashboard-observatorium-thanos-%s.configmap' % std.split(name, '.')[0]]:
     local configmap = k.core.v1.configMap;
@@ -1853,9 +1856,8 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               {
                 current: {
                   selected: true,
-                  tags: [],
-                  text: 'app-sre-stage-01-prometheus',
-                  value: 'app-sre-stage-01-prometheus',
+                  text: obsDatasource,
+                  value: obsDatasource,
                 },
                 hide: 0,
                 includeAll: false,
@@ -1872,51 +1874,28 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               {
                 allValue: null,
                 current: {
-                  isNone: true,
-                  selected: true,
-                  text: 'None',
-                  value: '',
+                  text: obsNamespace,
+                  value: obsNamespace,
                 },
                 datasource: '$datasource',
-                definition: 'label_values(kube_pod_info, cluster)',
-                hide: 0,
-                includeAll: false,
-                label: 'cluster',
-                multi: false,
-                name: 'cluster',
-                options: [],
-                query: 'label_values(kube_pod_info, cluster)',
-                refresh: 1,
-                regex: '',
-                skipUrlSync: false,
-                sort: 0,
-                tagValuesQuery: '',
-                tags: [],
-                tagsQuery: '',
-                type: 'query',
-                useTags: false,
-              },
-              {
-                allValue: null,
-                current: {
-                  text: 'telemeter-stage',
-                  value: 'telemeter-stage',
-                },
-                datasource: '$datasource',
-                definition: 'label_values(kube_pod_info{cluster="$cluster"}, namespace)',
+                definition: 'label_values(kube_pod_info, namespace)',
                 hide: 0,
                 includeAll: false,
                 label: 'namespace',
                 multi: false,
                 name: 'namespace',
-                options: [],
-                query: 'label_values(kube_pod_info{cluster="$cluster"}, namespace)',
+                options: [
+
+                ],
+                query: 'label_values(kube_pod_info, namespace)',
                 refresh: 1,
                 regex: '^telemeter.*',
                 skipUrlSync: false,
                 sort: 2,
                 tagValuesQuery: '',
-                tags: [],
+                tags: [
+
+                ],
                 tagsQuery: '',
                 type: 'query',
                 useTags: false,
@@ -3933,11 +3912,14 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
             list: [
               {
                 current: {
-                  text: 'Prometheus',
-                  value: 'Prometheus',
+                  selected: true,
+                  text: obsDatasource,
+                  value: obsDatasource,
                 },
                 hide: 0,
+                includeAll: false,
                 label: null,
+                multi: false,
                 name: 'datasource',
                 options: [
 
@@ -3945,14 +3927,17 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
                 query: 'prometheus',
                 refresh: 1,
                 regex: '',
+                skipUrlSync: false,
                 type: 'datasource',
               },
               {
                 allValue: null,
                 current: {
-
+                  text: obsNamespace,
+                  value: obsNamespace,
                 },
                 datasource: '$datasource',
+                definition: 'label_values(kube_pod_info, namespace)',
                 hide: 0,
                 includeAll: false,
                 label: 'namespace',
@@ -3961,9 +3946,9 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
                 options: [
 
                 ],
-                query: 'label_values(kube_pod_info{}, namespace)',
+                query: 'label_values(kube_pod_info, namespace)',
                 refresh: 1,
-                regex: '',
+                regex: '^telemeter.*',
                 sort: 2,
                 tagValuesQuery: '',
                 tags: [
@@ -4748,15 +4733,17 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               {
                 current: {
                   selected: true,
-                  text: 'app-sre-stage-01-prometheus',
-                  value: 'app-sre-stage-01-prometheus',
+                  text: obsDatasource,
+                  value: obsDatasource,
                 },
                 hide: 0,
                 includeAll: false,
                 label: null,
                 multi: false,
                 name: 'datasource',
-                options: [],
+                options: [
+
+                ],
                 query: 'prometheus',
                 refresh: 1,
                 regex: '',
@@ -4766,9 +4753,8 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               {
                 allValue: null,
                 current: {
-                  selected: true,
-                  text: 'telemeter-stage',
-                  value: 'telemeter-stage',
+                  text: obsNamespace,
+                  value: obsNamespace,
                 },
                 datasource: '$datasource',
                 definition: 'label_values(kube_pod_info, namespace)',
@@ -7181,15 +7167,17 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               {
                 current: {
                   selected: true,
-                  text: 'telemeter-prod-01-prometheus',
-                  value: 'telemeter-prod-01-prometheus',
+                  text: obsDatasource,
+                  value: obsDatasource,
                 },
                 hide: 0,
                 includeAll: false,
                 label: null,
                 multi: false,
                 name: 'datasource',
-                options: [],
+                options: [
+
+                ],
                 query: 'prometheus',
                 refresh: 1,
                 regex: '',
@@ -7199,49 +7187,22 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
               {
                 allValue: null,
                 current: {
-                  isNone: true,
-                  selected: true,
-                  text: 'None',
-                  value: '',
+                  text: obsNamespace,
+                  value: obsNamespace,
                 },
                 datasource: '$datasource',
-                definition: 'label_values(kube_pod_info, cluster)',
-                hide: 0,
-                includeAll: false,
-                label: 'cluster',
-                multi: false,
-                name: 'cluster',
-                options: [],
-                query: 'label_values(kube_pod_info, cluster)',
-                refresh: 1,
-                regex: '',
-                skipUrlSync: false,
-                sort: 0,
-                tagValuesQuery: '',
-                tags: [],
-                tagsQuery: '',
-                type: 'query',
-                useTags: false,
-              },
-              {
-                allValue: null,
-                current: {
-                  text: 'telemeter-production',
-                  value: 'telemeter-production',
-                },
-                datasource: '$datasource',
-                definition: 'label_values(kube_pod_info{cluster="$cluster"}, namespace)',
+                definition: 'label_values(kube_pod_info, namespace)',
                 hide: 0,
                 includeAll: false,
                 label: 'namespace',
                 multi: false,
                 name: 'namespace',
                 options: [],
-                query: 'label_values(kube_pod_info{cluster="$cluster"}, namespace)',
+                query: 'label_values(kube_pod_info, namespace)',
                 refresh: 1,
                 regex: '^telemeter.*',
                 skipUrlSync: false,
-                sort: 2,
+                sort: 1,
                 tagValuesQuery: '',
                 tags: [],
                 tagsQuery: '',

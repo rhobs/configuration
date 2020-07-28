@@ -44,7 +44,7 @@
           "subdir": "slo-libsonnet"
         }
       },
-      "version": "c2b8bce072ee96bfed0283c38dfcf29e0c8d8ff1"
+      "version": "master"
     },
     {
       "source": {
@@ -91,7 +91,7 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "7413e5f8141ba1580f70130046388ffafee1f28e"
+      "version": "master"
     },
     {
       "source": {
@@ -109,7 +109,7 @@
           "subdir": "mixin"
         }
       },
-      "version": "6fc316b5ced4eeef486a6b2aae5c5de5e2f8cb27",
+      "version": "master",
       "name": "thanos-mixin"
     }
   ],

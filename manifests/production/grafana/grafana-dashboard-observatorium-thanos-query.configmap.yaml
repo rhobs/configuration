@@ -65,10 +65,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, status_code)",
+                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, handler, status_code)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{status_code}}",
+                  "legendFormat": "{{job}} {{handler}} {{status_code}}",
                   "refId": "A",
                   "step": 10
                 }
@@ -360,10 +360,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, status_code)",
+                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",handler=\"query_range\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, handler, status_code)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{status_code}}",
+                  "legendFormat": "{{job}} {{handler}} {{status_code}}",
                   "refId": "A",
                   "step": 10
                 }
@@ -607,301 +607,6 @@ data:
           "titleSize": "h6"
         },
         {
-          "collapse": true,
-          "height": "250px",
-          "panels": [
-            {
-              "aliasColors": {
-                "1xx": "#EAB839",
-                "2xx": "#7EB26D",
-                "3xx": "#6ED0E0",
-                "4xx": "#EF843C",
-                "5xx": "#E24D42",
-                "error": "#E24D42",
-                "success": "#7EB26D"
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows rate of requests against /query for the given time, with handlers and codes.",
-              "fill": 10,
-              "id": 7,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(label_replace(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, handler, status_code)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{handler}} {{status_code}}",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Rate",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests, in more detail.",
-              "fill": 10,
-              "id": 8,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(http_requests_total{namespace=\"$namespace\",job=~\"$job\",code!~\"2..\"}[$interval])) by (job, handler, code)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{handler}} {{code}}",
-                  "legendLink": null,
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Errors",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "percentunit",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests in quantiles.",
-              "fill": 1,
-              "id": 9,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}} {{handler}}",
-                  "refId": "A",
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(http_request_duration_seconds_sum{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler) * 1 / sum(rate(http_request_duration_seconds_count{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "mean {{job}} {{handler}}",
-                  "refId": "B",
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, handler, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}} {{handler}}",
-                  "refId": "C",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Duration",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "s",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            }
-          ],
-          "repeat": null,
-          "repeatIteration": null,
-          "repeatRowId": null,
-          "showTitle": true,
-          "title": "Query Detailed",
-          "titleSize": "h6"
-        },
-        {
           "collapse": false,
           "height": "250px",
           "panels": [
@@ -932,296 +637,7 @@ data:
               "datasource": "$datasource",
               "description": "Shows rate of handled Unary gRPC requests from other queriers.",
               "fill": 10,
-              "id": 10,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(grpc_client_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_code)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_code}}",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Rate",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-                "error": "#E24D42"
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
-              "fill": 10,
-              "id": 11,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) / sum(rate(grpc_client_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval]))",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "error",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Errors",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "percentunit",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests from other queriers, in quantiles.",
-              "fill": 1,
-              "id": 12,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(grpc_client_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_client_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job)\n",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "mean {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Duration",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "s",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            }
-          ],
-          "repeat": null,
-          "repeatIteration": null,
-          "repeatRowId": null,
-          "showTitle": true,
-          "title": "gRPC (Unary)",
-          "titleSize": "h6"
-        },
-        {
-          "collapse": true,
-          "height": "250px",
-          "panels": [
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows rate of handled Unary gRPC requests, with grpc methods and codes from other queriers.",
-              "fill": 10,
-              "id": 13,
+              "id": 7,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1300,7 +716,7 @@ data:
             },
             {
               "aliasColors": {
-
+                "error": "#E24D42"
               },
               "bars": false,
               "dashLength": 10,
@@ -1308,7 +724,7 @@ data:
               "datasource": "$datasource",
               "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
               "fill": 10,
-              "id": 14,
+              "id": 8,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1337,11 +753,11 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code!=\"OK\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) by (job, grpc_method, grpc_code)\n",
+                  "expr": "sum(rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval])) / sum(rate(grpc_client_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
-                  "legendLink": null,
+                  "legendFormat": "error",
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1368,7 +784,7 @@ data:
               },
               "yaxes": [
                 {
-                  "format": "short",
+                  "format": "percentunit",
                   "label": null,
                   "logBase": 1,
                   "max": null,
@@ -1395,7 +811,7 @@ data:
               "datasource": "$datasource",
               "description": "Shows how long has it taken to handle requests from other queriers, in quantiles.",
               "fill": 1,
-              "id": 15,
+              "id": 9,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1493,7 +909,7 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Detailed",
+          "title": "gRPC (Unary)",
           "titleSize": "h6"
         },
         {
@@ -1527,296 +943,7 @@ data:
               "datasource": "$datasource",
               "description": "Shows rate of handled Streamed gRPC requests from other queriers.",
               "fill": 10,
-              "id": 16,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(grpc_client_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_code)",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_code}}",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Rate",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-                "error": "#E24D42"
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
-              "fill": 10,
-              "id": 17,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 0,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": true,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) / sum(rate(grpc_client_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval]))",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "error",
-                  "refId": "A",
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Errors",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "percentunit",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            },
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests from other queriers, in quantiles",
-              "fill": 1,
-              "id": 18,
-              "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-              },
-              "lines": true,
-              "linewidth": 1,
-              "links": [
-
-              ],
-              "nullPointMode": "null as zero",
-              "percentage": false,
-              "pointradius": 5,
-              "points": false,
-              "renderer": "flot",
-              "seriesOverrides": [
-
-              ],
-              "spaceLength": 10,
-              "span": 4,
-              "stack": false,
-              "steppedLine": false,
-              "targets": [
-                {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(grpc_client_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_client_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job)\n",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "mean {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_client_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}}",
-                  "legendLink": null,
-                  "step": 10
-                }
-              ],
-              "thresholds": [
-
-              ],
-              "timeFrom": null,
-              "timeShift": null,
-              "title": "Duration",
-              "tooltip": {
-                "shared": false,
-                "sort": 0,
-                "value_type": "individual"
-              },
-              "type": "graph",
-              "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": [
-
-                ]
-              },
-              "yaxes": [
-                {
-                  "format": "s",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": 0,
-                  "show": true
-                },
-                {
-                  "format": "short",
-                  "label": null,
-                  "logBase": 1,
-                  "max": null,
-                  "min": null,
-                  "show": false
-                }
-              ]
-            }
-          ],
-          "repeat": null,
-          "repeatIteration": null,
-          "repeatRowId": null,
-          "showTitle": true,
-          "title": "gRPC (Stream)",
-          "titleSize": "h6"
-        },
-        {
-          "collapse": true,
-          "height": "250px",
-          "panels": [
-            {
-              "aliasColors": {
-
-              },
-              "bars": false,
-              "dashLength": 10,
-              "dashes": false,
-              "datasource": "$datasource",
-              "description": "Shows rate of handled Streamed gRPC requests, with grpc methods and codes.",
-              "fill": 10,
-              "id": 19,
+              "id": 10,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1895,15 +1022,15 @@ data:
             },
             {
               "aliasColors": {
-
+                "error": "#E24D42"
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests.",
+              "description": "Shows ratio of errors compared to the the total number of handled requests from other queriers.",
               "fill": 10,
-              "id": 20,
+              "id": 11,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -1932,11 +1059,11 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_client_handled_total{grpc_code!=\"OK\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, grpc_code)\n",
+                  "expr": "sum(rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) / sum(rate(grpc_client_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
-                  "legendLink": null,
+                  "legendFormat": "error",
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1963,7 +1090,7 @@ data:
               },
               "yaxes": [
                 {
-                  "format": "short",
+                  "format": "percentunit",
                   "label": null,
                   "logBase": 1,
                   "max": null,
@@ -1988,9 +1115,9 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows how long has it taken to handle requests in quantiles.",
+              "description": "Shows how long has it taken to handle requests from other queriers, in quantiles",
               "fill": 1,
-              "id": 21,
+              "id": 12,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2088,7 +1215,7 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Detailed",
+          "title": "gRPC (Stream)",
           "titleSize": "h6"
         },
         {
@@ -2105,7 +1232,7 @@ data:
               "datasource": "$datasource",
               "description": "Shows rate of DNS lookups to discover stores.",
               "fill": 1,
-              "id": 22,
+              "id": 13,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2192,7 +1319,7 @@ data:
               "datasource": "$datasource",
               "description": "Shows ratio of failures compared to the the total number of executed DNS lookups.",
               "fill": 10,
-              "id": 23,
+              "id": 14,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2290,7 +1417,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 24,
+              "id": 15,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2416,7 +1543,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 25,
+              "id": 16,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -2502,7 +1629,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 26,
+              "id": 17,
               "legend": {
                 "avg": false,
                 "current": false,

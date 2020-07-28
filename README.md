@@ -2,16 +2,24 @@
 
 This projects holds all the configuration files for our internal Observatorium deployments.
 
-### Syncing upstream changes for the jsonnet dependancies.
+## Installing jsonnet dependencies.
 
+To install all dependencies:
+```
+jb install
+#installs pinned versions from `jsonnetfile.lock.json` file.
+```
+
+To update a dependency:
 ```
 jb update https://github.com/thanos-io/kube-thanos
+#updates `kube-thanos` to master and sets the new hash in `jsonnetfile.lock.json`.
+
+jb update
+#updates all dependancies to master and sets the new hashes in `jsonnetfile.lock.json`.
 ```
-This will update `kube-thanos` to latest master and set the hash in `jsonnetfile.lock.json`
 
-
-
-## Manage Grafana dashboards
+## Grafana dashboards
 
 All dashboards are generated in `manifests/production/grafana` with:
 ```
@@ -23,7 +31,7 @@ make grafana
 **Production**: update the commit hash ref in `https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`
 
 
-## Manage components - Deployments, ServiceMonitors, ConfigMaps etc...
+## Components - Deployments, ServiceMonitors, ConfigMaps etc...
 
 All components manifests are generated in `manifests/production/` with:
 ```
@@ -35,7 +43,10 @@ make manifests
 
 
 ## CI Jobs
-deployment jobs runs are posted in `#sd-app-sre-info` for grafana dashboards and `#team-monitoring-info` for everyrhing else.
+Jobs runs are posted in:<br/>
+`#sd-app-sre-info` for grafana dashboards <br/>
+and <br/>
+`#team-monitoring-info` for everyrhing else.
 
 
 

@@ -28,7 +28,9 @@ make grafana
 
 **Staging**: deploys on every commit master.
 
-**Production**: update the commit hash ref in `https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`
+**Production**: update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
+
+If you are deleting a dashboard or adding new ones, you need to update the grafana template accordingly: [`https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/openshift/grafana.template.yaml`](https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/openshift/grafana.template.yaml)
 
 
 ## Components - Deployments, ServiceMonitors, ConfigMaps etc...
@@ -39,7 +41,7 @@ make manifests
 ```
 **Staging**: deploys on every commit master.
 
-**Production**: update the commit hash ref in `https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml`
+**Production**: update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml)
 
 
 ## CI Jobs

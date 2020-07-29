@@ -34,7 +34,8 @@ https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/opensh
 
 **Production**: update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
 
-If you are deleting a dashboard or adding new ones, you need to update the grafana template accordingly: [`https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/openshift/grafana.template.yaml`](https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/openshift/grafana.template.yaml)
+When deleting or adding a dashboard, you need to update the grafana template accordingly: [`https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/openshift/grafana.template.yaml`](https://gitlab.cee.redhat.com/service/app-sre-observability/-/blob/master/openshift/grafana.template.yaml)
+> this step will be automated soon https://issues.redhat.com/browse/APPSRE-2285
 
 
 ## Components - Deployments, ServiceMonitors, ConfigMaps etc...

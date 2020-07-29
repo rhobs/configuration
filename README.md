@@ -1,9 +1,7 @@
 # observatorium/configuration
-
 This projects holds all the configuration files for our internal Observatorium deployments.
 
 ## Installing jsonnet dependencies.
-
 To install all dependencies:
 ```
 jb install
@@ -20,7 +18,6 @@ jb update
 ```
 
 ## Grafana dashboards
-
 All dashboards are generated in `manifests/production/grafana` with:
 ```
 make grafana
@@ -39,7 +36,6 @@ When deleting or adding a dashboard, you need to update the grafana template acc
 
 
 ## Components - Deployments, ServiceMonitors, ConfigMaps etc...
-
 All components manifests are generated in `manifests/production/` with:
 ```
 make manifests
@@ -55,5 +51,10 @@ Jobs runs are posted in:<br/>
 and <br/>
 `#team-monitoring-info` for everyrhing else.
 
+## Troubleshooting
+1. Enable port forwarding for a user - [example](
+https://gitlab.cee.redhat.com/service/app-interface/-/blob/ee91aac666ee39a273332c59ad4bdf7e0f50eeba/data/teams/telemeter/users/fbranczy.yml#L14)
+2. Add a pod name to the allowed list for port forwarding - [example](
+https://gitlab.cee.redhat.com/service/app-interface/-/blob/ee91aac666ee39a273332c59ad4bdf7e0f50eeba/resources/app-sre/telemeter-production/observatorium-allow-port-forward.role.yaml#L10)
 
 

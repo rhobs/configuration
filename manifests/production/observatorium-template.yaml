@@ -3283,7 +3283,7 @@ parameters:
 - name: OBSERVATORIUM_API_IMAGE_TAG
   value: master-2020-06-26-v0.1.1-105-gc784d77
 - name: OBSERVATORIUM_API_REPLICAS
-  value: "3"
+  value: "0"
 - name: OBSERVATORIUM_API_CPU_REQUEST
   value: 100m
 - name: OBSERVATORIUM_API_CPU_LIMIT

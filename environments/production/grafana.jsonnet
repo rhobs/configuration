@@ -16,7 +16,7 @@ local memcached = (import 'memcached-mixin/mixin.libsonnet');
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'telemeter-production';
 
-{
+local dashboards = {
   ['grafana-dashboard-observatorium-thanos-%s.configmap' % std.split(name, '.')[0]]:
     local configmap = k.core.v1.configMap;
     configmap.new() +
@@ -5147,4 +5147,19 @@ local obsNamespace = 'telemeter-production';
         }, '  ',
       ),
     }),
+};
+
+
+{
+  [name]: dashboards[name] {
+    metadata+: {
+      labels+: {
+        grafana_dashboard: 'true',
+      },
+      annotations+: {
+        'grafana-folder': '/grafana-dashboard-definitions/Observatorium',
+      },
+    },
+  }
+  for name in std.objectFields(dashboards)
 }

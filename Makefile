@@ -28,7 +28,7 @@ resources/observability/prometheusrules: format prometheusrules.jsonnet $(JSONNE
 .PHONY: grafana
 grafana: manifests/production/grafana
 
-manifests/production/grafana: format  environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+manifests/production/grafana: format environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
 	rm -f manifests/production/grafana/*.yaml
 	$(JSONNET) -J vendor -m manifests/production/grafana environments/production/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
@@ -50,7 +50,7 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 	cp /tmp/metrics.json environments/production/metrics.json
 
 .PHONY: manifests
-manifests: format $(VENDOR_DIR)  manifests/production/conprof-template.yaml manifests/production/jaeger-template.yaml manifests/production/observatorium-template.yaml
+manifests: format $(VENDOR_DIR) manifests/production/conprof-template.yaml manifests/production/jaeger-template.yaml manifests/production/observatorium-template.yaml
 
 manifests/production/conprof-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running conprof-template"

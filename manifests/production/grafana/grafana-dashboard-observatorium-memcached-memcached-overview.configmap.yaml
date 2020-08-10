@@ -1222,8 +1222,8 @@ data:
     }
 kind: ConfigMap
 metadata:
-  name: grafana-dashboard-observatorium-memcached-memcached-overview
-  labels:
-    grafana_dashboard: "true"
   annotations:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
+  labels:
+    grafana_dashboard: "true"
+  name: grafana-dashboard-observatorium-memcached-memcached-overview

@@ -2069,3 +2069,7 @@ data:
 kind: ConfigMap
 metadata:
   name: grafana-dashboard-observatorium-api
+  labels:
+    grafana_dashboard: "true"
+  annotations:
+    grafana-folder: /grafana-dashboard-definitions/Observatorium

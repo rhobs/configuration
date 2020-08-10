@@ -1739,3 +1739,7 @@ data:
 kind: ConfigMap
 metadata:
   name: grafana-dashboard-observatorium-thanos-compact
+  labels:
+    grafana_dashboard: "true"
+  annotations:
+    grafana-folder: /grafana-dashboard-definitions/Observatorium

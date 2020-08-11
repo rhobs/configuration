@@ -613,6 +613,7 @@ objects:
         - args:
           - compact
           - --wait
+          - --log.level=${THANOS_COMPACTOR_LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --data-dir=/var/thanos/compact
           - --debug.accept-malformed-index
@@ -772,6 +773,7 @@ objects:
         containers:
         - args:
           - query
+          - --log.level=${THANOS_QUERIER_LOG_LEVEL}
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:9090
           - --query.replica-label=prometheus_replica
@@ -1243,6 +1245,7 @@ objects:
         containers:
         - args:
           - receive
+          - --log.level=${THANOS_RECEIVE_LOG_LEVEL}
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --remote-write.address=0.0.0.0:19291
@@ -1254,7 +1257,6 @@ objects:
           - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --tsdb.retention=4d
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
-          - --log.level=${THANOS_RECEIVE_LOG_LEVEL}
           - --receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
           - |
             --tracing.config=
@@ -1506,6 +1508,7 @@ objects:
         containers:
         - args:
           - rule
+          - --log.level=${THANOS_RULER_LOG_LEVEL}
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
@@ -1698,6 +1701,7 @@ objects:
         containers:
         - args:
           - store
+          - --log.level=${THANOS_STORE_LOG_LEVEL}
           - --data-dir=/var/thanos/store
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
@@ -1936,6 +1940,7 @@ objects:
         containers:
         - args:
           - store
+          - --log.level=${THANOS_STORE_LOG_LEVEL}
           - --data-dir=/var/thanos/store
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
@@ -2174,6 +2179,7 @@ objects:
         containers:
         - args:
           - store
+          - --log.level=${THANOS_STORE_LOG_LEVEL}
           - --data-dir=/var/thanos/store
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
@@ -3182,6 +3188,8 @@ parameters:
   value: "3"
 - name: THANOS_STORE_REPLICAS
   value: "5"
+- name: THANOS_COMPACTOR_LOG_LEVEL
+  value: info
 - name: THANOS_COMPACTOR_REPLICAS
   value: "1"
 - name: THANOS_RECEIVE_REPLICAS
@@ -3190,6 +3198,8 @@ parameters:
   value: thanos-objectstorage
 - name: THANOS_S3_SECRET
   value: telemeter-thanos-stage-s3
+- name: THANOS_QUERIER_LOG_LEVEL
+  value: info
 - name: THANOS_QUERIER_CPU_REQUEST
   value: 100m
 - name: THANOS_QUERIER_CPU_LIMIT
@@ -3208,6 +3218,8 @@ parameters:
   value: 256Mi
 - name: THANOS_QUERIER_CACHE_MEMORY_LIMIT
   value: 1Gi
+- name: THANOS_STORE_LOG_LEVEL
+  value: info
 - name: THANOS_STORE_CPU_REQUEST
   value: 500m
 - name: THANOS_STORE_CPU_LIMIT
@@ -3266,6 +3278,8 @@ parameters:
   value: 5Gi
 - name: THANOS_COMPACTOR_PVC_REQUEST
   value: 50Gi
+- name: THANOS_RULER_LOG_LEVEL
+  value: info
 - name: THANOS_RULER_REPLICAS
   value: "2"
 - name: THANOS_RULER_CPU_REQUEST
@@ -3283,7 +3297,7 @@ parameters:
 - name: OBSERVATORIUM_API_IMAGE_TAG
   value: master-2020-06-26-v0.1.1-105-gc784d77
 - name: OBSERVATORIUM_API_REPLICAS
-  value: "0"
+  value: "3"
 - name: OBSERVATORIUM_API_CPU_REQUEST
   value: 100m
 - name: OBSERVATORIUM_API_CPU_LIMIT

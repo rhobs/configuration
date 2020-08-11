@@ -443,6 +443,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     ],
 
     compact+: {
+      logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       objectStorageConfig: obs.config.objectStorageConfig,
@@ -549,6 +550,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     },
 
     rule+: {
+      logLevel: '${THANOS_RULER_LOG_LEVEL}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       objectStorageConfig: obs.config.objectStorageConfig,
@@ -570,6 +572,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     },
 
     store+: {
+      logLevel: '${THANOS_STORE_LOG_LEVEL}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       shards: 3,
@@ -687,6 +690,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     },
 
     query+: {
+      logLevel: '${THANOS_QUERIER_LOG_LEVEL}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       replicas: '${{THANOS_QUERIER_REPLICAS}}',
@@ -1023,6 +1027,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         value: '5',
       },
       {
+        name: 'THANOS_COMPACTOR_LOG_LEVEL',
+        value: 'info',
+      },
+      {
         name: 'THANOS_COMPACTOR_REPLICAS',
         value: '1',
       },
@@ -1037,6 +1045,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       {
         name: 'THANOS_S3_SECRET',
         value: 'telemeter-thanos-stage-s3',
+      },
+      {
+        name: 'THANOS_QUERIER_LOG_LEVEL',
+        value: 'info',
       },
       {
         name: 'THANOS_QUERIER_CPU_REQUEST',
@@ -1073,6 +1085,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       {
         name: 'THANOS_QUERIER_CACHE_MEMORY_LIMIT',
         value: '1Gi',
+      },
+      {
+        name: 'THANOS_STORE_LOG_LEVEL',
+        value: 'info',
       },
       {
         name: 'THANOS_STORE_CPU_REQUEST',
@@ -1189,6 +1205,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       {
         name: 'THANOS_COMPACTOR_PVC_REQUEST',
         value: '50Gi',
+      },
+      {
+        name: 'THANOS_RULER_LOG_LEVEL',
+        value: 'info',
       },
       {
         name: 'THANOS_RULER_REPLICAS',

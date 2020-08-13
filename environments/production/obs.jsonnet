@@ -1,7 +1,6 @@
 local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet');
 local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
 local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
-local cqf = (import 'github.com/observatorium/deployments/components/cortex-query-frontend.libsonnet');
 local mc = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 local up = (import 'github.com/observatorium/deployments/components/up.libsonnet');
 
@@ -356,23 +355,23 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
     (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').deploymentMixin,
 
-  queryCache+::
-    cqf.withResources +
-    cqf.withServiceMonitor {
+  queryFrontend+::
+    t.queryFrontend.withResources +
+    t.queryFrontend.withServiceMonitor {
       serviceMonitor+: {
         metadata+: {
+          name: 'observatorium-thanos-query-frontend',
           labels+: {
             prometheus: 'app-sre',
             'app.kubernetes.io/version':: 'hidden',
           },
         },
-        spec+: {
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-        },
+        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
       },
     } +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin,
+    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
+    (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').deploymentMixin,
 
   api+::
     api.withResources +
@@ -729,27 +728,34 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       },
     },
 
-    queryCache+: {
-      local qcConfig = self,
-      version: 'master-fdcd992f',
-      image: 'quay.io/cortexproject/cortex:' + qcConfig.version,
-      replicas: '${{THANOS_QUERIER_CACHE_REPLICAS}}',
+    queryFrontend+: {
+      image: obs.config.thanosImage,
+      version: obs.config.thanosVersion,
+      replicas: '${{THANOS_QUERY_FRONTEND_REPLICAS}}',
       resources: {
         requests: {
-          cpu: '${THANOS_QUERIER_CACHE_CPU_REQUEST}',
-          memory: '${THANOS_QUERIER_CACHE_MEMORY_REQUEST}',
+          cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
+          memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
         },
         limits: {
-          cpu: '${THANOS_QUERIER_CACHE_CPU_LIMIT}',
-          memory: '${THANOS_QUERIER_CACHE_MEMORY_LIMIT}',
+          cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
+          memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
         },
+      },
+      splitInterval: '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
+      maxRetries: '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
+      logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
+      fifoCache: {
+        maxSize: '0',
+        maxSizeItems: 2048,
+        validity: '6h',
       },
       oauthProxy: {
         image: obs.config.oauthProxyImage,
         httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.query.service.spec.ports[1].port,
-        tlsSecretName: 'query-cache-tls',
-        sessionSecretName: 'query-cache-proxy',
+        upstream: 'http://localhost:' + obs.queryFrontend.service.spec.ports[0].port,
+        tlsSecretName: 'query-frontend-tls',
+        sessionSecretName: 'query-frontend-proxy',
         sessionSecret: '',
         serviceAccountName: 'prometheus-telemeter',
         resources: {
@@ -762,6 +768,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
             memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
           },
         },
+      },
+      jaegerAgent: {
+        image: obs.config.jaegerAgentImage,
+        collectorAddress: obs.config.jaegerAgentCollectorAddress,
       },
     },
 
@@ -778,9 +788,9 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       },
       metrics: {
         readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          obs.queryCache.service.metadata.name,
-          obs.queryCache.service.metadata.namespace,
-          obs.queryCache.service.spec.ports[0].port,
+          obs.queryFrontend.service.metadata.name,
+          obs.queryFrontend.service.metadata.namespace,
+          obs.queryFrontend.service.spec.ports[0].port,
         ],
         writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
           obs.receiveService.metadata.name,
@@ -880,7 +890,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
       namespace: obs.config.namespace,
       endpointType: 'metrics',
-      readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryCache.service.metadata.name, obs.queryCache.service.metadata.namespace],
+      readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryFrontend.service.metadata.name, obs.queryFrontend.service.metadata.namespace],
       version: 'master-2020-06-15-d763595',
       image: 'quay.io/observatorium/up:' + cfg.version,
       queryConfig: (import 'queries.libsonnet'),
@@ -988,7 +998,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       },
       {
         name: 'THANOS_IMAGE_TAG',
-        value: 'master-2020-06-03-20004510',  // Master around the time v0.13.0-rc.1 was released.
+        value: 'master-2020-08-12-70f89d83',
       },
       {
         name: 'STORAGE_CLASS',
@@ -1067,24 +1077,36 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         value: '1Gi',
       },
       {
-        name: 'THANOS_QUERIER_CACHE_REPLICAS',
+        name: 'THANOS_QUERY_FRONTEND_REPLICAS',
         value: '3',
       },
       {
-        name: 'THANOS_QUERIER_CACHE_CPU_REQUEST',
+        name: 'THANOS_QUERY_FRONTEND_CPU_REQUEST',
         value: '100m',
       },
       {
-        name: 'THANOS_QUERIER_CACHE_CPU_LIMIT',
+        name: 'THANOS_QUERY_FRONTEND_CPU_LIMIT',
         value: '1',
       },
       {
-        name: 'THANOS_QUERIER_CACHE_MEMORY_REQUEST',
+        name: 'THANOS_QUERY_FRONTEND_MEMORY_REQUEST',
         value: '256Mi',
       },
       {
-        name: 'THANOS_QUERIER_CACHE_MEMORY_LIMIT',
+        name: 'THANOS_QUERY_FRONTEND_MEMORY_LIMIT',
         value: '1Gi',
+      },
+      {
+        name: 'THANOS_QUERY_FRONTEND_SPLIT_INTERVAL',
+        value: '24h',
+      },
+      {
+        name: 'THANOS_QUERY_FRONTEND_MAX_RETRIES',
+        value: '0',
+      },
+      {
+        name: 'THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN',
+        value: '5s',
       },
       {
         name: 'THANOS_STORE_LOG_LEVEL',

@@ -580,17 +580,23 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
         indexCache+: {
-          timeout: '200ms',
-          maxGetMultiBatchSize: 100,
-          maxAsyncBufferSize: 200000,
-          maxAsyncConcurrency: 100,
-          maxItemSize: '5MiB',
+          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
+          maxIdleConnections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
+          timeout: '400ms',  // default: 500ms
+          maxAsyncBufferSize: 200000,  // default: 10_000
+          maxAsyncConcurrency: 200,  // default: 20
+          maxGetMultiBatchSize: 100,  // default: 0 - No batching.
+          maxGetMultiConcurrency: 1000,  // default: 100
+          maxItemSize: '5MiB',  // default: 1Mb
         },
         bucketCache+: {
-          timeout: '200ms',
-          maxGetMultiBatchSize: 100,
-          maxAsyncBufferSize: 25000,
-          maxAsyncConcurrency: 50,
+          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
+          maxIdleConnections: 1100,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
+          timeout: '400ms',  // default: 500ms
+          maxAsyncBufferSize: 25000,  // default: 10_000
+          maxAsyncConcurrency: 50,  // default: 20
+          maxGetMultiBatchSize: 100,  // default: 0 - No batching.
+          maxGetMultiConcurrency: 1000,  // default: 100
         },
       },
       resources: {

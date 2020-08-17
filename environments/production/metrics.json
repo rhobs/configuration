@@ -49,6 +49,7 @@
   "{__name__=\"node_uname_info\"}",
   "{__name__=\"noobaa_accounts_num\"}",
   "{__name__=\"noobaa_total_usage\"}",
+  "{__name__=\"olm_resolution_duration_seconds\"}",
   "{__name__=\"openshift:cpu_usage_cores:sum\"}",
   "{__name__=\"openshift:memory_usage_bytes:sum\"}",
   "{__name__=\"openshift:prometheus_tsdb_head_samples_appended_total:sum\"}",

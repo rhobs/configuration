@@ -1761,7 +1761,7 @@ objects:
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 200000
               "max_async_concurrency": 200
-              "max_get_multi_batch_size": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
@@ -1778,7 +1778,7 @@ objects:
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 25000
               "max_async_concurrency": 50
-              "max_get_multi_batch_size": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1100
               "max_item_size": "1MiB"
@@ -2000,7 +2000,7 @@ objects:
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 200000
               "max_async_concurrency": 200
-              "max_get_multi_batch_size": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
@@ -2017,7 +2017,7 @@ objects:
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 25000
               "max_async_concurrency": 50
-              "max_get_multi_batch_size": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1100
               "max_item_size": "1MiB"
@@ -2239,7 +2239,7 @@ objects:
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 200000
               "max_async_concurrency": 200
-              "max_get_multi_batch_size": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
@@ -2256,7 +2256,7 @@ objects:
               "dns_provider_update_interval": "10s"
               "max_async_buffer_size": 25000
               "max_async_concurrency": 50
-              "max_get_multi_batch_size": 50
+              "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1100
               "max_item_size": "1MiB"

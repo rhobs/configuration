@@ -1414,6 +1414,10 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
         name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET',
         value: 'observatorium-thanos-receive',
       },
+      {
+        name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS',
+        value: '3600',
+      },
     ],
   },
 }

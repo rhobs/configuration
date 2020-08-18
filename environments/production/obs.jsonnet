@@ -584,7 +584,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
           timeout: '400ms',  // default: 500ms
           maxAsyncBufferSize: 200000,  // default: 10_000
           maxAsyncConcurrency: 200,  // default: 20
-          maxGetMultiBatchSize: 100,  // default: 0 - No batching.
+          maxGetMultiBatchSize: 50,  // default: 0 - No batching.
           maxGetMultiConcurrency: 1000,  // default: 100
           maxItemSize: '5MiB',  // default: 1Mb
         },
@@ -594,7 +594,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
           timeout: '400ms',  // default: 500ms
           maxAsyncBufferSize: 25000,  // default: 10_000
           maxAsyncConcurrency: 50,  // default: 20
-          maxGetMultiBatchSize: 100,  // default: 0 - No batching.
+          maxGetMultiBatchSize: 50,  // default: 0 - No batching.
           maxGetMultiConcurrency: 1000,  // default: 100
         },
       },

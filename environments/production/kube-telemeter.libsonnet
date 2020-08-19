@@ -16,7 +16,7 @@
               super.containers[0] {
                 image: image,
                 command+: [
-                  '--token-expire-seconds=${{TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}}',
+                  '--token-expire-seconds=${TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}',
                   '--limit-bytes=5242880',
                   '--forward-url=http://%s.%s.svc:%d/api/metrics/v1/api/v1/receive' % [
                     'thanos-receive',

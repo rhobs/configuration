@@ -1,0 +1,148 @@
+# HELP tagging_api_requests_total API requests made to the Resource Groups Tagging API
+# TYPE tagging_api_requests_total counter
+# HELP aws_rds_database_connections_average CloudWatch metric AWS/RDS DatabaseConnections Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Count
+# TYPE aws_rds_database_connections_average gauge
+aws_rds_database_connections_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 5.0 1594997160000
+aws_rds_database_connections_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 1531.0 1594997160000
+aws_rds_database_connections_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 6.0 1594997160000
+aws_rds_database_connections_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 24.0 1594997160000
+aws_rds_database_connections_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 0.0 1594997160000
+aws_rds_database_connections_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 0.0 1594997160000
+# HELP aws_rds_cpuutilization_average CloudWatch metric AWS/RDS CPUUtilization Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Percent
+# TYPE aws_rds_cpuutilization_average gauge
+aws_rds_cpuutilization_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 1.35593220346876 1594997160000
+aws_rds_cpuutilization_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 22.7083333333333 1594997160000
+aws_rds_cpuutilization_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 0.619791666666364 1594997160000
+aws_rds_cpuutilization_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 1.16666666668607 1594997160000
+aws_rds_cpuutilization_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 1.83333333348855 1594997160000
+aws_rds_cpuutilization_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 9.11016949152542 1594997160000
+# HELP aws_rds_free_storage_space_average CloudWatch metric AWS/RDS FreeStorageSpace Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Bytes
+# TYPE aws_rds_free_storage_space_average gauge
+aws_rds_free_storage_space_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 9.45014784E9 1594997160000
+aws_rds_free_storage_space_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 7.88926447616E11 1594997160000
+aws_rds_free_storage_space_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 9.79114242048E11 1594997160000
+aws_rds_free_storage_space_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 9.78898608128E11 1594997160000
+aws_rds_free_storage_space_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 8.79757869056E11 1594997160000
+aws_rds_free_storage_space_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 9.628758016E9 1594997160000
+# HELP aws_rds_read_latency_average CloudWatch metric AWS/RDS ReadLatency Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Seconds
+# TYPE aws_rds_read_latency_average gauge
+aws_rds_read_latency_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 0.0 1594997160000
+aws_rds_read_latency_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 0.0 1594997160000
+aws_rds_read_latency_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 0.002465497076023392 1594997160000
+aws_rds_read_latency_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 0.0 1594997160000
+aws_rds_read_latency_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 9.109413779171557E-4 1594997160000
+aws_rds_read_latency_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 8.479262672811059E-4 1594997160000
+# HELP aws_rds_write_latency_average CloudWatch metric AWS/RDS WriteLatency Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Seconds
+# TYPE aws_rds_write_latency_average gauge
+aws_rds_write_latency_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 0.004472803149754988 1594997160000
+aws_rds_write_latency_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 0.0 1594997160000
+aws_rds_write_latency_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 0.0015185251476642204 1594997160000
+aws_rds_write_latency_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 0.0024697845507094065 1594997160000
+aws_rds_write_latency_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 0.06726153846153846 1594997160000
+aws_rds_write_latency_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 0.0018235294117647058 1594997160000
+# HELP aws_rds_read_iops_average CloudWatch metric AWS/RDS ReadIOPS Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Count/Second
+# TYPE aws_rds_read_iops_average gauge
+aws_rds_read_iops_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 0.0 1594997160000
+aws_rds_read_iops_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 895.7333333333333 1594997160000
+aws_rds_read_iops_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 16.33251670749796 1594997160000
+aws_rds_read_iops_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 0.0 1594997160000
+aws_rds_read_iops_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 0.0 1594997160000
+aws_rds_read_iops_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 56.13052680699298 1594997160000
+# HELP aws_rds_write_iops_average CloudWatch metric AWS/RDS WriteIOPS Dimensions: [DBInstanceIdentifier] Statistic: Average Unit: Count/Second
+# TYPE aws_rds_write_iops_average gauge
+aws_rds_write_iops_average{job="aws_rds",instance="",dbinstance_identifier="quayenc-2019-quayvpc",} 291.9020715630885 1594997160000
+aws_rds_write_iops_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-prod-4b8cc2ff-d1f3-497c-bc18-859593c68bdf",} 0.85 1594997160000
+aws_rds_write_iops_average{job="aws_rds",instance="",dbinstance_identifier="quayio-production",} 132.39338033098346 1594997160000
+aws_rds_write_iops_average{job="aws_rds",instance="",dbinstance_identifier="clair",} 27.183333333333334 1594997160000
+aws_rds_write_iops_average{job="aws_rds",instance="",dbinstance_identifier="db-apostille-staging-926eef16-1496-45ad-bd09-366946b9475a",} 0.7166666666666667 1594997160000
+aws_rds_write_iops_average{job="aws_rds",instance="",dbinstance_identifier="clair-v2-testing",} 0.8666955565185506 1594997160000
+# HELP aws_elasticache_cpuutilization_average CloudWatch metric AWS/ElastiCache CPUUtilization Dimensions: [CacheClusterId] Statistic: Average Unit: Percent
+# TYPE aws_elasticache_cpuutilization_average gauge
+aws_elasticache_cpuutilization_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 4.20833333337214 1594997160000
+aws_elasticache_cpuutilization_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 16.9166666667055 1594997160000
+# HELP aws_elasticache_new_connections_average CloudWatch metric AWS/ElastiCache NewConnections Dimensions: [CacheClusterId] Statistic: Average Unit: Count
+# TYPE aws_elasticache_new_connections_average gauge
+aws_elasticache_new_connections_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 10058.0 1594997160000
+aws_elasticache_new_connections_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 0.0 1594997160000
+# HELP aws_elasticache_curr_connections_average CloudWatch metric AWS/ElastiCache CurrConnections Dimensions: [CacheClusterId] Statistic: Average Unit: Count
+# TYPE aws_elasticache_curr_connections_average gauge
+aws_elasticache_curr_connections_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 2897.0 1594997160000
+aws_elasticache_curr_connections_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 5.0 1594997160000
+# HELP aws_elasticache_cache_hits_average CloudWatch metric AWS/ElastiCache CacheHits Dimensions: [CacheClusterId] Statistic: Average Unit: Count
+# TYPE aws_elasticache_cache_hits_average gauge
+aws_elasticache_cache_hits_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 0.0 1594997160000
+aws_elasticache_cache_hits_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 18752.0 1594997160000
+# HELP aws_elasticache_cache_misses_average CloudWatch metric AWS/ElastiCache CacheMisses Dimensions: [CacheClusterId] Statistic: Average Unit: Count
+# TYPE aws_elasticache_cache_misses_average gauge
+aws_elasticache_cache_misses_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 3.0 1594997160000
+aws_elasticache_cache_misses_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 0.0 1594997160000
+# HELP aws_elasticache_replication_lag_average CloudWatch metric AWS/ElastiCache ReplicationLag Dimensions: [CacheClusterId] Statistic: Average Unit: Seconds
+# TYPE aws_elasticache_replication_lag_average gauge
+aws_elasticache_replication_lag_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 0.0 1594997160000
+aws_elasticache_replication_lag_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 0.0 1594997160000
+# HELP aws_elasticache_network_bytes_in_average CloudWatch metric AWS/ElastiCache NetworkBytesIn Dimensions: [CacheClusterId] Statistic: Average Unit: Bytes
+# TYPE aws_elasticache_network_bytes_in_average gauge
+aws_elasticache_network_bytes_in_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 2.2805156E7 1594997160000
+aws_elasticache_network_bytes_in_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 3140947.0 1594997160000
+# HELP aws_elasticache_network_bytes_out_average CloudWatch metric AWS/ElastiCache NetworkBytesOut Dimensions: [CacheClusterId] Statistic: Average Unit: Bytes
+# TYPE aws_elasticache_network_bytes_out_average gauge
+aws_elasticache_network_bytes_out_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-002",} 802461.0 1594997160000
+aws_elasticache_network_bytes_out_average{job="aws_elasticache",instance="",cache_cluster_id="quayio-production-001",} 6.9023781E7 1594997160000
+# HELP aws_cloudfront_requests_sum CloudWatch metric AWS/CloudFront Requests Dimensions: [DistributionId, Region] Statistic: Sum Unit: None
+# TYPE aws_cloudfront_requests_sum gauge
+aws_cloudfront_requests_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E26ZSD57Z81FLL",} 1.0 1594996860000
+aws_cloudfront_requests_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E1MCEMOFF48VER",} 40.0 1594996860000
+aws_cloudfront_requests_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E3U4ZBYSY5MDVG",} 13992.0 1594996860000
+# HELP aws_cloudfront_bytes_downloaded_sum CloudWatch metric AWS/CloudFront BytesDownloaded Dimensions: [DistributionId, Region] Statistic: Sum Unit: None
+# TYPE aws_cloudfront_bytes_downloaded_sum gauge
+aws_cloudfront_bytes_downloaded_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E1MCEMOFF48VER",} 19840.0 1594996860000
+aws_cloudfront_bytes_downloaded_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E3U4ZBYSY5MDVG",} 6.7055020463E10 1594996860000
+aws_cloudfront_bytes_downloaded_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E26ZSD57Z81FLL",} 7796.0 1594996860000
+# HELP aws_cloudfront_4xx_error_rate_average CloudWatch metric AWS/CloudFront 4xxErrorRate Dimensions: [DistributionId, Region] Statistic: Average Unit: Percent
+# TYPE aws_cloudfront_4xx_error_rate_average gauge
+aws_cloudfront_4xx_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E1MCEMOFF48VER",} 100.0 1594997160000
+aws_cloudfront_4xx_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E26ZSD57Z81FLL",} 0.0 1594997160000
+aws_cloudfront_4xx_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E3U4ZBYSY5MDVG",} 0.0 1594997160000
+# HELP aws_cloudfront_5xx_error_rate_average CloudWatch metric AWS/CloudFront 5xxErrorRate Dimensions: [DistributionId, Region] Statistic: Average Unit: Percent
+# TYPE aws_cloudfront_5xx_error_rate_average gauge
+aws_cloudfront_5xx_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E26ZSD57Z81FLL",} 0.0 1594997160000
+aws_cloudfront_5xx_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E1MCEMOFF48VER",} 0.0 1594997160000
+aws_cloudfront_5xx_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E3U4ZBYSY5MDVG",} 0.0 1594997160000
+# HELP aws_cloudfront_bytes_uploaded_sum CloudWatch metric AWS/CloudFront BytesUploaded Dimensions: [DistributionId, Region] Statistic: Sum Unit: None
+# TYPE aws_cloudfront_bytes_uploaded_sum gauge
+aws_cloudfront_bytes_uploaded_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E1MCEMOFF48VER",} 0.0 1594997160000
+aws_cloudfront_bytes_uploaded_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E26ZSD57Z81FLL",} 0.0 1594997160000
+aws_cloudfront_bytes_uploaded_sum{job="aws_cloudfront",instance="",region="Global",distribution_id="E3U4ZBYSY5MDVG",} 0.0 1594997160000
+# HELP aws_cloudfront_total_error_rate_average CloudWatch metric AWS/CloudFront TotalErrorRate Dimensions: [DistributionId, Region] Statistic: Average Unit: Percent
+# TYPE aws_cloudfront_total_error_rate_average gauge
+aws_cloudfront_total_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E26ZSD57Z81FLL",} 0.0 1594997160000
+aws_cloudfront_total_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E3U4ZBYSY5MDVG",} 0.0 1594997160000
+aws_cloudfront_total_error_rate_average{job="aws_cloudfront",instance="",region="Global",distribution_id="E1MCEMOFF48VER",} 100.0 1594997160000
+# HELP quay_monitor_monitor_pull_time_average CloudWatch metric Quay/Monitor MonitorPullTime Dimensions: null Statistic: Average Unit: Seconds
+# TYPE quay_monitor_monitor_pull_time_average gauge
+quay_monitor_monitor_pull_time_average{job="quay_monitor",instance="",} 0.301016703 1594997160000
+# HELP quay_monitor_monitor_push_time_average CloudWatch metric Quay/Monitor MonitorPushTime Dimensions: null Statistic: Average Unit: Seconds
+# TYPE quay_monitor_monitor_push_time_average gauge
+quay_monitor_monitor_push_time_average{job="quay_monitor",instance="",} 3.233374278 1594997160000
+# HELP quay_monitor_monitor_success_average CloudWatch metric Quay/Monitor MonitorSuccess Dimensions: null Statistic: Average Unit: Count
+# TYPE quay_monitor_monitor_success_average gauge
+quay_monitor_monitor_success_average{job="quay_monitor",instance="",} 1.0 1594997160000
+# HELP aws_autoscaling_group_in_service_instances_average CloudWatch metric AWS/AutoScaling GroupInServiceInstances Dimensions: [AutoScalingGroupName] Statistic: Average Unit: None
+# TYPE aws_autoscaling_group_in_service_instances_average gauge
+aws_autoscaling_group_in_service_instances_average{job="aws_autoscaling",instance="",auto_scaling_group_name="QuayMonitor2019-AppServerAutoScale-4HDFC97ZHPG3",} 1.0 1594997160000
+# HELP cloudwatch_exporter_scrape_duration_seconds Time this CloudWatch scrape took, in seconds.
+# TYPE cloudwatch_exporter_scrape_duration_seconds gauge
+cloudwatch_exporter_scrape_duration_seconds 0.789979756
+# HELP cloudwatch_exporter_scrape_error Non-zero if this scrape failed.
+# TYPE cloudwatch_exporter_scrape_error gauge
+cloudwatch_exporter_scrape_error 0.0
+# HELP cloudwatch_requests_total API requests made to CloudWatch
+# TYPE cloudwatch_requests_total counter
+cloudwatch_requests_total{action="listMetrics",namespace="AWS/RDS",} 289926.0
+cloudwatch_requests_total{action="getMetricStatistics",namespace="AWS/ElastiCache",} 662688.0
+cloudwatch_requests_total{action="getMetricStatistics",namespace="AWS/CloudFront",} 1242540.0
+cloudwatch_requests_total{action="getMetricStatistics",namespace="AWS/AutoScaling",} 41418.0
+cloudwatch_requests_total{action="listMetrics",namespace="AWS/ElastiCache",} 331344.0
+cloudwatch_requests_total{action="getMetricStatistics",namespace="AWS/RDS",} 1820862.0
+cloudwatch_requests_total{action="listMetrics",namespace="AWS/CloudFront",} 248508.0
+cloudwatch_requests_total{action="getMetricStatistics",namespace="Quay/Monitor",} 165672.0

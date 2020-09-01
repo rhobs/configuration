@@ -597,6 +597,7 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
           - --query.timeout=15m
+          - --query.lookback-delta=15m
           - |
             --tracing.config=
               type: JAEGER

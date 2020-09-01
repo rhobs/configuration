@@ -339,7 +339,8 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
 
   query+::
     t.query.withResources +
-    t.query.withServiceMonitor {
+    t.query.withServiceMonitor +
+    t.query.withLookbackDelta + {
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-thanos-querier',
@@ -699,6 +700,7 @@ local up = (import 'github.com/observatorium/deployments/components/up.libsonnet
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       replicas: '${{THANOS_QUERIER_REPLICAS}}',
+      lookbackDelta: '15m',
       resources: {
         requests: {
           cpu: '${THANOS_QUERIER_CPU_REQUEST}',

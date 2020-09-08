@@ -44,6 +44,26 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "mixin-utils"
+        }
+      },
+      "version": "881db2241f0c5007c3e831caf34b0c645202b4ab",
+      "sum": "Je2SxBKu+1WrKEEG60zjSKaY/6TPX8uRz5bsaw0a8oA="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/loki.git",
+          "subdir": "production/loki-mixin"
+        }
+      },
+      "version": "899e8cc95b9fbf2e76c898b9f8a7a9d5623536d4",
+      "sum": "XGl2E7/qrumkYyiyjWd32q1j9Ha5TKqnTvOluqXDsoo="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/jaegertracing/jaeger.git",
           "subdir": "monitoring/jaeger-mixin"
         }
@@ -79,8 +99,8 @@
           "subdir": ""
         }
       },
-      "version": "fc95f780cbc048ceea2caaa31d4f11464b39e6cc",
-      "sum": "RrmM3Ct8EWjYiko0Zo7mvghoectoHMLsGJZMdxEMD3U="
+      "version": "aae146408016bd5682a05c5a1e1ba890b7e3d1dd",
+      "sum": "3GhDSK7FGlzeozKoc6Sn2kXrNm+nk0QbOxOlzmzovbQ="
     },
     {
       "source": {

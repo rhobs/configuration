@@ -26,6 +26,7 @@ objects:
         - "write"
         "resources":
         - "metrics"
+        - "logs"
         "tenants":
         - "rhobs"
       - "name": "telemeter-write"
@@ -82,9 +83,9 @@ objects:
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${NAMESPACE}.svc.cluster.local:9090
           - --metrics.write.endpoint=http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291
           - --log.level=warn
-          - --logs.read.endpoint=http://127.0.0.1
-          - --logs.tail.endpoint=http://127.0.0.1
-          - --logs.write.endpoint=http://127.0.0.1
+          - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${NAMESPACE}.svc.cluster.local:3100
+          - --logs.tail.endpoint=http://observatorium-loki-querier-http.${NAMESPACE}.svc.cluster.local:3100
+          - --logs.write.endpoint=http://observatorium-loki-distributor-http.${NAMESPACE}.svc.cluster.local:3100
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}

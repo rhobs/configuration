@@ -8,6 +8,8 @@
   "{__name__=\"cluster:capacity_cpu_cores:sum\"}",
   "{__name__=\"cluster:capacity_memory_bytes:sum\"}",
   "{__name__=\"cluster:cpu_usage_cores:sum\"}",
+  "{__name__=\"cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum\"}",
+  "{__name__=\"cluster:kubelet_volume_stats_used_bytes:provisioner:sum\"}",
   "{__name__=\"cluster:memory_usage_bytes:sum\"}",
   "{__name__=\"cluster:network_attachment_definition_enabled_instance_up:max\"}",
   "{__name__=\"cluster:network_attachment_definition_instances:max\"}",

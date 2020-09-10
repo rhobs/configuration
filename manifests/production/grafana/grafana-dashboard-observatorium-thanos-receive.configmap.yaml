@@ -1658,6 +1658,7 @@ data:
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
+                  "linkTargetBlank": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value",

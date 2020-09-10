@@ -1,11 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  annotations:
-    grafana-folder: /grafana-dashboard-definitions/Observatorium
-  labels:
-    grafana_dashboard: "true"
-  name: grafana-dashboard-telemeter
 data:
   telemeter.json: |-
     {
@@ -40,7 +33,9 @@ data:
             "y": 0
           },
           "id": 108,
-          "panels": [],
+          "panels": [
+
+          ],
           "title": "Telemeter v1 (/authorize & /upload)",
           "type": "row"
         },
@@ -70,7 +65,9 @@ data:
           },
           "id": 113,
           "interval": null,
-          "links": [],
+          "links": [
+
+          ],
           "mappingType": 1,
           "mappingTypes": [
             {
@@ -85,7 +82,9 @@ data:
           "maxDataPoints": 100,
           "nullPointMode": "connected",
           "nullText": null,
-          "options": {},
+          "options": {
+
+          },
           "postfix": "",
           "postfixFontSize": "50%",
           "prefix": "",
@@ -129,7 +128,9 @@ data:
           "valueName": "current"
         },
         {
-          "aliasColors": {},
+          "aliasColors": {
+
+          },
           "bars": false,
           "cacheTimeout": null,
           "dashLength": 10,
@@ -156,17 +157,23 @@ data:
           },
           "lines": true,
           "linewidth": 0,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "percentage": false,
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
           "seriesOverrides": [
-            {}
+            {
+
+            }
           ],
           "spaceLength": 10,
           "stack": false,
@@ -180,9 +187,13 @@ data:
               "refId": "A"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Error Budget (28d)",
           "tooltip": {
@@ -196,7 +207,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -262,7 +275,9 @@ data:
           },
           "id": 104,
           "interval": null,
-          "links": [],
+          "links": [
+
+          ],
           "mappingType": 1,
           "mappingTypes": [
             {
@@ -277,7 +292,9 @@ data:
           "maxDataPoints": 100,
           "nullPointMode": "connected",
           "nullText": null,
-          "options": {},
+          "options": {
+
+          },
           "postfix": "",
           "postfixFontSize": "50%",
           "prefix": "",
@@ -352,10 +369,14 @@ data:
           },
           "lines": true,
           "linewidth": 0,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -391,16 +412,20 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (code) (rate(haproxy_server_http_responses_total{route=\"telemeter-server-authorize\"}[$range]))",
+              "expr": "sum by (code) (rate(haproxy_server_http_responses_total{route=\"telemeter-server-authorize\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{code}}",
               "refId": "A"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Requests",
           "tooltip": {
@@ -414,7 +439,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -471,10 +498,14 @@ data:
           },
           "lines": true,
           "linewidth": 0,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -493,16 +524,20 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-authorize\",code=\"5xx\"}[$range])) / sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-authorize\"}[$range]))",
+              "expr": "sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-authorize\",code=\"5xx\"}[5m])) / sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-authorize\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "errors",
               "refId": "A"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Errors",
           "tooltip": {
@@ -516,7 +551,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -574,10 +611,14 @@ data:
           },
           "lines": true,
           "linewidth": 1,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -606,30 +647,34 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"authorize\"}[$range])))",
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"authorize\"}[5m])))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "99th",
               "refId": "A"
             },
             {
-              "expr": "histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"authorize\"}[$range])))",
+              "expr": "histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"authorize\"}[5m])))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "90th",
               "refId": "B"
             },
             {
-              "expr": "histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"authorize\"}[$range])))",
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"authorize\"}[5m])))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "50th",
               "refId": "C"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Duration",
           "tooltip": {
@@ -643,7 +688,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -708,7 +755,9 @@ data:
           },
           "id": 105,
           "interval": null,
-          "links": [],
+          "links": [
+
+          ],
           "mappingType": 1,
           "mappingTypes": [
             {
@@ -723,7 +772,9 @@ data:
           "maxDataPoints": 100,
           "nullPointMode": "connected",
           "nullText": null,
-          "options": {},
+          "options": {
+
+          },
           "postfix": "",
           "postfixFontSize": "50%",
           "prefix": "",
@@ -798,10 +849,14 @@ data:
           },
           "lines": true,
           "linewidth": 0,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -836,16 +891,20 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum by (code) (rate(haproxy_server_http_responses_total{route=\"telemeter-server-upload\"}[$range]))",
+              "expr": "sum by (code) (rate(haproxy_server_http_responses_total{route=\"telemeter-server-upload\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{code}}",
               "refId": "A"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Requests",
           "tooltip": {
@@ -859,7 +918,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -916,10 +977,14 @@ data:
           },
           "lines": true,
           "linewidth": 0,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -938,16 +1003,20 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-upload\",code=\"5xx\"}[$range])) / sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-upload\"}[$range]))",
+              "expr": "sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-upload\",code=\"5xx\"}[5m])) / sum(rate(haproxy_server_http_responses_total{route=\"telemeter-server-upload\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "errors",
               "refId": "A"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Errors",
           "tooltip": {
@@ -961,7 +1030,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -1019,10 +1090,14 @@ data:
           },
           "lines": true,
           "linewidth": 1,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -1051,30 +1126,34 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"upload\"}[$range])))",
+              "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"upload\"}[5m])))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "99th",
               "refId": "A"
             },
             {
-              "expr": "histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"upload\"}[$range])))",
+              "expr": "histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"upload\"}[5m])))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "90th",
               "refId": "B"
             },
             {
-              "expr": "histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"upload\"}[$range])))",
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"5..\",handler=\"upload\"}[5m])))",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "50th",
               "refId": "C"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Duration",
           "tooltip": {
@@ -1088,7 +1167,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -1152,7 +1233,9 @@ data:
               },
               "id": 106,
               "interval": null,
-              "links": [],
+              "links": [
+
+              ],
               "mappingType": 1,
               "mappingTypes": [
                 {
@@ -1167,7 +1250,9 @@ data:
               "maxDataPoints": 100,
               "nullPointMode": "connected",
               "nullText": null,
-              "options": {},
+              "options": {
+
+              },
               "postfix": "",
               "postfixFontSize": "50%",
               "prefix": "",
@@ -1242,10 +1327,14 @@ data:
               },
               "lines": true,
               "linewidth": 0,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null",
               "options": {
-                "dataLinks": []
+                "dataLinks": [
+
+                ]
               },
               "paceLength": 10,
               "percentage": false,
@@ -1287,9 +1376,13 @@ data:
                   "refId": "A"
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
-              "timeRegions": [],
+              "timeRegions": [
+
+              ],
               "timeShift": null,
               "title": "Requests",
               "tooltip": {
@@ -1303,7 +1396,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -1360,10 +1455,14 @@ data:
               },
               "lines": true,
               "linewidth": 0,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null",
               "options": {
-                "dataLinks": []
+                "dataLinks": [
+
+                ]
               },
               "paceLength": 10,
               "percentage": false,
@@ -1389,9 +1488,13 @@ data:
                   "refId": "A"
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
-              "timeRegions": [],
+              "timeRegions": [
+
+              ],
               "timeShift": null,
               "title": "Errors",
               "tooltip": {
@@ -1405,7 +1508,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -1462,10 +1567,14 @@ data:
               },
               "lines": true,
               "linewidth": 1,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null",
               "options": {
-                "dataLinks": []
+                "dataLinks": [
+
+                ]
               },
               "paceLength": 10,
               "percentage": false,
@@ -1515,9 +1624,13 @@ data:
                   "refId": "C"
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
-              "timeRegions": [],
+              "timeRegions": [
+
+              ],
               "timeShift": null,
               "title": "Duration",
               "tooltip": {
@@ -1531,7 +1644,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -1570,7 +1685,9 @@ data:
             "y": 30
           },
           "id": 47,
-          "panels": [],
+          "panels": [
+
+          ],
           "title": "Oauth Client",
           "type": "row"
         },
@@ -1604,10 +1721,14 @@ data:
           },
           "lines": true,
           "linewidth": 0,
-          "links": [],
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "dataLinks": [
+
+            ]
           },
           "paceLength": 10,
           "percentage": false,
@@ -1648,9 +1769,13 @@ data:
               "refId": "A"
             }
           ],
-          "thresholds": [],
+          "thresholds": [
+
+          ],
           "timeFrom": null,
-          "timeRegions": [],
+          "timeRegions": [
+
+          ],
           "timeShift": null,
           "title": "Oauth Client Response Codes",
           "tooltip": {
@@ -1664,7 +1789,9 @@ data:
             "mode": "time",
             "name": null,
             "show": true,
-            "values": []
+            "values": [
+
+            ]
           },
           "yaxes": [
             {
@@ -1701,7 +1828,9 @@ data:
           "id": 54,
           "panels": [
             {
-              "aliasColors": {},
+              "aliasColors": {
+
+              },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
@@ -1725,14 +1854,18 @@ data:
               },
               "lines": true,
               "linewidth": 0,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null as zero",
               "paceLength": 10,
               "percentage": false,
               "pointradius": 5,
               "points": false,
               "renderer": "flot",
-              "seriesOverrides": [],
+              "seriesOverrides": [
+
+              ],
               "spaceLength": 10,
               "stack": true,
               "steppedLine": false,
@@ -1747,9 +1880,13 @@ data:
                   "step": 10
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
-              "timeRegions": [],
+              "timeRegions": [
+
+              ],
               "timeShift": null,
               "title": "CPU Usage",
               "tooltip": {
@@ -1763,7 +1900,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -1789,9 +1928,13 @@ data:
               }
             },
             {
-              "aliasColors": {},
+              "aliasColors": {
+
+              },
               "bars": false,
-              "columns": [],
+              "columns": [
+
+              ],
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
@@ -1815,7 +1958,9 @@ data:
               },
               "lines": true,
               "linewidth": 1,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null as zero",
               "pageSize": null,
               "percentage": false,
@@ -1823,7 +1968,9 @@ data:
               "points": false,
               "renderer": "flot",
               "scroll": true,
-              "seriesOverrides": [],
+              "seriesOverrides": [
+
+              ],
               "showHeader": true,
               "sort": {
                 "col": 0,
@@ -1844,14 +1991,18 @@ data:
                   "alias": "CPU Usage",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #A",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "short"
                 },
@@ -1859,14 +2010,18 @@ data:
                   "alias": "CPU Requests",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #B",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "short"
                 },
@@ -1874,14 +2029,18 @@ data:
                   "alias": "CPU Requests %",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #C",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "percentunit"
                 },
@@ -1889,14 +2048,18 @@ data:
                   "alias": "CPU Limits",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #D",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "short"
                 },
@@ -1904,14 +2067,18 @@ data:
                   "alias": "CPU Limits %",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #E",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "percentunit"
                 },
@@ -1919,14 +2086,18 @@ data:
                   "alias": "Pod",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": true,
                   "linkTooltip": "Drill down",
                   "linkUrl": "/d/k8s-compute-resources-pod/k8s-compute-resources-pod?var-datasource=$datasource&var-namespace=$namespace&var-pod=$__cell",
                   "pattern": "pod",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "short"
                 },
@@ -1934,11 +2105,15 @@ data:
                   "alias": "",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "pattern": "/.*/",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "string",
                   "unit": "short"
                 }
@@ -1990,7 +2165,9 @@ data:
                   "step": 10
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
               "timeShift": null,
               "title": "CPU Quota",
@@ -2006,7 +2183,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -2028,7 +2207,9 @@ data:
               ]
             },
             {
-              "aliasColors": {},
+              "aliasColors": {
+
+              },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
@@ -2052,14 +2233,18 @@ data:
               },
               "lines": true,
               "linewidth": 0,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null as zero",
               "paceLength": 10,
               "percentage": false,
               "pointradius": 5,
               "points": false,
               "renderer": "flot",
-              "seriesOverrides": [],
+              "seriesOverrides": [
+
+              ],
               "spaceLength": 10,
               "stack": true,
               "steppedLine": false,
@@ -2074,9 +2259,13 @@ data:
                   "step": 10
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
-              "timeRegions": [],
+              "timeRegions": [
+
+              ],
               "timeShift": null,
               "title": "Memory Usage",
               "tooltip": {
@@ -2090,7 +2279,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -2116,9 +2307,13 @@ data:
               }
             },
             {
-              "aliasColors": {},
+              "aliasColors": {
+
+              },
               "bars": false,
-              "columns": [],
+              "columns": [
+
+              ],
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
@@ -2142,7 +2337,9 @@ data:
               },
               "lines": true,
               "linewidth": 1,
-              "links": [],
+              "links": [
+
+              ],
               "nullPointMode": "null as zero",
               "pageSize": null,
               "percentage": false,
@@ -2150,7 +2347,9 @@ data:
               "points": false,
               "renderer": "flot",
               "scroll": true,
-              "seriesOverrides": [],
+              "seriesOverrides": [
+
+              ],
               "showHeader": true,
               "sort": {
                 "col": 0,
@@ -2171,14 +2370,18 @@ data:
                   "alias": "Memory Usage",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #A",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "decbytes"
                 },
@@ -2186,14 +2389,18 @@ data:
                   "alias": "Memory Requests",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #B",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "decbytes"
                 },
@@ -2201,14 +2408,18 @@ data:
                   "alias": "Memory Requests %",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #C",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "percentunit"
                 },
@@ -2216,14 +2427,18 @@ data:
                   "alias": "Memory Limits",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #D",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "decbytes"
                 },
@@ -2231,14 +2446,18 @@ data:
                   "alias": "Memory Limits %",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": false,
                   "linkTooltip": "Drill down",
                   "linkUrl": "",
                   "pattern": "Value #E",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "percentunit"
                 },
@@ -2246,14 +2465,18 @@ data:
                   "alias": "Pod",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "link": true,
                   "linkTooltip": "Drill down",
                   "linkUrl": "/d/k8s-compute-resources-pod/k8s-compute-resources-pod?var-datasource=$datasource&var-namespace=$namespace&var-pod=$__cell",
                   "pattern": "pod",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "number",
                   "unit": "short"
                 },
@@ -2261,11 +2484,15 @@ data:
                   "alias": "",
                   "align": "auto",
                   "colorMode": null,
-                  "colors": [],
+                  "colors": [
+
+                  ],
                   "dateFormat": "YYYY-MM-DD HH:mm:ss",
                   "decimals": 2,
                   "pattern": "/.*/",
-                  "thresholds": [],
+                  "thresholds": [
+
+                  ],
                   "type": "string",
                   "unit": "short"
                 }
@@ -2317,7 +2544,9 @@ data:
                   "step": 10
                 }
               ],
-              "thresholds": [],
+              "thresholds": [
+
+              ],
               "timeFrom": null,
               "timeShift": null,
               "title": "Memory Quota",
@@ -2333,7 +2562,9 @@ data:
                 "mode": "time",
                 "name": null,
                 "show": true,
-                "values": []
+                "values": [
+
+                ]
               },
               "yaxes": [
                 {
@@ -2362,7 +2593,9 @@ data:
       "refresh": "1m",
       "schemaVersion": 22,
       "style": "dark",
-      "tags": [],
+      "tags": [
+
+      ],
       "templating": {
         "list": [
           {
@@ -2376,7 +2609,9 @@ data:
             "label": null,
             "multi": false,
             "name": "datasource",
-            "options": [],
+            "options": [
+
+            ],
             "query": "prometheus",
             "refresh": 1,
             "regex": "",
@@ -2396,71 +2631,21 @@ data:
             "label": "namespace",
             "multi": false,
             "name": "namespace",
-            "options": [],
+            "options": [
+
+            ],
             "query": "label_values(kube_pod_info, namespace)",
             "refresh": 1,
             "regex": "^telemeter.*",
             "skipUrlSync": false,
             "sort": 1,
             "tagValuesQuery": "",
-            "tags": [],
+            "tags": [
+
+            ],
             "tagsQuery": "",
             "type": "query",
             "useTags": false
-          },
-          {
-            "auto": false,
-            "auto_count": 30,
-            "auto_min": "10s",
-            "current": {
-              "selected": false,
-              "text": "5m",
-              "value": "5m"
-            },
-            "hide": 0,
-            "label": null,
-            "name": "range",
-            "options": [
-              {
-                "selected": true,
-                "text": "5m",
-                "value": "5m"
-              },
-              {
-                "selected": false,
-                "text": "10m",
-                "value": "10m"
-              },
-              {
-                "selected": false,
-                "text": "30m",
-                "value": "30m"
-              },
-              {
-                "selected": false,
-                "text": "1h",
-                "value": "1h"
-              },
-              {
-                "selected": false,
-                "text": "6h",
-                "value": "6h"
-              },
-              {
-                "selected": false,
-                "text": "12h",
-                "value": "12h"
-              },
-              {
-                "selected": false,
-                "text": "1d",
-                "value": "1d"
-              }
-            ],
-            "query": "5m,10m,30m,1h,6h,12h,1d",
-            "refresh": 2,
-            "skipUrlSync": false,
-            "type": "interval"
           }
         ]
       },
@@ -2498,3 +2683,10 @@ data:
       "uid": "Tg-mH0rizaSJDKSADJ",
       "version": 1
     }
+kind: ConfigMap
+metadata:
+  annotations:
+    grafana-folder: /grafana-dashboard-definitions/Observatorium
+  labels:
+    grafana_dashboard: "true"
+  name: grafana-dashboard-telemeter

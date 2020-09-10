@@ -40,7 +40,7 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 	# Download the latest metrics file to extract the new added metrics.
 	# NOTE: Because old clusters could still send metrics the whitelisting is append only
 	# (environments/production/metrics.json).
-	curl -q https://raw.githubusercontent.com/openshift/cluster-monitoring-operator/master/manifests/0000_50_cluster_monitoring_operator_04-config.yaml | \
+	curl -q https://raw.githubusercontent.com/openshift/cluster-monitoring-operator/master/manifests/0000_50_cluster-monitoring-operator_04-config.yaml | \
 		$(GOJSONTOYAML) -yamltojson | \
 		$(GOJQ) -r '.data["metrics.yaml"]' | \
 		$(GOJSONTOYAML) -yamltojson | \

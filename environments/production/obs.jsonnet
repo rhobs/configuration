@@ -136,6 +136,9 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         configmap.new() +
         configmap.mixin.metadata.withName(nameResource) +
         configmap.mixin.metadata.withLabels(obs.config.commonLabels) +
+        configmap.mixin.metadata.withAnnotations({
+          'qontract.recycle': 'true',
+        }) +
         configmap.withData({
           [nameFile]: std.manifestYamlDoc({
             groups: [{

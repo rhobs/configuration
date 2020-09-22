@@ -13,6 +13,12 @@ objects:
         "subjects":
         - "kind": "group"
           "name": "rhobs"
+      - "name": "telemeter-server"
+        "roles":
+        - "telemeter-write"
+        "subjects":
+        - "kind": "user"
+          "name": "monitoring-telemeter-service@redhat.com"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -22,6 +28,13 @@ objects:
         - "metrics"
         "tenants":
         - "rhobs"
+      - "name": "telemeter-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "telemeter"
   kind: ConfigMap
   metadata:
     labels:
@@ -136,7 +149,16 @@ objects:
         "oidc":
           "clientID": "id"
           "clientSecret": "secret"
+          "groupClaim": "groups"
           "issuerURL": "https://rhobs.tenants.observatorium.io"
+          "usernameClaim": "preferred_username"
+      - "id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+        "name": "telemeter"
+        "oidc":
+          "clientID": "id"
+          "clientSecret": "secret"
+          "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
+          "usernameClaim": "email"
 - apiVersion: v1
   kind: Service
   metadata:

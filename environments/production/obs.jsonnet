@@ -804,6 +804,18 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               'write',
             ],
           },
+          {
+            name: 'telemeter-write',
+            resources: [
+              'metrics',
+            ],
+            tenants: [
+              'telemeter',
+            ],
+            permissions: [
+              'write',
+            ],
+          },
         ],
         roleBindings: [
           {
@@ -818,6 +830,18 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               },
             ],
           },
+          {
+            name: 'telemeter-server',
+            roles: [
+              'telemeter-write',
+            ],
+            subjects: [
+              {
+                name: 'monitoring-telemeter-service@redhat.com',
+                kind: 'user',
+              },
+            ],
+          },
         ],
       },
       tenants: {
@@ -829,6 +853,18 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               clientID: 'id',
               clientSecret: 'secret',
               issuerURL: 'https://rhobs.tenants.observatorium.io',
+              usernameClaim: 'preferred_username',
+              groupClaim: 'groups',
+            },
+          },
+          {
+            name: 'telemeter',
+            id: 'FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
+            oidc: {
+              clientID: 'id',
+              clientSecret: 'secret',
+              issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
+              usernameClaim: 'email',
             },
           },
         ],

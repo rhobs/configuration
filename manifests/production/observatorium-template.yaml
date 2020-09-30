@@ -784,7 +784,7 @@ objects:
           - --query-frontend.downstream-url=http://observatorium-thanos-query.${NAMESPACE}.svc.cluster.local.:9090
           - --query-range.split-interval=${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}
           - --query-range.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
-          - --query-frontend.log_queries_longer_than=${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}
+          - --query-frontend.log-queries-longer-than=${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}
           - |-
             --query-range.response-cache-config="config":
               "max_size": "0"
@@ -2787,6 +2787,11 @@ objects:
           - --whitelist={__name__="ceph_cluster_total_bytes"}
           - --whitelist={__name__="ceph_cluster_total_used_raw_bytes"}
           - --whitelist={__name__="ceph_health_status"}
+          - --whitelist={__name__="che_workspace_failure_total"}
+          - --whitelist={__name__="che_workspace_start_time_seconds_count"}
+          - --whitelist={__name__="che_workspace_start_time_seconds_sum"}
+          - --whitelist={__name__="che_workspace_started_total"}
+          - --whitelist={__name__="che_workspace_status"}
           - --whitelist={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
@@ -2944,6 +2949,11 @@ objects:
           - --whitelist={__name__="ceph_cluster_total_bytes"}
           - --whitelist={__name__="ceph_cluster_total_used_raw_bytes"}
           - --whitelist={__name__="ceph_health_status"}
+          - --whitelist={__name__="che_workspace_failure_total"}
+          - --whitelist={__name__="che_workspace_start_time_seconds_count"}
+          - --whitelist={__name__="che_workspace_start_time_seconds_sum"}
+          - --whitelist={__name__="che_workspace_started_total"}
+          - --whitelist={__name__="che_workspace_status"}
           - --whitelist={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}

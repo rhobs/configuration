@@ -378,7 +378,75 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
         },
       },
-    },
+    } + (if obs['opa-ams'] != null then {
+           deployment+: {
+             spec+: {
+               template+: {
+                 spec+: {
+                   containers+: [
+                     {
+                       name: 'opa-ams',
+                       image: obs['opa-ams'].config.image,
+                       args: [
+                         '--web.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.public,
+                         '--web.internal.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.internal,
+                         '--log.level=warn',
+                         '--ams-url=' + obs['opa-ams'].config.amsURL,
+                         '--resource-type-prefix=' + obs['opa-ams'].config.resourceTypePrefix,
+                         '--oidc.client-id=$(CLIENT_ID)',
+                         '--oidc.client-secret=$(CLIENT_SECRET)',
+                         '--oidc.issuer-url=$(ISSUER_URL)',
+                         '--opa.package=' + obs['opa-ams'].config.opaPackage,
+                       ] + (
+                         if std.objectHas(obs['opa-ams'].config, 'memcached') then
+                           [
+                             '--memcached=' + obs['opa-ams'].config.memcached,
+                           ]
+                         else []
+                       ) + (
+                         if std.objectHas(obs['opa-ams'].config, 'memcachedExpire') then
+                           [
+                             '--memcached.expire=' + obs['opa-ams'].config.memcachedExpire,
+                           ]
+                         else []
+                       ),
+                       env: [
+                         {
+                           name: 'ISSUER_URL',
+                           valueFrom: {
+                             secretKeyRef: {
+                               name: obs['opa-ams'].config.secretName,
+                               key: obs['opa-ams'].config.issuerURLKey,
+                             },
+                           },
+                         },
+                         {
+                           name: 'CLIENT_ID',
+                           valueFrom: {
+                             secretKeyRef: {
+                               name: obs['opa-ams'].config.secretName,
+                               key: obs['opa-ams'].config.clientIDKey,
+                             },
+                           },
+                         },
+                         {
+                           name: 'CLIENT_SECRET',
+                           valueFrom: {
+                             secretKeyRef: {
+                               name: obs['opa-ams'].config.secretName,
+                               key: obs['opa-ams'].config.clientSecretKey,
+                             },
+                           },
+                         },
+                       ],
+                       resourcs: obs['opa-ams'].config.resources,
+                     },
+                   ],
+                 },
+               },
+             },
+           },
+         } else {}),
 
   up+:: up {
     serviceMonitor+: {
@@ -900,6 +968,33 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
+    'opa-ams'+:: {
+      image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
+      secretName: obs.api.config.name,
+      clientIDKey: 'client-id',
+      clientSecretKey: 'client-secret',
+      issuerURLKey: 'issuer-url',
+      amsURL: '${AMS_URL}',
+      memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
+      memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
+      ports: {
+        public: 8082,
+        internal: 8083,
+      },
+      opaPackage: 'observatorium',
+      resourceTypePrefix: 'observatorium',
+      resources: {
+        requests: {
+          cpu: '${OPA_AMS_CPU_REQUEST}',
+          memory: '${OPA_AMS_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${OPA_AMS_CPU_LIMIT}',
+          memory: '${OPA_AMS_MEMORY_LIMIT}',
+        },
+      },
+    },
+
     loki+:: {
       version: 'xxx',
       replicas: {
@@ -950,6 +1045,10 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
 
   storeBucketCache+:: {
     config+:: obs.config.storeBucketCache,
+  },
+
+  'opa-ams'+:: {
+    config+:: obs.config['opa-ams'],
   },
 } + {
   local obs = self,
@@ -1310,6 +1409,34 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       {
         name: 'OBSERVATORIUM_API_MEMORY_LIMIT',
         value: '1Gi',
+      },
+      {
+        name: 'OPA_AMS_IMAGE',
+        value: 'quay.io/observatorium/opa-ams',
+      },
+      {
+        name: 'OPA_AMS_IMAGE_TAG',
+        value: 'master-2020-10-05-c0da3b8',
+      },
+      {
+        name: 'OPA_AMS_MEMCACHED_EXPIRE',
+        value: '300',
+      },
+      {
+        name: 'OPA_AMS_CPU_REQUEST',
+        value: '100m',
+      },
+      {
+        name: 'OPA_AMS_MEMORY_REQUEST',
+        value: '100Mi',
+      },
+      {
+        name: 'OPA_AMS_CPU_LIMITS',
+        value: '200m',
+      },
+      {
+        name: 'OPA_AMS_MEMORY_LIMITS',
+        value: '200Mi',
       },
       {
         name: 'JAEGER_PROXY_CPU_REQUEST',

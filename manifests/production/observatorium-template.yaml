@@ -124,6 +124,43 @@ objects:
             name: tenants
             readOnly: true
             subPath: tenants.yaml
+        - args:
+          - --web.listen=0.0.0.0:8082
+          - --web.internal.listen=0.0.0.0:8083
+          - --log.level=warn
+          - --ams-url=${AMS_URL}
+          - --resource-type-prefix=observatorium
+          - --oidc.client-id=$(CLIENT_ID)
+          - --oidc.client-secret=$(CLIENT_SECRET)
+          - --oidc.issuer-url=$(ISSUER_URL)
+          - --opa.package=observatorium
+          - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
+          - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
+          env:
+          - name: ISSUER_URL
+            valueFrom:
+              secretKeyRef:
+                key: issuer-url
+                name: observatorium-observatorium-api
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: observatorium-observatorium-api
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: observatorium-observatorium-api
+          image: ${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}
+          name: opa-ams
+          resourcs:
+            limits:
+              cpu: ${OPA_AMS_CPU_LIMIT}
+              memory: ${OPA_AMS_MEMORY_LIMIT}
+            requests:
+              cpu: ${OPA_AMS_CPU_REQUEST}
+              memory: ${OPA_AMS_MEMORY_REQUEST}
         volumes:
         - configMap:
             name: observatorium-observatorium-api
@@ -3015,7 +3052,7 @@ objects:
           - --elide-label=prometheus_replica
           - --token-expire-seconds=${TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}
           - --limit-bytes=5242880
-          - --forward-url=http://observatorium-observatorium-api.telemeter-production.svc.cluster.local:8080/api/metrics/v1/telemeter/api/v1/receive
+          - --forward-url=${TELEMETER_FORWARD_URL}
           - --log-level=debug
           env:
           - name: AUTHORIZE_URL
@@ -3417,6 +3454,20 @@ parameters:
   value: 256Mi
 - name: OBSERVATORIUM_API_MEMORY_LIMIT
   value: 1Gi
+- name: OPA_AMS_IMAGE
+  value: quay.io/observatorium/opa-ams
+- name: OPA_AMS_IMAGE_TAG
+  value: master-2020-10-05-c0da3b8
+- name: OPA_AMS_MEMCACHED_EXPIRE
+  value: "300"
+- name: OPA_AMS_CPU_REQUEST
+  value: 100m
+- name: OPA_AMS_MEMORY_REQUEST
+  value: 100Mi
+- name: OPA_AMS_CPU_LIMITS
+  value: 200m
+- name: OPA_AMS_MEMORY_LIMITS
+  value: 200Mi
 - name: JAEGER_PROXY_CPU_REQUEST
   value: 100m
 - name: JAEGER_PROXY_MEMORY_REQUEST

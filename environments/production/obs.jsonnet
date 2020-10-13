@@ -905,7 +905,11 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
             ],
             subjects: [
               {
-                name: 'monitoring-telemeter-service@redhat.com',
+                name: 'service-account-telemeter-service-staging',
+                kind: 'user',
+              },
+              {
+                name: 'service-account-telemeter-service',
                 kind: 'user',
               },
             ],
@@ -932,7 +936,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               clientID: 'id',
               clientSecret: 'secret',
               issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-              usernameClaim: 'email',
+              usernameClaim: 'preferred_username',
             },
           },
         ],

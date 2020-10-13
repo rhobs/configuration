@@ -18,7 +18,9 @@ objects:
         - "telemeter-write"
         "subjects":
         - "kind": "user"
-          "name": "monitoring-telemeter-service@redhat.com"
+          "name": "service-account-telemeter-service-staging"
+        - "kind": "user"
+          "name": "service-account-telemeter-service"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -195,7 +197,7 @@ objects:
           "clientID": "id"
           "clientSecret": "secret"
           "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
-          "usernameClaim": "email"
+          "usernameClaim": "preferred_username"
 - apiVersion: v1
   kind: Service
   metadata:

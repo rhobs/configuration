@@ -1566,6 +1566,10 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS',
         value: '3600',
       },
+      {
+        name: 'TELEMETER_LOG_LEVEL',
+        value: 'warn',
+      },
     ],
   },
 }

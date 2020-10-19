@@ -61,5 +61,6 @@ manifests/production/jaeger-template.yaml: $(shell find environments/production 
 	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
 
 manifests/production/observatorium-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running observatorium-template"
-	$(JSONNET) -J vendor environments/production/main.jsonnet | $(GOJSONTOYAML) > manifests/production/observatorium-template.yaml
+	@echo ">>>>> Running observatorium templates"
+	$(JSONNET) -J vendor -m manifests/production environments/production/main.jsonnet  | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find manifests/production -type f ! -name '*.yaml' -delete

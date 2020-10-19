@@ -1,43 +1,103 @@
 local obs = (import 'obs.jsonnet');
+local utils = (import 'mixin-utils/utils.libsonnet');
 
 {
-  _config+:: {
-    // TODO: Move this to the new style of selectors that kube-thanos uses
-    thanosReceiveSelector: $.receive.selector,
-    thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
-    thanosReceiveControllerSelector: 'job="%s"' % self.thanosReceiveControllerJobPrefix,
+  thanos: {
+    local t = self,
+    _config+:: {
+      local cfg = self,
+      // TODO: Move this to the new style of selectors that kube-thanos uses
+      thanosReceiveSelector: t.receive.selector,
+      thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
+      thanosReceiveControllerSelector: 'job="%s"' % cfg.thanosReceiveControllerJobPrefix,
+    },
+
+    dashboard+:: {
+      tags: ['thanos-mixin'],
+      namespaceQuery: 'kube_pod_info',
+    },
+    overview+:: {
+      title: '%(prefix)sOverview' % t.dashboard.prefix,
+    },
+    compact+:: {
+      local compact = self,
+      jobPrefix: obs.compact.service.metadata.name,
+      selector: 'job="%s"' % compact.jobPrefix,
+      title: '%(prefix)sCompact' % t.dashboard.prefix,
+    },
+    query+:: {
+      local query = self,
+      jobPrefix: obs.query.service.metadata.name,
+      selector: 'job="%s"' % query.jobPrefix,
+      title: '%(prefix)sQuery' % t.dashboard.prefix,
+    },
+    receive+:: {
+      local receive = self,
+      jobPrefix: obs.receivers.default.service.metadata.name,
+      selector: 'job=~"%s.*"' % receive.jobPrefix,
+      title: '%(prefix)sReceive' % t.dashboard.prefix,
+    },
+    store+:: {
+      local store = self,
+      jobPrefix: 'observatorium-thanos-store',
+      selector: 'job=~"%s.*"' % store.jobPrefix,
+      title: '%(prefix)sStore' % t.dashboard.prefix,
+    },
+    rule+:: {
+      local rule = self,
+      jobPrefix: obs.rule.service.metadata.name,
+      selector: 'job="%s"' % rule.jobPrefix,
+      title: '%(prefix)sRule' % t.dashboard.prefix,
+    },
   },
 
-  dashboard+:: {
-    tags: ['thanos-mixin'],
-    namespaceQuery: 'kube_pod_info',
-  },
-  overview+:: {
-    title: '%(prefix)sOverview' % $.dashboard.prefix,
-  },
-  compact+:: {
-    jobPrefix: obs.compact.service.metadata.name,
-    selector: 'job="%s"' % self.jobPrefix,
-    title: '%(prefix)sCompact' % $.dashboard.prefix,
-  },
-  query+:: {
-    jobPrefix: obs.query.service.metadata.name,
-    selector: 'job="%s"' % self.jobPrefix,
-    title: '%(prefix)sQuery' % $.dashboard.prefix,
-  },
-  receive+:: {
-    jobPrefix: obs.receivers.default.service.metadata.name,
-    selector: 'job=~"%s.*"' % self.jobPrefix,
-    title: '%(prefix)sReceive' % $.dashboard.prefix,
-  },
-  store+:: {
-    jobPrefix: 'observatorium-thanos-store',
-    selector: 'job=~"%s.*"' % self.jobPrefix,
-    title: '%(prefix)sStore' % $.dashboard.prefix,
-  },
-  rule+:: {
-    jobPrefix: obs.rule.service.metadata.name,
-    selector: 'job="%s"' % self.jobPrefix,
-    title: '%(prefix)sRule' % $.dashboard.prefix,
+  loki: {
+    grafanaDashboards+: {
+      'loki-chunks.json'+: {
+        showMultiCluster:: false,
+        namespaceQuery:: 'telemeter',
+        namespaceType:: 'custom',
+        matchers:: {
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
+        },
+      },
+      'loki-logs.json'+: {
+        showMultiCluster:: false,
+      },
+      'loki-operational.json'+: {
+        showAnnotations:: false,
+        showLinks:: false,
+        showMultiCluster:: false,
+        namespaceQuery:: 'telemeter',
+        namespaceType:: 'custom',
+        matchers:: {
+          cortexgateway:: [],
+          distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor-http')],
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
+          querier:: [utils.selector.eq('job', 'observatorium-loki-querier-http')],
+        },
+      },
+      'loki-reads.json'+: {
+        showMultiCluster:: false,
+        namespaceQuery:: 'telemeter',
+        namespaceType:: 'custom',
+        matchers:: {
+          cortexgateway:: [],
+          queryFrontend:: [utils.selector.eq('job', 'observatorium-loki-query-frontend-http')],
+          querier:: [utils.selector.eq('job', 'observatorium-loki-querier-http')],
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
+        },
+      },
+      'loki-writes.json'+: {
+        showMultiCluster:: false,
+        namespaceQuery:: 'telemeter',
+        namespaceType:: 'custom',
+        matchers:: {
+          cortexgateway:: [],
+          distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor-http')],
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
+        },
+      },
+    },
   },
 }

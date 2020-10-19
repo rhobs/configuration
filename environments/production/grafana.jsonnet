@@ -1,3 +1,5 @@
+local selectors = (import 'selectors.libsonnet');
+
 local thanos =
   (import 'thanos-mixin/dashboards/query.libsonnet') +
   (import 'thanos-mixin/dashboards/store.libsonnet') +
@@ -7,10 +9,11 @@ local thanos =
   (import 'thanos-mixin/dashboards/overview.libsonnet') +
   (import 'thanos-mixin/dashboards/defaults.libsonnet') +
   (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
-  (import 'selectors.libsonnet');
+  selectors.thanos;
 
 local jaeger = (import 'jaeger-mixin/mixin.libsonnet');
 local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
+local loki = (import 'loki-mixin/mixin.libsonnet') + selectors.loki;
 local memcached = (import 'memcached-mixin/mixin.libsonnet');
 
 local obsDatasource = 'telemeter-prod-01-prometheus';
@@ -34,6 +37,15 @@ local dashboards = {
       [name]: std.manifestJsonEx(jaeger.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
     })
   for name in std.objectFields(jaeger.grafanaDashboards)
+} + {
+  ['grafana-dashboard-observatorium-%s.configmap' % std.split(name, '.')[0]]:
+    local configmap = k.core.v1.configMap;
+    configmap.new() +
+    configmap.mixin.metadata.withName('grafana-dashboard-observatorium-%s' % std.split(name, '.')[0]) +
+    configmap.withData({
+      [name]: std.manifestJsonEx(loki.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
+    })
+  for name in std.objectFields(loki.grafanaDashboards)
 } + {
   ['grafana-dashboard-observatorium-memcached-%s.configmap' % std.split(name, '.')[0]]:
     local configmap = k.core.v1.configMap;

@@ -1,3 +1,4 @@
+local loki = (import 'loki-mixin/mixin.libsonnet');
 local obs = import 'environments/production/obs.jsonnet';
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
 
@@ -38,7 +39,7 @@ local thanosAlerts =
   (import 'thanos-mixin/alerts/store.libsonnet') +
   (import 'thanos-mixin/alerts/rule.libsonnet') +
   (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
-  (import 'environments/production/selectors.libsonnet') {
+  (import 'environments/production/selectors.libsonnet').thanos {
     query+:: {
       p99QueryLatencyThreshold: 90,
     },
@@ -48,7 +49,8 @@ local thanosAlerts =
 // Overwrite severity to medium and high.
 local appSREOverwrites = function(prometheusAlerts, namespace) {
   local setSeverity = function(label, alertName) {
-    label: if label == 'critical' then
+    label: if std.startsWith(alertName, 'Loki') then 'low'
+    else if label == 'critical' then
       // For thanos page only for `ThanosNoRuleEvaluations`.
       if std.startsWith(alertName, 'Thanos') then
         if alertName != 'ThanosNoRuleEvaluations' then 'high' else label
@@ -56,6 +58,8 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
     else if label == 'warning' then 'medium'
     else 'high',
   },
+
+  local test = std.trace(std.toString(prometheusAlerts), ''),
 
   local dashboardID = function(name) {
     id:
@@ -75,6 +79,8 @@ local appSREOverwrites = function(prometheusAlerts, namespace) {
         name == 'thanos-component-absent.rules' then 'no-dashboard'
       else if
         std.startsWith(name, 'observatorium-api') then 'Tg-mH0rizaSJDKSADX'
+      else if
+        std.startsWith(name, 'loki') then 'no-dashboard'
       else error 'no dashboard id for group %s' % name,
   },
 
@@ -333,5 +339,42 @@ local obsSLOs = {
     },
 
     spec: a.all,
+  },
+}
+
+{
+  'observatorium-loki-recording-rules.prometheusrules': {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: 'objservatorium-loki-recording-rules',
+      labels: {
+        prometheus: 'app-sre',
+        role: 'alert-rules',
+      },
+    },
+    spec: loki.prometheusRules,
+  },
+
+  'observatorium-loki-stage.prometheusrules': renderLoki('observatorium-loki-stage', 'telemeter-stage'),
+
+  'observatorium-loki-production.prometheusrules': renderLoki('observatorium-loki-production', 'telemeter-production'),
+
+  local renderLoki(name, namespace) = {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: name,
+      labels: {
+        prometheus: 'app-sre',
+        role: 'alert-rules',
+      },
+    },
+
+    local alerts =
+      loki.prometheusAlerts +
+      appSREOverwrites(super.prometheusAlerts, namespace),
+
+    spec: alerts,
   },
 }

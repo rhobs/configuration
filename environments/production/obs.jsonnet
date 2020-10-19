@@ -1,6 +1,9 @@
 local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet');
 local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
 local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
+local ja = (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet');
+local l = (import 'github.com/observatorium/deployments/components/loki.libsonnet');
+local lc = (import 'github.com/observatorium/deployments/components/loki-caches.libsonnet');
 local mc = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 local up = (import 'github.com/observatorium/deployments/components/up.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
@@ -103,7 +106,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
       },
     } +
-    (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin {
+    ja.statefulSetMixin {
       statefulSet+: {
         spec+: {
           template+: {
@@ -166,7 +169,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           },
         },
       } +
-      (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin {
+      ja.statefulSetMixin {
         statefulSet+: {
           spec+: {
             template+: {
@@ -300,7 +303,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
             },
           },
         },
-      } + (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').statefulSetMixin
+      } + ja.statefulSetMixin
     for hashring in obs.config.hashrings
   },
 
@@ -337,7 +340,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     } +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
-    (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').deploymentMixin,
+    ja.deploymentMixin,
 
   queryFrontend+::
     t.queryFrontend.withResources +
@@ -355,7 +358,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     } +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
-    (import 'github.com/observatorium/deployments/components/jaeger-agent.libsonnet').deploymentMixin,
+    ja.deploymentMixin,
 
   api+::
     api.withResources +
@@ -461,6 +464,229 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     },
   },
 
+  lokiCaches+::
+    lc +
+    lc.withServiceMonitors {
+      config+:: {
+        local lcCfg = self,
+        name: obs.config.name,
+        namespace: '${NAMESPACE}',
+        version: '${MEMCACHED_IMAGE_TAG}',
+        image: '%s:%s' % ['${MEMCACHED_IMAGE}', lcCfg.version],
+        commonLabels+: obs.config.commonLabels,
+        exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+        exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', lcCfg.exporterVersion],
+        enableChuckCache: true,
+        enableIndexQueryCache: true,
+        enableIndexWriteCache: false,
+        enableResultsCache: true,
+        replicas: {
+          chunk_cache: '${{LOKI_CHUNK_CACHE_REPLICAS}}',
+          index_query_cache: '${{LOKI_INDEX_QUERY_CACHE_REPLICAS}}',
+          results_cache: '${{LOKI_RESULTS_CACHE_REPLICAS}}',
+        },
+      },
+      serviceMonitors: {
+        chunk_cache: {
+          metadata+: {
+            name: 'observatorium-loki-chunk-cache',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+        index_query_cache+: {
+          metadata+: {
+            name: 'observatorium-loki-index-query-cache',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+        results_cache: {
+          metadata+: {
+            name: 'observatorium-loki-results-cache',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+      },
+    },
+
+  loki+::
+    l +
+    l.withMemberList +
+    l.withResources +
+    l.withVolumeClaimTemplate +
+    l.withChunkStoreCache +
+    l.withIndexQueryCache +
+    l.withResultsCache +
+    l.withServiceMonitor {
+      config+:: {
+        local lConfig = self,
+        name: obs.config.name + '-' + lConfig.commonLabels['app.kubernetes.io/name'],
+        namespace: '${NAMESPACE}',
+        version: '${LOKI_IMAGE_TAG}',
+        image: '%s:%s' % ['${LOKI_IMAGE}', lConfig.version],
+        commonLabels+: obs.config.commonLabels,
+        queryConcurrency: 32,
+        // Parallelism based on formular:
+        // LOKI_QUERIER_CONCURRENCY / LOKI_QUERY_FRONTEND_REPLICAS
+        queryParallelism: 16,
+        objectStorageConfig: {
+          secretName: '${LOKI_S3_SECRET}',
+          bucketsKey: 'bucket',
+          regionKey: 'aws_region',
+          accessKeyIdKey: 'aws_access_key_id',
+          secretAccessKeyKey: 'aws_secret_access_key',
+        },
+        replicas: {
+          distributor: '${{LOKI_DISTRIBUTOR_REPLICAS}}',
+          ingester: '${{LOKI_INGESTER_REPLICAS}}',
+          querier: '${{LOKI_QUERIER_REPLICAS}}',
+          query_frontend: '${{LOKI_QUERY_FRONTEND_REPLICAS}}',
+        },
+        resources: {
+          distributor: {
+            requests: {
+              cpu: '${LOKI_DISTRIBUTOR_CPU_REQUESTS}',
+              memory: '${LOKI_DISTRIBUTOR_MEMORY_REQUESTS}',
+            },
+            limits: {
+              cpu: '${LOKI_DISTRIBUTOR_CPU_LIMITS}',
+              memory: '${LOKI_DISTRIBUTOR_MEMORY_LIMITS}',
+            },
+          },
+          ingester: {
+            requests: {
+              cpu: '${LOKI_INGESTER_CPU_REQUESTS}',
+              memory: '${LOKI_INGESTER_MEMORY_REQUESTS}',
+            },
+            limits: {
+              cpu: '${LOKI_INGESTER_CPU_LIMITS}',
+              memory: '${LOKI_INGESTER_MEMORY_LIMITS}',
+            },
+          },
+          querier: {
+            requests: {
+              cpu: '${LOKI_QUERIER_CPU_REQUESTS}',
+              memory: '${LOKI_QUERIER_MEMORY_REQUESTS}',
+            },
+            limits: {
+              cpu: '${LOKI_QUERIER_CPU_LIMITS}',
+              memory: '${LOKI_QUERIER_MEMORY_LIMITS}',
+            },
+          },
+          query_frontend: {
+            requests: {
+              cpu: '${LOKI_QUERY_FRONTEND_CPU_REQUESTS}',
+              memory: '${LOKI_QUERY_FRONTEND_MEMORY_REQUESTS}',
+            },
+            limits: {
+              cpu: '${LOKI_QUERY_FRONTEND_CPU_LIMITS}',
+              memory: '${LOKI_QUERY_FRONTEND_MEMORY_LIMITS}',
+            },
+          },
+        },
+        chunkCache: 'dns+%s.%s.svc.cluster.local:%s' % [
+          obs.lokiCaches.manifests['chunk-cache-service'].metadata.name,
+          obs.lokiCaches.manifests['chunk-cache-service'].metadata.namespace,
+          obs.lokiCaches.manifests['chunk-cache-service'].spec.ports[0].port,
+        ],
+        indexQueryCache: 'dns+%s.%s.svc.cluster.local:%s' % [
+          obs.lokiCaches.manifests['index-query-cache-service'].metadata.name,
+          obs.lokiCaches.manifests['index-query-cache-service'].metadata.namespace,
+          obs.lokiCaches.manifests['index-query-cache-service'].spec.ports[0].port,
+        ],
+        resultsCache: 'dns+%s.%s.svc.cluster.local:%s' % [
+          obs.lokiCaches.manifests['results-cache-service'].metadata.name,
+          obs.lokiCaches.manifests['results-cache-service'].metadata.namespace,
+          obs.lokiCaches.manifests['results-cache-service'].spec.ports[0].port,
+        ],
+        volumeClaimTemplate: {
+          spec: {
+            accessModes: ['ReadWriteOnce'],
+            resources: {
+              requests: {
+                storage: '${LOKI_PVC_REQUEST}',
+              },
+            },
+            storageClassName: '${STORAGE_CLASS}',
+          },
+        },
+      },
+      serviceMonitors: {
+        distributor: {
+          metadata+: {
+            name: 'observatorium-loki-distributor',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+        querier: {
+          metadata+: {
+            name: 'observatorium-loki-querier',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+        query_frontend: {
+          metadata+: {
+            name: 'observatorium-loki-query-frontend',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+        ingester: {
+          metadata+: {
+            name: 'observatorium-loki-ingester',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
+      },
+      defaultConfig+:: {
+        tracing: {
+          enabled: true,
+        },
+      },
+      manifests+:: {
+        [name]+:
+          local m = super[name];
+          if m.kind == 'Deployment' || m.kind == 'StatefulSet' then
+            m + ja.specMixin {
+              config+: {
+                jaegerAgent: {
+                  image: obs.config.jaegerAgentImage,
+                  collectorAddress: obs.config.jaegerAgentCollectorAddress,
+                },
+              },
+            }
+          else
+            m
+        for name in std.objectFields(super.manifests)
+      },
+    },
+
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
@@ -478,8 +704,17 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     jaegerAgentImage:: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
     jaegerAgentCollectorAddress:: 'dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250',
     objectStorageConfig:: {
-      name: '${THANOS_CONFIG_SECRET}',
-      key: 'thanos.yaml',
+      thanos: {
+        name: '${THANOS_CONFIG_SECRET}',
+        key: 'thanos.yaml',
+      },
+      loki: {
+        secretName: '${LOKI_S3_SECRET}',
+        bucketsKey: 'buckets',
+        regionKey: 'region',
+        accessKeyIdKey: 'aws_access_key_id',
+        secretAccessKeyKey: 'aws_secret_access_key',
+      },
     },
 
     hashrings: [
@@ -497,7 +732,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
-      objectStorageConfig: obs.config.objectStorageConfig,
+      objectStorageConfig: obs.config.objectStorageConfig.thanos,
       retentionResolutionRaw: '14d',
       retentionResolution5m: '1s',
       retentionResolution1h: '1s',
@@ -569,7 +804,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       debug: '${THANOS_RECEIVE_DEBUG_ENV}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
-      objectStorageConfig: obs.config.objectStorageConfig,
+      objectStorageConfig: obs.config.objectStorageConfig.thanos,
       hashrings: obs.config.hashrings,
       replicas: '${{THANOS_RECEIVE_REPLICAS}}',
       replicationFactor: 3,
@@ -604,7 +839,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
-      objectStorageConfig: obs.config.objectStorageConfig,
+      objectStorageConfig: obs.config.objectStorageConfig.thanos,
       replicas: '${{THANOS_RULER_REPLICAS}}',
       resources: {
         requests: {
@@ -627,7 +862,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       image: obs.config.thanosImage,
       version: obs.config.thanosVersion,
       shards: 3,
-      objectStorageConfig: obs.config.objectStorageConfig,
+      objectStorageConfig: obs.config.objectStorageConfig.thanos,
       replicas: '${{THANOS_STORE_REPLICAS}}',
       memcached+: {
         indexCache+: {
@@ -840,10 +1075,21 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', api.version],
       replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
       logs: {
-        // Fake logs endpoints to satisfy Observatorium flag parsing.
-        readEndpoint: 'http://127.0.0.1',
-        writeEndpoint: 'http://127.0.0.1',
-        tailEndpoint: 'http://127.0.0.1',
+        readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+          obs.loki.manifests['query-frontend-http-service'].metadata.name,
+          obs.loki.manifests['query-frontend-http-service'].metadata.namespace,
+          obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
+        ],
+        tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+          obs.loki.manifests['querier-http-service'].metadata.name,
+          obs.loki.manifests['querier-http-service'].metadata.namespace,
+          obs.loki.manifests['querier-http-service'].spec.ports[0].port,
+        ],
+        writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+          obs.loki.manifests['distributor-http-service'].metadata.name,
+          obs.loki.manifests['distributor-http-service'].metadata.namespace,
+          obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
+        ],
       },
       metrics: {
         readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
@@ -863,6 +1109,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
             name: 'rhobs',
             resources: [
               'metrics',
+              'logs',
             ],
             tenants: [
               'rhobs',
@@ -999,17 +1246,8 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
-    loki+:: {
-      version: 'xxx',
-      replicas: {
-        distributor: 'xxx',
-      },
-      image: 'xxxx',
-      objectStorageConfig: {
-        name: 'xxx',
-        key: 'endpoint',
-      },
-    },
+    loki+:: {},
+    lokiCaches+:: {},
 
     up: {
       local cfg = self,
@@ -1069,7 +1307,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     },
   },
 
-  openshiftTemplate:: {
+  metricsOpenshiftTemplate:: {
     apiVersion: 'v1',
     kind: 'Template',
     metadata: {
@@ -1083,7 +1321,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           },
         }
         for name in std.objectFields(obs.manifests)
-        if obs.manifests[name] != null && !std.startsWith(name, 'loki')
+        if obs.manifests[name] != null
       ] +
       [obs.storeMonitor.serviceMonitor] +
       [obs.receiversMonitor.serviceMonitor] +
@@ -1575,5 +1813,223 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         value: 'warn',
       },
     ],
+  },
+
+  logsOpenShiftTemplate:: {
+    apiVersion: 'v1',
+    kind: 'Template',
+    metadata: {
+      name: 'observatorium-logs',
+    },
+    objects: [
+      obs.lokiCaches.manifests[name] {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for name in std.objectFields(obs.lokiCaches.manifests)
+    ] + [
+      obs.loki.manifests[name] {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for name in std.objectFields(obs.loki.manifests)
+    ],
+    parameters: [
+      {
+        name: 'NAMESPACE',
+        value: 'telemeter',
+      },
+      {
+        name: 'STORAGE_CLASS',
+        value: 'gp2',
+      },
+      {
+        name: 'LOKI_IMAGE_TAG',
+        value: '1.6.1',
+      },
+      {
+        name: 'LOKI_IMAGE',
+        value: 'docker.io/grafana/loki',
+      },
+      {
+        name: 'LOKI_S3_SECRET',
+        value: 'telemeter-loki-stage-s3',
+      },
+      {
+        name: 'LOKI_DISTRIBUTOR_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_DISTRIBUTOR_CPU_REQUESTS',
+        value: '500m',
+      },
+      {
+        name: 'LOKI_DISTRIBUTOR_CPU_LIMITS',
+        value: '1000m',
+      },
+      {
+        name: 'LOKI_DISTRIBUTOR_MEMORY_REQUESTS',
+        value: '500Mi',
+      },
+      {
+        name: 'LOKI_DISTRIBUTOR_MEMORY_LIMITS',
+        value: '1Gi',
+      },
+      {
+        name: 'LOKI_INGESTER_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_INGESTER_CPU_REQUESTS',
+        value: '1000m',
+      },
+      {
+        name: 'LOKI_INGESTER_CPU_LIMITS',
+        value: '2000m',
+      },
+      {
+        name: 'LOKI_INGESTER_MEMORY_REQUESTS',
+        value: '5Gi',
+      },
+      {
+        name: 'LOKI_INGESTER_MEMORY_LIMITS',
+        value: '10Gi',
+      },
+      {
+        name: 'LOKI_QUERIER_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_QUERIER_CPU_REQUESTS',
+        value: '500m',
+      },
+      {
+        name: 'LOKI_QUERIER_CPU_LIMITS',
+        value: '500m',
+      },
+      {
+        name: 'LOKI_QUERIER_MEMORY_REQUESTS',
+        value: '600Mi',
+      },
+      {
+        name: 'LOKI_QUERIER_MEMORY_LIMITS',
+        value: '1200Mi',
+      },
+      {
+        name: 'LOKI_QUERY_FRONTEND_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_QUERY_FRONTEND_CPU_REQUESTS',
+        value: '500m',
+      },
+      {
+        name: 'LOKI_QUERY_FRONTEND_CPU_LIMITS',
+        value: '500m',
+      },
+      {
+        name: 'LOKI_QUERY_FRONTEND_MEMORY_REQUESTS',
+        value: '600Mi',
+      },
+      {
+        name: 'LOKI_QUERY_FRONTEND_MEMORY_LIMITS',
+        value: '1200Mi',
+      },
+      {
+        name: 'LOKI_CHUNK_CACHE_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_INDEX_QUERY_CACHE_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_RESULTS_CACHE_REPLICAS',
+        value: '2',
+      },
+      {
+        name: 'LOKI_PVC_REQUEST',
+        value: '50Gi',
+      },
+      {
+        name: 'JAEGER_AGENT_IMAGE',
+        value: 'jaegertracing/jaeger-agent',
+      },
+      {
+        name: 'JAEGER_AGENT_IMAGE_TAG',
+        value: '1.14.0',
+      },
+      {
+        name: 'JAEGER_PROXY_CPU_REQUEST',
+        value: '100m',
+      },
+      {
+        name: 'JAEGER_PROXY_MEMORY_REQUEST',
+        value: '100Mi',
+      },
+      {
+        name: 'JAEGER_PROXY_CPU_LIMITS',
+        value: '200m',
+      },
+      {
+        name: 'JAEGER_PROXY_MEMORY_LIMITS',
+        value: '200Mi',
+      },
+      {
+        name: 'MEMCACHED_IMAGE',
+        value: 'docker.io/memcached',
+      },
+      {
+        name: 'MEMCACHED_IMAGE_TAG',
+        value: '1.5.20-alpine',
+      },
+      {
+        name: 'MEMCACHED_EXPORTER_IMAGE',
+        value: 'docker.io/prom/memcached-exporter',
+      },
+      {
+        name: 'MEMCACHED_EXPORTER_IMAGE_TAG',
+        value: 'v0.6.0',
+      },
+      {
+        name: 'MEMCACHED_CPU_REQUEST',
+        value: '500m',
+      },
+      {
+        name: 'MEMCACHED_CPU_LIMIT',
+        value: '3',
+      },
+      {
+        name: 'MEMCACHED_MEMORY_REQUEST',
+        value: '1329Mi',
+      },
+      {
+        name: 'MEMCACHED_MEMORY_LIMIT',
+        value: '1844Mi',
+      },
+      {
+        name: 'MEMCACHED_EXPORTER_CPU_REQUEST',
+        value: '50m',
+      },
+      {
+        name: 'MEMCACHED_EXPORTER_CPU_LIMIT',
+        value: '200m',
+      },
+      {
+        name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST',
+        value: '50Mi',
+      },
+      {
+        name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT',
+        value: '200Mi',
+      },
+    ],
+  },
+
+  openShiftTemplates:: {
+    'observatorium-template': obs.metricsOpenshiftTemplate,
+    'observatorium-logs-template': obs.logsOpenShiftTemplate,
   },
 }

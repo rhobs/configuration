@@ -1,1 +1,1 @@
-(import 'obs.jsonnet').openshiftTemplate
+(import 'obs.jsonnet').openShiftTemplates

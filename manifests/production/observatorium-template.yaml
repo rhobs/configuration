@@ -21,6 +21,22 @@ objects:
           "name": "service-account-telemeter-service-staging"
         - "kind": "user"
           "name": "service-account-telemeter-service"
+      - "name": "dptp-collector"
+        "roles":
+        - "dptp-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-collector"
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-collector-staging"
+      - "name": "dptp-reader"
+        "roles":
+        - "dptp-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-reader"
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-reader-staging"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -38,6 +54,20 @@ objects:
         - "metrics"
         "tenants":
         - "telemeter"
+      - "name": "dptp-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "dptp"
+      - "name": "dptp-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "dptp"
   kind: ConfigMap
   metadata:
     labels:
@@ -199,6 +229,13 @@ objects:
           "clientSecret": "secret"
           "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
           "usernameClaim": "preferred_username"
+      - "id": "AC879303-C60F-4D0D-A6D5-A485CFD638B8"
+        "name": "dptp"
+        "oidc":
+          "clientID": "id"
+          "clientSecret": "secret"
+          "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
+          "usernameClaim": "email"
 - apiVersion: v1
   kind: Service
   metadata:

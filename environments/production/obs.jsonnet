@@ -1131,6 +1131,30 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               'write',
             ],
           },
+          {
+            name: 'dptp-write',
+            resources: [
+              'logs',
+            ],
+            tenants: [
+              'dptp',
+            ],
+            permissions: [
+              'write',
+            ],
+          },
+          {
+            name: 'dptp-read',
+            resources: [
+              'logs',
+            ],
+            tenants: [
+              'dptp',
+            ],
+            permissions: [
+              'read',
+            ],
+          },
         ],
         roleBindings: [
           {
@@ -1161,6 +1185,38 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               },
             ],
           },
+          {
+            name: 'dptp-collector',
+            roles: [
+              'dptp-write',
+            ],
+            subjects: [
+              {
+                name: 'service-account-observatorium-dptp-collector',
+                kind: 'user',
+              },
+              {
+                name: 'service-account-observatorium-dptp-collector-staging',
+                kind: 'user',
+              },
+            ],
+          },
+          {
+            name: 'dptp-reader',
+            roles: [
+              'dptp-read',
+            ],
+            subjects: [
+              {
+                name: 'service-account-observatorium-dptp-reader',
+                kind: 'user',
+              },
+              {
+                name: 'service-account-observatorium-dptp-reader-staging',
+                kind: 'user',
+              },
+            ],
+          },
         ],
       },
       tenants: {
@@ -1184,6 +1240,16 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               clientSecret: 'secret',
               issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
               usernameClaim: 'preferred_username',
+            },
+          },
+          {
+            name: 'dptp',
+            id: 'AC879303-C60F-4D0D-A6D5-A485CFD638B8',
+            oidc: {
+              clientID: 'id',
+              clientSecret: 'secret',
+              issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
+              usernameClaim: 'email',
             },
           },
         ],

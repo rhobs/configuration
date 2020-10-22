@@ -391,7 +391,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                          '--web.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.public,
                          '--web.internal.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.internal,
                          '--log.level=warn',
-                         '--ams-url=' + obs['opa-ams'].config.amsURL,
+                         '--ams.url=' + obs['opa-ams'].config.amsURL,
                          '--resource-type-prefix=' + obs['opa-ams'].config.resourceTypePrefix,
                          '--oidc.client-id=$(CLIENT_ID)',
                          '--oidc.client-secret=$(CLIENT_SECRET)',
@@ -407,6 +407,13 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                          if std.objectHas(obs['opa-ams'].config, 'memcachedExpire') then
                            [
                              '--memcached.expire=' + obs['opa-ams'].config.memcachedExpire,
+                           ]
+                         else []
+                       ) + (
+                         if std.objectHas(obs['opa-ams'].config, 'mappings') then
+                           [
+                             '--ams.mappings=%s=%s' % [tenant, obs['opa-ams'].config.mappings[tenant]]
+                             for tenant in std.objectFields(obs['opa-ams'].config.mappings)
                            ]
                          else []
                        ),
@@ -981,6 +988,10 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       amsURL: '${AMS_URL}',
       memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
       memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
+      mappings: {
+        // A map from Observatorium tenant names to AMS organization IDs, e.g.:
+        // tenant: 'organizationID',
+      },
       ports: {
         public: 8082,
         internal: 8083,
@@ -1420,7 +1431,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       {
         name: 'OPA_AMS_IMAGE_TAG',
-        value: 'master-2020-10-05-c0da3b8',
+        value: 'master-2020-10-22-c35090d',
       },
       {
         name: 'OPA_AMS_MEMCACHED_EXPIRE',

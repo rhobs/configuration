@@ -130,7 +130,7 @@ objects:
           - --web.listen=0.0.0.0:8082
           - --web.internal.listen=0.0.0.0:8083
           - --log.level=warn
-          - --ams-url=${AMS_URL}
+          - --ams.url=${AMS_URL}
           - --resource-type-prefix=observatorium
           - --oidc.client-id=$(CLIENT_ID)
           - --oidc.client-secret=$(CLIENT_SECRET)

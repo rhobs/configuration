@@ -314,8 +314,12 @@ objects:
             periodSeconds: 30
             timeoutSeconds: 1
           resources:
-            limits: {}
-            requests: {}
+            limits:
+              cpu: ${GUBERNATOR_CPU_LIMIT}
+              memory: ${GUBERNATOR_MEMORY_LIMIT}
+            requests:
+              cpu: ${GUBERNATOR_CPU_REQUEST}
+              memory: ${GUBERNATOR_MEMORY_REQUEST}
         restartPolicy: Always
         serviceAccount: observatorium-gubernator
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -3599,6 +3603,14 @@ parameters:
   value: 0.9.1
 - name: GUBERNATOR_REPLICAS
   value: "2"
+- name: GUBERNATOR_CPU_REQUEST
+  value: 100m
+- name: GUBERNATOR_CPU_LIMITS
+  value: 200m
+- name: GUBERNATOR_MEMORY_REQUEST
+  value: 100Mi
+- name: GUBERNATOR_MEMORY_LIMITS
+  value: 200Mi
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/observatorium
 - name: OBSERVATORIUM_API_IMAGE_TAG

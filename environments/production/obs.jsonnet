@@ -1074,6 +1074,16 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       version: '${GUBERNATOR_IMAGE_TAG}',
       image: '%s:%s' % ['${GUBERNATOR_IMAGE}', guber.version],
       replicas: '${{GUBERNATOR_REPLICAS}}',
+      resources: {
+        requests: {
+          cpu: '${GUBERNATOR_CPU_REQUEST}',
+          memory: '${GUBERNATOR_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${GUBERNATOR_CPU_LIMIT}',
+          memory: '${GUBERNATOR_MEMORY_LIMIT}',
+        },
+      },
     },
 
     api+: {
@@ -1649,6 +1659,22 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       {
         name: 'GUBERNATOR_REPLICAS',
         value: '2',
+      },
+      {
+        name: 'GUBERNATOR_CPU_REQUEST',
+        value: '100m',
+      },
+      {
+        name: 'GUBERNATOR_CPU_LIMITS',
+        value: '200m',
+      },
+      {
+        name: 'GUBERNATOR_MEMORY_REQUEST',
+        value: '100Mi',
+      },
+      {
+        name: 'GUBERNATOR_MEMORY_LIMITS',
+        value: '200Mi',
       },
       {
         name: 'OBSERVATORIUM_API_IMAGE',

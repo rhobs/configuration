@@ -1069,6 +1069,13 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
+    gubernator+: {
+      local guber = self,
+      version: '${GUBERNATOR_IMAGE_TAG}',
+      image: '%s:%s' % ['${GUBERNATOR_IMAGE}', guber.version],
+      replicas: '${{GUBERNATOR_REPLICAS}}',
+    },
+
     api+: {
       local api = self,
       version: '${OBSERVATORIUM_API_IMAGE_TAG}',
@@ -1101,6 +1108,13 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           obs.receiveService.metadata.name,
           obs.receiveService.metadata.namespace,
           obs.receiveService.spec.ports[2].port,
+        ],
+      },
+      rateLimiter: {
+        grpcAddress: '%s.%s.svc.cluster.local:%d' % [
+          obs.gubernator.service.metadata.name,
+          obs.gubernator.service.metadata.namespace,
+          obs.gubernator.service.spec.ports[1].port,
         ],
       },
       rbac: {
@@ -1625,12 +1639,24 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         value: 'http://thanos-querier.observatorium.svc:9090',
       },
       {
+        name: 'GUBERNATOR_IMAGE',
+        value: 'thrawn01/gubernator',
+      },
+      {
+        name: 'GUBERNATOR_IMAGE_TAG',
+        value: '0.9.1',
+      },
+      {
+        name: 'GUBERNATOR_REPLICAS',
+        value: '2',
+      },
+      {
         name: 'OBSERVATORIUM_API_IMAGE',
         value: 'quay.io/observatorium/observatorium',
       },
       {
         name: 'OBSERVATORIUM_API_IMAGE_TAG',
-        value: 'master-2020-06-26-v0.1.1-105-gc784d77',
+        value: 'master-2020-10-26-v0.1.1-184-ge8aa228',
       },
       {
         name: 'OBSERVATORIUM_API_REPLICAS',

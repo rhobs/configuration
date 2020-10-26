@@ -90,6 +90,7 @@ objects:
           - --logs.write.endpoint=http://observatorium-loki-distributor-http.${NAMESPACE}.svc.cluster.local:3100
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
+          - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:81
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -164,6 +165,7 @@ objects:
             requests:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
+        serviceAccount: observatorium-observatorium-api
         volumes:
         - configMap:
             name: observatorium-observatorium-api
@@ -222,6 +224,16 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
+    name: observatorium-observatorium-api
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -240,6 +252,142 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: observatorium-api
         app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
+    name: observatorium-gubernator
+  spec:
+    replicas: ${{GUBERNATOR_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rate-limiter
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: gubernator
+        app.kubernetes.io/part-of: observatorium
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: rate-limiter
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: gubernator
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
+      spec:
+        containers:
+        - env:
+          - name: GUBER_K8S_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: GUBER_K8S_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: GUBER_K8S_POD_PORT
+            value: "81"
+          - name: GUBER_K8S_ENDPOINTS_SELECTOR
+            value: app.kubernetes.io/name=gubernator
+          image: ${GUBERNATOR_IMAGE}:${GUBERNATOR_IMAGE_TAG}
+          name: gubernator
+          ports:
+          - containerPort: 80
+            name: http
+          - containerPort: 81
+            name: grpc
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /v1/HealthCheck
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 1
+          resources:
+            limits: {}
+            requests: {}
+        restartPolicy: Always
+        serviceAccount: observatorium-gubernator
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
+    name: observatorium-gubernator
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - endpoints
+    verbs:
+    - list
+    - watch
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
+    name: observatorium-gubernator
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: observatorium-gubernator
+  subjects:
+  - kind: ServiceAccount
+    name: observatorium-gubernator
+    namespace: ${NAMESPACE}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
+    name: observatorium-gubernator
+  spec:
+    ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: grpc
+      port: 81
+      targetPort: 81
+    selector:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
+    name: observatorium-gubernator
 - apiVersion: v1
   data:
     queries.yaml: |-
@@ -3445,10 +3593,16 @@ parameters:
   value: 1Gi
 - name: THANOS_QUERIER_SVC_URL
   value: http://thanos-querier.observatorium.svc:9090
+- name: GUBERNATOR_IMAGE
+  value: thrawn01/gubernator
+- name: GUBERNATOR_IMAGE_TAG
+  value: 0.9.1
+- name: GUBERNATOR_REPLICAS
+  value: "2"
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/observatorium
 - name: OBSERVATORIUM_API_IMAGE_TAG
-  value: master-2020-06-26-v0.1.1-105-gc784d77
+  value: master-2020-10-26-v0.1.1-184-ge8aa228
 - name: OBSERVATORIUM_API_REPLICAS
   value: "3"
 - name: OBSERVATORIUM_API_CPU_REQUEST

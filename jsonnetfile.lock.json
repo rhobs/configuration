@@ -99,8 +99,8 @@
           "subdir": ""
         }
       },
-      "version": "aae146408016bd5682a05c5a1e1ba890b7e3d1dd",
-      "sum": "3GhDSK7FGlzeozKoc6Sn2kXrNm+nk0QbOxOlzmzovbQ="
+      "version": "89901782c7ad655cab57f374f09fd1086531449b",
+      "sum": "gL60lRjXS0QslNtFoxA0kD1KhFzwLfrMZSuqEez4iBE="
     },
     {
       "source": {
@@ -109,8 +109,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "6aff7a83c752e6a42fe65d795ecfde25ee6b29fe",
-      "sum": "7IMsF5Iy+tUt+OzBzulYLepzmyGn7+XlXkq5K2hNkEo=",
+      "version": "e8aa228b5e565accc295f0fe6d0650fa0945f2a3",
+      "sum": "+WhNmHXCF/5awOIqBz03uIcDSD7jQ4tLLS39bFszUHA=",
       "name": "observatorium"
     },
     {

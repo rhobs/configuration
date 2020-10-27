@@ -188,7 +188,7 @@ objects:
                 name: observatorium-observatorium-api
           image: ${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}
           name: opa-ams
-          resourcs:
+          resources:
             limits:
               cpu: ${OPA_AMS_CPU_LIMIT}
               memory: ${OPA_AMS_MEMORY_LIMIT}

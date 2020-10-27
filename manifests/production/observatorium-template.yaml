@@ -3031,6 +3031,7 @@ objects:
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="cam_app_workload_migrations"}
+          - --whitelist={__name__="cco_credentials_mode"}
           - --whitelist={__name__="ceph_cluster_total_bytes"}
           - --whitelist={__name__="ceph_cluster_total_used_raw_bytes"}
           - --whitelist={__name__="ceph_health_status"}
@@ -3194,6 +3195,7 @@ objects:
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="cam_app_workload_migrations"}
+          - --whitelist={__name__="cco_credentials_mode"}
           - --whitelist={__name__="ceph_cluster_total_bytes"}
           - --whitelist={__name__="ceph_cluster_total_used_raw_bytes"}
           - --whitelist={__name__="ceph_health_status"}

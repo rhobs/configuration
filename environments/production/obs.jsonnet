@@ -1763,7 +1763,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         value: '100m',
       },
       {
-        name: 'GUBERNATOR_CPU_LIMITS',
+        name: 'GUBERNATOR_CPU_LIMIT',
         value: '200m',
       },
       {
@@ -1771,7 +1771,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         value: '100Mi',
       },
       {
-        name: 'GUBERNATOR_MEMORY_LIMITS',
+        name: 'GUBERNATOR_MEMORY_LIMIT',
         value: '200Mi',
       },
       {

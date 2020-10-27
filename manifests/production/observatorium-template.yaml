@@ -3662,11 +3662,11 @@ parameters:
   value: "2"
 - name: GUBERNATOR_CPU_REQUEST
   value: 100m
-- name: GUBERNATOR_CPU_LIMITS
+- name: GUBERNATOR_CPU_LIMIT
   value: 200m
 - name: GUBERNATOR_MEMORY_REQUEST
   value: 100Mi
-- name: GUBERNATOR_MEMORY_LIMITS
+- name: GUBERNATOR_MEMORY_LIMIT
   value: 200Mi
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/observatorium

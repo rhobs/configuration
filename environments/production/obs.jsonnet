@@ -470,7 +470,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                            },
                          },
                        ],
-                       resourcs: obs['opa-ams'].config.resources,
+                       resources: obs['opa-ams'].config.resources,
                      },
                    ],
                  },

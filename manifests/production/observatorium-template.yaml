@@ -392,6 +392,24 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
     name: observatorium-gubernator
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-gubernator
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rate-limiter
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: gubernator
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     queries.yaml: |-

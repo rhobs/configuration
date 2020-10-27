@@ -6,6 +6,7 @@ local l = (import 'github.com/observatorium/deployments/components/loki.libsonne
 local lc = (import 'github.com/observatorium/deployments/components/loki-caches.libsonnet');
 local mc = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 local up = (import 'github.com/observatorium/deployments/components/up.libsonnet');
+local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 
 
@@ -359,6 +360,26 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
     ja.deploymentMixin,
+
+  gubernator+:: gubernator.withServiceMonitor {
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-gubernator',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: {
+        selector+: {
+          matchLabels+: {
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+      },
+    },
+  },
 
   api+::
     api.withResources +

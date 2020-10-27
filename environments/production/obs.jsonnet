@@ -1823,11 +1823,11 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         value: '100Mi',
       },
       {
-        name: 'OPA_AMS_CPU_LIMITS',
+        name: 'OPA_AMS_CPU_LIMIT',
         value: '200m',
       },
       {
-        name: 'OPA_AMS_MEMORY_LIMITS',
+        name: 'OPA_AMS_MEMORY_LIMIT',
         value: '200Mi',
       },
       {

@@ -347,7 +347,7 @@ local obsSLOs = {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
     metadata: {
-      name: 'objservatorium-loki-recording-rules',
+      name: 'observatorium-loki-recording-rules',
       labels: {
         prometheus: 'app-sre',
         role: 'alert-rules',

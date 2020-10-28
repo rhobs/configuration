@@ -1752,7 +1752,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       {
         name: 'GUBERNATOR_IMAGE_TAG',
-        value: '0.9.1',
+        value: '1.0.0-rc.1',
       },
       {
         name: 'GUBERNATOR_REPLICAS',

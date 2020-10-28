@@ -384,7 +384,7 @@ spec:
         summary: Thanos Store is having high latency for bucket operations.
       expr: |
         (
-          histogram_quantile(0.9, sum by (job, le) (rate(thanos_objstore_bucket_operation_duration_seconds_bucket{job=~"observatorium-thanos-store.*"}[5m]))) > 2
+          histogram_quantile(0.99, sum by (job, le) (rate(thanos_objstore_bucket_operation_duration_seconds_bucket{job=~"observatorium-thanos-store.*"}[5m]))) > 3
         and
           sum by (job) (rate(thanos_objstore_bucket_operation_duration_seconds_count{job=~"observatorium-thanos-store.*"}[5m])) > 0
         )

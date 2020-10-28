@@ -43,6 +43,9 @@ local thanosAlerts =
     query+:: {
       p99QueryLatencyThreshold: 90,
     },
+    store+:: {
+      bucketOpsP99LatencyThreshold: 3,
+    },
   };
 
 // Add dashboards and runbook anntotations.

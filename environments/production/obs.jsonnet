@@ -413,7 +413,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                        image: obs['opa-ams'].config.image,
                        args: [
                          '--web.listen=127.0.0.1:%s' % obs['opa-ams'].config.ports.api,
-                         '--web.internal.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.internal,
+                         '--web.internal.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.metrics,
                          '--web.healthchecks.url=http://127.0.0.1:%s' % obs['opa-ams'].config.ports.api,
                          '--log.level=warn',
                          '--ams.url=' + obs['opa-ams'].config.amsURL,
@@ -483,7 +483,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                          periodSeconds: 30,
                          httpGet: {
                            path: '/live',
-                           port: obs['opa-ams'].config.ports.internal,
+                           port: obs['opa-ams'].config.ports.metrics,
                            scheme: 'HTTP',
                          },
                        },
@@ -492,7 +492,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                          periodSeconds: 5,
                          httpGet: {
                            path: '/ready',
-                           port: obs['opa-ams'].config.ports.internal,
+                           port: obs['opa-ams'].config.ports.metrics,
                            scheme: 'HTTP',
                          },
                        },
@@ -520,7 +520,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
            serviceMonitor+: {
              spec+: {
                endpoints+: [
-                 { port: 'opa-ams-internal' },
+                 { port: 'opa-ams-metrics' },
                ],
              },
            },
@@ -1399,7 +1399,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       ports: {
         api: 8082,
-        internal: 8083,
+        metrics: 8083,
       },
       opaPackage: 'observatorium',
       resourceTypePrefix: 'observatorium',

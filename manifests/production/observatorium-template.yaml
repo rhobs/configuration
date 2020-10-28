@@ -159,8 +159,9 @@ objects:
             readOnly: true
             subPath: tenants.yaml
         - args:
-          - --web.listen=0.0.0.0:8082
+          - --web.listen=127.0.0.1:8082
           - --web.internal.listen=0.0.0.0:8083
+          - --web.healthchecks.url=http://127.0.0.1:8082
           - --log.level=warn
           - --ams.url=${AMS_URL}
           - --resource-type-prefix=observatorium
@@ -187,7 +188,26 @@ objects:
                 key: client-secret
                 name: observatorium-observatorium-api
           image: ${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8083
+              scheme: HTTP
+            periodSeconds: 30
           name: opa-ams
+          ports:
+          - containerPort: 8082
+            name: opa-ams-api
+          - containerPort: 8083
+            name: opa-ams-internal
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8083
+              scheme: HTTP
+            periodSeconds: 5
           resources:
             limits:
               cpu: ${OPA_AMS_CPU_LIMIT}
@@ -256,6 +276,12 @@ objects:
     - name: public
       port: 8080
       targetPort: 8080
+    - name: opa-ams-api
+      port: 8082
+      targetPort: 8082
+    - name: opa-ams-internal
+      port: 8083
+      targetPort: 8083
     selector:
       app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium
@@ -280,6 +306,7 @@ objects:
   spec:
     endpoints:
     - port: internal
+    - port: opa-ams-internal
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}

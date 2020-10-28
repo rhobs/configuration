@@ -412,8 +412,9 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                        name: 'opa-ams',
                        image: obs['opa-ams'].config.image,
                        args: [
-                         '--web.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.public,
+                         '--web.listen=127.0.0.1:%s' % obs['opa-ams'].config.ports.api,
                          '--web.internal.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.internal,
+                         '--web.healthchecks.url=http://127.0.0.1:%s' % obs['opa-ams'].config.ports.api,
                          '--log.level=warn',
                          '--ams.url=' + obs['opa-ams'].config.amsURL,
                          '--resource-type-prefix=' + obs['opa-ams'].config.resourceTypePrefix,
@@ -470,11 +471,57 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                            },
                          },
                        ],
+                       ports: [
+                         {
+                           name: 'opa-ams-' + name,
+                           containerPort: obs['opa-ams'].config.ports[name],
+                         }
+                         for name in std.objectFields(obs['opa-ams'].config.ports)
+                       ],
+                       livenessProbe: {
+                         failureThreshold: 10,
+                         periodSeconds: 30,
+                         httpGet: {
+                           path: '/live',
+                           port: obs['opa-ams'].config.ports.internal,
+                           scheme: 'HTTP',
+                         },
+                       },
+                       readinessProbe: {
+                         failureThreshold: 12,
+                         periodSeconds: 5,
+                         httpGet: {
+                           path: '/ready',
+                           port: obs['opa-ams'].config.ports.internal,
+                           scheme: 'HTTP',
+                         },
+                       },
                        resources: obs['opa-ams'].config.resources,
                      },
                    ],
                  },
                },
+             },
+           },
+
+           service+: {
+             spec+: {
+               ports+: [
+                 {
+                   name: 'opa-ams-' + name,
+                   port: obs['opa-ams'].config.ports[name],
+                   targetPort: obs['opa-ams'].config.ports[name],
+                 }
+                 for name in std.objectFields(obs['opa-ams'].config.ports)
+               ],
+             },
+           },
+
+           serviceMonitor+: {
+             spec+: {
+               endpoints+: [
+                 { port: 'opa-ams-internal' },
+               ],
              },
            },
          } else {}),
@@ -1351,7 +1398,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         // tenant: 'organizationID',
       },
       ports: {
-        public: 8082,
+        api: 8082,
         internal: 8083,
       },
       opaPackage: 'observatorium',
@@ -1808,7 +1855,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       {
         name: 'OPA_AMS_IMAGE_TAG',
-        value: 'master-2020-10-22-c35090d',
+        value: 'master-2020-10-28-902d400',
       },
       {
         name: 'OPA_AMS_MEMCACHED_EXPIRE',

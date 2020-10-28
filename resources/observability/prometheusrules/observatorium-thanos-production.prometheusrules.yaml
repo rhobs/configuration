@@ -9,13 +9,76 @@ metadata:
   name: observatorium-thanos-production
 spec:
   groups:
+  - name: thanos-component-absent.rules
+    rules:
+    - alert: ThanosCompactIsDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/thanos-component-absent.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        description: ThanosCompact has disappeared from Prometheus target discovery.
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanoscompactisdown
+        summary: thanos component has disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job="observatorium-thanos-compact"} == 1)
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high
+    - alert: ThanosQueryIsDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/thanos-component-absent.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        description: ThanosQuery has disappeared from Prometheus target discovery.
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosqueryisdown
+        summary: thanos component has disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job="observatorium-thanos-query"} == 1)
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high
+    - alert: ThanosReceiveIsDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/thanos-component-absent.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        description: ThanosReceive has disappeared from Prometheus target discovery.
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceiveisdown
+        summary: thanos component has disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job=~"observatorium-thanos-receive-default.*"} == 1)
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high
+    - alert: ThanosRuleIsDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/thanos-component-absent.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        description: ThanosRule has disappeared from Prometheus target discovery.
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosruleisdown
+        summary: thanos component has disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job="observatorium-thanos-rule"} == 1)
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high
+    - alert: ThanosStoreIsDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/thanos-component-absent.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
+        description: ThanosStore has disappeared from Prometheus target discovery.
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosstoreisdown
+        summary: thanos component has disappeared from Prometheus target discovery.
+      expr: |
+        absent(up{job=~"observatorium-thanos-store.*"} == 1)
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high
   - name: thanos-compact.rules
     rules:
     - alert: ThanosCompactMultipleRunning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: No more than one Thanos Compact instance should be running at once. There are {{ $value }}
+        description: No more than one Thanos Compact instance should be running at once. There are {{ $value }}
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanoscompactmultiplerunning
+        summary: Thanos Compact has multiple instances running.
       expr: sum(up{job="observatorium-thanos-compact"}) > 1
       for: 5m
       labels:
@@ -24,8 +87,9 @@ spec:
     - alert: ThanosCompactHalted
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Compact {{$labels.job}} has failed to run and now is halted.
+        description: Thanos Compact {{$labels.job}} has failed to run and now is halted.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanoscompacthalted
+        summary: Thanos Compact has failed to run ans is now halted.
       expr: thanos_compactor_halted{job="observatorium-thanos-compact"} == 1
       for: 5m
       labels:
@@ -34,8 +98,9 @@ spec:
     - alert: ThanosCompactHighCompactionFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Compact {{$labels.job}} is failing to execute {{ $value | humanize }}% of compactions.
+        description: Thanos Compact {{$labels.job}} is failing to execute {{ $value | humanize }}% of compactions.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanoscompacthighcompactionfailures
+        summary: Thanos Compact is failing to execute compactions.
       expr: |
         (
           sum by (job) (rate(thanos_compact_group_compactions_failures_total{job="observatorium-thanos-compact"}[5m]))
@@ -50,8 +115,9 @@ spec:
     - alert: ThanosCompactBucketHighOperationFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Compact {{$labels.job}} Bucket is failing to execute {{ $value | humanize }}% of operations.
+        description: Thanos Compact {{$labels.job}} Bucket is failing to execute {{ $value | humanize }}% of operations.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanoscompactbuckethighoperationfailures
+        summary: Thanos Compact Bucket is having a high number of operation failures.
       expr: |
         (
           sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job="observatorium-thanos-compact"}[5m]))
@@ -66,8 +132,9 @@ spec:
     - alert: ThanosCompactHasNotRun
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Compact {{$labels.job}} has not uploaded anything for 24 hours.
+        description: Thanos Compact {{$labels.job}} has not uploaded anything for 24 hours.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanoscompacthasnotrun
+        summary: Thanos Compact has not uploaded anything for last 24 hours.
       expr: (time() - max(max_over_time(thanos_objstore_bucket_last_successful_upload_time{job="observatorium-thanos-compact"}[24h]))) / 60 / 60 > 24
       labels:
         service: telemeter
@@ -77,8 +144,9 @@ spec:
     - alert: ThanosQueryHttpRequestQueryErrorRateHigh
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Query {{$labels.job}} is failing to handle {{ $value | humanize }}% of "query" requests.
+        description: Thanos Query {{$labels.job}} is failing to handle {{ $value | humanize }}% of "query" requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosqueryhttprequestqueryerrorratehigh
+        summary: Thanos Query is failing to handle requests.
       expr: |
         (
           sum(rate(http_requests_total{code=~"5..", job="observatorium-thanos-query", handler="query"}[5m]))
@@ -92,8 +160,9 @@ spec:
     - alert: ThanosQueryGrpcServerErrorRate
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Query {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
+        description: Thanos Query {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosquerygrpcservererrorrate
+        summary: Thanos Query is failing to handle requests.
       expr: |
         (
           sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job="observatorium-thanos-query"}[5m]))
@@ -108,8 +177,9 @@ spec:
     - alert: ThanosQueryGrpcClientErrorRate
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Query {{$labels.job}} is failing to send {{ $value | humanize }}% of requests.
+        description: Thanos Query {{$labels.job}} is failing to send {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosquerygrpcclienterrorrate
+        summary: Thanos Query is failing to send requests.
       expr: |
         (
           sum by (job) (rate(grpc_client_handled_total{grpc_code!="OK", job="observatorium-thanos-query"}[5m]))
@@ -123,8 +193,9 @@ spec:
     - alert: ThanosQueryHighDNSFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Query {{$labels.job}} have {{ $value | humanize }}% of failing DNS queries for store endpoints.
+        description: Thanos Query {{$labels.job}} have {{ $value | humanize }}% of failing DNS queries for store endpoints.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosqueryhighdnsfailures
+        summary: Thanos Query is having high number of DNS failures.
       expr: |
         (
           sum by (job) (rate(thanos_querier_store_apis_dns_failures_total{job="observatorium-thanos-query"}[5m]))
@@ -138,8 +209,9 @@ spec:
     - alert: ThanosQueryInstantLatencyHigh
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Query {{$labels.job}} has a 99th percentile latency of {{ $value }} seconds for instant queries.
+        description: Thanos Query {{$labels.job}} has a 99th percentile latency of {{ $value }} seconds for instant queries.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosqueryinstantlatencyhigh
+        summary: Thanos Query has high latency for queries.
       expr: |
         (
           histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query"}[5m]))) > 90
@@ -155,8 +227,9 @@ spec:
     - alert: ThanosReceiveHttpRequestErrorRateHigh
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
+        description: Thanos Receive {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivehttprequesterrorratehigh
+        summary: Thanos Receive is failing to handle requests.
       expr: |
         (
           sum(rate(http_requests_total{code=~"5..", job=~"observatorium-thanos-receive-default.*", handler="receive"}[5m]))
@@ -170,8 +243,9 @@ spec:
     - alert: ThanosReceiveHttpRequestLatencyHigh
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} has a 99th percentile latency of {{ $value }} seconds for requests.
+        description: Thanos Receive {{$labels.job}} has a 99th percentile latency of {{ $value }} seconds for requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivehttprequestlatencyhigh
+        summary: Thanos Receive has high HTTP requests latency.
       expr: |
         (
           histogram_quantile(0.99, sum by (job, le) (rate(http_request_duration_seconds_bucket{job=~"observatorium-thanos-receive-default.*", handler="receive"}[5m]))) > 10
@@ -185,8 +259,9 @@ spec:
     - alert: ThanosReceiveHighReplicationFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} is failing to replicate {{ $value | humanize }}% of requests.
+        description: Thanos Receive {{$labels.job}} is failing to replicate {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivehighreplicationfailures
+        summary: Thanos Receive is having high number of replication failures.
       expr: |
         thanos_receive_replication_factor > 1
           and
@@ -210,8 +285,9 @@ spec:
     - alert: ThanosReceiveHighForwardRequestFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} is failing to forward {{ $value | humanize }}% of requests.
+        description: Thanos Receive {{$labels.job}} is failing to forward {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivehighforwardrequestfailures
+        summary: Thanos Receive is failing to forward requests.
       expr: |
         (
           sum by (job) (rate(thanos_receive_forward_requests_total{result="error", job=~"observatorium-thanos-receive-default.*"}[5m]))
@@ -225,8 +301,9 @@ spec:
     - alert: ThanosReceiveHighHashringFileRefreshFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} is failing to refresh hashring file, {{ $value | humanize }} of attempts failed.
+        description: Thanos Receive {{$labels.job}} is failing to refresh hashring file, {{ $value | humanize }} of attempts failed.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivehighhashringfilerefreshfailures
+        summary: Thanos Receive is failing to refresh hasring file.
       expr: |
         (
           sum by (job) (rate(thanos_receive_hashrings_file_errors_total{job=~"observatorium-thanos-receive-default.*"}[5m]))
@@ -241,8 +318,9 @@ spec:
     - alert: ThanosReceiveConfigReloadFailure
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{$labels.job}} has not been able to reload hashring configurations.
+        description: Thanos Receive {{$labels.job}} has not been able to reload hashring configurations.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceiveconfigreloadfailure
+        summary: Thanos Receive has not been able to reload configuration.
       expr: avg(thanos_receive_config_last_reload_successful{job=~"observatorium-thanos-receive-default.*"}) by (job) != 1
       for: 5m
       labels:
@@ -251,8 +329,9 @@ spec:
     - alert: ThanosReceiveNoUpload
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Receive {{ $labels.instance }} of {{$labels.job}} has not uploaded latest data to object storage.
+        description: Thanos Receive {{ $labels.instance }} of {{$labels.job}} has not uploaded latest data to object storage.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosreceivenoupload
+        summary: Thanos Receive has not uploaded latest data to object storage.
       expr: |
         (up{job=~"observatorium-thanos-receive-default.*"} - 1)
         + on (instance) # filters to only alert on current instance last 3h
@@ -266,8 +345,9 @@ spec:
     - alert: ThanosStoreGrpcErrorRate
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Store {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
+        description: Thanos Store {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosstoregrpcerrorrate
+        summary: Thanos Store is failing to handle qrpcd requests.
       expr: |
         (
           sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~"observatorium-thanos-store.*"}[5m]))
@@ -282,8 +362,9 @@ spec:
     - alert: ThanosStoreBucketHighOperationFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Store {{$labels.job}} Bucket is failing to execute {{ $value | humanize }}% of operations.
+        description: Thanos Store {{$labels.job}} Bucket is failing to execute {{ $value | humanize }}% of operations.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosstorebuckethighoperationfailures
+        summary: Thanos Store Bucket is failing to execute operations.
       expr: |
         (
           sum by (job) (rate(thanos_objstore_bucket_operation_failures_total{job=~"observatorium-thanos-store.*"}[5m]))
@@ -298,8 +379,9 @@ spec:
     - alert: ThanosStoreObjstoreOperationLatencyHigh
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Store {{$labels.job}} Bucket has a 99th percentile latency of {{ $value }} seconds for the bucket operations.
+        description: Thanos Store {{$labels.job}} Bucket has a 99th percentile latency of {{ $value }} seconds for the bucket operations.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosstoreobjstoreoperationlatencyhigh
+        summary: Thanos Store is having high latency for bucket operations.
       expr: |
         (
           histogram_quantile(0.9, sum by (job, le) (rate(thanos_objstore_bucket_operation_duration_seconds_bucket{job=~"observatorium-thanos-store.*"}[5m]))) > 2
@@ -315,8 +397,9 @@ spec:
     - alert: ThanosRuleQueueIsDroppingAlerts
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} {{$labels.pod}} is failing to queue alerts.
+        description: Thanos Rule {{$labels.job}} {{$labels.pod}} is failing to queue alerts.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulequeueisdroppingalerts
+        summary: Thanos Rule is failing to queue alerts.
       expr: |
         sum by (job) (rate(thanos_alert_queue_alerts_dropped_total{job="observatorium-thanos-rule"}[5m])) > 0
       for: 5m
@@ -326,8 +409,9 @@ spec:
     - alert: ThanosRuleSenderIsFailingAlerts
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} {{$labels.pod}} is failing to send alerts to alertmanager.
+        description: Thanos Rule {{$labels.job}} {{$labels.pod}} is failing to send alerts to alertmanager.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulesenderisfailingalerts
+        summary: Thanos Rule is failing to send alerts to alertmanager.
       expr: |
         sum by (job) (rate(thanos_alert_sender_alerts_dropped_total{job="observatorium-thanos-rule"}[5m])) > 0
       for: 5m
@@ -337,8 +421,9 @@ spec:
     - alert: ThanosRuleHighRuleEvaluationFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} {{$labels.pod}} is failing to evaluate rules.
+        description: Thanos Rule {{$labels.job}} {{$labels.pod}} is failing to evaluate rules.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulehighruleevaluationfailures
+        summary: Thanos Rule is failing to evaluate rules.
       expr: |
         (
           sum by (job) (rate(prometheus_rule_evaluation_failures_total{job="observatorium-thanos-rule"}[5m]))
@@ -353,8 +438,9 @@ spec:
     - alert: ThanosRuleHighRuleEvaluationWarnings
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} {{$labels.pod}} has high number of evaluation warnings.
+        description: Thanos Rule {{$labels.job}} {{$labels.pod}} has high number of evaluation warnings.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulehighruleevaluationwarnings
+        summary: Thanos Rule has high number of evaluation warnings.
       expr: |
         sum by (job) (rate(thanos_rule_evaluation_with_warnings_total{job="observatorium-thanos-rule"}[5m])) > 0
       for: 15m
@@ -364,8 +450,9 @@ spec:
     - alert: ThanosRuleRuleEvaluationLatencyHigh
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}}/{{$labels.pod}} has higher evaluation latency than interval for {{$labels.rule_group}}.
+        description: Thanos Rule {{$labels.job}}/{{$labels.pod}} has higher evaluation latency than interval for {{$labels.rule_group}}.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosruleruleevaluationlatencyhigh
+        summary: Thanos Rule has high rule evaluation latency.
       expr: |
         (
           sum by (job, pod, rule_group) (prometheus_rule_group_last_duration_seconds{job="observatorium-thanos-rule"})
@@ -379,8 +466,9 @@ spec:
     - alert: ThanosRuleGrpcErrorRate
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
+        description: Thanos Rule {{$labels.job}} is failing to handle {{ $value | humanize }}% of requests.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulegrpcerrorrate
+        summary: Thanos Rule is failing to handle grpc requests.
       expr: |
         (
           sum by (job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job="observatorium-thanos-rule"}[5m]))
@@ -395,8 +483,9 @@ spec:
     - alert: ThanosRuleConfigReloadFailure
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} has not been able to reload its configuration.
+        description: Thanos Rule {{$labels.job}} has not been able to reload its configuration.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosruleconfigreloadfailure
+        summary: Thanos Rule has not been able to reload configuration.
       expr: avg(thanos_rule_config_last_reload_successful{job="observatorium-thanos-rule"}) by (job) != 1
       for: 5m
       labels:
@@ -405,8 +494,9 @@ spec:
     - alert: ThanosRuleQueryHighDNSFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} has {{ $value | humanize }}% of failing DNS queries for query endpoints.
+        description: Thanos Rule {{$labels.job}} has {{ $value | humanize }}% of failing DNS queries for query endpoints.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulequeryhighdnsfailures
+        summary: Thanos Rule is having high number of DNS failures.
       expr: |
         (
           sum by (job) (rate(thanos_ruler_query_apis_dns_failures_total{job="observatorium-thanos-rule"}[5m]))
@@ -421,8 +511,9 @@ spec:
     - alert: ThanosRuleAlertmanagerHighDNSFailures
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} has {{ $value | humanize }}% of failing DNS queries for Alertmanager endpoints.
+        description: Thanos Rule {{$labels.job}} has {{ $value | humanize }}% of failing DNS queries for Alertmanager endpoints.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulealertmanagerhighdnsfailures
+        summary: Thanos Rule is having high number of DNS failures.
       expr: |
         (
           sum by (job) (rate(thanos_ruler_alertmanagers_dns_failures_total{job="observatorium-thanos-rule"}[5m]))
@@ -437,8 +528,9 @@ spec:
     - alert: ThanosRuleNoEvaluationFor10Intervals
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} has {{ $value | humanize }}% rule groups that did not evaluate for at least 10x of their expected interval.
+        description: Thanos Rule {{$labels.job}} has {{ $value | humanize }}% rule groups that did not evaluate for at least 10x of their expected interval.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosrulenoevaluationfor10intervals
+        summary: Thanos Rule has rule groups that did not evaluate for 10 intervals.
       expr: |
         time() -  max by (job, group) (prometheus_rule_group_last_evaluation_timestamp_seconds{job="observatorium-thanos-rule"})
         >
@@ -450,8 +542,9 @@ spec:
     - alert: ThanosNoRuleEvaluations
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m
-        message: Thanos Rule {{$labels.job}} did not perform any rule evaluations in the past 2 minutes.
+        description: Thanos Rule {{$labels.job}} did not perform any rule evaluations in the past 2 minutes.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosnoruleevaluations
+        summary: Thanos Rule did not perform any rule evaluations.
       expr: |
         sum(rate(prometheus_rule_evaluations_total{job="observatorium-thanos-rule"}[2m])) <= 0
           and

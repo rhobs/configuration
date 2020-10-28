@@ -49,7 +49,7 @@ local thanosAlerts =
 // Overwrite severity to medium and high.
 local appSREOverwrites = function(prometheusAlerts, namespace) {
   local setSeverity = function(label, alertName) {
-    label: if std.startsWith(alertName, 'Loki') then 'low'
+    label: if std.startsWith(alertName, 'Loki') then 'info'
     else if label == 'critical' then
       // For thanos page only for `ThanosNoRuleEvaluations`.
       if std.startsWith(alertName, 'Thanos') then
@@ -347,7 +347,7 @@ local obsSLOs = {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
     metadata: {
-      name: 'objservatorium-loki-recording-rules',
+      name: 'observatorium-loki-recording-rules',
       labels: {
         prometheus: 'app-sre',
         role: 'alert-rules',

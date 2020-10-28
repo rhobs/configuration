@@ -32,7 +32,7 @@ local telemeterSLOs = [
 ];
 
 local thanosAlerts =
-  // (import 'thanos-mixin/alerts/absent.libsonnet') + // TODO: need to be fixed upstream.
+  (import 'thanos-mixin/alerts/absent.libsonnet') +
   (import 'thanos-mixin/alerts/compact.libsonnet') +
   (import 'thanos-mixin/alerts/query.libsonnet') +
   (import 'thanos-mixin/alerts/receive.libsonnet') +

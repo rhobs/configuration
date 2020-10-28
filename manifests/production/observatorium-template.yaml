@@ -200,7 +200,7 @@ objects:
           - containerPort: 8082
             name: opa-ams-api
           - containerPort: 8083
-            name: opa-ams-internal
+            name: opa-ams-metrics
           readinessProbe:
             failureThreshold: 12
             httpGet:
@@ -279,7 +279,7 @@ objects:
     - name: opa-ams-api
       port: 8082
       targetPort: 8082
-    - name: opa-ams-internal
+    - name: opa-ams-metrics
       port: 8083
       targetPort: 8083
     selector:
@@ -306,7 +306,7 @@ objects:
   spec:
     endpoints:
     - port: internal
-    - port: opa-ams-internal
+    - port: opa-ams-metrics
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
@@ -3716,7 +3716,7 @@ parameters:
 - name: OPA_AMS_IMAGE
   value: quay.io/observatorium/opa-ams
 - name: OPA_AMS_IMAGE_TAG
-  value: master-2020-10-22-c35090d
+  value: master-2020-10-28-902d400
 - name: OPA_AMS_MEMCACHED_EXPIRE
   value: "300"
 - name: OPA_AMS_CPU_REQUEST

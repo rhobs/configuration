@@ -15,7 +15,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /upload is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeteruploaderrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeteruploaderrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate5m{route="telemeter-server-upload"}) > (14.40 * (1-0.98000))
         and
@@ -29,7 +29,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /upload is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeteruploaderrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeteruploaderrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate30m{route="telemeter-server-upload"}) > (6.00 * (1-0.98000))
         and
@@ -43,7 +43,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /upload is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeteruploaderrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeteruploaderrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate2h{route="telemeter-server-upload"}) > (3.00 * (1-0.98000))
         and
@@ -57,7 +57,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /upload is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeteruploaderrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeteruploaderrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate6h{route="telemeter-server-upload"}) > (1.00 * (1-0.98000))
         and
@@ -122,7 +122,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /authorize is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeterauthorizeerrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeterauthorizeerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate5m{route="telemeter-server-authorize"}) > (14.40 * (1-0.98000))
         and
@@ -136,7 +136,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /authorize is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeterauthorizeerrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeterauthorizeerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate30m{route="telemeter-server-authorize"}) > (6.00 * (1-0.98000))
         and
@@ -150,7 +150,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /authorize is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeterauthorizeerrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeterauthorizeerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate2h{route="telemeter-server-authorize"}) > (3.00 * (1-0.98000))
         and
@@ -164,7 +164,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: Telemeter /authorize is burning too much error budget to gurantee overall availability
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#telemeterauthorizeerrorbudgetburning
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#telemeterauthorizeerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate6h{route="telemeter-server-authorize"}) > (1.00 * (1-0.98000))
         and

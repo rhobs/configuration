@@ -69,7 +69,7 @@ spec:
       record: http_requests_total:burnrate6h
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -81,10 +81,10 @@ spec:
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
-        severity: critical
+        severity: high
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -96,10 +96,10 @@ spec:
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
-        severity: critical
+        severity: high
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -114,7 +114,7 @@ spec:
         severity: medium
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -187,7 +187,7 @@ spec:
       record: http_requests_total:burnrate6h
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -199,10 +199,10 @@ spec:
         handler: query|query_legacy
         job: observatorium-observatorium-api
         service: telemeter
-        severity: critical
+        severity: high
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -214,10 +214,10 @@ spec:
         handler: query|query_legacy
         job: observatorium-observatorium-api
         service: telemeter
-        severity: critical
+        severity: high
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -232,7 +232,7 @@ spec:
         severity: medium
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -305,7 +305,7 @@ spec:
       record: http_requests_total:burnrate6h
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -317,10 +317,10 @@ spec:
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
-        severity: critical
+        severity: high
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -332,10 +332,10 @@ spec:
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
-        severity: critical
+        severity: high
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |
@@ -350,7 +350,7 @@ spec:
         severity: medium
     - alert: ObservatoriumAPIErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
       expr: |

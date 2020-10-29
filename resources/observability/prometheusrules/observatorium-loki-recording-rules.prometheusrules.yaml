@@ -5,7 +5,7 @@ kind: PrometheusRule
 metadata:
   labels:
     prometheus: app-sre
-    role: alert-rules
+    role: recording-rules
   name: observatorium-loki-recording-rules
 spec:
   groups:

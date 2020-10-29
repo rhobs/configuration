@@ -197,19 +197,6 @@ objects:
           ports:
           - containerPort: 9150
             name: metrics
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    name: observatorium-loki-index-write-cache
-  spec:
-    endpoints:
-    - port: metrics
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: index-write-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: loki
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:
@@ -308,6 +295,208 @@ objects:
           - containerPort: 9150
             name: metrics
 - apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-compactor-grpc
+  spec:
+    clusterIP: None
+    ports:
+    - name: grcp
+      port: 9095
+      targetPort: 9095
+    selector:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-compactor-http
+  spec:
+    ports:
+    - name: metrics
+      port: 3100
+      targetPort: 3100
+    selector:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-loki-compactor
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: compactor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-compactor
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: compactor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-loki-compactor-grpc
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: compactor
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: loki
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/tracing: jaeger-agent
+      spec:
+        containers:
+        - args:
+          - -target=compactor
+          - -config.file=/etc/loki/config/config.yaml
+          - -limits.per-user-override-config=/etc/loki/config/overrides.yaml
+          - -log.level=error
+          - -s3.buckets=$(S3_BUCKETS)
+          - -s3.region=$(S3_REGION)
+          - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
+          - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          env:
+          - name: S3_BUCKETS
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: ${LOKI_S3_SECRET}
+          - name: S3_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: ${LOKI_S3_SECRET}
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: ${LOKI_S3_SECRET}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: ${LOKI_S3_SECRET}
+          image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          name: observatorium-loki-compactor
+          ports:
+          - containerPort: 3100
+            name: metrics
+          - containerPort: 9095
+            name: grpc
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: ${LOKI_COMPACTOR_CPU_LIMITS}
+              memory: ${LOKI_COMPACTOR_MEMORY_LIMITS}
+            requests:
+              cpu: ${LOKI_COMPACTOR_CPU_REQUESTS}
+              memory: ${LOKI_COMPACTOR_MEMORY_REQUESTS}
+          volumeMounts:
+          - mountPath: /etc/loki/config/
+            name: config
+            readOnly: false
+          - mountPath: /data
+            name: storage
+            readOnly: false
+        - args:
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.type=grpc
+          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+          name: jaeger-agent
+          ports:
+          - containerPort: 6831
+            name: jaeger-thrift
+          - containerPort: 5778
+            name: configs
+          - containerPort: 14271
+            name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+        volumes:
+        - configMap:
+            name: observatorium-loki
+          name: config
+    volumeClaimTemplates:
+    - metadata:
+        labels:
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: loki
+          app.kubernetes.io/part-of: observatorium
+        name: storage
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: ${LOKI_PVC_REQUEST}
+        storageClassName: ${STORAGE_CLASS}
+- apiVersion: v1
   data:
     config.yaml: |-
       "auth_enabled": true
@@ -323,6 +512,10 @@ objects:
             "timeout": "100ms"
             "update_interval": "1m"
         "max_look_back_period": "0s"
+      "compactor":
+        "compaction_interval": "2h"
+        "shared_store": "s3"
+        "working_directory": "/data/loki/compactor"
       "distributor":
         "ring":
           "kvstore":
@@ -362,6 +555,7 @@ objects:
         "ingestion_burst_size_mb": 20
         "ingestion_rate_mb": 10
         "ingestion_rate_strategy": "global"
+        "max_cache_freshness_per_query": "10m"
         "max_global_streams_per_user": 10000
         "max_query_length": "12000h"
         "max_query_parallelism": 32
@@ -396,11 +590,10 @@ objects:
               "max_idle_conns": 16
               "timeout": "500ms"
               "update_interval": "1m"
-          "max_freshness": "10m"
         "split_queries_by_interval": "30m"
       "schema_config":
         "configs":
-        - "from": "2018-04-15"
+        - "from": "2020-10-01"
           "index":
             "period": "24h"
             "prefix": "loki_index_"
@@ -419,7 +612,8 @@ objects:
         "boltdb_shipper":
           "active_index_directory": "/data/loki/index"
           "cache_location": "/data/loki/index_cache"
-          "resync_interval": "5s"
+          "cache_ttl": "24h"
+          "resync_interval": "5m"
           "shared_store": "s3"
         "index_queries_cache_config":
           "memcached":
@@ -1253,11 +1447,19 @@ parameters:
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
-  value: 1.6.1
+  value: 2.0.0
 - name: LOKI_IMAGE
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET
   value: telemeter-loki-stage-s3
+- name: LOKI_COMPACTOR_CPU_REQUESTS
+  value: 500m
+- name: LOKI_COMPACTOR_CPU_LIMITS
+  value: 1000m
+- name: LOKI_COMPACTOR_MEMORY_REQUESTS
+  value: 2Gi
+- name: LOKI_COMPACTOR_MEMORY_LIMITS
+  value: 4Gi
 - name: LOKI_DISTRIBUTOR_REPLICAS
   value: "2"
 - name: LOKI_DISTRIBUTOR_CPU_REQUESTS

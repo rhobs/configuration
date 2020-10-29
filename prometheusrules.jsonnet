@@ -29,7 +29,17 @@ local absent(name, job) = {
 
 // Add dashboards and runbook anntotations.
 // Overwrite severity to medium and high.
-local appSREOverwrites(prometheusAlerts, namespace) = {
+local appSREOverwrites(namespace) = {
+  local environment = std.split(namespace, '-')[1],
+  local dashboardDatasource = function(environment) {
+    datasource:
+      if
+        environment == 'stage' then 'app-sre-stage-01-prometheus'
+      else if
+        environment == 'production' then 'telemeter-prod-01-prometheus'
+      else error 'no datasource for environment %s' % environment,
+  },
+
   local dashboardID = function(name) {
     id:
       if
@@ -57,15 +67,21 @@ local appSREOverwrites(prometheusAlerts, namespace) = {
       else error 'no dashboard id for group %s' % name,
   },
 
-  local setSeverity = function(label, alertName) {
-    label: if std.startsWith(alertName, 'Loki') then 'info'
-    else if label == 'critical' then
-      // For thanos page only for `ThanosNoRuleEvaluations`.
-      if std.startsWith(alertName, 'Thanos') then
-        if alertName != 'ThanosNoRuleEvaluations' then 'high' else label
-      else label
-    else if label == 'warning' then 'medium'
-    else 'high',
+  local setSeverity = function(label, environment, alertName) {
+    label:
+      if
+        std.startsWith(alertName, 'Loki') then 'info'
+      else if
+        label == 'critical' then
+        if
+          environment == 'stage' then 'high'
+        else if
+          // For thanos, page only for `ThanosNoRuleEvaluations`.
+          std.startsWith(alertName, 'Thanos') && alertName != 'ThanosNoRuleEvaluations' then 'high'
+        else label
+      else if
+        label == 'warning' then 'medium'
+      else 'high',
   },
 
   groups: [
@@ -73,18 +89,32 @@ local appSREOverwrites(prometheusAlerts, namespace) = {
       rules: [
         if std.objectHas(r, 'alert') then
           r {
-            annotations+: {
-              runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-              dashboard: if std.startsWith(g.name, 'telemeter') then 'https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus'
-              else 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=app-sre-prometheus&var-namespace=%s&var-job=All&var-pod=All&var-interval=5m' % [
-                dashboardID(g.name).id,
-                g.name,
-                namespace,
-              ],
-            },
+            annotations+:
+              {
+                // Message is a required field. Upstream thanos-mixin doesn't have it.
+                message: if std.objectHasAll(self, 'description') then self.description else r.annotations.message,
+              } +
+              if std.startsWith(g.name, 'telemeter') then
+                {
+                  runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [
+                    dashboardID(g.name).id,
+                    dashboardDatasource(environment).datasource,
+                  ],
+                }
+              else
+                {
+                  runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace=%s&var-job=All&var-pod=All&var-interval=5m' % [
+                    dashboardID(g.name).id,
+                    g.name,
+                    dashboardDatasource(environment).datasource,
+                    namespace,
+                  ],
+                },
             labels+: {
               service: 'telemeter',
-              severity: setSeverity(r.labels.severity, r.alert).label,
+              severity: setSeverity(r.labels.severity, environment, r.alert).label,
             },
           } else r
         for r in super.rules
@@ -152,7 +182,7 @@ local renderAlerts(name, namespace, mixin) = {
   },
 
   spec: mixin {
-    prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
+    prometheusAlerts+:: appSREOverwrites(namespace),
   }.prometheusAlerts,
 };
 
@@ -204,7 +234,7 @@ local renderAlerts(name, namespace, mixin) = {
   },
 
   'telemeter-slos-stage.prometheusrules': renderAlerts('telemeter-slos-stage', 'telemeter-stage', telemeter),
-  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'telemeter-prodcution', telemeter),
+  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'telemeter-production', telemeter),
 }
 
 {

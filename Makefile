@@ -22,7 +22,7 @@ resources/observability/prometheusrules: format prometheusrules.jsonnet $(JSONNE
 	rm -f resources/observability/prometheusrules/*.yaml
 	$(JSONNET) -J vendor -m resources/observability/prometheusrules prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
-	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c '/bin/echo -e "---\n\$$schema: /openshift/prometheus-rule-1.yml\n$$(cat {})" > {}'
+	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c 'sed -i "1s;^;---\n\$$schema: /openshift/prometheus-rule-1.yml\n;" {}'
 
 
 .PHONY: grafana

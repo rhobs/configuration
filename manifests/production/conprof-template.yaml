@@ -37,7 +37,7 @@ objects:
         "kubernetes_sd_configs":
         - "namespaces":
             "names":
-            - "${NAMESPACE}"
+            - "${OBSERVATORIUM_LOGS_NAMESPACE}"
           "role": "pod"
         "relabel_configs":
         - "action": "keep"
@@ -252,6 +252,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: telemeter
+- name: OBSERVATORIUM_LOGS_NAMESPACE
+  value: observatorium-logs
 - name: IMAGE
   value: quay.io/conprof/conprof
 - name: IMAGE_TAG

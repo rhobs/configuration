@@ -772,7 +772,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               config+: {
                 jaegerAgent: {
                   image: obs.config.jaegerAgentImage,
-                  collectorAddress: obs.config.jaegerAgentCollectorAddress,
+                  collectorAddress: 'dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250',
                 },
               },
             }
@@ -1189,17 +1189,17 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       logs: {
         readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
           obs.loki.manifests['query-frontend-http-service'].metadata.name,
-          obs.loki.manifests['query-frontend-http-service'].metadata.namespace,
+          '${OBSERVATORIUM_LOGS_NAMESPACE}',
           obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
         ],
         tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
           obs.loki.manifests['querier-http-service'].metadata.name,
-          obs.loki.manifests['querier-http-service'].metadata.namespace,
+          '${OBSERVATORIUM_LOGS_NAMESPACE}',
           obs.loki.manifests['querier-http-service'].spec.ports[0].port,
         ],
         writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
           obs.loki.manifests['distributor-http-service'].metadata.name,
-          obs.loki.manifests['distributor-http-service'].metadata.namespace,
+          '${OBSERVATORIUM_LOGS_NAMESPACE}',
           obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
         ],
       },
@@ -1496,6 +1496,9 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     },
   },
 
+  local obsNS = 'telemeter',
+  local obsLogsNS = 'observatorium-logs',
+
   metricsOpenshiftTemplate:: {
     apiVersion: 'v1',
     kind: 'Template',
@@ -1547,7 +1550,11 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     parameters: [
       {
         name: 'NAMESPACE',
-        value: 'telemeter',
+        value: obsNS,
+      },
+      {
+        name: 'OBSERVATORIUM_LOGS_NAMESPACE',
+        value: obsLogsNS,
       },
       {
         name: 'THANOS_IMAGE',
@@ -2056,7 +2063,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     parameters: [
       {
         name: 'NAMESPACE',
-        value: 'telemeter',
+        value: obsLogsNS,
       },
       {
         name: 'STORAGE_CLASS',
@@ -2072,7 +2079,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       {
         name: 'LOKI_S3_SECRET',
-        value: 'telemeter-loki-stage-s3',
+        value: 'observatorium-logs-stage-s3',
       },
       {
         name: 'LOKI_COMPACTOR_CPU_REQUESTS',
@@ -2185,6 +2192,10 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       {
         name: 'LOKI_PVC_REQUEST',
         value: '50Gi',
+      },
+      {
+        name: 'JAEGER_COLLECTOR_NAMESPACE',
+        value: obsNS,
       },
       {
         name: 'JAEGER_AGENT_IMAGE',

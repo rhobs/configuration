@@ -4,34 +4,43 @@
 
 - Observatorium
     - [Verify components are running](#verify-components-are-running)
-    - [ThanosCompactMultipleCompactsAreRunning](#thanoscompactmultiplecompactsarerunning)
+    - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
     - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
     - [ThanosCompactHalted](#thanoscompacthalted)
     - [ThanosCompactHighCompactionFailures](#thanoscompacthighcompactionfailures)
     - [ThanosCompactBucketHighOperationFailures](#thanoscompactbuckethighoperationfailures)
     - [ThanosCompactHasNotRun](#thanoscompacthasnotrun)
+    - [ThanosCompactIsDown](#thanoscompactisdown)
     - [ThanosQuerierGrpcServerErrorRate](#thanosqueriergrpcservererrorrate)
     - [ThanosQuerierGrpcClientErrorRate](#thanosqueriergrpcclienterrorrate)
     - [ThanosQuerierHighDNSFailures](#thanosquerierhighdnsfailures)
     - [ThanosQuerierInstantLatencyHigh](#thanosquerierinstantlatencyhigh)
     - [ThanosQuerierRangeLatencyHigh](#thanosquerierrangelatencyhigh)
+    - [ThanosQuerierIsDown](#thanosqueryisdown)
     - [ThanosReceiveHttpRequestLatencyHigh](#thanosreceivehttprequestlatencyhigh)
     - [ThanosReceiveHighForwardRequestFailures](#thanosreceivehighforwardrequestfailures)
     - [ThanosReceiveHighHashringFileRefreshFailures](#thanosreceivehighhashringfilerefreshfailures)
     - [ThanosReceiveConfigReloadFailure](#thanosreceiveconfigreloadfailure)
+    - [ThanosReceiveIsDown](#thanosreceiveisdown)
     - [ThanosStoreGrpcErrorRate](#thanosstoregrpcerrorrate)
     - [ThanosStoreSeriesGateLatencyHigh](#thanosstoreseriesgatelatencyhigh)
     - [ThanosStoreBucketHighOperationFailures](#thanosstorebuckethighoperationfailures)
     - [ThanosStoreObjstoreOperationLatencyHigh](#thanosstoreobjstoreoperationlatencyhigh)
+    - [ThanosStoreIsDown](#thanosstoreisdown)
     - [ThanosReceiveControllerReconcileErrorRate](#thanosreceivecontrollerreconcileerrorrate)
     - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
+    - [ThanosReceiveControllerIsDown](#thanosreceivecontrollerisdown)
     - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
     - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
     - [ThanosReceiveNoUpload](#thanosreceivenoupload)
     - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
     - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
+    - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
     - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
+    - [ThanosRuleIsDown](#thanosruleisdown)
     - [ObservatoriumAPIErrorsSLOBudgetBurn](#observatoriumapierrorsslobudgetburn)
+    - [GubernatorIsDown](#gubernatorisdown)
+    - [Escalations](#escalations)
 
 <!-- /TOC -->
 
@@ -78,7 +87,7 @@ Multiple replicas of Thanos Compact shouldn't be running. This leads data corrup
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1h&g0.expr=sum(up%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-compact/pods).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosCompactHalted
 
@@ -105,7 +114,7 @@ Thanos Compact has failed to run and now is halted.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1h&g0.expr=thanos_compactor_halted%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-compact/pods).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosCompactHighCompactionFailures
 
@@ -132,7 +141,7 @@ Thanos Compact is failing to execute of compactions.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1h&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(prometheus_tsdb_compactions_failed_total%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(prometheus_tsdb_compactions_total%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-compact/pods).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosCompactBucketHighOperationFailures
 
@@ -159,7 +168,7 @@ Thanos Compact fails to execute operations against bucket.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1h&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_objstore_bucket_operation_failures_total%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_objstore_bucket_operations_total%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)%20&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-compact/pods).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosCompactHasNotRun
 
@@ -186,7 +195,7 @@ Thanos Compact has not uploaded anything for 24 hours.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/651943d05a8123e32867b4673963f42b/thanos-compact?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1h&g0.expr=(time()%20-%20max(thanos_objstore_bucket_last_successful_upload_time%7Bjob%3D~%22thanos-compactor.*%22%2Cnamespace%3D%22telemeter-production%22%7D))%0A%20%20%20%20%20%20%20%20%2F%2060%20%2F%2060&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-compact/pods).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosQuerierGrpcServerErrorRate
 
@@ -216,7 +225,7 @@ Indicated query job/pod having issues.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1y&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_server_handled_total%7Bgrpc_code%3D~%22Unknown%7CResourceExhausted%7CInternal%7CUnavailable%22%2C%20job%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_server_started_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -248,7 +257,7 @@ Certain amount of the requests that querier makes to other Store API components 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1y&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_client_handled_total%7Bgrpc_code!%3D%22OK%22%2C%20job%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_client_started_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Inspect logs and events of depending jobs, like [store](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-store-shard-0), [receivers](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default) (There maybe more than one receive component and store shard deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive and store components).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -280,7 +289,7 @@ Queriers use DNS Service discovery to discover related components.
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_querier_store_apis_dns_failures_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_querier_store_apis_dns_lookups_total%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
 - Inspect logs and events of depending jobs, like [store](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-store-shard-0), [receivers](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default) (There maybe more than one receive component and store shard deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -310,7 +319,7 @@ Thanos Queriers are slower than expected to conduct instant vector queries.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(http_request_duration_seconds_bucket%7Bjob%3D~"thanos-querier.*"%2Cnamespace%3D"telemeter-production"%2C%20handler%3D"query"%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -340,7 +349,7 @@ Thanos Queriers are slower than expected to conduct range vector queries.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m&refresh=10s) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(http_request_duration_seconds_bucket%7Bjob%3D~%22thanos-querier.*%22%2Cnamespace%3D%22telemeter-production%22%2C%20handler%3D%22query_range%22%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)%20&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-query).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -371,7 +380,7 @@ Thanos Receive ingests time series from Prometheus remote write or any other req
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=10m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=1d&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(http_request_duration_seconds_bucket%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%2C%20handler%3D%22receive%22%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)%20&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default/pods). There maybe more than one receive component deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -402,7 +411,7 @@ Some of Thanos Receives in the hash-ring might be failing.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=10m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_forward_requests_total%7Bresult%3D%22error%22%2C%20job%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_forward_requests_total%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default/pods). (There maybe more than one receive component deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -433,7 +442,7 @@ They might be using stale version of configuration.
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=10m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_hashrings_file_errors_total%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_hashrings_file_refreshes_total%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default/pods). (There maybe more than one receive component deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
 - Inspect logs, events and latest changes of [`thanos-receive-controller`](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-receive-controller)
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -463,7 +472,7 @@ Thanos Receives failed to reload the latest configuration files.
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=10m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=avg(thanos_receive_config_last_reload_successful%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default/pods). (There maybe more than one receive component deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
 - Inspect logs, events and latest changes of [`thanos-receive-controller`](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-receive-controller)
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -492,7 +501,7 @@ Thanos Stores are failing to handle incoming gRPC requests.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_server_handled_total%7Bgrpc_code%3D~%22Unknown%7CResourceExhausted%7CInternal%7CUnavailable%22%2C%20job%3D~%22thanos-store.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(grpc_server_started_total%7Bjob%3D~%22thanos-store.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-store-shard-0/pods). There maybe more than one store shard deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive and store components.
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -523,7 +532,7 @@ A store series gate is a limiter which limits the maximum amount of concurrent q
 - Check saturation of stores, using [dashboards](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m), try scaling up if it's the issue.
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(thanos_bucket_store_series_gate_duration_seconds_bucket%7Bjob%3D~%22thanos-store.*%22%2Cnamespace%3D%22telemeter-production%22%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-store-shard-0/pods). There maybe more than one store shard deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available store shards.
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -552,7 +561,7 @@ Thanos Stores are failing to conduct operations against buckets.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_objstore_bucket_operation_failures_total%7Bjob%3D~%22thanos-store.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_objstore_bucket_operations_total%7Bjob%3D~%22thanos-store.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)%20by%20(job)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-store-shard-0/pods). There maybe more than one store shard deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available store shards.
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -581,7 +590,7 @@ Thanos Stores are slower than expected to conduct operations against buckets.
 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=histogram_quantile(0.99%2C%0A%20%20%20%20%20%20%20%20%20%20sum(thanos_objstore_bucket_operation_duration_seconds_bucket%7Bjob%3D~%22thanos-store.*%22%2Cnamespace%3D%22telemeter-production%22%7D)%20by%20(job%2C%20le)%0A%20%20%20%20%20%20%20%20)%20&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-store-shard-0/pods). There maybe more than one store shard deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available store shards.
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -611,7 +620,7 @@ Thanos Receive Controller is failing to reconcile changes.
 - Make sure provided [configuration](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/configmaps/observatorium-thanos-receive-controller-tenants) is correct (There might be others, check all [configmaps](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/configmaps)).
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/858503cdeb29690fd8946e038f01ba85/thanos-receive-controller?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=sum(rate(thanos_receive_controller_reconcile_errors_total%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%2F%0A%20%20%20%20%20%20%20%20%20%20on%20(namespace)%20group_left%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_controller_reconcile_attempts_total%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D))%0A%20%20%20%20%20%20%20%20%20&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-receive-controller).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -642,7 +651,7 @@ Thanos Receive Controller is failing to change configmaps.
 - Make sure provided [configuration](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/configmaps/observatorium-thanos-receive-controller-tenants) is correct (There might be others, check all [configmaps](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/configmaps)).
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/858503cdeb29690fd8946e038f01ba85/thanos-receive-controller?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=sum(%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_controller_configmap_change_errors_total%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20%20%20on%20(namespace)%20group_left%0A%20%20%20%20%20%20%20%20%20%20rate(thanos_receive_controller_configmap_change_attempts_total%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D)%0A%20%20%20%20%20%20%20%20)&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-receive-controller).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -673,7 +682,7 @@ The configuration of the instances of Thanos Receive are old compare to Receive 
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/858503cdeb29690fd8946e038f01ba85/thanos-receive-controller?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=avg(thanos_receive_config_last_reload_success_timestamp_seconds%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D)%20by%20(namespace%2C%20job)%0A%20%20%20%20%20%20%20%20%20%20%3C%0A%20%20%20%20%20%20%20%20on(namespace)%0A%20%20%20%20%20%20%20%20thanos_receive_controller_configmap_last_reload_success_timestamp_seconds%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-receive-controller).
 - Inspect logs and events of `receive` jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default/pods). (There maybe more than one receive component deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -704,20 +713,21 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 - Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/d/858503cdeb29690fd8946e038f01ba85/thanos-receive-controller?orgId=1&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=avg(thanos_receive_config_hash%7Bjob%3D~%22thanos-receive.*%22%2Cnamespace%3D%22telemeter-production%22%7D)%20BY%20(namespace%2C%20job)%0A%20%20%20%20%20%20%20%20%20%20%2F%0A%20%20%20%20%20%20%20%20on%20(namespace)%0A%20%20%20%20%20%20%20%20group_left%0A%20%20%20%20%20%20%20%20thanos_receive_controller_configmap_hash%7Bjob%3D~%22thanos-receive-controller.*%22%2Cnamespace%3D%22telemeter-production%22%7D&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-thanos-receive-controller).
 - Inspect logs and events of `receive` jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatorium-thanos-receive-default/pods). (There maybe more than one receive component deployed, check all other [statefulsets](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets) to find available receive components)).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
 ## ThanosRuleHighRuleEvaluationFailures
 ## ThanosNoRuleEvaluations
+## ThanosRuleRuleEvaluationLatencyHigh
 
 ### Impact
 
-If the evaluation failures are too high, a *symptom* is, that we may end up **losing data** or are **unable to alert**. 
+If the evaluation failures are too high are or the evaluation latency is too high, a *symptom* is, that we may end up **losing data** or are **unable to alert**.
 
 ### Summary
 
-Both Thanos Rule replicas fail to evaluate certain recording rules or alerts. 
+Both Thanos Rule replicas fail to evaluate or too slow to evaluate certain recording rules or alerts.
 
 ### Severity
 
@@ -734,14 +744,14 @@ Both Thanos Rule replicas fail to evaluate certain recording rules or alerts.
 
 Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in turn the Thanos Querier reaches out to the Thanos Store and Thanos Receivers.
 
-1. Check the [Thanos Ruler dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) to get a general overview. 
+1. Check the [Thanos Ruler dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) to get a general overview.
 1. Check the [Thanos Querier dashboard](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Most likely you can focus on the Instant Query API RED metrics.
 1. Drill down into the [Thanos Store dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) and [Thanos Receiver dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Depending on which one of them has the same elevated error rate, concentrate on that component.
     1. Probably, the Thanos Receiver is the problem, as the Thanos Ruler mostly looks at very recent data (like last 5min).
 1. Now that you, hopefully, know which component is causing the errors, dive into its logs, query it's raw metrics (check the dashboards as examples).
-    1. Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+    1. Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
---- 
+---
 
 ## ThanosReceiveNoUpload
 
@@ -772,11 +782,11 @@ NOTE: This must be done with a 4.x version of the oc client.
 
 ### Impact
 
-Non-revertable gap in recording rules' data (dropped sample) or not evaluates alerts (missed alert).    
+Non-revertable gap in recording rules' data (dropped sample) or not evaluates alerts (missed alert).
 
 ### Summary
 
-Both Thanos Rule replicas internal TSDB failed to ingest samples. 
+Both Thanos Rule replicas internal TSDB failed to ingest samples.
 
 ### Severity
 
@@ -793,7 +803,42 @@ Both Thanos Rule replicas internal TSDB failed to ingest samples.
 
 - Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: https://issues.redhat.com/browse/OBS-210
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
-- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+
+---
+
+## MandatoryThanosComponentIsDown
+## ThanosCompactIsDown
+## ThanosQueryIsDown
+## ThanosReceiveIsDown
+## ThanosStoreIsDown
+## ThanosReceiveControllerIsDown
+## ThanosRuleIsDown
+
+### Impact
+
+The Observatorium service is degraded. It might not be fulling all the promised functionality.
+
+### Summary
+
+Respective component that is supposed to be running is not running.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `telemeter-stage`
+  - `telemeter-production`
+
+### Steps
+
+- Inspect metrics of failing job using [dashboards](https://grafana.app-sre.devshift.net/dashboards/f/MQilB9tMk/observatorium) or [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/targets).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/pods).
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -801,7 +846,7 @@ Both Thanos Rule replicas internal TSDB failed to ingest samples.
 
 ### Impact
 
-SLO breach or complete outage for ingesting and/or querying data. 
+SLO breach or complete outage for ingesting and/or querying data.
 For users this is means that the service as being unavailable due to returning too many errors.
 
 ### Summary
@@ -828,6 +873,35 @@ For the set availability guarantees the observatorium api or the thanos receiver
 
 ---
 
+## GubernatorIsDown
+
+### Impact
+
+Observatorium is not ingesting or giving access to data that belongs to the tenants with defined rate limits.
+
+### Summary
+
+Observatorium rate-limiting service is not working.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `telemeter-stage`
+  - `telemeter-production`
+
+### Steps
+
+- Inspect metrics of failing job using [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=%7Bjob%3D~%22observatorium-gubernator%22%7D&g0.tab=0).
+- Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-gubernator).
+- Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+
+---
+
 ## Escalations
 
-Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack.
+Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack.

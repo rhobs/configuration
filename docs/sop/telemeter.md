@@ -3,14 +3,37 @@
 <!-- TOC depthTo:2 -->
 
 - [SOP : OpenShift Telemeter](#sop--openshift-telemeter)
-    - [Verify it's working](#verify-its-working)
-    - [TelemeterAuthorizeErrorBudgetBurning](#telemeterauthorizeerrorbudgetburning)
-    - [AuthorizeClientErrorsHigh](#authorizeclienterrorshigh)
-    - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
-    - [TelemeterDown](#telemeterdown)
-    - [TelemeterUploadErrorBudgetBurning](#telemeteruploaderrorbudgetburning)
-    - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
-    - [Escalations](#escalations)
+  - [Verify it's working](#verify-its-working)
+  - [AuthorizeClientErrorsHigh](#authorizeclienterrorshigh)
+    - [Impact:](#impact)
+    - [Summary:](#summary)
+    - [Access required:](#access-required)
+    - [Steps:](#steps)
+  - [TelemeterAuthorizeErrorBudgetBurning](#telemeterauthorizeerrorbudgetburning)
+  - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
+    - [Impact:](#impact-1)
+    - [Summary:](#summary-1)
+    - [Access required:](#access-required-1)
+    - [Relevant secrets:](#relevant-secrets)
+    - [Steps:](#steps-1)
+  - [TelemeterDown](#telemeterdown)
+    - [Impact:](#impact-2)
+    - [Summary:](#summary-2)
+    - [Access required:](#access-required-2)
+    - [Steps:](#steps-2)
+  - [TelemeterUploadErrorBudgetBurning](#telemeteruploaderrorbudgetburning)
+  - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
+    - [Impact:](#impact-3)
+    - [Summary:](#summary-3)
+    - [Access required:](#access-required-3)
+    - [Relevant secrets:](#relevant-secrets-1)
+    - [Steps:](#steps-3)
+  - [TelemeterCapacity[Medium | High | Critical]](#telemetercapacitymedium--high--critical)
+    - [Impact:](#impact-4)
+    - [Summary:](#summary-4)
+    - [Access required:](#access-required-4)
+    - [Steps:](#steps-4)
+  - [Escalations](#escalations)
 
 <!-- /TOC -->
 
@@ -60,7 +83,7 @@ Telemeter is recieving errors at a high rate from Keycloak.
 
 ## TelemeterAuthorizeErrorBudgetBurning
 
-Please check the [OAuthClientErrorsHigh](#telemeterauthorizeerrorbudgetburning) alert below!  
+Please check the [OAuthClientErrorsHigh](#telemeterauthorizeerrorbudgetburning) alert below!
 Both alert on the same underlying symptoms.
 
 _Note: Soon this new alert will replace the inferior one below._
@@ -123,17 +146,17 @@ Telemeter Server might be down and not serving any requests.
 
 1. Check if this problem is visibile to the outside. Can you see elevated error rates on [the Telemeter dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now)?
 1. Are there still Telemeter Pods? Are they crash looping? Are they ready? Check the OpenShift console for the `telemeter-production` namespace.
-1. Check the [Prometheus target page](https://prometheus.telemeter-prod-01.devshift.net/targets). Are there are still `job="telemeter-server"` available? 
-    1. Check if Telemeter still answers on the port scraped for metrics (using port-forward to the internal port - while writing this it is`8081`). 
+1. Check the [Prometheus target page](https://prometheus.telemeter-prod-01.devshift.net/targets). Are there are still `job="telemeter-server"` available?
+    1. Check if Telemeter still answers on the port scraped for metrics (using port-forward to the internal port - while writing this it is`8081`).
     1. Check the logs - anything suspicious?
-    1. Check the ServiceMonitors. 
+    1. Check the ServiceMonitors.
 1. If the problem persists then escalate with [PagerDuty to the Telemetry](https://redhat.pagerduty.com/teams/PQL1RZA/subteams) team to help in the investigation.
 
 ---
 
 ## TelemeterUploadErrorBudgetBurning
 
-Please check the [UploadHandlerErrorsHigh](#uploadhandlererrorshigh) alert below!  
+Please check the [UploadHandlerErrorsHigh](#uploadhandlererrorshigh) alert below!
 Both alert on the same underlying symptoms.
 
 _Note: Soon this new alert will replace the inferior one below._
@@ -200,4 +223,7 @@ Telemeter Prometheus is reaching to its limit of active timeseries and will be u
 ---
 
 ## Escalations
-We want a link to app-interface here, but okay to just contacts here for now.
+
+Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-telemetry`](https://slack.com/app_redirect?channel=forum-telemetry) at CoreOS Slack.
+
+TODO: We want a link to app-interface here, but okay to just contacts here for now.

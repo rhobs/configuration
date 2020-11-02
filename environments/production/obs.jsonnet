@@ -553,7 +553,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', lcCfg.exporterVersion],
         enableChuckCache: true,
         enableIndexQueryCache: true,
-        enableIndexWriteCache: false,
         enableResultsCache: true,
         replicas: {
           chunk_cache: '${{LOKI_CHUNK_CACHE_REPLICAS}}',
@@ -623,12 +622,23 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           secretAccessKeyKey: 'aws_secret_access_key',
         },
         replicas: {
+          compactor: 1,  // Loki supports only a single compactor instance
           distributor: '${{LOKI_DISTRIBUTOR_REPLICAS}}',
           ingester: '${{LOKI_INGESTER_REPLICAS}}',
           querier: '${{LOKI_QUERIER_REPLICAS}}',
           query_frontend: '${{LOKI_QUERY_FRONTEND_REPLICAS}}',
         },
         resources: {
+          compactor: {
+            requests: {
+              cpu: '${LOKI_COMPACTOR_CPU_REQUESTS}',
+              memory: '${LOKI_COMPACTOR_MEMORY_REQUESTS}',
+            },
+            limits: {
+              cpu: '${LOKI_COMPACTOR_CPU_LIMITS}',
+              memory: '${LOKI_COMPACTOR_MEMORY_LIMITS}',
+            },
+          },
           distributor: {
             requests: {
               cpu: '${LOKI_DISTRIBUTOR_CPU_REQUESTS}',
@@ -698,6 +708,16 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         },
       },
       serviceMonitors: {
+        compactor: {
+          metadata+: {
+            name: 'observatorium-loki-compactor',
+            labels+: {
+              prometheus: 'app-sre',
+              'app.kubernetes.io/version':: 'hidden',
+            },
+          },
+          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        },
         distributor: {
           metadata+: {
             name: 'observatorium-loki-distributor',
@@ -2044,7 +2064,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       {
         name: 'LOKI_IMAGE_TAG',
-        value: '1.6.1',
+        value: '2.0.0',
       },
       {
         name: 'LOKI_IMAGE',
@@ -2053,6 +2073,22 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       {
         name: 'LOKI_S3_SECRET',
         value: 'telemeter-loki-stage-s3',
+      },
+      {
+        name: 'LOKI_COMPACTOR_CPU_REQUESTS',
+        value: '500m',
+      },
+      {
+        name: 'LOKI_COMPACTOR_CPU_LIMITS',
+        value: '1000m',
+      },
+      {
+        name: 'LOKI_COMPACTOR_MEMORY_REQUESTS',
+        value: '2Gi',
+      },
+      {
+        name: 'LOKI_COMPACTOR_MEMORY_LIMITS',
+        value: '4Gi',
       },
       {
         name: 'LOKI_DISTRIBUTOR_REPLICAS',

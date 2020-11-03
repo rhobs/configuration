@@ -1847,7 +1847,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       {
         name: 'OBSERVATORIUM_API_IMAGE_TAG',
-        value: 'master-2020-10-26-v0.1.1-184-ge8aa228',
+        value: 'master-2020-11-02-v0.1.1-192-ge324057',
       },
       {
         name: 'OBSERVATORIUM_API_REPLICAS',

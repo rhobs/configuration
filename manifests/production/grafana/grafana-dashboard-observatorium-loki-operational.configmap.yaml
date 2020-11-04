@@ -7602,8 +7602,8 @@ data:
           {
             "allValue": null,
             "current": {
-              "text": "telemeter",
-              "value": "telemeter"
+              "text": "observatorium-logs",
+              "value": "observatorium-logs"
             },
             "datasource": "$metrics",
             "hide": 0,
@@ -7614,7 +7614,7 @@ data:
             "options": [
 
             ],
-            "query": "telemeter",
+            "query": "observatorium-logs",
             "refresh": 1,
             "regex": "",
             "sort": 2,

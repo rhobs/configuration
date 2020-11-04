@@ -444,7 +444,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -724,7 +724,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1001,7 +1001,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1207,7 +1207,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1339,7 +1339,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1443,7 +1443,7 @@ objects:
         app.kubernetes.io/part-of: observatorium
 parameters:
 - name: NAMESPACE
-  value: telemeter
+  value: observatorium-logs
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
@@ -1451,7 +1451,7 @@ parameters:
 - name: LOKI_IMAGE
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET
-  value: telemeter-loki-stage-s3
+  value: observatorium-logs-stage-s3
 - name: LOKI_COMPACTOR_CPU_REQUESTS
   value: 500m
 - name: LOKI_COMPACTOR_CPU_LIMITS
@@ -1508,6 +1508,8 @@ parameters:
   value: "2"
 - name: LOKI_PVC_REQUEST
   value: 50Gi
+- name: JAEGER_COLLECTOR_NAMESPACE
+  value: telemeter
 - name: JAEGER_AGENT_IMAGE
   value: jaegertracing/jaeger-agent
 - name: JAEGER_AGENT_IMAGE_TAG

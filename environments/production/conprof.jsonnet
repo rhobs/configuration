@@ -47,7 +47,7 @@ local conprof = c + c.withConfigMap {
       }, {
         job_name: 'loki',
         kubernetes_sd_configs: [{
-          namespaces: { names: ['${NAMESPACE}'] },
+          namespaces: { names: ['${OBSERVATORIUM_LOGS_NAMESPACE}'] },
           role: 'pod',
         }],
         relabel_configs: [
@@ -259,6 +259,7 @@ local conprof = c + c.withConfigMap {
     ],
   parameters: [
     { name: 'NAMESPACE', value: 'telemeter' },
+    { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
     { name: 'IMAGE', value: 'quay.io/conprof/conprof' },
     { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
     { name: 'CONPROF_REPLICAS', value: '1' },

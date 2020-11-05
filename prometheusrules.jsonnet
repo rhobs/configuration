@@ -30,7 +30,8 @@ local absent(name, job) = {
 // Add dashboards and runbook anntotations.
 // Overwrite severity to medium and high.
 local appSREOverwrites(namespace) = {
-  local environment = std.split(namespace, '-')[1],
+  local nscomponents = std.split(namespace, '-'),
+  local environment = nscomponents[std.length(nscomponents) - 1],
   local dashboardDatasource = function(environment) {
     datasource:
       if
@@ -113,7 +114,7 @@ local appSREOverwrites(namespace) = {
                   ],
                 },
             labels+: {
-              service: 'telemeter',
+              service: if std.startsWith(g.name, 'loki') then 'obervatorium-logs' else 'telemeter',
               severity: setSeverity(r.labels.severity, environment, r.alert).label,
             },
           } else r
@@ -392,10 +393,10 @@ local renderAlerts(name, namespace, mixin) = {
 }
 
 {
-  'observatorium-loki-recording-rules.prometheusrules': renderRules('observatorium-loki-recording-rules', 'telemeter', loki),
+  'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', 'observatorium-logs', loki),
 
-  'observatorium-loki-stage.prometheusrules': renderAlerts('observatorium-loki-stage', 'telemeter-stage', loki),
-  'observatorium-loki-production.prometheusrules': renderAlerts('observatorium-loki-production', 'telemeter-production', loki),
+  'observatorium-logs-stage.prometheusrules': renderAlerts('observatorium-logs-stage', 'observatorium-logs-stage', loki),
+  'observatorium-logs-production.prometheusrules': renderAlerts('observatorium-logs-production', 'observatorium-logs-production', loki),
 }
 
 {

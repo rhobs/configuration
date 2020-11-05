@@ -4,6 +4,11 @@
 
 - Observatorium
     - [Verify components are running](#verify-components-are-running)
+- Observatorium Logs
+    - [LokiRequestErrors](#lokirequesterrors)
+    - [LokiRequestPanics](#lokirequestpanics)
+    - [LokiRequestLatency](#lokirequestlatency)
+- Observatorium Metrics
     - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
     - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
     - [ThanosCompactHalted](#thanoscompacthalted)
@@ -59,6 +64,92 @@ Check targets are UP in app-sre Prometheus:
 - `thanos-receive-controller`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-controller-production%2f0
 
 - `thanos-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0
+
+---
+
+## LokiRequestErrors
+
+### Impact
+
+For users this means that the service as being unavailable due to returning too many errors.
+
+### Summary
+
+For the set availability guarantees the Loki distributor/query-frontend/querier are returning too many http errors when processing requests.
+
+### Severity
+
+`info`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-logs-production))
+- Edit access to the Observatorium Logs namespaces:
+  - `observatorium-logs-stage`
+  - `observatorium-logs-production`
+
+### Steps
+
+- The api proxies requests to the Loki query-frontend or queriers (only for `tail` endpoint) and the Loki distributor so check the logs of all components.
+- The Loki distributor and querier requests data downstream from the Loki ingester or directly from the S3 bucket so check ingester logs and S3 connectivity.
+- Inspect the metrics for the api [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m)
+- Inspect the metrics for the Loki query-frontend/querier
+- Inspect the metrics for the Loki distributor/ingester
+
+## LokiRequestPanics
+
+### Impact
+
+For users this means that the service as being unavailable due to components failing with panics.
+
+### Summary
+
+For the set availability guarantees the Loki distributor/query-frontend/querier are producing too many panics when processing requests.
+
+### Severity
+
+`info`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-logs-production))
+- Edit access to the Observatorium Logs namespaces:
+  - `observatorium-logs-stage`
+  - `observatorium-logs-production`
+
+### Steps
+
+- The api proxies requests to the Loki query-frontend or queriers (only for `tail` endpoint) and the Loki distributor so check the logs of all components.
+- The Loki distributor and querier requests data downstream from the Loki ingester so check ingester logs.
+
+## LokiRequestLatency
+
+### Impact
+
+For users this means the service as returning logs data too slow or timeouts.
+
+### Summary
+
+Loki components are slower than expected to conduct queries or process ingested streams.
+
+### Severity
+
+`info`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-logs-production))
+- Edit access to the Observatorium Logs namespaces:
+  - `observatorium-logs-stage`
+  - `observatorium-logs-production`
+
+### Steps
+
+- The api proxies requests to the Loki query-frontend or queriers (only for `tail` endpoint) and the Loki distributor so check the logs of all components.
+- The Loki distributor and querier requests data downstream from the Loki ingester or directly from the S3 bucket so check ingester logs and S3 connectivity.
+- Inspect the metrics for the api [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m)
+- Inspect the metrics for the Loki query-frontend/querier
+- Inspect the metrics for the Loki distributor/ingester
 
 ---
 

@@ -6,7 +6,7 @@ metadata:
   labels:
     prometheus: app-sre
     role: recording-rules
-  name: observatorium-loki-recording-rules
+  name: observatorium-logs-recording-rules
 spec:
   groups:
   - name: loki_rules

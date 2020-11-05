@@ -444,7 +444,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -724,7 +724,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1001,7 +1001,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1207,7 +1207,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1339,7 +1339,7 @@ objects:
             name: storage
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:

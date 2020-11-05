@@ -772,7 +772,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               config+: {
                 jaegerAgent: {
                   image: obs.config.jaegerAgentImage,
-                  collectorAddress: 'dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250',
+                  collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
                 },
               },
             }

@@ -85,6 +85,20 @@ local appSREOverwrites(namespace) = {
       else 'high',
   },
 
+  local setServiceLabel = function(alertName) {
+    label:
+      if std.length(std.findSubstr('Logs', alertName)) > 0 || std.length(std.findSubstr('Loki', alertName)) > 0
+      then 'obervatorium-logs'
+      else 'telemeter',
+  },
+
+  local pruneUnsupportedLabels = function(labels) {
+    // Prune selector label because not allowed by AppSRE
+    labels: std.prune(labels {
+      group: null,
+    }),
+  },
+
   groups: [
     g {
       rules: [
@@ -113,11 +127,13 @@ local appSREOverwrites(namespace) = {
                     namespace,
                   ],
                 },
-            labels+: {
-              service: if std.startsWith(g.name, 'loki') then 'obervatorium-logs' else 'telemeter',
+            labels: pruneUnsupportedLabels(r.labels {
+              service: setServiceLabel(r.alert).label,
               severity: setSeverity(r.labels.severity, environment, r.alert).label,
-            },
-          } else r
+            }).labels,
+          } else r {
+          labels: pruneUnsupportedLabels(r.labels).labels,
+        }
         for r in super.rules
       ],
     }
@@ -262,42 +278,89 @@ local renderAlerts(name, namespace, mixin) = {
 
 {
   local obsSLOs = {
+    local logsGroup = 'logsv1',
+    local metricsGroup = 'metricsv1',
     local metricLatency = 'http_request_duration_seconds',
     local metricError = 'http_requests_total',
-    local writeSelector = {
-      selectors: ['handler="receive"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    local writeMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
     },
-    local querySelector = {
-      selectors: ['handler=~"query|query_legacy"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    local queryMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler=~"query|query_legacy"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
     },
-    local queryRangeSelector = {
-      selectors: ['handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    local queryRangeMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    },
+    local pushLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    },
+    local queryLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler=~"querylabel|labels|label_values"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    },
+    local queryRangeLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+    },
+    local tailLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="tail|prom_tail"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
     },
 
-    local alertNameErrors = 'ObservatoriumAPIErrorsSLOBudgetBurn',
+    local alertNameLogsErrors = 'ObservatoriumAPILogsErrorsSLOBudgetBurn',
+    local alertNameMetricsErrors = 'ObservatoriumAPIMetricsErrorsSLOBudgetBurn',
     local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
 
     errorBurn:: [
       {
-        name: 'observatorium-api-write-errors.slo.rules',
-        config: writeSelector {
-          alertName: alertNameErrors,
+        name: 'observatorium-api-write-metrics-errors.slo.rules',
+        config: writeMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
           metric: metricError,
           target: 0.99,
         },
       },
       {
-        name: 'observatorium-api-query-errors.slo.rules',
-        config: querySelector {
-          alertName: alertNameErrors,
+        name: 'observatorium-api-query-metrics-errors.slo.rules',
+        config: queryMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
           metric: metricError,
           target: 0.95,
         },
       },
       {
-        name: 'observatorium-api-query-range-errors.slo.rules',
-        config: queryRangeSelector {
-          alertName: alertNameErrors,
+        name: 'observatorium-api-query-range-metrics-errors.slo.rules',
+        config: queryRangeMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-push-logs-errors.slo.rules',
+        config: pushLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-query-logs-errors.slo.rules',
+        config: queryLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-query-range-logs-errors.slo.rules',
+        config: queryRangeLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-tail-logs-errors.slo.rules',
+        config: tailLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
           metric: metricError,
           target: 0.90,
         },
@@ -308,7 +371,7 @@ local renderAlerts(name, namespace, mixin) = {
     //   latencyBurn:: [
     //     {
     //       name: 'observatorium-api-write-latency-low.slo.rules',
-    //       config: writeSelector {
+    //       config: writeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
     //         latencyTarget: '0.2',
@@ -317,7 +380,7 @@ local renderAlerts(name, namespace, mixin) = {
     //     },
     //     {
     //       name: 'observatorium-api-write-latency-high.slo.rules',
-    //       config: writeSelector {
+    //       config: writeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
     //         latencyTarget: '1',
@@ -326,7 +389,7 @@ local renderAlerts(name, namespace, mixin) = {
     //     },
     //     {
     //       name: 'observatorium-api-query-latency-low.slo.rules',
-    //       config: querySelector {
+    //       config: queryMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
     //         latencyTarget: '1',
@@ -335,7 +398,7 @@ local renderAlerts(name, namespace, mixin) = {
     //     },
     //     {
     //       name: 'observatorium-api-query-latency-high.slo.rules',
-    //       config: querySelector {
+    //       config: queryMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
     //         latencyTarget: '2.5',
@@ -344,7 +407,7 @@ local renderAlerts(name, namespace, mixin) = {
     //     },
     //     {
     //       name: 'observatorium-api-query-range-latency-low.slo.rules',
-    //       config: queryRangeSelector {
+    //       config: queryRangeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
     //         latencyTarget: '60',
@@ -353,7 +416,7 @@ local renderAlerts(name, namespace, mixin) = {
     //     },
     //     {
     //       name: 'observatorium-api-query-range-latency-high.slo.rules',
-    //       config: queryRangeSelector {
+    //       config: queryRangeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
     //         latencyTarget: '120',

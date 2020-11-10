@@ -252,7 +252,7 @@ local renderAlerts(name, namespace, mixin) = {
         p99QueryLatencyThreshold: 90,
       },
       store+:: {
-        bucketOpsP99LatencyThreshold: 3,
+        bucketOpsP99LatencyThreshold: 6,
       },
     },
 

@@ -11,6 +11,11 @@ local conprof = c + c.withConfigMap {
     image: '${IMAGE}:${IMAGE_TAG}',
     version: '${IMAGE_TAG}',
 
+    namespaces: [
+      '${NAMESPACE}',
+      '${OBSERVATORIUM_LOGS_NAMESPACE}',
+    ],
+
     rawconfig+:: {
       scrape_configs: [{
         job_name: 'thanos',
@@ -242,21 +247,8 @@ local conprof = c + c.withConfigMap {
           namespace:: 'hidden',
         },
       },
-    ] + [
-      object {
-        metadata+: {
-          namespace:: 'hidden',
-        },
-      }
-      for object in conprof.roles.items
-    ] + [
-      object {
-        metadata+: {
-          namespace:: 'hidden',
-        },
-      }
-      for object in conprof.roleBindings.items
-    ],
+    ] + conprof.roles.items
+    + conprof.roleBindings.items,
   parameters: [
     { name: 'NAMESPACE', value: 'telemeter' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },

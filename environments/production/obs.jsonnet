@@ -10,7 +10,10 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 
 
-(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') {
+(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +
+(import './observatorium-metrics.libsonnet') +
+(import './observatorium-metrics-template.libsonnet') +
+{
   local obs = self,
 
   local s3EnvVars = [
@@ -33,43 +36,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
   ],
-
-  compact+::
-    t.compact.withVolumeClaimTemplate +
-    t.compact.withResources +
-    t.compact.withServiceMonitor {
-      serviceMonitor+: {
-        metadata+: {
-          name: 'observatorium-thanos-compactor',
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-          },
-        },
-        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-      },
-    } +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').statefulSetMixin {
-      statefulSet+: {
-        spec+: {
-          template+: {
-            spec+: {
-              containers: [
-                if c.name == 'thanos-compact' then c {
-                  env+: s3EnvVars,
-                  // Temporary workaround on high cardinality blocks for 2w.
-                  // Since we have only 2w retention, there is no point in having 2w blocks.
-                  // See: https://issues.redhat.com/browse/OBS-437
-                  args+: ['--debug.max-compaction-level=3'],
-                } else c
-                for c in super.containers
-              ],
-            },
-          },
-        },
-      },
-    },
 
   thanosReceiveController+::
     trc.withResources +
@@ -94,129 +60,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         },
       },
     },
-
-  rule+::
-    local nameResource = obs.config.name + '-rule';
-    local nameFile = obs.config.name + '.yaml';
-    t.rule.withResources +
-    t.rule.withServiceMonitor {
-      serviceMonitor+: {
-        metadata+: {
-          name: 'observatorium-thanos-rule',
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-          },
-        },
-        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-      },
-    } +
-    ja.statefulSetMixin {
-      statefulSet+: {
-        spec+: {
-          template+: {
-            spec+: {
-              containers: [
-                if c.name == 'thanos-rule' then c {
-                  env+: s3EnvVars,
-                  args+: ['--rule-file=/var/thanos/config/rules/' + nameFile],
-                  volumeMounts+: [{
-                    name: nameResource,
-                    mountPath: '/var/thanos/config/rules',
-                  }],
-                } else c
-                for c in super.containers
-              ],
-              volumes+: [{
-                name: nameResource,
-                configMap: {
-                  name: nameResource,
-                },
-              }],
-            },
-          },
-        },
-      },
-    } + {
-      configmap:
-        local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
-        local configmap = k.core.v1.configMap;
-        configmap.new() +
-        configmap.mixin.metadata.withName(nameResource) +
-        configmap.mixin.metadata.withLabels(obs.config.commonLabels) +
-        configmap.mixin.metadata.withAnnotations({
-          'qontract.recycle': 'true',
-        }) +
-        configmap.withData({
-          [nameFile]: std.manifestYamlDoc({
-            groups: [{
-              name: 'observatorium.rules',
-              interval: '3m',
-              rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
-            }],
-          }),
-        }),
-    },
-
-  store+:: {
-    ['shard' + i]+:
-      t.store.withVolumeClaimTemplate +
-      t.store.withResources + {
-        config+:: {
-          memcached+: {
-            local memcached = obs.store['shard' + i].config.memcached,
-            indexCache: memcached {
-              addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [obs.storeIndexCache.service.metadata.name, obs.storeIndexCache.service.metadata.namespace]],
-            },
-            bucketCache: memcached {
-              addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [obs.storeBucketCache.service.metadata.name, obs.storeBucketCache.service.metadata.namespace]],
-            },
-          },
-        },
-      } +
-      ja.statefulSetMixin {
-        statefulSet+: {
-          spec+: {
-            template+: {
-              spec+: {
-                containers: [
-                  if c.name == 'thanos-store' then c {
-                    env+: s3EnvVars,
-                  } else c
-                  for c in super.containers
-                ],
-              },
-            },
-          },
-        },
-      }
-    for i in std.range(0, obs.config.store.shards - 1)
-  },
-
-  storeMonitor: t.store.withServiceMonitor {
-    config:: obs.store.shard0.config {
-      commonLabels+: {
-        'store.observatorium.io/shard':: 'hidden',
-      },
-      podLabelSelector+: {
-        'store.observatorium.io/shard':: 'hidden',
-      },
-    },
-    serviceMonitor+: {
-      metadata+: {
-        namespace:: 'hidden',
-        name: 'observatorium-thanos-store-shard',
-        labels+: {
-          prometheus: 'app-sre',
-          'app.kubernetes.io/version':: 'hidden',
-
-        },
-      },
-      spec+: {
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-      },
-    },
-  },
 
   storeCache:: {},
 
@@ -280,117 +123,21 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
-  receivers+:: {
-    [hashring.hashring]+:
-      t.receive.withVolumeClaimTemplate +
-      t.receive.withPodDisruptionBudget +
-      t.receive.withResources + {
-        statefulSet+: {
-          spec+: {
-            template+: {
-              spec+: {
-                containers: [
-                  if c.name == 'thanos-receive' then c {
-                    args+: [
-                      '--receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
-                    ],
-                    env+: s3EnvVars,
-                  } + {
-                    args: [
-                      if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}'
-                      else if std.startsWith(a, '--tsdb.retention') then '--tsdb.retention=4d' else a
-                      for a in super.args
-                    ],
-                  } else c
-                  for c in super.containers
-                ],
-              },
-            },
-          },
-        },
-      } + ja.statefulSetMixin
-    for hashring in obs.config.hashrings
-  },
-
-  receiversMonitor:: t.store.withServiceMonitor {
-    config:: obs.receivers.default.config,
-    serviceMonitor+: {
-      metadata+: {
-        labels+: {
-          prometheus: 'app-sre',
-          'app.kubernetes.io/version':: 'hidden',
-        },
-        namespace:: 'hidden',
-      },
-      spec+: {
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-      },
-    },
-  },
-
-  query+::
-    t.query.withResources +
-    t.query.withServiceMonitor +
-    t.query.withLookbackDelta + {
-      serviceMonitor+: {
-        metadata+: {
-          name: 'observatorium-thanos-querier',
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-          },
-        },
-        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-      },
-    } +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
-    ja.deploymentMixin,
-
-  queryFrontend+::
-    t.queryFrontend.withResources +
-    t.queryFrontend.withServiceMonitor {
-      serviceMonitor+: {
-        metadata+: {
-          name: 'observatorium-thanos-query-frontend',
-          labels+: {
-            prometheus: 'app-sre',
-            'app.kubernetes.io/version':: 'hidden',
-          },
-        },
-        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-      },
-      deployment+: {
-        spec+: {
-          template+: {
-            spec+: {
-              containers: [
-                if c.name == 'thanos-query-frontend' then c {
-                  args+: [
-                    '--labels.split-interval=%s' % '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
-                    '--labels.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
-                    '--labels.default-time-range=336h',
-                    '--labels.response-cache-config=' + std.manifestYamlDoc({
-                      config: {
-                        max_size: '0',
-                        max_size_items: 2048,
-                        validity: '6h',
-                      },
-                      type: 'in-memory',
-                    }),
-                    '--cache-compression-type=snappy',
-                  ],
-                } else c
-                for c in super.containers
-              ],
-            },
-          },
-        },
-      },
-    } +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
-    (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +
-    ja.deploymentMixin,
+  // receiversMonitor:: t.store.withServiceMonitor {
+  //   config:: obs.receivers.default.config,
+  //   serviceMonitor+: {
+  //     metadata+: {
+  //       labels+: {
+  //         prometheus: 'app-sre',
+  //         'app.kubernetes.io/version':: 'hidden',
+  //       },
+  //       namespace:: 'hidden',
+  //     },
+  //     spec+: {
+  //       namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+  //     },
+  //   },
+  // },
 
   gubernator+:: gubernator.withServiceMonitor {
     serviceMonitor+: {
@@ -873,57 +620,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     ],
 
-    compact+: {
-      logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      objectStorageConfig: obs.config.objectStorageConfig.thanos,
-      retentionResolutionRaw: '14d',
-      retentionResolution5m: '1s',
-      retentionResolution1h: '1s',
-      replicas: '${{THANOS_COMPACTOR_REPLICAS}}',
-      resources: {
-        requests: {
-          cpu: '${THANOS_COMPACTOR_CPU_REQUEST}',
-          memory: '${THANOS_COMPACTOR_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_COMPACTOR_CPU_LIMIT}',
-          memory: '${THANOS_COMPACTOR_MEMORY_LIMIT}',
-        },
-      },
-      oauthProxy: {
-        image: obs.config.oauthProxyImage,
-        httpsPort: 8443,
-        upstream: 'http://localhost:' + obs.compact.service.spec.ports[0].port,
-        tlsSecretName: 'compact-tls',
-        sessionSecretName: 'compact-proxy',
-        sessionSecret: '',
-        serviceAccountName: 'prometheus-telemeter',
-        resources: {
-          requests: {
-            cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-            memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-            memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-          },
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          resources: {
-            requests: {
-              storage: '${THANOS_COMPACTOR_PVC_REQUEST}',
-            },
-          },
-          storageClassName: '${STORAGE_CLASS}',
-        },
-      },
-    },
-
     thanosReceiveController+: {
       image: '${THANOS_RECEIVE_CONTROLLER_IMAGE}:${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
       version: '${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
@@ -944,118 +640,41 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
-    receivers+: {
-      logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
-      debug: '${THANOS_RECEIVE_DEBUG_ENV}',
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      objectStorageConfig: obs.config.objectStorageConfig.thanos,
-      hashrings: obs.config.hashrings,
-      replicas: '${{THANOS_RECEIVE_REPLICAS}}',
-      replicationFactor: 3,
-      resources: {
-        requests: {
-          cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
-          memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
-          memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          resources: {
-            requests: {
-              storage: '50Gi',
-            },
-          },
-          storageClassName: '${STORAGE_CLASS}',
-        },
-      },
-      jaegerAgent: {
-        image: obs.config.jaegerAgentImage,
-        collectorAddress: obs.config.jaegerAgentCollectorAddress,
-      },
-    },
-
-    rule+: {
-      logLevel: '${THANOS_RULER_LOG_LEVEL}',
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      objectStorageConfig: obs.config.objectStorageConfig.thanos,
-      replicas: '${{THANOS_RULER_REPLICAS}}',
-      resources: {
-        requests: {
-          cpu: '${THANOS_RULER_CPU_REQUEST}',
-          memory: '${THANOS_RULER_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_RULER_CPU_LIMIT}',
-          memory: '${THANOS_RULER_MEMORY_LIMIT}',
-        },
-      },
-      jaegerAgent: {
-        image: obs.config.jaegerAgentImage,
-        collectorAddress: obs.config.jaegerAgentCollectorAddress,
-      },
-    },
-
-    store+: {
-      logLevel: '${THANOS_STORE_LOG_LEVEL}',
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      shards: 3,
-      objectStorageConfig: obs.config.objectStorageConfig.thanos,
-      replicas: '${{THANOS_STORE_REPLICAS}}',
-      memcached+: {
-        indexCache+: {
-          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
-          maxIdleConnections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '400ms',  // default: 500ms
-          maxAsyncBufferSize: 200000,  // default: 10_000
-          maxAsyncConcurrency: 200,  // default: 20
-          maxGetMultiBatchSize: 100,  // default: 0 - No batching.
-          maxGetMultiConcurrency: 1000,  // default: 100
-          maxItemSize: '5MiB',  // default: 1Mb
-        },
-        bucketCache+: {
-          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
-          maxIdleConnections: 1100,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '400ms',  // default: 500ms
-          maxAsyncBufferSize: 25000,  // default: 10_000
-          maxAsyncConcurrency: 50,  // default: 20
-          maxGetMultiBatchSize: 100,  // default: 0 - No batching.
-          maxGetMultiConcurrency: 1000,  // default: 100
-        },
-      },
-      resources: {
-        requests: {
-          cpu: '${THANOS_STORE_CPU_REQUEST}',
-          memory: '${THANOS_STORE_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_STORE_CPU_LIMIT}',
-          memory: '${THANOS_STORE_MEMORY_LIMIT}',
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          resources: {
-            requests: {
-              storage: '50Gi',
-            },
-          },
-          storageClassName: '${STORAGE_CLASS}',
-        },
-      },
-      jaegerAgent: {
-        image: obs.config.jaegerAgentImage,
-        collectorAddress: obs.config.jaegerAgentCollectorAddress,
-      },
-    },
+    // receivers+: {
+    //   logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
+    //   debug: '${THANOS_RECEIVE_DEBUG_ENV}',
+    //   image: obs.config.thanosImage,
+    //   version: obs.config.thanosVersion,
+    //   objectStorageConfig: obs.config.objectStorageConfig.thanos,
+    //   hashrings: obs.config.hashrings,
+    //   replicas: '${{THANOS_RECEIVE_REPLICAS}}',
+    //   replicationFactor: 3,
+    //   resources: {
+    //     requests: {
+    //       cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
+    //       memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
+    //     },
+    //     limits: {
+    //       cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
+    //       memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
+    //     },
+    //   },
+    //   volumeClaimTemplate: {
+    //     spec: {
+    //       accessModes: ['ReadWriteOnce'],
+    //       resources: {
+    //         requests: {
+    //           storage: '50Gi',
+    //         },
+    //       },
+    //       storageClassName: '${STORAGE_CLASS}',
+    //     },
+    //   },
+    //   jaegerAgent: {
+    //     image: obs.config.jaegerAgentImage,
+    //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
+    //   },
+    // },
 
     storeIndexCache+: {
       local scConfig = self,
@@ -1126,93 +745,52 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
-    query+: {
-      logLevel: '${THANOS_QUERIER_LOG_LEVEL}',
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      replicas: '${{THANOS_QUERIER_REPLICAS}}',
-      lookbackDelta: '15m',
-      resources: {
-        requests: {
-          cpu: '${THANOS_QUERIER_CPU_REQUEST}',
-          memory: '${THANOS_QUERIER_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_QUERIER_CPU_LIMIT}',
-          memory: '${THANOS_QUERIER_MEMORY_LIMIT}',
-        },
-      },
-      oauthProxy: {
-        image: obs.config.oauthProxyImage,
-        httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.query.service.spec.ports[1].port,
-        tlsSecretName: 'query-tls',
-        sessionSecretName: 'query-proxy',
-        sessionSecret: '',
-        serviceAccountName: 'prometheus-telemeter',
-        resources: {
-          requests: {
-            cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-            memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-            memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-          },
-        },
-      },
-      jaegerAgent: {
-        image: obs.config.jaegerAgentImage,
-        collectorAddress: obs.config.jaegerAgentCollectorAddress,
-      },
-    },
-
-    queryFrontend+: {
-      image: obs.config.thanosImage,
-      version: obs.config.thanosVersion,
-      replicas: '${{THANOS_QUERY_FRONTEND_REPLICAS}}',
-      resources: {
-        requests: {
-          cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
-          memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
-          memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
-        },
-      },
-      splitInterval: '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
-      maxRetries: '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
-      logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
-      fifoCache: {
-        maxSize: '0',
-        maxSizeItems: 2048,
-        validity: '6h',
-      },
-      oauthProxy: {
-        image: obs.config.oauthProxyImage,
-        httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.queryFrontend.service.spec.ports[0].port,
-        tlsSecretName: 'query-frontend-tls',
-        sessionSecretName: 'query-frontend-proxy',
-        sessionSecret: '',
-        serviceAccountName: 'prometheus-telemeter',
-        resources: {
-          requests: {
-            cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-            memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-            memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-          },
-        },
-      },
-      jaegerAgent: {
-        image: obs.config.jaegerAgentImage,
-        collectorAddress: obs.config.jaegerAgentCollectorAddress,
-      },
-    },
+    // queryFrontend+: {
+    //   image: obs.config.thanosImage,
+    //   version: obs.config.thanosVersion,
+    //   replicas: '${{THANOS_QUERY_FRONTEND_REPLICAS}}',
+    //   resources: {
+    //     requests: {
+    //       cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
+    //       memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
+    //     },
+    //     limits: {
+    //       cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
+    //       memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
+    //     },
+    //   },
+    //   splitInterval: '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
+    //   maxRetries: '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
+    //   logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
+    //   fifoCache: {
+    //     maxSize: '0',
+    //     maxSizeItems: 2048,
+    //     validity: '6h',
+    //   },
+    //   oauthProxy: {
+    //     image: obs.config.oauthProxyImage,
+    //     httpsPort: 9091,
+    //     upstream: 'http://localhost:' + obs.queryFrontend.service.spec.ports[0].port,
+    //     tlsSecretName: 'query-frontend-tls',
+    //     sessionSecretName: 'query-frontend-proxy',
+    //     sessionSecret: '',
+    //     serviceAccountName: 'prometheus-telemeter',
+    //     resources: {
+    //       requests: {
+    //         cpu: '${JAEGER_PROXY_CPU_REQUEST}',
+    //         memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
+    //       },
+    //       limits: {
+    //         cpu: '${JAEGER_PROXY_CPU_LIMITS}',
+    //         memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
+    //       },
+    //     },
+    //   },
+    //   jaegerAgent: {
+    //     image: obs.config.jaegerAgentImage,
+    //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
+    //   },
+    // },
 
     gubernator+: {
       local guber = self,
@@ -1607,8 +1185,8 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null
       ] +
-      [obs.storeMonitor.serviceMonitor] +
-      [obs.receiversMonitor.serviceMonitor] +
+      // [obs.storeMonitor.serviceMonitor] +
+      // [obs.receiversMonitor.serviceMonitor] +
       [
         obs.storeIndexCache[name] {
           metadata+: {

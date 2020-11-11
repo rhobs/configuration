@@ -1335,11 +1335,11 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                 kind: 'user',
               },
               {
-                name: 'f:528d76ff-f708-43ed-8cd5-fe16f4fe0ce6:ptsiraki@redhat.com',
+                name: 'ptsiraki@redhat.com',
                 kind: 'user',
               },
               {
-                name: 'f:528d76ff-f708-43ed-8cd5-fe16f4fe0ce6:vrutkovs@redhat.com',
+                name: 'vrutkovs@redhat.com',
                 kind: 'user',
               },
             ],

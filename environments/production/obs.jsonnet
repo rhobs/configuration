@@ -1341,10 +1341,32 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                 name: 'service-account-observatorium-dptp-reader-staging',
                 kind: 'user',
               },
+              // OpenShift Logging Team
+              {
+                name: 'aconway@redhat.com',
+                kind: 'user',
+              },
+              {
+                name: 'brejones@redhat.com',
+                kind: 'user',
+              },
+              {
+                name: 'cvogel@redhat.com',
+                kind: 'user',
+              },
+              {
+                name: 'ewolinet@redhat.com',
+                kind: 'user',
+              },
+              {
+                name: 'jcantril@redhat.com',
+                kind: 'user',
+              },
               {
                 name: 'ptsiraki@redhat.com',
                 kind: 'user',
               },
+              // OpenShift DPTP team
               {
                 name: 'vrutkovs@redhat.com',
                 kind: 'user',

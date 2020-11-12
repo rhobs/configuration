@@ -74,6 +74,8 @@ objects:
         - "dptp"
   kind: ConfigMap
   metadata:
+    annotations:
+      qontract.recycle: "true"
     labels:
       app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium

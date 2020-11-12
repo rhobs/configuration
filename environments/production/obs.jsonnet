@@ -1376,7 +1376,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               clientID: 'id',
               clientSecret: 'secret',
               issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-              usernameClaim: 'email',
+              usernameClaim: 'preferred_username',
             },
           },
         ],

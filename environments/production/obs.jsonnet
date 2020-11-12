@@ -402,6 +402,13 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
         },
       },
+      configmap+: {
+        metadata+: {
+          annotations+: {
+            'qontract.recycle': 'true',
+          },
+        },
+      },
     } + (if obs['opa-ams'] != null then {
            deployment+: {
              spec+: {

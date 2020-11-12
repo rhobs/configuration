@@ -8,6 +8,7 @@
     - [LokiRequestErrors](#lokirequesterrors)
     - [LokiRequestPanics](#lokirequestpanics)
     - [LokiRequestLatency](#lokirequestlatency)
+    - [ObservatoriumAPILogsErrorsSLOBudgetBurn](#observatoriumapilogserrorsslobudgetburn)
 - Observatorium Metrics
     - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
     - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
@@ -43,7 +44,7 @@
     - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
     - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
     - [ThanosRuleIsDown](#thanosruleisdown)
-    - [ObservatoriumAPIErrorsSLOBudgetBurn](#observatoriumapierrorsslobudgetburn)
+    - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn](#observatoriumapimetricserrorsslobudgetburn)
     - [GubernatorIsDown](#gubernatorisdown)
     - [Escalations](#escalations)
 
@@ -54,6 +55,20 @@
 ## Verify components are running
 
 Check targets are UP in app-sre Prometheus:
+
+### Logs
+
+- `loki-distributor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-distributor-production%2f0
+
+- `loki-ingester`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-ingester-production%2f0
+
+- `loki-querier`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-querier-production%2f0
+
+- `loki-query-frontend`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-query-frontend-production%2f0
+
+- `loki-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-compactor-production%2f0
+
+### Metrics
 
 - `thanos-querier`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-querier-production%2f0
 
@@ -142,6 +157,29 @@ Loki components are slower than expected to conduct queries or process ingested 
 - Edit access to the Observatorium Logs namespaces:
   - `observatorium-logs-stage`
   - `observatorium-logs-production`
+
+### Steps
+
+- The api proxies requests to the Loki query-frontend or queriers (only for `tail` endpoint) and the Loki distributor so check the logs of all components.
+- The Loki distributor and querier requests data downstream from the Loki ingester or directly from the S3 bucket so check ingester logs and S3 connectivity.
+- Inspect the metrics for the api [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m)
+- Inspect the metrics for the Loki query-frontend/querier
+- Inspect the metrics for the Loki distributor/ingester
+
+## ObservatoriumAPILogsErrorsSLOBudgetBurn
+
+### Impact
+
+SLO breach or complete outage for ingesting and/or querying logs data.
+For users this is means that the service as being unavailable due to returning too many errors.
+
+### Summary
+
+For the set availability guarantees the observatorium api or the Loki distributor/query-frontend/querier are returning too many http errors when processing requests.
+
+### Severity
+
+`high`
 
 ### Steps
 
@@ -933,11 +971,11 @@ Respective component that is supposed to be running is not running.
 
 ---
 
-## ObservatoriumAPIErrorsSLOBudgetBurn
+## ObservatoriumAPIMetricsErrorsSLOBudgetBurn
 
 ### Impact
 
-SLO breach or complete outage for ingesting and/or querying data.
+SLO breach or complete outage for ingesting and/or querying metrics data.
 For users this is means that the service as being unavailable due to returning too many errors.
 
 ### Summary

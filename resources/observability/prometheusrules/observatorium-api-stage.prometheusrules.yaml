@@ -9,357 +9,829 @@ metadata:
   name: observatorium-api-stage
 spec:
   groups:
-  - name: observatorium-api-write-errors.slo.rules
+  - name: observatorium-api-write-metrics-errors.slo.rules
     rules:
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[1d]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[1d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[1d]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[1h]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[1h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[1h]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[2h]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[2h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[2h]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[30m]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[30m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[30m]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[3d]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[3d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[3d]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[5m]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[5m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[5m]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api",code=~"5.."}[6h]))
         /
-        sum(rate(http_requests_total{handler="receive",job="observatorium-observatorium-api"}[6h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[6h]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate5m{handler="receive",job="observatorium-observatorium-api"}) > (14.40 * (1-0.99000))
+        sum(http_requests_total:burnrate5m{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (14.40 * (1-0.99000))
         and
-        sum(http_requests_total:burnrate1h{handler="receive",job="observatorium-observatorium-api"}) > (14.40 * (1-0.99000))
+        sum(http_requests_total:burnrate1h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (14.40 * (1-0.99000))
       for: 2m
       labels:
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
         severity: high
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate30m{handler="receive",job="observatorium-observatorium-api"}) > (6.00 * (1-0.99000))
+        sum(http_requests_total:burnrate30m{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (6.00 * (1-0.99000))
         and
-        sum(http_requests_total:burnrate6h{handler="receive",job="observatorium-observatorium-api"}) > (6.00 * (1-0.99000))
+        sum(http_requests_total:burnrate6h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (6.00 * (1-0.99000))
       for: 15m
       labels:
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
         severity: high
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate2h{handler="receive",job="observatorium-observatorium-api"}) > (3.00 * (1-0.99000))
+        sum(http_requests_total:burnrate2h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (3.00 * (1-0.99000))
         and
-        sum(http_requests_total:burnrate1d{handler="receive",job="observatorium-observatorium-api"}) > (3.00 * (1-0.99000))
+        sum(http_requests_total:burnrate1d{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (3.00 * (1-0.99000))
       for: 1h
       labels:
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate6h{handler="receive",job="observatorium-observatorium-api"}) > (1.00 * (1-0.99000))
+        sum(http_requests_total:burnrate6h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (1.00 * (1-0.99000))
         and
-        sum(http_requests_total:burnrate3d{handler="receive",job="observatorium-observatorium-api"}) > (1.00 * (1-0.99000))
+        sum(http_requests_total:burnrate3d{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (1.00 * (1-0.99000))
       for: 3h
       labels:
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-  - name: observatorium-api-query-errors.slo.rules
+  - name: observatorium-api-query-metrics-errors.slo.rules
     rules:
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[1d]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[1d]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[1d]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[1h]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[1h]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[1h]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[2h]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[2h]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[2h]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[30m]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[30m]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[30m]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[3d]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[3d]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[3d]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[5m]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[5m]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[5m]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api",code=~"5.."}[6h]))
         /
-        sum(rate(http_requests_total{handler=~"query|query_legacy",job="observatorium-observatorium-api"}[6h]))
+        sum(rate(http_requests_total{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}[6h]))
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate5m{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate5m{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (14.40 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1h{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate1h{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
         service: telemeter
         severity: high
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate30m{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate30m{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (6.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate6h{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
         service: telemeter
         severity: high
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate2h{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate2h{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (3.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1d{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate1d{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate6h{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (1.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate3d{handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate3d{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
         handler: query|query_legacy
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-  - name: observatorium-api-query-range-errors.slo.rules
+  - name: observatorium-api-query-range-metrics-errors.slo.rules
     rules:
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[1d]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[1d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[1d]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[1h]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[1h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[1h]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[2h]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[2h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[2h]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[30m]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[30m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[30m]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[3d]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[3d]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[3d]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[5m]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[5m]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[5m]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[6h]))
         /
-        sum(rate(http_requests_total{handler="query_range",job="observatorium-observatorium-api"}[6h]))
+        sum(rate(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[6h]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate5m{handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+        sum(http_requests_total:burnrate5m{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate1h{handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+        sum(http_requests_total:burnrate1h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
       for: 2m
       labels:
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
         severity: high
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate30m{handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+        sum(http_requests_total:burnrate30m{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate6h{handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+        sum(http_requests_total:burnrate6h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
       for: 15m
       labels:
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
         severity: high
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate2h{handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+        sum(http_requests_total:burnrate2h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate1d{handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+        sum(http_requests_total:burnrate1d{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
       for: 1h
       labels:
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-    - alert: ObservatoriumAPIErrorsSLOBudgetBurn
+    - alert: ObservatoriumAPIMetricsErrorsSLOBudgetBurn
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapierrorsslobudgetburn
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
-        sum(http_requests_total:burnrate6h{handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+        sum(http_requests_total:burnrate6h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate3d{handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+        sum(http_requests_total:burnrate3d{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
       for: 3h
       labels:
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
+        severity: medium
+  - name: observatorium-api-push-logs-errors.slo.rules
+    rules:
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[1d]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[1h]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[2h]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[30m]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[3d]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[5m]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-api"}[6h]))
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-push-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate5m{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1h{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+      for: 2m
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-push-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate30m{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate6h{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+      for: 15m
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-push-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate2h{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1d{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+      for: 1h
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-push-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate6h{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate3d{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+      for: 3h
+      labels:
+        handler: push
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+  - name: observatorium-api-query-logs-errors.slo.rules
+    rules:
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[1d]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[1h]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[2h]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[30m]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[3d]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[5m]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}[6h]))
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=~querylabel|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate5m{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1h{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+      for: 2m
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=~querylabel|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate30m{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate6h{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+      for: 15m
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=~querylabel|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate2h{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1d{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+      for: 1h
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=~querylabel|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate6h{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate3d{group="logsv1",handler=~"querylabel|labels|label_values",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+      for: 3h
+      labels:
+        handler: querylabel|labels|label_values
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+  - name: observatorium-api-query-range-logs-errors.slo.rules
+    rules:
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[1d]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[1h]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[2h]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[30m]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[3d]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[5m]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}[6h]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate5m{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1h{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+      for: 2m
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate30m{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate6h{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+      for: 15m
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate2h{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1d{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+      for: 1h
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate6h{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate3d{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+      for: 3h
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+  - name: observatorium-api-tail-logs-errors.slo.rules
+    rules:
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[1d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[1d]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[1h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[1h]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[2h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[2h]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[30m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[30m]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[3d]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[3d]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[5m]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[5m]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api",code=~"5.."}[6h]))
+        /
+        sum(rate(http_requests_total{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}[6h]))
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-tail-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate5m{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1h{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
+      for: 2m
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-tail-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate30m{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate6h{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
+      for: 15m
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: high
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-tail-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate2h{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1d{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
+      for: 1h
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
+        severity: medium
+    - alert: ObservatoriumAPILogsErrorsSLOBudgetBurn
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-tail-logs-errors.slo.rules?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=telemeter-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+      expr: |
+        sum(http_requests_total:burnrate6h{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate3d{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
+      for: 3h
+      labels:
+        handler: tail|prom_tail
+        job: observatorium-observatorium-api
+        service: obervatorium-logs
         severity: medium

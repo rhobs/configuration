@@ -1368,7 +1368,19 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               },
               // OpenShift DPTP team
               {
+                name: 'dmace@redhat.com',
+                kind: 'user',
+              },
+              {
+                name: 'sbatsche@redhat.com',
+                kind: 'user',
+              },
+              {
                 name: 'vrutkovs@redhat.com',
+                kind: 'user',
+              },
+              {
+                name: 'wking@redhat.com',
                 kind: 'user',
               },
             ],

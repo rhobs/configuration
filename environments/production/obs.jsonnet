@@ -1347,7 +1347,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                 kind: 'user',
               },
               {
-                name: 'brejones@redhat.com',
+                name: 'brejones',
                 kind: 'user',
               },
               {
@@ -1380,7 +1380,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                 kind: 'user',
               },
               {
-                name: 'wking@redhat.com',
+                name: 'trking',
                 kind: 'user',
               },
             ],

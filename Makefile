@@ -26,13 +26,19 @@ resources/observability/prometheusrules: format prometheusrules.jsonnet $(JSONNE
 
 
 .PHONY: grafana
-grafana: manifests/production/grafana
+grafana: manifests/production/grafana manifests/production/grafana/observatorium-logs
 
 manifests/production/grafana: format environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
 	rm -f manifests/production/grafana/*.yaml
 	$(JSONNET) -J vendor -m manifests/production/grafana environments/production/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find manifests/production/grafana -type f ! -name '*.yaml' -delete
+
+manifests/production/grafana/observatorium-logs: format environments/production/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running grafana observatorium-logs"
+	rm -f manifests/production/grafana/observatorium-logs/*.yaml
+	$(JSONNET) -J vendor -m manifests/production/grafana/observatorium-logs environments/production/grafana-obs-logs.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find manifests/production/grafana/observatorium-logs -type f ! -name '*.yaml' -delete
 
 .PHONY: whitelisted_metrics
 whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)

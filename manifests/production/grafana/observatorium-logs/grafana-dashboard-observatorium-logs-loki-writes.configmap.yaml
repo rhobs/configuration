@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  loki-chunks.json: |-
+  loki-writes.json: |-
     {
       "annotations": {
         "list": [
@@ -22,13 +22,19 @@ data:
           "panels": [
             {
               "aliasColors": {
-
+                "1xx": "#EAB839",
+                "2xx": "#7EB26D",
+                "3xx": "#6ED0E0",
+                "4xx": "#EF843C",
+                "5xx": "#E24D42",
+                "error": "#E24D42",
+                "success": "#7EB26D"
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "fill": 1,
+              "fill": 10,
               "id": 1,
               "legend": {
                 "avg": false,
@@ -40,7 +46,7 @@ data:
                 "values": false
               },
               "lines": true,
-              "linewidth": 1,
+              "linewidth": 0,
               "links": [
 
               ],
@@ -54,15 +60,15 @@ data:
               ],
               "spaceLength": 10,
               "span": 6,
-              "stack": false,
+              "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(loki_ingester_memory_chunks{job=\"observatorium-loki-ingester-http\"})",
+                  "expr": "sum by (status) (label_replace(label_replace(rate(loki_request_duration_seconds_count{ route=~\"api_prom_push|loki_api_v1_push\"}[$__interval]), \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"), \"status\", \"${1}\",   \"status_code\", \"([a-z]+)\"))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "series",
-                  "legendLink": null,
+                  "legendFormat": "{{status}}",
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -71,7 +77,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Series",
+              "title": "QPS",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -144,11 +150,27 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(loki_ingester_memory_chunks{job=\"observatorium-loki-ingester-http\"}) / sum(loki_ingester_memory_streams{job=\"observatorium-loki-ingester-http\"})",
+                  "expr": "histogram_quantile(0.99, sum by (le) (route:loki_request_duration_seconds_bucket:sum_rate{route=~\"api_prom_push|loki_api_v1_push\"})) * 1e3",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "chunks",
-                  "legendLink": null,
+                  "legendFormat": "99th Percentile",
+                  "refId": "A",
+                  "step": 10
+                },
+                {
+                  "expr": "histogram_quantile(0.50, sum by (le) (route:loki_request_duration_seconds_bucket:sum_rate{route=~\"api_prom_push|loki_api_v1_push\"})) * 1e3",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "50th Percentile",
+                  "refId": "B",
+                  "step": 10
+                },
+                {
+                  "expr": "1e3 * sum(route:loki_request_duration_seconds_sum:sum_rate{route=~\"api_prom_push|loki_api_v1_push\"}) / sum(route:loki_request_duration_seconds_count:sum_rate{route=~\"api_prom_push|loki_api_v1_push\"})",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "Average",
+                  "refId": "C",
                   "step": 10
                 }
               ],
@@ -157,7 +179,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Chunks per series",
+              "title": "Latency",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -175,7 +197,7 @@ data:
               },
               "yaxes": [
                 {
-                  "format": "short",
+                  "format": "ms",
                   "label": null,
                   "logBase": 1,
                   "max": null,
@@ -197,7 +219,7 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Active Series / Chunks",
+          "title": "Frontend (cortex_gw)",
           "titleSize": "h6"
         },
         {
@@ -206,13 +228,19 @@ data:
           "panels": [
             {
               "aliasColors": {
-
+                "1xx": "#EAB839",
+                "2xx": "#7EB26D",
+                "3xx": "#6ED0E0",
+                "4xx": "#EF843C",
+                "5xx": "#E24D42",
+                "error": "#E24D42",
+                "success": "#7EB26D"
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "fill": 1,
+              "fill": 10,
               "id": 3,
               "legend": {
                 "avg": false,
@@ -224,7 +252,7 @@ data:
                 "values": false
               },
               "lines": true,
-              "linewidth": 1,
+              "linewidth": 0,
               "links": [
 
               ],
@@ -238,31 +266,15 @@ data:
               ],
               "spaceLength": 10,
               "span": 6,
-              "stack": false,
+              "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_utilization_bucket{job=\"observatorium-loki-ingester-http\"}[$__interval])) by (le)) * 1",
+                  "expr": "sum by (status) (label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-distributor-http\"}[$__interval]), \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"), \"status\", \"${1}\",   \"status_code\", \"([a-z]+)\"))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "99th Percentile",
+                  "legendFormat": "{{status}}",
                   "refId": "A",
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_utilization_bucket{job=\"observatorium-loki-ingester-http\"}[$__interval])) by (le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "50th Percentile",
-                  "refId": "B",
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(loki_ingester_chunk_utilization_sum{job=\"observatorium-loki-ingester-http\"}[$__interval])) * 1 / sum(rate(loki_ingester_chunk_utilization_count{job=\"observatorium-loki-ingester-http\"}[$__interval]))",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "Average",
-                  "refId": "C",
                   "step": 10
                 }
               ],
@@ -271,7 +283,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Utilization",
+              "title": "QPS",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -289,7 +301,7 @@ data:
               },
               "yaxes": [
                 {
-                  "format": "percentunit",
+                  "format": "short",
                   "label": null,
                   "logBase": 1,
                   "max": null,
@@ -344,7 +356,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_age_seconds_bucket{job=\"observatorium-loki-ingester-http\"}[$__interval])) by (le)) * 1e3",
+                  "expr": "histogram_quantile(0.99, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"})) * 1e3",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "99th Percentile",
@@ -352,7 +364,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_age_seconds_bucket{job=\"observatorium-loki-ingester-http\"}[$__interval])) by (le)) * 1e3",
+                  "expr": "histogram_quantile(0.50, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"})) * 1e3",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "50th Percentile",
@@ -360,7 +372,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(loki_ingester_chunk_age_seconds_sum{job=\"observatorium-loki-ingester-http\"}[$__interval])) * 1e3 / sum(rate(loki_ingester_chunk_age_seconds_count{job=\"observatorium-loki-ingester-http\"}[$__interval]))",
+                  "expr": "1e3 * sum(job:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-distributor-http\"}) / sum(job:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-distributor-http\"})",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "Average",
@@ -373,7 +385,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Age",
+              "title": "Latency",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -413,7 +425,7 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Flush Stats",
+          "title": "Distributor",
           "titleSize": "h6"
         },
         {
@@ -422,13 +434,19 @@ data:
           "panels": [
             {
               "aliasColors": {
-
+                "1xx": "#EAB839",
+                "2xx": "#7EB26D",
+                "3xx": "#6ED0E0",
+                "4xx": "#EF843C",
+                "5xx": "#E24D42",
+                "error": "#E24D42",
+                "success": "#7EB26D"
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "fill": 1,
+              "fill": 10,
               "id": 5,
               "legend": {
                 "avg": false,
@@ -440,7 +458,7 @@ data:
                 "values": false
               },
               "lines": true,
-              "linewidth": 1,
+              "linewidth": 0,
               "links": [
 
               ],
@@ -454,31 +472,15 @@ data:
               ],
               "spaceLength": 10,
               "span": 6,
-              "stack": false,
+              "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_entries_bucket{job=\"observatorium-loki-ingester-http\"}[$__interval])) by (le)) * 1",
+                  "expr": "sum by (status) (label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"}[$__interval]), \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"), \"status\", \"${1}\",   \"status_code\", \"([a-z]+)\"))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "99th Percentile",
+                  "legendFormat": "{{status}}",
                   "refId": "A",
-                  "step": 10
-                },
-                {
-                  "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_entries_bucket{job=\"observatorium-loki-ingester-http\"}[$__interval])) by (le)) * 1",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "50th Percentile",
-                  "refId": "B",
-                  "step": 10
-                },
-                {
-                  "expr": "sum(rate(loki_ingester_chunk_entries_sum{job=\"observatorium-loki-ingester-http\"}[$__interval])) * 1 / sum(rate(loki_ingester_chunk_entries_count{job=\"observatorium-loki-ingester-http\"}[$__interval]))",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "Average",
-                  "refId": "C",
                   "step": 10
                 }
               ],
@@ -487,7 +489,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Size",
+              "title": "QPS",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -560,11 +562,27 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(cortex_chunk_store_index_entries_per_chunk_sum{job=\"observatorium-loki-ingester-http\"}[5m])) / sum(rate(cortex_chunk_store_index_entries_per_chunk_count{job=\"observatorium-loki-ingester-http\"}[5m]))",
+                  "expr": "histogram_quantile(0.99, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"})) * 1e3",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "entries",
-                  "legendLink": null,
+                  "legendFormat": "99th Percentile",
+                  "refId": "A",
+                  "step": 10
+                },
+                {
+                  "expr": "histogram_quantile(0.50, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"})) * 1e3",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "50th Percentile",
+                  "refId": "B",
+                  "step": 10
+                },
+                {
+                  "expr": "1e3 * sum(job_route:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"}) / sum(job_route:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"})",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "Average",
+                  "refId": "C",
                   "step": 10
                 }
               ],
@@ -573,7 +591,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Entries",
+              "title": "Latency",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -591,7 +609,7 @@ data:
               },
               "yaxes": [
                 {
-                  "format": "short",
+                  "format": "ms",
                   "label": null,
                   "logBase": 1,
                   "max": null,
@@ -613,7 +631,7 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Flush Stats",
+          "title": "Ingester",
           "titleSize": "h6"
         },
         {
@@ -622,13 +640,19 @@ data:
           "panels": [
             {
               "aliasColors": {
-
+                "1xx": "#EAB839",
+                "2xx": "#7EB26D",
+                "3xx": "#6ED0E0",
+                "4xx": "#EF843C",
+                "5xx": "#E24D42",
+                "error": "#E24D42",
+                "success": "#7EB26D"
               },
               "bars": false,
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "fill": 1,
+              "fill": 10,
               "id": 7,
               "legend": {
                 "avg": false,
@@ -640,7 +664,7 @@ data:
                 "values": false
               },
               "lines": true,
-              "linewidth": 1,
+              "linewidth": 0,
               "links": [
 
               ],
@@ -654,15 +678,15 @@ data:
               ],
               "spaceLength": 10,
               "span": 6,
-              "stack": false,
+              "stack": true,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "cortex_ingester_flush_queue_length{job=\"observatorium-loki-ingester-http\"}",
+                  "expr": "sum by (status) (label_replace(label_replace(rate(cortex_bigtable_request_duration_seconds_count{job=\"observatorium-loki-ingester-http\", operation=\"/google.bigtable.v2.Bigtable/MutateRows\"}[$__interval]), \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"), \"status\", \"${1}\",   \"status_code\", \"([a-z]+)\"))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{pod}}",
-                  "legendLink": null,
+                  "legendFormat": "{{status}}",
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -671,7 +695,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Queue Length",
+              "title": "QPS",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -708,6 +732,120 @@ data:
             },
             {
               "aliasColors": {
+
+              },
+              "bars": false,
+              "dashLength": 10,
+              "dashes": false,
+              "datasource": "$datasource",
+              "fill": 1,
+              "id": 8,
+              "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+              },
+              "lines": true,
+              "linewidth": 1,
+              "links": [
+
+              ],
+              "nullPointMode": "null as zero",
+              "percentage": false,
+              "pointradius": 5,
+              "points": false,
+              "renderer": "flot",
+              "seriesOverrides": [
+
+              ],
+              "spaceLength": 10,
+              "span": 6,
+              "stack": false,
+              "steppedLine": false,
+              "targets": [
+                {
+                  "expr": "histogram_quantile(0.99, sum by (le) (job_operation:cortex_bigtable_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", operation=\"/google.bigtable.v2.Bigtable/MutateRows\"})) * 1e3",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "99th Percentile",
+                  "refId": "A",
+                  "step": 10
+                },
+                {
+                  "expr": "histogram_quantile(0.50, sum by (le) (job_operation:cortex_bigtable_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", operation=\"/google.bigtable.v2.Bigtable/MutateRows\"})) * 1e3",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "50th Percentile",
+                  "refId": "B",
+                  "step": 10
+                },
+                {
+                  "expr": "1e3 * sum(job_operation:cortex_bigtable_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-ingester-http\", operation=\"/google.bigtable.v2.Bigtable/MutateRows\"}) / sum(job_operation:cortex_bigtable_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-ingester-http\", operation=\"/google.bigtable.v2.Bigtable/MutateRows\"})",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "Average",
+                  "refId": "C",
+                  "step": 10
+                }
+              ],
+              "thresholds": [
+
+              ],
+              "timeFrom": null,
+              "timeShift": null,
+              "title": "Latency",
+              "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+              },
+              "type": "graph",
+              "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": [
+
+                ]
+              },
+              "yaxes": [
+                {
+                  "format": "ms",
+                  "label": null,
+                  "logBase": 1,
+                  "max": null,
+                  "min": 0,
+                  "show": true
+                },
+                {
+                  "format": "short",
+                  "label": null,
+                  "logBase": 1,
+                  "max": null,
+                  "min": null,
+                  "show": false
+                }
+              ]
+            }
+          ],
+          "repeat": null,
+          "repeatIteration": null,
+          "repeatRowId": null,
+          "showTitle": true,
+          "title": "BigTable",
+          "titleSize": "h6"
+        },
+        {
+          "collapse": false,
+          "height": "250px",
+          "panels": [
+            {
+              "aliasColors": {
                 "1xx": "#EAB839",
                 "2xx": "#7EB26D",
                 "3xx": "#6ED0E0",
@@ -721,7 +859,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 10,
-              "id": 8,
+              "id": 9,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -750,7 +888,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (status) (label_replace(label_replace(rate(loki_ingester_chunk_age_seconds_count{job=\"observatorium-loki-ingester-http\"}[$__interval]), \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"), \"status\", \"${1}\",   \"status_code\", \"([a-z]+)\"))",
+                  "expr": "sum by (status) (label_replace(label_replace(rate(loki_boltdb_shipper_request_duration_seconds_count{job=\"observatorium-loki-ingester-http\", operation=\"WRITE\"}[$__interval]), \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"), \"status\", \"${1}\",   \"status_code\", \"([a-z]+)\"))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{status}}",
@@ -763,7 +901,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Flush Rate",
+              "title": "QPS",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -797,19 +935,7 @@ data:
                   "show": false
                 }
               ]
-            }
-          ],
-          "repeat": null,
-          "repeatIteration": null,
-          "repeatRowId": null,
-          "showTitle": true,
-          "title": "Flush Stats",
-          "titleSize": "h6"
-        },
-        {
-          "collapse": false,
-          "height": "250px",
-          "panels": [
+            },
             {
               "aliasColors": {
 
@@ -819,7 +945,7 @@ data:
               "dashes": false,
               "datasource": "$datasource",
               "fill": 1,
-              "id": 9,
+              "id": 10,
               "legend": {
                 "avg": false,
                 "current": false,
@@ -843,32 +969,32 @@ data:
 
               ],
               "spaceLength": 10,
-              "span": 12,
+              "span": 6,
               "stack": false,
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.5, sum(rate(loki_ingester_chunk_bounds_hours_bucket{job=\"observatorium-loki-ingester-http\"}[5m])) by (le))",
+                  "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{job=\"observatorium-loki-ingester-http\", operation=\"WRITE\"}[$__interval])) by (le)) * 1e3",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "p50",
-                  "legendLink": null,
+                  "legendFormat": "99th Percentile",
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_bounds_hours_bucket{job=\"observatorium-loki-ingester-http\"}[5m])) by (le))",
+                  "expr": "histogram_quantile(0.50, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{job=\"observatorium-loki-ingester-http\", operation=\"WRITE\"}[$__interval])) by (le)) * 1e3",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "p99",
-                  "legendLink": null,
+                  "legendFormat": "50th Percentile",
+                  "refId": "B",
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(loki_ingester_chunk_bounds_hours_sum{job=\"observatorium-loki-ingester-http\"}[5m])) / sum(rate(loki_ingester_chunk_bounds_hours_count{job=\"observatorium-loki-ingester-http\"}[5m]))",
+                  "expr": "sum(rate(loki_boltdb_shipper_request_duration_seconds_sum{job=\"observatorium-loki-ingester-http\", operation=\"WRITE\"}[$__interval])) * 1e3 / sum(rate(loki_boltdb_shipper_request_duration_seconds_count{job=\"observatorium-loki-ingester-http\", operation=\"WRITE\"}[$__interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "avg",
-                  "legendLink": null,
+                  "legendFormat": "Average",
+                  "refId": "C",
                   "step": 10
                 }
               ],
@@ -877,7 +1003,7 @@ data:
               ],
               "timeFrom": null,
               "timeShift": null,
-              "title": "Chunk Duration hours (end-start)",
+              "title": "Latency",
               "tooltip": {
                 "shared": true,
                 "sort": 0,
@@ -895,7 +1021,7 @@ data:
               },
               "yaxes": [
                 {
-                  "format": "short",
+                  "format": "ms",
                   "label": null,
                   "logBase": 1,
                   "max": null,
@@ -917,7 +1043,7 @@ data:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": true,
-          "title": "Duration",
+          "title": "BoltDB Shipper",
           "titleSize": "h6"
         }
       ],
@@ -1004,7 +1130,7 @@ data:
         ]
       },
       "timezone": "utc",
-      "title": "Loki / Chunks",
+      "title": "Loki / Writes",
       "uid": "",
       "version": 0
     }
@@ -1014,4 +1140,4 @@ metadata:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
   labels:
     grafana_dashboard: "true"
-  name: grafana-dashboard-observatorium-loki-chunks
+  name: grafana-dashboard-observatorium-logs-loki-writes

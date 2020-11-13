@@ -1346,4 +1346,4 @@ metadata:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
   labels:
     grafana_dashboard: "true"
-  name: grafana-dashboard-observatorium-loki-reads
+  name: grafana-dashboard-observatorium-logs-loki-reads

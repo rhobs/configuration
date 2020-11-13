@@ -43,7 +43,7 @@ local dashboards = {
     configmap.new() +
     configmap.mixin.metadata.withName('grafana-dashboard-observatorium-%s' % std.split(name, '.')[0]) +
     configmap.withData({
-      [name]: std.manifestJsonEx(loki.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
+      [name]: std.manifestJsonEx(loki.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium', 'observatorium-logs']) }, '  '),
     })
   for name in std.objectFields(loki.grafanaDashboards)
 } + {

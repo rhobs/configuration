@@ -1256,7 +1256,8 @@ data:
       "schemaVersion": 14,
       "style": "dark",
       "tags": [
-        "observatorium"
+        "observatorium",
+        "observatorium-logs"
       ],
       "templating": {
         "list": [
@@ -1279,8 +1280,8 @@ data:
           {
             "allValue": null,
             "current": {
-              "text": "observatorium-logs",
-              "value": "observatorium-logs"
+              "text": "observatorium-logs-production",
+              "value": "observatorium-logs-production"
             },
             "datasource": "$datasource",
             "hide": 0,
@@ -1291,7 +1292,7 @@ data:
             "options": [
 
             ],
-            "query": "observatorium-logs",
+            "query": "observatorium-logs-production",
             "refresh": 1,
             "regex": "",
             "sort": 2,

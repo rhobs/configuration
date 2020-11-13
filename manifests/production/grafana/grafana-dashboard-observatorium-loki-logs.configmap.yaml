@@ -958,7 +958,8 @@ data:
       "schemaVersion": 22,
       "style": "dark",
       "tags": [
-        "observatorium"
+        "observatorium",
+        "observatorium-logs"
       ],
       "templating": {
         "list": [

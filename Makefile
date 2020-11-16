@@ -26,13 +26,13 @@ resources/observability/prometheusrules: format prometheusrules.jsonnet $(JSONNE
 
 
 .PHONY: grafana
-grafana: manifests/production/grafana manifests/production/grafana/observatorium-logs
+grafana: manifests/production/grafana/observatorium manifests/production/grafana/observatorium-logs
 
-manifests/production/grafana: format environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+manifests/production/grafana/observatorium: format environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
-	rm -f manifests/production/grafana/*.yaml
-	$(JSONNET) -J vendor -m manifests/production/grafana environments/production/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	find manifests/production/grafana -type f ! -name '*.yaml' -delete
+	rm -f manifests/production/grafana/observatorium/*.yaml
+	$(JSONNET) -J vendor -m manifests/production/grafana/observatorium environments/production/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find manifests/production/grafana/observatorium -type f ! -name '*.yaml' -delete
 
 manifests/production/grafana/observatorium-logs: format environments/production/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana observatorium-logs"

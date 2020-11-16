@@ -1829,8 +1829,8 @@ local dashboards = {
               {
                 current: {
                   selected: true,
-                  text: obsDatasource,
-                  value: obsDatasource,
+                  text: '${OBSERVATORIUM_API_DATASOURCE}',
+                  value: '${OBSERVATORIUM_API_DATASOURCE}',
                 },
                 hide: 0,
                 includeAll: false,
@@ -1847,8 +1847,8 @@ local dashboards = {
               {
                 allValue: null,
                 current: {
-                  text: obsNamespace,
-                  value: obsNamespace,
+                  text: '${OBSERVATORIUM_API_NAMESPACE}',
+                  value: '${OBSERVATORIUM_API_NAMESPACE}',
                 },
                 datasource: '$datasource',
                 definition: 'label_values(kube_pod_info, namespace)',
@@ -1960,6 +1960,8 @@ local dashboards = {
     for name in std.objectFields(dashboards)
   ],
   parameters: [
+    { name: 'OBSERVATORIUM_API_DATASOURCE', value: 'telemeter-prod-01-prometheus' },
+    { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'telemeter-production' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs-production' },
   ],
 }

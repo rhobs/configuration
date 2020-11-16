@@ -55,7 +55,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
     grafanaDashboards+: {
       'loki-chunks.json'+: {
         showMultiCluster:: false,
-        namespaceQuery:: 'observatorium-logs-production',
+        namespaceQuery:: '${OBSERVATORIUM_LOGS_NAMESPACE}',
         namespaceType:: 'custom',
         matchers:: {
           ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
@@ -68,7 +68,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
         showAnnotations:: false,
         showLinks:: false,
         showMultiCluster:: false,
-        namespaceQuery:: 'observatorium-logs-production',
+        namespaceQuery:: '${OBSERVATORIUM_LOGS_NAMESPACE}',
         namespaceType:: 'custom',
         matchers:: {
           cortexgateway:: [],
@@ -79,7 +79,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
       },
       'loki-reads.json'+: {
         showMultiCluster:: false,
-        namespaceQuery:: 'observatorium-logs-production',
+        namespaceQuery:: '${OBSERVATORIUM_LOGS_NAMESPACE}',
         namespaceType:: 'custom',
         matchers:: {
           cortexgateway:: [],
@@ -90,7 +90,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
       },
       'loki-writes.json'+: {
         showMultiCluster:: false,
-        namespaceQuery:: 'observatorium-logs-production',
+        namespaceQuery:: '${OBSERVATORIUM_LOGS_NAMESPACE}',
         namespaceType:: 'custom',
         matchers:: {
           cortexgateway:: [],

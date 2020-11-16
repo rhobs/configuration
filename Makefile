@@ -37,7 +37,7 @@ manifests/production/grafana/observatorium: format environments/production/grafa
 manifests/production/grafana/observatorium-logs: format environments/production/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana observatorium-logs"
 	rm -f manifests/production/grafana/observatorium-logs/*.yaml
-	$(JSONNET) -J vendor -m manifests/production/grafana/observatorium-logs environments/production/grafana-obs-logs.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	$(JSONNET) -J vendor environments/production/grafana-obs-logs.jsonnet | $(GOJSONTOYAML) > manifests/production/grafana/observatorium-logs/grafana-dashboards-template.yaml
 	find manifests/production/grafana/observatorium-logs -type f ! -name '*.yaml' -delete
 
 .PHONY: whitelisted_metrics

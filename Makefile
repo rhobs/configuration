@@ -60,7 +60,7 @@ manifests: format $(VENDOR_DIR) manifests/production/conprof-template.yaml manif
 
 manifests/production/conprof-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running conprof-template"
-	$(JSONNET) -J vendor environments/production/conprof.jsonnet | $(GOJSONTOYAML) > manifests/production/conprof-template.yaml
+	$(JSONNET) -J vendor -m manifests/production environments/production/conprof.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 manifests/production/jaeger-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"

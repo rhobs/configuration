@@ -11,11 +11,6 @@ local conprof = c + c.withConfigMap {
     image: '${IMAGE}:${IMAGE_TAG}',
     version: '${IMAGE_TAG}',
 
-    namespaces: [
-      '${NAMESPACE}',
-      '${OBSERVATORIUM_LOGS_NAMESPACE}',
-    ],
-
     rawconfig+:: {
       scrape_configs: [{
         job_name: 'thanos',
@@ -121,38 +116,16 @@ local conprof = c + c.withConfigMap {
     },
   },
 
-  roles:
-    local role = k.rbac.v1.role;
-    local policyRule = role.rulesType;
-    local coreRule = policyRule.new() +
-                     policyRule.withApiGroups(['']) +
-                     policyRule.withResources([
-                       'services',
-                       'endpoints',
-                       'pods',
-                     ]) +
-                     policyRule.withVerbs(['get', 'list', 'watch']);
-
-    local newSpecificRole(namespace) =
-      role.new() +
-      role.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
-      role.mixin.metadata.withNamespace(namespace) +
-      role.mixin.metadata.withLabels(conprof.config.commonLabels) +
-      role.withRules(coreRule);
-
-    local roleList = k3.rbac.v1.roleList;
-    roleList.new([newSpecificRole(x) for x in conprof.config.namespaces]),
-
   roleBindings:
     local roleBinding = k.rbac.v1.roleBinding;
 
     local newSpecificRoleBinding(namespace) =
       roleBinding.new() +
-      roleBinding.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
+      roleBinding.mixin.metadata.withName(conprof.config.name) +
       roleBinding.mixin.metadata.withNamespace(namespace) +
       roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
       roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
-      roleBinding.mixin.roleRef.withName(conprof.config.name + '-' + namespace) +
+      roleBinding.mixin.roleRef.withName(conprof.config.name) +
       roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
       roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
 
@@ -247,13 +220,13 @@ local conprof = c + c.withConfigMap {
 };
 
 {
-  apiVersion: 'v1',
-  kind: 'Template',
-  metadata: {
-    name: 'conprof',
-  },
-  objects:
-    [
+  'conprof-template': {
+    apiVersion: 'v1',
+    kind: 'Template',
+    metadata: {
+      name: 'conprof',
+    },
+    objects: [
       conprof.configmap {
         metadata+: {
           namespace:: 'hidden',
@@ -269,23 +242,63 @@ local conprof = c + c.withConfigMap {
           namespace:: 'hidden',
         },
       },
-    ] + conprof.roles.items
-    + conprof.roleBindings.items,
-  parameters: [
-    { name: 'NAMESPACE', value: 'telemeter' },
-    { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
-    { name: 'IMAGE', value: 'quay.io/conprof/conprof' },
-    { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
-    { name: 'CONPROF_REPLICAS', value: '1' },
-    { name: 'CONPROF_CPU_REQUEST', value: '1' },
-    { name: 'CONPROF_MEMORY_REQUEST', value: '4Gi' },
-    { name: 'CONPROF_CPU_LIMITS', value: '4' },
-    { name: 'CONPROF_MEMORY_LIMITS', value: '8Gi' },
-    { name: 'PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
-    { name: 'PROXY_IMAGE_TAG', value: '4.4.0' },
-    { name: 'CONPROF_PROXY_CPU_REQUEST', value: '100m' },
-    { name: 'CONPROF_PROXY_MEMORY_REQUEST', value: '100Mi' },
-    { name: 'CONPROF_PROXY_CPU_LIMITS', value: '200m' },
-    { name: 'CONPROF_PROXY_MEMORY_LIMITS', value: '200Mi' },
-  ],
+    ] + [
+      object {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for object in conprof.roles.items
+    ] + [
+      object {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for object in conprof.roleBindings.items
+    ],
+
+    parameters: [
+      { name: 'NAMESPACE', value: 'telemeter' },
+      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
+      { name: 'IMAGE', value: 'quay.io/conprof/conprof' },
+      { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
+      { name: 'CONPROF_REPLICAS', value: '1' },
+      { name: 'CONPROF_CPU_REQUEST', value: '1' },
+      { name: 'CONPROF_MEMORY_REQUEST', value: '4Gi' },
+      { name: 'CONPROF_CPU_LIMITS', value: '4' },
+      { name: 'CONPROF_MEMORY_LIMITS', value: '8Gi' },
+      { name: 'PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
+      { name: 'PROXY_IMAGE_TAG', value: '4.4.0' },
+      { name: 'CONPROF_PROXY_CPU_REQUEST', value: '100m' },
+      { name: 'CONPROF_PROXY_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'CONPROF_PROXY_CPU_LIMITS', value: '200m' },
+      { name: 'CONPROF_PROXY_MEMORY_LIMITS', value: '200Mi' },
+    ],
+  },
+  'conprof-observatorium-logs-rbac-template': {
+    apiVersion: 'v1',
+    kind: 'Template',
+    metadata: {
+      name: 'conprof-observatorium-logs-rbac',
+    },
+    objects: [
+      object {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for object in conprof.roles.items
+    ] + [
+      object {
+        metadata+: {
+          namespace:: 'hidden',
+        },
+      }
+      for object in conprof.roleBindings.items
+    ],
+    parameters: [
+      { name: 'NAMESPACE', value: 'observatorium-logs' },
+    ],
+  },
 }

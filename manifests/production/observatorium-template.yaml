@@ -38,7 +38,7 @@ objects:
         - "kind": "user"
           "name": "service-account-observatorium-dptp-reader-staging"
         - "kind": "user"
-          "name": "aconway@redhat.com"
+          "name": "rhn-engineering-aconway"
         - "kind": "user"
           "name": "brejones"
         - "kind": "user"

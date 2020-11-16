@@ -1343,7 +1343,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
               },
               // OpenShift Logging Team
               {
-                name: 'aconway@redhat.com',
+                name: 'rhn-engineering-aconway',
                 kind: 'user',
               },
               {

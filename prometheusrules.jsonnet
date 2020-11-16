@@ -295,7 +295,7 @@ local renderAlerts(name, namespace, mixin) = {
       selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
     },
     local queryLogsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler=~"querylabel|labels|label_values"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler=~"query|label|labels|label_values"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
     },
     local queryRangeLogsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],

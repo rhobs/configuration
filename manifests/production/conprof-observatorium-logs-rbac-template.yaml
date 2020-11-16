@@ -10,7 +10,7 @@ objects:
       app.kubernetes.io/instance: conprof
       app.kubernetes.io/name: conprof
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof
+    name: conprof-${OBSERVATORIUM_LOGS_NAMESPACE}
     namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
   rules:
   - apiGroups:
@@ -30,12 +30,12 @@ objects:
       app.kubernetes.io/instance: conprof
       app.kubernetes.io/name: conprof
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof
+    name: conprof-${OBSERVATORIUM_LOGS_NAMESPACE}
     namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: conprof
+    name: conprof-${OBSERVATORIUM_LOGS_NAMESPACE}
   subjects:
   - kind: ServiceAccount
     name: prometheus-telemeter

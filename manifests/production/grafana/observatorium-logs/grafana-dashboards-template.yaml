@@ -1959,8 +1959,8 @@ objects:
             {
               "current": {
                 "selected": true,
-                "text": "telemeter-prod-01-prometheus",
-                "value": "telemeter-prod-01-prometheus"
+                "text": "${OBSERVATORIUM_API_DATASOURCE}",
+                "value": "${OBSERVATORIUM_API_DATASOURCE}"
               },
               "hide": 0,
               "includeAll": false,
@@ -1979,8 +1979,8 @@ objects:
             {
               "allValue": null,
               "current": {
-                "text": "telemeter-production",
-                "value": "telemeter-production"
+                "text": "${OBSERVATORIUM_API_NAMESPACE}",
+                "value": "${OBSERVATORIUM_API_NAMESPACE}"
               },
               "datasource": "$datasource",
               "definition": "label_values(kube_pod_info, namespace)",
@@ -14448,5 +14448,9 @@ objects:
       grafana_dashboard: "true"
     name: grafana-dashboard-observatorium-logs-loki-writes
 parameters:
+- name: OBSERVATORIUM_API_DATASOURCE
+  value: telemeter-prod-01-prometheus
+- name: OBSERVATORIUM_API_NAMESPACE
+  value: telemeter-production
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs-production

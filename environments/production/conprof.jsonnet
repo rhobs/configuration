@@ -121,6 +121,28 @@ local conprof = c + c.withConfigMap {
     },
   },
 
+  roles:
+    local role = k.rbac.v1.role;
+    local policyRule = role.rulesType;
+    local coreRule = policyRule.new() +
+                     policyRule.withApiGroups(['']) +
+                     policyRule.withResources([
+                       'services',
+                       'endpoints',
+                       'pods',
+                     ]) +
+                     policyRule.withVerbs(['get', 'list', 'watch']);
+
+    local newSpecificRole(namespace) =
+      role.new() +
+      role.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
+      role.mixin.metadata.withNamespace(namespace) +
+      role.mixin.metadata.withLabels(conprof.config.commonLabels) +
+      role.withRules(coreRule);
+
+    local roleList = k3.rbac.v1.roleList;
+    roleList.new([newSpecificRole(x) for x in conprof.config.namespaces]),
+
   roleBindings:
     local roleBinding = k.rbac.v1.roleBinding;
 
@@ -130,7 +152,7 @@ local conprof = c + c.withConfigMap {
       roleBinding.mixin.metadata.withNamespace(namespace) +
       roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
       roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
-      roleBinding.mixin.roleRef.withName(conprof.config.name) +
+      roleBinding.mixin.roleRef.withName(conprof.config.name + '-' + namespace) +
       roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
       roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
 

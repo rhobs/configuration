@@ -62,7 +62,7 @@ local appSREOverwrites(namespace) = {
       else if
         std.startsWith(name, 'telemeter') then 'Tg-mH0rizaSJDKSADJ'
       else if
-        std.startsWith(name, 'loki') then 'no-dashboard'
+        std.startsWith(name, 'loki') then 'Lg-mH0rizaSJDKSADX'
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
       else error 'no dashboard id for group %s' % name,
@@ -109,7 +109,15 @@ local appSREOverwrites(namespace) = {
                 // Message is a required field. Upstream thanos-mixin doesn't have it.
                 message: if std.objectHasAll(self, 'description') then self.description else r.annotations.message,
               } +
-              if std.startsWith(g.name, 'telemeter') then
+              if std.length(std.findSubstr('Logs', r.alert)) > 0 then
+                {
+                  runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s' % [
+                    dashboardID('loki').id,
+                    dashboardDatasource(environment).datasource,
+                  ],
+                }
+              else if std.startsWith(g.name, 'telemeter') then
                 {
                   runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [

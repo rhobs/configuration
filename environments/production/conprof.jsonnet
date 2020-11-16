@@ -11,6 +11,11 @@ local conprof = c + c.withConfigMap {
     image: '${IMAGE}:${IMAGE_TAG}',
     version: '${IMAGE_TAG}',
 
+    namespaces: [
+      '${NAMESPACE}',
+      '${OBSERVATORIUM_LOGS_NAMESPACE}',
+    ],
+
     rawconfig+:: {
       scrape_configs: [{
         job_name: 'thanos',
@@ -116,21 +121,45 @@ local conprof = c + c.withConfigMap {
     },
   },
 
+  roles:
+    local role = k.rbac.v1.role;
+    local policyRule = role.rulesType;
+    local coreRule = policyRule.new() +
+                     policyRule.withApiGroups(['']) +
+                     policyRule.withResources([
+                       'services',
+                       'endpoints',
+                       'pods',
+                     ]) +
+                     policyRule.withVerbs(['get', 'list', 'watch']);
+
+    local newSpecificRole(namespace) =
+      role.new() +
+      role.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
+      role.mixin.metadata.withNamespace(namespace) +
+      role.mixin.metadata.withLabels(conprof.config.commonLabels) +
+      role.withRules(coreRule);
+    {
+      'conprof-observatorium': newSpecificRole(conprof.config.namespaces[0]),
+      'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces[0]),
+    },
+
   roleBindings:
     local roleBinding = k.rbac.v1.roleBinding;
 
     local newSpecificRoleBinding(namespace) =
       roleBinding.new() +
-      roleBinding.mixin.metadata.withName(conprof.config.name) +
+      roleBinding.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
       roleBinding.mixin.metadata.withNamespace(namespace) +
       roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
       roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
-      roleBinding.mixin.roleRef.withName(conprof.config.name) +
+      roleBinding.mixin.roleRef.withName(conprof.config.name + '-' + namespace) +
       roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
       roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
-
-    local roleBindingList = k3.rbac.v1.roleBindingList;
-    roleBindingList.new([newSpecificRoleBinding(x) for x in conprof.config.namespaces]),
+    {
+      'conprof-observatorium': newSpecificRoleBinding(conprof.config.namespaces[0]),
+      'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces[0]),
+    },
 
   service+: {
     metadata+: {
@@ -243,21 +272,17 @@ local conprof = c + c.withConfigMap {
         },
       },
     ] + [
-      object {
+      conprof.roles['conprof-observatorium'] {
         metadata+: {
           namespace:: 'hidden',
         },
-      }
-      for object in conprof.roles.items
-    ] + [
-      object {
+      },
+      conprof.roleBindings['conprof-observatorium'] {
         metadata+: {
           namespace:: 'hidden',
         },
-      }
-      for object in conprof.roleBindings.items
+      },
     ],
-
     parameters: [
       { name: 'NAMESPACE', value: 'telemeter' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
@@ -283,19 +308,16 @@ local conprof = c + c.withConfigMap {
       name: 'conprof-observatorium-logs-rbac',
     },
     objects: [
-      object {
+      conprof.roles['conprof-observatorium-logs'] {
         metadata+: {
           namespace:: 'hidden',
         },
-      }
-      for object in conprof.roles.items
-    ] + [
-      object {
+      },
+      conprof.roleBindings['conprof-observatorium-logs'] {
         metadata+: {
           namespace:: 'hidden',
         },
-      }
-      for object in conprof.roleBindings.items
+      },
     ],
     parameters: [
       { name: 'NAMESPACE', value: 'observatorium-logs' },

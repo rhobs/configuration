@@ -221,28 +221,7 @@ objects:
       app.kubernetes.io/instance: conprof
       app.kubernetes.io/name: conprof
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-${NAMESPACE}
-    namespace: ${NAMESPACE}
-  rules:
-  - apiGroups:
-    - ""
-    resources:
-    - services
-    - endpoints
-    - pods
-    verbs:
-    - get
-    - list
-    - watch
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
-      app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-${OBSERVATORIUM_LOGS_NAMESPACE}
-    namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
+    name: conprof
   rules:
   - apiGroups:
     - ""
@@ -261,29 +240,11 @@ objects:
       app.kubernetes.io/instance: conprof
       app.kubernetes.io/name: conprof
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-${NAMESPACE}
-    namespace: ${NAMESPACE}
+    name: conprof
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: conprof-${NAMESPACE}
-  subjects:
-  - kind: ServiceAccount
-    name: prometheus-telemeter
-    namespace: ${NAMESPACE}
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
-      app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-${OBSERVATORIUM_LOGS_NAMESPACE}
-    namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: conprof-${OBSERVATORIUM_LOGS_NAMESPACE}
+    name: conprof
   subjects:
   - kind: ServiceAccount
     name: prometheus-telemeter

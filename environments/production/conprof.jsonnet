@@ -135,13 +135,13 @@ local conprof = c + c.withConfigMap {
 
     local newSpecificRole(namespace) =
       role.new() +
-      role.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
+      role.mixin.metadata.withName(conprof.config.name) +
       role.mixin.metadata.withNamespace(namespace) +
       role.mixin.metadata.withLabels(conprof.config.commonLabels) +
       role.withRules(coreRule);
     {
       'conprof-observatorium': newSpecificRole(conprof.config.namespaces[0]),
-      'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces[0]),
+      'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces[1]),
     },
 
   roleBindings:
@@ -149,16 +149,16 @@ local conprof = c + c.withConfigMap {
 
     local newSpecificRoleBinding(namespace) =
       roleBinding.new() +
-      roleBinding.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
+      roleBinding.mixin.metadata.withName(conprof.config.name) +
       roleBinding.mixin.metadata.withNamespace(namespace) +
       roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
       roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
-      roleBinding.mixin.roleRef.withName(conprof.config.name + '-' + namespace) +
+      roleBinding.mixin.roleRef.withName(conprof.config.name) +
       roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
       roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
     {
       'conprof-observatorium': newSpecificRoleBinding(conprof.config.namespaces[0]),
-      'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces[0]),
+      'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces[1]),
     },
 
   service+: {
@@ -308,19 +308,12 @@ local conprof = c + c.withConfigMap {
       name: 'conprof-observatorium-logs-rbac',
     },
     objects: [
-      conprof.roles['conprof-observatorium-logs'] {
-        metadata+: {
-          namespace:: 'hidden',
-        },
-      },
-      conprof.roleBindings['conprof-observatorium-logs'] {
-        metadata+: {
-          namespace:: 'hidden',
-        },
-      },
+      conprof.roles['conprof-observatorium-logs'],
+      conprof.roleBindings['conprof-observatorium-logs'],
     ],
     parameters: [
-      { name: 'NAMESPACE', value: 'observatorium-logs' },
+      { name: 'NAMESPACE', value: 'telemeter' },
+      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
     ],
   },
 }

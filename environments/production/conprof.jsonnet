@@ -148,7 +148,7 @@ local conprof = c + c.withConfigMap {
 
     local newSpecificRoleBinding(namespace) =
       roleBinding.new() +
-      roleBinding.mixin.metadata.withName(conprof.config.name) +
+      roleBinding.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
       roleBinding.mixin.metadata.withNamespace(namespace) +
       roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
       roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +

@@ -1941,15 +1941,25 @@ local dashboards = {
 };
 
 {
-  [name]: dashboards[name] {
-    metadata+: {
-      labels+: {
-        grafana_dashboard: 'true',
+  apiVersion: 'v1',
+  kind: 'Template',
+  metadata: {
+    name: 'observatorium-logs-dahboards-templates',
+  },
+  objects: [
+    dashboards[name] {
+      metadata+: {
+        labels+: {
+          grafana_dashboard: 'true',
+        },
+        annotations+: {
+          'grafana-folder': '/grafana-dashboard-definitions/Observatorium',
+        },
       },
-      annotations+: {
-        'grafana-folder': '/grafana-dashboard-definitions/Observatorium',
-      },
-    },
-  }
-  for name in std.objectFields(dashboards)
+    }
+    for name in std.objectFields(dashboards)
+  ],
+  parameters: [
+    { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs-production' },
+  ],
 }

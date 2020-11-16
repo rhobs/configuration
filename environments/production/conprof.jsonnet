@@ -135,7 +135,7 @@ local conprof = c + c.withConfigMap {
 
     local newSpecificRole(namespace) =
       role.new() +
-      role.mixin.metadata.withName(conprof.config.name) +
+      role.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
       role.mixin.metadata.withNamespace(namespace) +
       role.mixin.metadata.withLabels(conprof.config.commonLabels) +
       role.withRules(coreRule);
@@ -149,11 +149,11 @@ local conprof = c + c.withConfigMap {
 
     local newSpecificRoleBinding(namespace) =
       roleBinding.new() +
-      roleBinding.mixin.metadata.withName(conprof.config.name) +
+      roleBinding.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
       roleBinding.mixin.metadata.withNamespace(namespace) +
       roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
       roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
-      roleBinding.mixin.roleRef.withName(conprof.config.name) +
+      roleBinding.mixin.roleRef.withName(conprof.config.name + '-' + namespace) +
       roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
       roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
     {

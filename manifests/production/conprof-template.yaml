@@ -47,7 +47,7 @@ objects:
         - "action": "keep"
           "regex": "observatorium-loki-.+"
           "source_labels":
-          - "__meta_kubernetes_container_name"
+          - "__meta_kubernetes_pod_container_name"
         - "action": "keep"
           "regex": "metrics"
           "source_labels":

@@ -64,7 +64,7 @@ local conprof = c + c.withConfigMap {
           {
             action: 'keep',
             regex: 'observatorium-loki-.+',
-            source_labels: ['__meta_kubernetes_container_name'],
+            source_labels: ['__meta_kubernetes_pod_container_name'],
           },
           {
             action: 'keep',

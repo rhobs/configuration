@@ -63,7 +63,7 @@ local conprof = c + c.withConfigMap {
           },
           {
             action: 'keep',
-            regex: 'http',
+            regex: 'metrics',
             source_labels: ['__meta_kubernetes_pod_container_port_name'],
           },
           {
@@ -186,6 +186,7 @@ local conprof = c + c.withConfigMap {
         spec+: {
           containers: std.map(
                         function(c) if c.name == 'conprof' then c {
+                          args: c.args + ['--log.level=debug'],
                           resources: {
                             requests: {
                               cpu: '${CONPROF_CPU_REQUEST}',

@@ -45,7 +45,7 @@ objects:
           "source_labels":
           - "__meta_kubernetes_pod_name"
         - "action": "keep"
-          "regex": "http"
+          "regex": "metrics"
           "source_labels":
           - "__meta_kubernetes_pod_container_port_name"
         - "source_labels":
@@ -123,6 +123,7 @@ objects:
           - all
           - --storage.tsdb.path=/conprof
           - --config.file=/etc/conprof/conprof.yaml
+          - --log.level=debug
           image: ${IMAGE}:${IMAGE_TAG}
           name: conprof
           ports:

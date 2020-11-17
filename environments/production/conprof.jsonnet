@@ -186,7 +186,6 @@ local conprof = c + c.withConfigMap {
         spec+: {
           containers: std.map(
                         function(c) if c.name == 'conprof' then c {
-                          args: c.args + ['--log.level=debug'],
                           resources: {
                             requests: {
                               cpu: '${CONPROF_CPU_REQUEST}',
@@ -313,6 +312,7 @@ local conprof = c + c.withConfigMap {
       conprof.roleBindings['conprof-observatorium-logs'],
     ],
     parameters: [
+      { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
       { name: 'NAMESPACE', value: 'telemeter' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
     ],

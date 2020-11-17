@@ -90,6 +90,8 @@ objects:
           "insecure_skip_verify": true
   kind: ConfigMap
   metadata:
+    annotations:
+      qontract.recycle: "true"
     labels:
       app.kubernetes.io/instance: conprof
       app.kubernetes.io/name: conprof

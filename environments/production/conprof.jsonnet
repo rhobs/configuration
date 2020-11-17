@@ -260,6 +260,9 @@ local conprof = c + c.withConfigMap {
       conprof.configmap {
         metadata+: {
           namespace:: 'hidden',
+          annotations+: {
+            'qontract.recycle': 'true',
+          },
         },
       },
       conprof.statefulset {

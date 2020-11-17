@@ -125,7 +125,6 @@ objects:
           - all
           - --storage.tsdb.path=/conprof
           - --config.file=/etc/conprof/conprof.yaml
-          - --log.level=debug
           image: ${IMAGE}:${IMAGE_TAG}
           name: conprof
           ports:

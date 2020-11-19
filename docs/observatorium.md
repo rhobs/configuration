@@ -8,7 +8,7 @@ Observatorium Metrics, which is a general-purpose, scalable, multi-tenant, obser
 
 # Observatorium Logs
 
-Observatorium logs implements a logging solution to allow multiple instances of OCP clusters store their logs to a central location. It is itself built on Observatorirum and Loki, which is a scalable multi-tenant platform for ingesting and querying logs. Its Its [documentation can be found on github](https://github.com/observatorium/docs/blob/master/design/logs.md). Loki's documentation be found on [Grafana Loki Documentation](https://grafana.com/docs/loki/latest/configuration/) page.
+Observatorium logs implements a logging solution to allow multiple instances of OCP clusters store their logs to a central location. It is itself built on Observatorirum and Loki, which is a scalable multi-tenant platform for ingesting and querying logs. Its [documentation can be found on github](https://github.com/observatorium/docs/blob/master/design/logs.md). Loki's documentation be found on [Grafana Loki Documentation](https://grafana.com/docs/loki/latest/configuration/) page.
 
 ![high level architecture](observatorium-logs.png)
 

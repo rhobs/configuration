@@ -757,6 +757,7 @@ objects:
           - --delete-delay=48h
           - --deduplication.replica-label=replica
           - --downsampling.disable
+          - --debug.max-compaction-level=3
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:

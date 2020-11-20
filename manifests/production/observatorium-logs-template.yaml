@@ -394,6 +394,8 @@ objects:
           - -s3.region=$(S3_REGION)
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
+          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -527,7 +529,7 @@ objects:
         "frontend_address": "observatorium-loki-query-frontend-grpc.${NAMESPACE}.svc.cluster.local:9095"
         "grpc_client_config":
           "max_send_msg_size": 104857600
-        "parallelism": 16
+        "parallelism": 32
       "ingester":
         "chunk_block_size": 262144
         "chunk_encoding": "snappy"
@@ -672,6 +674,8 @@ objects:
           - -s3.region=$(S3_REGION)
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
+          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -949,6 +953,8 @@ objects:
           - -s3.region=$(S3_REGION)
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
+          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -1155,6 +1161,8 @@ objects:
           - -s3.region=$(S3_REGION)
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
+          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -1296,6 +1304,8 @@ objects:
           - -s3.region=$(S3_REGION)
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
+          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -1500,6 +1510,10 @@ parameters:
   value: 600Mi
 - name: LOKI_QUERY_FRONTEND_MEMORY_LIMITS
   value: 1200Mi
+- name: LOKI_REPLICATION_FACTOR
+  value: "2"
+- name: LOKI_QUERY_PARALLELISM
+  value: "2"
 - name: LOKI_CHUNK_CACHE_REPLICAS
   value: "2"
 - name: LOKI_INDEX_QUERY_CACHE_REPLICAS

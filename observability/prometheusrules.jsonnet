@@ -1,6 +1,6 @@
 local loki = (import 'loki-mixin/mixin.libsonnet');
-local obs = import 'environments/production/obs.jsonnet';
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
+local obs = import '../manifests/obs.jsonnet';
 
 local absent(name, job) = {
   prometheusAlerts+:: {
@@ -271,7 +271,7 @@ local renderAlerts(name, namespace, mixin) = {
     (import 'thanos-mixin/alerts/store.libsonnet') +
     (import 'thanos-mixin/alerts/rule.libsonnet') +
     (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
-    (import 'environments/production/selectors.libsonnet').thanos {
+    (import 'selectors.libsonnet').thanos {
       query+:: {
         p99QueryLatencyThreshold: 90,
       },

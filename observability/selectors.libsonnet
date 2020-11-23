@@ -1,5 +1,5 @@
-local obs = (import 'obs.jsonnet');
 local utils = (import 'mixin-utils/utils.libsonnet');
+local obs = (import '../manifests/obs.jsonnet');
 
 {
   thanos: {
@@ -8,7 +8,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
       local cfg = self,
       // TODO: Move this to the new style of selectors that kube-thanos uses
       thanosReceiveSelector: t.receive.selector,
-      thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
+      thanosReceiveControllerJobPrefix: obs.receiveController.service.metadata.name,
       thanosReceiveControllerSelector: 'job="%s"' % cfg.thanosReceiveControllerJobPrefix,
     },
 

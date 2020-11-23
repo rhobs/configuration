@@ -17,56 +17,56 @@ format: $(JSONNET_SRC) $(JSONNETFMT)
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
 
-resources/observability/prometheusrules: format prometheusrules.jsonnet $(JSONNET) $(GOJSONTOYAML)
+resources/observability/prometheusrules: format observability/prometheusrules.jsonnet $(JSONNET) $(GOJSONTOYAML)
 	@echo ">>>>> Running prometheusrules"
 	rm -f resources/observability/prometheusrules/*.yaml
-	$(JSONNET) -J vendor -m resources/observability/prometheusrules prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	$(JSONNET) -J vendor -m resources/observability/prometheusrules observability/prometheusrules.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules/*.yaml | xargs -I{} sh -c 'sed -i "1s;^;---\n\$$schema: /openshift/prometheus-rule-1.yml\n;" {}'
 
 
 .PHONY: grafana
-grafana: manifests/production/grafana/observatorium manifests/production/grafana/observatorium-logs
+grafana: resources/observability/grafana/observatorium resources/observability/grafana/observatorium-logs
 
-manifests/production/grafana/observatorium: format environments/production/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/observability/grafana/observatorium: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
-	rm -f manifests/production/grafana/observatorium/*.yaml
-	$(JSONNET) -J vendor -m manifests/production/grafana/observatorium environments/production/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	find manifests/production/grafana/observatorium -type f ! -name '*.yaml' -delete
+	rm -f resources/observability/grafana/observatorium/*.yaml
+	$(JSONNET) -J vendor -m resources/observability/grafana/observatorium observability/grafana.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete
 
-manifests/production/grafana/observatorium-logs: format environments/production/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/observability/grafana/observatorium-logs: format observability/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana observatorium-logs"
-	rm -f manifests/production/grafana/observatorium-logs/*.yaml
-	$(JSONNET) -J vendor environments/production/grafana-obs-logs.jsonnet | $(GOJSONTOYAML) > manifests/production/grafana/observatorium-logs/grafana-dashboards-template.yaml
-	find manifests/production/grafana/observatorium-logs -type f ! -name '*.yaml' -delete
+	rm -f resources/observability/grafana/observatorium-logs/*.yaml
+	$(JSONNET) -J vendor observability/grafana-obs-logs.jsonnet | $(GOJSONTOYAML) > resources/observability/grafana/observatorium-logs/grafana-dashboards-template.yaml
+	find resources/observability/grafana/observatorium-logs -type f ! -name '*.yaml' -delete
 
 .PHONY: whitelisted_metrics
 whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 	@echo ">>>>> Running whitelisted_metrics"
 	# Download the latest metrics file to extract the new added metrics.
 	# NOTE: Because old clusters could still send metrics the whitelisting is append only
-	# (environments/production/metrics.json).
+	# (configuration/telemeter/metrics.json).
 	curl -q https://raw.githubusercontent.com/openshift/cluster-monitoring-operator/master/manifests/0000_50_cluster-monitoring-operator_04-config.yaml | \
 		$(GOJSONTOYAML) -yamltojson | \
 		$(GOJQ) -r '.data["metrics.yaml"]' | \
 		$(GOJSONTOYAML) -yamltojson | \
 		$(GOJQ) -r '.matches | sort' | \
-		cat environments/production/metrics.json - | \
+		cat configuration/telemeter/metrics.json - | \
 		$(GOJQ) -s '.[0] + .[1] | sort | unique' > /tmp/metrics.json
-	cp /tmp/metrics.json environments/production/metrics.json
+	cp /tmp/metrics.json configuration/telemeter/metrics.json
 
 .PHONY: manifests
-manifests: format $(VENDOR_DIR) manifests/production/conprof-template.yaml manifests/production/jaeger-template.yaml manifests/production/observatorium-template.yaml
+manifests: format $(VENDOR_DIR) resources/manifests/conprof-template.yaml resources/manifests/jaeger-template.yaml resources/manifests/observatorium-template.yaml
 
-manifests/production/conprof-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/manifests/conprof-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running conprof-template"
-	$(JSONNET) -J vendor -m manifests/production environments/production/conprof.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	$(JSONNET) -J vendor -m resources/manifests manifests/conprof.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
-manifests/production/jaeger-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/manifests/jaeger-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"
-	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
+	$(JSONNET) -J vendor manifests/jaeger.jsonnet | $(GOJSONTOYAML) > resources/manifests/jaeger-template.yaml
 
-manifests/production/observatorium-template.yaml: $(shell find environments/production -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/manifests/observatorium-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"
-	$(JSONNET) -J vendor -m manifests/production environments/production/main.jsonnet  | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	find manifests/production -type f ! -name '*.yaml' -delete
+	$(JSONNET) -J vendor -m resources/manifests manifests/main.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find resources/manifests -type f ! -name '*.yaml' -delete

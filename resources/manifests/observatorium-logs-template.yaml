@@ -100,6 +100,7 @@ objects:
           ports:
           - containerPort: 9150
             name: metrics
+          resources: {}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -197,6 +198,7 @@ objects:
           ports:
           - containerPort: 9150
             name: metrics
+          resources: {}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -294,6 +296,7 @@ objects:
           ports:
           - containerPort: 9150
             name: metrics
+          resources: {}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -307,7 +310,7 @@ objects:
   spec:
     clusterIP: None
     ports:
-    - name: grcp
+    - name: grpc
       port: 9095
       targetPort: 9095
     selector:
@@ -382,7 +385,6 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: loki
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/tracing: jaeger-agent
       spec:
         containers:
         - args:
@@ -445,41 +447,6 @@ objects:
           - mountPath: /data
             name: storage
             readOnly: false
-        - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
-          - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
-          env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: 14271
-              scheme: HTTP
-          name: jaeger-agent
-          ports:
-          - containerPort: 6831
-            name: jaeger-thrift
-          - containerPort: 5778
-            name: configs
-          - containerPort: 14271
-            name: metrics
-          resources:
-            limits:
-              cpu: 128m
-              memory: 128Mi
-            requests:
-              cpu: 32m
-              memory: 64Mi
         volumes:
         - configMap:
             name: observatorium-loki
@@ -546,7 +513,6 @@ objects:
             "heartbeat_timeout": "1m"
             "kvstore":
               "store": "memberlist"
-            "replication_factor": 1
         "max_transfer_retries": 0
       "ingester_client":
         "grpc_client_config":
@@ -661,7 +627,6 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: loki
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/tracing: jaeger-agent
           loki.grafana.com/gossip: "true"
       spec:
         containers:
@@ -727,41 +692,6 @@ objects:
           - mountPath: /data
             name: storage
             readOnly: false
-        - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
-          - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
-          env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: 14271
-              scheme: HTTP
-          name: jaeger-agent
-          ports:
-          - containerPort: 6831
-            name: jaeger-thrift
-          - containerPort: 5778
-            name: configs
-          - containerPort: 14271
-            name: metrics
-          resources:
-            limits:
-              cpu: 128m
-              memory: 128Mi
-            requests:
-              cpu: 32m
-              memory: 64Mi
         volumes:
         - configMap:
             name: observatorium-loki
@@ -781,7 +711,7 @@ objects:
   spec:
     clusterIP: None
     ports:
-    - name: grcp
+    - name: grpc
       port: 9095
       targetPort: 9095
     selector:
@@ -864,7 +794,7 @@ objects:
   spec:
     clusterIP: None
     ports:
-    - name: grcp
+    - name: grpc
       port: 9095
       targetPort: 9095
     selector:
@@ -940,7 +870,6 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: loki
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/tracing: jaeger-agent
           loki.grafana.com/gossip: "true"
       spec:
         containers:
@@ -1006,41 +935,6 @@ objects:
           - mountPath: /data
             name: storage
             readOnly: false
-        - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
-          - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
-          env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: 14271
-              scheme: HTTP
-          name: jaeger-agent
-          ports:
-          - containerPort: 6831
-            name: jaeger-thrift
-          - containerPort: 5778
-            name: configs
-          - containerPort: 14271
-            name: metrics
-          resources:
-            limits:
-              cpu: 128m
-              memory: 128Mi
-            requests:
-              cpu: 32m
-              memory: 64Mi
         volumes:
         - configMap:
             name: observatorium-loki
@@ -1072,7 +966,7 @@ objects:
   spec:
     clusterIP: None
     ports:
-    - name: grcp
+    - name: grpc
       port: 9095
       targetPort: 9095
     selector:
@@ -1148,7 +1042,6 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: loki
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/tracing: jaeger-agent
           loki.grafana.com/gossip: "true"
       spec:
         containers:
@@ -1214,41 +1107,6 @@ objects:
           - mountPath: /data
             name: storage
             readOnly: false
-        - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
-          - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
-          env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: 14271
-              scheme: HTTP
-          name: jaeger-agent
-          ports:
-          - containerPort: 6831
-            name: jaeger-thrift
-          - containerPort: 5778
-            name: configs
-          - containerPort: 14271
-            name: metrics
-          resources:
-            limits:
-              cpu: 128m
-              memory: 128Mi
-            requests:
-              cpu: 32m
-              memory: 64Mi
         volumes:
         - configMap:
             name: observatorium-loki
@@ -1292,7 +1150,6 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: loki
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/tracing: jaeger-agent
       spec:
         containers:
         - args:
@@ -1348,41 +1205,6 @@ objects:
           - mountPath: /data
             name: storage
             readOnly: false
-        - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
-          - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
-          env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: 14271
-              scheme: HTTP
-          name: jaeger-agent
-          ports:
-          - containerPort: 6831
-            name: jaeger-thrift
-          - containerPort: 5778
-            name: configs
-          - containerPort: 14271
-            name: metrics
-          resources:
-            limits:
-              cpu: 128m
-              memory: 128Mi
-            requests:
-              cpu: 32m
-              memory: 64Mi
         volumes:
         - configMap:
             name: observatorium-loki
@@ -1402,7 +1224,7 @@ objects:
   spec:
     clusterIP: None
     ports:
-    - name: grcp
+    - name: grpc
       port: 9095
       targetPort: 9095
     selector:

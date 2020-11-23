@@ -4,6 +4,8 @@
 local jaegerAgent = import './sidecars/jaeger-agent.libsonnet';
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
+// TODO(kakkoyun): Find out a higher level functional approach for common label injections.
+// e.g. ServiceMonitors
 {
   local s3EnvVars = [
     {

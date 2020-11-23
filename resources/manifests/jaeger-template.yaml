@@ -11,7 +11,7 @@ objects:
     name: jaeger-admin
   spec:
     ports:
-    - name: admin-http
+    - name: admin
       port: 14269
       targetPort: 14269
     selector:
@@ -66,12 +66,18 @@ objects:
             periodSeconds: 30
           name: jaeger-all-in-one
           ports:
-          - containerPort: 14250
-            name: grpc
-          - containerPort: 14269
-            name: admin-http
-          - containerPort: 16686
-            name: query
+          - name: admin
+            port: 14269
+            targetPort: 14269
+          - name: grpc
+            port: 14250
+            targetPort: 14250
+          - name: metrics
+            port: 14271
+            targetPort: 14271
+          - name: query
+            port: 16686
+            targetPort: 16686
           readinessProbe:
             failureThreshold: 3
             httpGet:
@@ -151,81 +157,6 @@ objects:
       targetPort: 14250
     selector:
       app.kubernetes.io/name: jaeger-all-in-one
-- apiVersion: monitoring.coreos.com/v1
-  kind: PrometheusRule
-  metadata:
-    labels:
-      prometheus: app-sre
-      role: alert-rules
-    name: observatorium-jaeger
-  spec:
-    groups:
-    - name: jaeger_alerts
-      rules:
-      - alert: JaegerHTTPServerErrs
-        annotations:
-          message: |
-            {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% HTTP errors.
-        expr: 100 * sum(rate(jaeger_agent_http_server_errors_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_http_server_total[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerRPCRequestsErrors
-        annotations:
-          message: |
-            {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% RPC HTTP errors.
-        expr: 100 * sum(rate(jaeger_client_jaeger_rpc_http_requests{status_code=~"4xx|5xx"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_client_jaeger_rpc_http_requests[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerClientSpansDropped
-        annotations:
-          message: |
-            service {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
-        expr: 100 * sum(rate(jaeger_reporter_spans{result=~"dropped|err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_reporter_spans[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerAgentSpansDropped
-        annotations:
-          message: |
-            agent {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
-        expr: 100 * sum(rate(jaeger_agent_reporter_batches_failures_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_reporter_batches_submitted_total[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerCollectorDroppingSpans
-        annotations:
-          message: |
-            collector {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
-        expr: 100 * sum(rate(jaeger_collector_spans_dropped_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_collector_spans_received_total[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerSamplingUpdateFailing
-        annotations:
-          message: |
-            {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating sampling policies.
-        expr: 100 * sum(rate(jaeger_sampler_queries{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_sampler_queries[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerThrottlingUpdateFailing
-        annotations:
-          message: |
-            {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating throttling policies.
-        expr: 100 * sum(rate(jaeger_throttler_updates{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_throttler_updates[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
-      - alert: JaegerQueryReqsFailing
-        annotations:
-          message: |
-            {{ $labels.job }} {{ $labels.instance }} is seeing {{ printf "%.2f" $value }}% query errors on {{ $labels.operation }}.
-        expr: 100 * sum(rate(jaeger_query_requests_total{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_query_requests_total[1m])) by (instance, job, namespace)> 1
-        for: 15m
-        labels:
-          severity: warning
 - apiVersion: v1
   kind: Service
   metadata:
@@ -248,32 +179,19 @@ objects:
   kind: ServiceMonitor
   metadata:
     labels:
-      prometheus: app-sre
-    name: observatorium-jaeger-collector
+      app.kubernetes.io/component: tracing
+      app.kubernetes.io/instance: jaeger-collector
+      app.kubernetes.io/name: jaeger-collector
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: jaeger-collector
   spec:
     endpoints:
-    - port: admin-http
-    namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
+    - port: http
     selector:
       matchLabels:
-        app.kubernetes.io/name: jaeger-all-in-one
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      prometheus: app-sre
-    name: observatorium-jaeger-agent
-  spec:
-    endpoints:
-    - port: metrics
-    namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-    selector:
-      matchLabels:
-        app.kubernetes.io/name: jaeger-agent
+        app.kubernetes.io/component: tracing
+        app.kubernetes.io/instance: jaeger-collector
+        app.kubernetes.io/name: jaeger-collector
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:

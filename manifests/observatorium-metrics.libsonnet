@@ -1,9 +1,12 @@
 local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet');
+local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
+local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 
 // This file contains all components as configured per upstream projects like kube-thanos etc.
 // Please check observatorium-metrics-template.libsonnet for OpenShift Template specific overwrites.
 
+// TODOK(kakkoyun): Shouldn't anything that touches templates be moved to other file?
 {
   local thanosSharedConfig = {
     image: '${THANOS_IMAGE}:${THANOS_IMAGE_TAG}',
@@ -68,7 +71,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
   rule::
     t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-rule',
-
       commonLabels:: {
         'app.kubernetes.io/component': 'rule-evaluation-engine',
         'app.kubernetes.io/instance': 'observatorium',
@@ -111,7 +113,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         },
       },
     }) + {
-      // TODO: Move configmap either to upstream (best) or as overwrite
+      // TODO: Move configmap either to upstream (best) or as overwrite.
       configmap: {
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -139,7 +141,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
 
   local storeShards = 3,
   store:: {
-    // Sharding should be moved upstream into kube-thanos
+    // Sharding should be moved upstream into kube-thanos.
     ['shard' + i]+:
       t.store(thanosSharedConfig {
         name: 'observatorium-thanos-store',
@@ -169,6 +171,129 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         },
       })
     for i in std.range(0, storeShards - 1)
+  },
+
+  storeIndexCache:: memcached({
+    local cfg = self,
+    serviceMonitor: true,
+    name: 'observatorium-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+    namespace: thanosSharedConfig.namespace,
+    commonLabels:: {
+      'app.kubernetes.io/component': 'store-index-cache',
+      'app.kubernetes.io/instance': 'observatorium',
+      'app.kubernetes.io/name': 'memcached',
+      'app.kubernetes.io/part-of': 'observatorium',
+      'app.kubernetes.io/version': cfg.version,
+    },
+
+    version: '${MEMCACHED_IMAGE_TAG}',
+    image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
+    exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+    exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
+    connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
+    memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
+    maxItemSize: '5m',
+    replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
+    resources: {
+      memcached: {
+        requests: {
+          cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}',
+          memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}',
+          memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}',
+        },
+      },
+
+      exporter: {
+        requests: {
+          cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+          memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+          memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+        },
+      },
+    },
+  }) {
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-thanos-store-index-cache',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+    },
+    statefulSet+: {
+      spec+: {
+        volumeClaimTemplates:: null,
+      },
+    },
+  },
+
+  storeBucketCache:: memcached({
+    local cfg = self,
+    name: 'observatorium-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+    namespace: thanosSharedConfig.namespace,
+    commonLabels:: {
+      'app.kubernetes.io/component': 'store-bucket-cache',
+      'app.kubernetes.io/instance': 'observatorium',
+      'app.kubernetes.io/name': 'memcached',
+      'app.kubernetes.io/part-of': 'observatorium',
+      'app.kubernetes.io/version': cfg.version,
+    },
+
+    serviceMonitor: true,
+    version: '${MEMCACHED_IMAGE_TAG}',
+    image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
+    exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+    exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
+    connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
+    memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
+    replicas: '${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}',
+    resources: {
+      memcached: {
+        requests: {
+          cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}',
+          memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}',
+          memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}',
+        },
+      },
+
+      exporter: {
+        requests: {
+          cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+          memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+          memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+        },
+      },
+    },
+  }) {
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-thanos-store-bucket-cache',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+    },
+    statefulSet+: {
+      spec+: {
+        volumeClaimTemplates:: null,
+      },
+    },
   },
 
   query::
@@ -215,16 +340,10 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     }),
 
 
-  local hashrings = [
-    {
-      hashring: 'default',
-      tenants: [
-        // Match all for now
-        // 'foo',
-        // 'bar',
-      ],
-    },
-  ],
+  local hashrings = [{
+    hashring: 'default',
+    tenants: [],
+  }],
 
   receivers:: {
     [hashring.hashring]+:
@@ -258,4 +377,65 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       })
     for hashring in hashrings
   },
+
+  receiveController:: trc({
+    serviceMonitor: true,
+    name: 'observatorium-thanos-receive-controller',
+    image: '${THANOS_RECEIVE_CONTROLLER_IMAGE}:${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
+    version: '${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
+    replicas: 1,
+    hashrings: hashrings,
+    resources: {
+      requests: {
+        cpu: '10m',
+        memory: '24Mi',
+      },
+      limits: {
+        cpu: '64m',
+        memory: '128Mi',
+      },
+    },
+    // TODO(kakkoyun): Jaeger!!
+    // jaegerAgent: {
+    //   image: obs.config.jaegerAgentImage,
+    //   collectorAddress: obs.config.jaegerAgentCollectorAddress,
+    // },
+  }) {
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-thanos-receive-controller',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+
+      spec+: {
+        selector+: {
+          // TODO: Remove once fixed upstream
+          matchLabels+: {
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+      },
+    },
+  },
+
+  // TODO(kakkoyun): receiversMonitor!!
+  // receiversMonitor:: t.store.withServiceMonitor {
+  //   config:: obs.receivers.default.config,
+  //   serviceMonitor+: {
+  //     metadata+: {
+  //       labels+: {
+  //         prometheus: 'app-sre',
+  //         'app.kubernetes.io/version':: 'hidden',
+  //       },
+  //       namespace:: 'hidden',
+  //     },
+  //     spec+: {
+  //       namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+  //     },
+  //   },
+  // },
 }

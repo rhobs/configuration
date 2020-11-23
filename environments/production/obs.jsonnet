@@ -621,10 +621,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         version: '${LOKI_IMAGE_TAG}',
         image: '%s:%s' % ['${LOKI_IMAGE}', lConfig.version],
         commonLabels+: obs.config.commonLabels,
-        queryConcurrency: 32,
-        // Parallelism based on formular:
-        // LOKI_QUERIER_CONCURRENCY / LOKI_QUERY_FRONTEND_REPLICAS
-        queryParallelism: 16,
         objectStorageConfig: {
           secretName: '${LOKI_S3_SECRET}',
           bucketsKey: 'bucket',
@@ -779,7 +775,23 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         [name]+:
           local m = super[name];
           if m.kind == 'Deployment' || m.kind == 'StatefulSet' then
-            m + ja.specMixin {
+            m {
+              spec+: {
+                template+: {
+                  spec+: {
+                    containers: [
+                      c {
+                        args+: [
+                          '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
+                          '-querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}',
+                        ],
+                      }
+                      for c in super.containers
+                    ],
+                  },
+                },
+              },
+            } + ja.specMixin {
               config+: {
                 jaegerAgent: {
                   image: obs.config.jaegerAgentImage,
@@ -2229,6 +2241,24 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       {
         name: 'LOKI_QUERY_FRONTEND_MEMORY_LIMITS',
         value: '1200Mi',
+      },
+      {
+        name: 'LOKI_REPLICATION_FACTOR',
+        // This value should be set equal to
+        // LOKI_REPLICATION_FACTOR <= LOKI_INGESTER_REPLICAS
+        value: '2',
+      },
+      {
+        name: 'LOKI_QUERY_PARALLELISM',
+        // The querier concurrency should be equal to (or less than) the CPU cores of the system the querier runs.
+        // A higher value will lead to a querier trying to process more requests than there are available
+        // cores and will result in scheduling delays.
+        // This value should be set equal to:
+        //
+        // std.floor( querier-concurrency / LOKI_QUERY_FRONTEND_REPLICAS)
+        //
+        // e.g. limit to N/2 worker threads per frontend, as we have two frontends.
+        value: '2',
       },
       {
         name: 'LOKI_CHUNK_CACHE_REPLICAS',

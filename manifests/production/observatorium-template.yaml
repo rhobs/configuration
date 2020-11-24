@@ -1093,7 +1093,7 @@ objects:
               "validity": "6h"
             "type": "in-memory"
           - --labels.split-interval=${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}
-          - --labels.max_retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
+          - --labels.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --labels.default-time-range=336h
           - |-
             --labels.response-cache-config="config":

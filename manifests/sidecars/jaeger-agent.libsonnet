@@ -55,6 +55,8 @@ function(params) {
     },
   },
 
+  spec+: spec,
+
   statefulSet+: {
     spec+: spec,
   },

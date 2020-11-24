@@ -1,6 +1,6 @@
 local list = import 'telemeter/lib/list.libsonnet';
 
-// TODO(kakkpyun): Remove kube-telemeter!
+// TODO(kakkoyun): Remove kube-telemeter!
 (import 'kube-telemeter.libsonnet') +
 {
   telemeterServer+:: {

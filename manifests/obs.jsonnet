@@ -1,48 +1,35 @@
 local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
-local up = (import 'github.com/observatorium/deployments/components/up.libsonnet');
+local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
-
-local l = (import 'github.com/observatorium/deployments/components/loki.libsonnet');
-local lc = (import './loki-caches.libsonnet');
-local ja = (import './sidecars/jaeger-agent.libsonnet');
 
 (import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +
 (import './observatorium-metrics.libsonnet') +
 (import './observatorium-metrics-template.libsonnet') +
+(import './observatorium-logs.libsonnet') +
+(import './observatorium-logs-template.libsonnet') +
 {
   local obs = self,
-
-  // TODO(kakkoyun): Clean up!
-  local s3EnvVars = [
-    {
-      name: 'AWS_ACCESS_KEY_ID',
-      valueFrom: {
-        secretKeyRef: {
-          key: 'aws_access_key_id',
-          name: '${THANOS_S3_SECRET}',
-        },
-      },
-    },
-    {
-      name: 'AWS_SECRET_ACCESS_KEY',
-      valueFrom: {
-        secretKeyRef: {
-          key: 'aws_secret_access_key',
-          name: '${THANOS_S3_SECRET}',
-        },
-      },
-    },
-  ],
 
   gubernator:: gubernator({
     local cfg = self,
     name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
     namespace: obs.config.namespace,
-    version: '1.0.0-rc.1',
-    image: 'thrawn01/gubernator:' + cfg.version,
+    version: '${GUBERNATOR_IMAGE_TAG}',
+    image: '%s:%s' % ['${GUBERNATOR_IMAGE}', cfg.version],
+    // replicas: '${{GUBERNATOR_REPLICAS}}',
     replicas: 1,
     commonLabels+:: obs.config.commonLabels,
     serviceMonitor: true,
+    resources: {
+      requests: {
+        cpu: '${GUBERNATOR_CPU_REQUEST}',
+        memory: '${GUBERNATOR_MEMORY_REQUEST}',
+      },
+      limits: {
+        cpu: '${GUBERNATOR_CPU_LIMIT}',
+        memory: '${GUBERNATOR_MEMORY_LIMIT}',
+      },
+    },
   }) {
     serviceMonitor+: {
       metadata+: {
@@ -96,6 +83,7 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
           obs.queryFrontend.service.spec.ports[0].port,
         ],
         writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+          // TODO(kakkoyun): Fix after creting receivers service.
           '',
           '',
           0,
@@ -111,159 +99,8 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
           obs.gubernator.service.spec.ports[1].port,
         ],
       },
-      // TODO(kakkoyun): Move to a dedicated file!
-      rbac: {
-        roles: [
-          {
-            name: 'rhobs',
-            resources: [
-              'metrics',
-              'logs',
-            ],
-            tenants: [
-              'rhobs',
-            ],
-            permissions: [
-              'read',
-              'write',
-            ],
-          },
-          {
-            name: 'telemeter-write',
-            resources: [
-              'metrics',
-            ],
-            tenants: [
-              'telemeter',
-            ],
-            permissions: [
-              'write',
-            ],
-          },
-          {
-            name: 'dptp-write',
-            resources: [
-              'logs',
-            ],
-            tenants: [
-              'dptp',
-            ],
-            permissions: [
-              'write',
-            ],
-          },
-          {
-            name: 'dptp-read',
-            resources: [
-              'logs',
-            ],
-            tenants: [
-              'dptp',
-            ],
-            permissions: [
-              'read',
-            ],
-          },
-        ],
-        roleBindings: [
-          {
-            name: 'rhobs',
-            roles: [
-              'rhobs',
-            ],
-            subjects: [
-              {
-                name: 'rhobs',
-                kind: 'group',
-              },
-            ],
-          },
-          {
-            name: 'telemeter-server',
-            roles: [
-              'telemeter-write',
-            ],
-            subjects: [
-              {
-                name: 'service-account-telemeter-service-staging',
-                kind: 'user',
-              },
-              {
-                name: 'service-account-telemeter-service',
-                kind: 'user',
-              },
-            ],
-          },
-          {
-            name: 'dptp-collector',
-            roles: [
-              'dptp-write',
-            ],
-            subjects: [
-              {
-                name: 'service-account-observatorium-dptp-collector',
-                kind: 'user',
-              },
-              {
-                name: 'service-account-observatorium-dptp-collector-staging',
-                kind: 'user',
-              },
-            ],
-          },
-          {
-            name: 'dptp-reader',
-            roles: [
-              'dptp-read',
-            ],
-            subjects: [
-              {
-                name: 'service-account-observatorium-dptp-reader',
-                kind: 'user',
-              },
-              {
-                name: 'service-account-observatorium-dptp-reader-staging',
-                kind: 'user',
-              },
-            ],
-          },
-        ],
-      },
-      // TODO(kakkoyun): Move to a dedicated file!
-      tenants: {
-        tenants: [
-          {
-            name: 'rhobs',
-            id: '770c1124-6ae8-4324-a9d4-9ce08590094b',
-            oidc: {
-              clientID: 'id',
-              clientSecret: 'secret',
-              issuerURL: 'https://rhobs.tenants.observatorium.io',
-              usernameClaim: 'preferred_username',
-              groupClaim: 'groups',
-            },
-          },
-          {
-            name: 'telemeter',
-            id: 'FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
-            oidc: {
-              clientID: 'id',
-              clientSecret: 'secret',
-              issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-              usernameClaim: 'preferred_username',
-            },
-          },
-          {
-            name: 'dptp',
-            id: 'AC879303-C60F-4D0D-A6D5-A485CFD638B8',
-            oidc: {
-              clientID: 'id',
-              clientSecret: 'secret',
-              issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-              usernameClaim: 'email',
-            },
-          },
-        ],
-      },
+      rbac: (import '../configuration/observatorium/rbac.libsonnet'),
+      tenants: (import '../configuration/observatorium/tenants.libsonnet'),
       resources: {
         requests: {
           cpu: '${OBSERVATORIUM_API_CPU_REQUEST}',
@@ -274,27 +111,34 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
           memory: '${OBSERVATORIUM_API_MEMORY_LIMIT}',
         },
       },
-      oauthProxy: {
-        image: obs.config.oauthProxyImage,
+    }) + {
+      local oauth = (import './sidecars/oauth-proxy.libsonnet')({
+        name: 'observatorium-api',
+        image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
         httpsPort: 9091,
         upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
         tlsSecretName: 'observatorium-api-tls',
         sessionSecretName: 'observatorium-api-proxy',
         sessionSecret: '',
-        serviceAccountName: 'prometheus-telemeter',
+        serviceAccountName: 'observatorium-api',
         resources: {
           requests: {
-            cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-            memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
+            cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+            memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
           },
           limits: {
-            cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-            memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
+            cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+            memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
           },
         },
-      },
-    }) + {
-      local api = self,
+      }),
+
+      proxySecret: oauth.proxySecret,
+
+      service+: oauth.service,
+
+      deployment+: oauth.deployment,
+    } + {
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-api',
@@ -314,12 +158,11 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
       },
       configmap+: {
         metadata+: {
-          annotations+: {
-            'qontract.recycle': 'true',
-          },
+          annotations+: { 'qontract.recycle': 'true' },
         },
       },
     }
+    // TODO(kakkoyun): Extract as a sidecar.
     + (if obs['opa-ams'] != null then {
          deployment+: {
            spec+: {
@@ -422,6 +265,7 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
            },
          },
 
+         // TODO(kakkoyun): Extract as a sidecar.
          service+: {
            spec+: {
              ports+: [
@@ -435,6 +279,7 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
            },
          },
 
+         // TODO(kakkoyun): Extract as a sidecar.
          serviceMonitor+: {
            spec+: {
              endpoints+: [
@@ -444,7 +289,29 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
          },
        } else {}),
 
-  up+:: up {
+  up:: up({
+    local cfg = self,
+    name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
+    namespace: obs.config.namespace,
+    commonLabels+:: obs.config.commonLabels,
+    version: 'master-2020-06-15-d763595',
+    image: 'quay.io/observatorium/up:' + cfg.version,
+    replicas: 1,
+    endpointType: 'metrics',
+    readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryFrontend.service.metadata.name, obs.queryFrontend.service.metadata.namespace],
+    queryConfig: (import '../configuration/observatorium/queries.libsonnet'),
+    serviceMonitor: true,
+    resources: {
+      requests: {
+        cpu: '5m',
+        memory: '10Mi',
+      },
+      limits: {
+        cpu: '20m',
+        memory: '50Mi',
+      },
+    },
+  }) {
     serviceMonitor+: {
       metadata+: {
         name: 'observatorium-up',
@@ -457,286 +324,22 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
     },
   },
 
-  lokiCaches+::
-    lc +
-    lc.withServiceMonitors {
-      config+:: {
-        local lcCfg = self,
-        name: obs.config.name,
-        namespace: '${NAMESPACE}',
-        version: '${MEMCACHED_IMAGE_TAG}',
-        image: '%s:%s' % ['${MEMCACHED_IMAGE}', lcCfg.version],
-        commonLabels+: obs.config.commonLabels,
-        exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
-        exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', lcCfg.exporterVersion],
-        enableChuckCache: true,
-        enableIndexQueryCache: true,
-        enableResultsCache: true,
-        replicas: {
-          chunk_cache: '${{LOKI_CHUNK_CACHE_REPLICAS}}',
-          index_query_cache: '${{LOKI_INDEX_QUERY_CACHE_REPLICAS}}',
-          results_cache: '${{LOKI_RESULTS_CACHE_REPLICAS}}',
-        },
-      },
-      serviceMonitors: {
-        chunk_cache: {
-          metadata+: {
-            name: 'observatorium-loki-chunk-cache',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-        index_query_cache+: {
-          metadata+: {
-            name: 'observatorium-loki-index-query-cache',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-        results_cache: {
-          metadata+: {
-            name: 'observatorium-loki-results-cache',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-      },
-    },
-
-  loki+::
-    l +
-    l.withMemberList +
-    l.withResources +
-    l.withVolumeClaimTemplate +
-    l.withChunkStoreCache +
-    l.withIndexQueryCache +
-    l.withResultsCache +
-    l.withServiceMonitor {
-      config+:: {
-        local lConfig = self,
-        name: obs.config.name + '-' + lConfig.commonLabels['app.kubernetes.io/name'],
-        namespace: '${NAMESPACE}',
-        version: '${LOKI_IMAGE_TAG}',
-        image: '%s:%s' % ['${LOKI_IMAGE}', lConfig.version],
-        commonLabels+: obs.config.commonLabels,
-        objectStorageConfig: {
-          secretName: '${LOKI_S3_SECRET}',
-          bucketsKey: 'bucket',
-          regionKey: 'aws_region',
-          accessKeyIdKey: 'aws_access_key_id',
-          secretAccessKeyKey: 'aws_secret_access_key',
-        },
-        replicas: {
-          compactor: 1,  // Loki supports only a single compactor instance
-          distributor: '${{LOKI_DISTRIBUTOR_REPLICAS}}',
-          ingester: '${{LOKI_INGESTER_REPLICAS}}',
-          querier: '${{LOKI_QUERIER_REPLICAS}}',
-          query_frontend: '${{LOKI_QUERY_FRONTEND_REPLICAS}}',
-        },
-        resources: {
-          compactor: {
-            requests: {
-              cpu: '${LOKI_COMPACTOR_CPU_REQUESTS}',
-              memory: '${LOKI_COMPACTOR_MEMORY_REQUESTS}',
-            },
-            limits: {
-              cpu: '${LOKI_COMPACTOR_CPU_LIMITS}',
-              memory: '${LOKI_COMPACTOR_MEMORY_LIMITS}',
-            },
-          },
-          distributor: {
-            requests: {
-              cpu: '${LOKI_DISTRIBUTOR_CPU_REQUESTS}',
-              memory: '${LOKI_DISTRIBUTOR_MEMORY_REQUESTS}',
-            },
-            limits: {
-              cpu: '${LOKI_DISTRIBUTOR_CPU_LIMITS}',
-              memory: '${LOKI_DISTRIBUTOR_MEMORY_LIMITS}',
-            },
-          },
-          ingester: {
-            requests: {
-              cpu: '${LOKI_INGESTER_CPU_REQUESTS}',
-              memory: '${LOKI_INGESTER_MEMORY_REQUESTS}',
-            },
-            limits: {
-              cpu: '${LOKI_INGESTER_CPU_LIMITS}',
-              memory: '${LOKI_INGESTER_MEMORY_LIMITS}',
-            },
-          },
-          querier: {
-            requests: {
-              cpu: '${LOKI_QUERIER_CPU_REQUESTS}',
-              memory: '${LOKI_QUERIER_MEMORY_REQUESTS}',
-            },
-            limits: {
-              cpu: '${LOKI_QUERIER_CPU_LIMITS}',
-              memory: '${LOKI_QUERIER_MEMORY_LIMITS}',
-            },
-          },
-          query_frontend: {
-            requests: {
-              cpu: '${LOKI_QUERY_FRONTEND_CPU_REQUESTS}',
-              memory: '${LOKI_QUERY_FRONTEND_MEMORY_REQUESTS}',
-            },
-            limits: {
-              cpu: '${LOKI_QUERY_FRONTEND_CPU_LIMITS}',
-              memory: '${LOKI_QUERY_FRONTEND_MEMORY_LIMITS}',
-            },
-          },
-        },
-        chunkCache: 'dns+%s.%s.svc.cluster.local:%s' % [
-          obs.lokiCaches.manifests['chunk-cache-service'].metadata.name,
-          obs.lokiCaches.manifests['chunk-cache-service'].metadata.namespace,
-          obs.lokiCaches.manifests['chunk-cache-service'].spec.ports[0].port,
-        ],
-        indexQueryCache: 'dns+%s.%s.svc.cluster.local:%s' % [
-          obs.lokiCaches.manifests['index-query-cache-service'].metadata.name,
-          obs.lokiCaches.manifests['index-query-cache-service'].metadata.namespace,
-          obs.lokiCaches.manifests['index-query-cache-service'].spec.ports[0].port,
-        ],
-        resultsCache: 'dns+%s.%s.svc.cluster.local:%s' % [
-          obs.lokiCaches.manifests['results-cache-service'].metadata.name,
-          obs.lokiCaches.manifests['results-cache-service'].metadata.namespace,
-          obs.lokiCaches.manifests['results-cache-service'].spec.ports[0].port,
-        ],
-        volumeClaimTemplate: {
-          spec: {
-            accessModes: ['ReadWriteOnce'],
-            resources: {
-              requests: {
-                storage: '${LOKI_PVC_REQUEST}',
-              },
-            },
-            storageClassName: '${STORAGE_CLASS}',
-          },
-        },
-      },
-      serviceMonitors: {
-        compactor: {
-          metadata+: {
-            name: 'observatorium-loki-compactor',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-        distributor: {
-          metadata+: {
-            name: 'observatorium-loki-distributor',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-        querier: {
-          metadata+: {
-            name: 'observatorium-loki-querier',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-        query_frontend: {
-          metadata+: {
-            name: 'observatorium-loki-query-frontend',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-        ingester: {
-          metadata+: {
-            name: 'observatorium-loki-ingester',
-            labels+: {
-              prometheus: 'app-sre',
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
-        },
-      },
-      defaultConfig+:: {
-        tracing: {
-          enabled: true,
-        },
-      },
-      manifests+:: {
-        [name]+:
-          local m = super[name];
-          if m.kind == 'Deployment' || m.kind == 'StatefulSet' then
-            m {
-              spec+: {
-                template+: {
-                  spec+: {
-                    containers: [
-                      c {
-                        args+: [
-                          '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
-                          '-querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}',
-                        ],
-                      }
-                      for c in super.containers
-                    ],
-                  },
-                },
-              },
-            }
-          // TODO(kakkoyun): Loki + Jaeger !!
-          // + ja.specMixin {
-          //   config+: {
-          //     jaegerAgent: {
-          //       image: obs.config.jaegerAgentImage,
-          //       collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
-          //     },
-          //   },
-          // }
-          else
-            m
-        for name in std.objectFields(super.manifests)
-      },
-    },
-
-  // TODO(kakkoyun): Up!!
-  // manifests+:: {
-  //   ['observatorium-up-' + name]: obs.up[name]
-  //   for name in std.objectFields(obs.up)
-  //   if obs.up[name] != null
-  // },
+  manifests+:: {
+    ['observatorium-up-' + name]: obs.up[name]
+    for name in std.objectFields(obs.up)
+    if obs.up[name] != null
+  },
 } + {
   local obs = self,
 
   config+:: {
-    // TODO(kakkoyun): Clean up!
     name: 'observatorium',
     namespace:: '${NAMESPACE}',
-    thanosImage:: '${THANOS_IMAGE}:${THANOS_IMAGE_TAG}',
-    thanosVersion: '${THANOS_IMAGE_TAG}',
-    oauthProxyImage:: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
-    jaegerAgentImage:: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
-    jaegerAgentCollectorAddress:: 'dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250',
     objectStorageConfig:: {
-      thanos: {
-        name: '${THANOS_CONFIG_SECRET}',
-        key: 'thanos.yaml',
-      },
+      //   thanos: {
+      //     name: '${THANOS_CONFIG_SECRET}',
+      //     key: 'thanos.yaml',
+      //   },
       loki: {
         secretName: '${LOKI_S3_SECRET}',
         bucketsKey: 'buckets',
@@ -746,384 +349,10 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
       },
     },
 
-    // TODO(kakkoyun): Clean up!
-    // hashrings: [
-    //   {
-    //     hashring: 'default',
-    //     tenants: [
-    //       // Match all for now
-    //       // 'foo',
-    //       // 'bar',
-    //     ],
-    //   },
-    // ],
-    // TODO(kakkoyun): Clean up!
-    // receivers+: {
-    //   logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
-    //   debug: '${THANOS_RECEIVE_DEBUG_ENV}',
-    //   image: obs.config.thanosImage,
-    //   version: obs.config.thanosVersion,
-    //   objectStorageConfig: obs.config.objectStorageConfig.thanos,
-    //   hashrings: obs.config.hashrings,
-    //   replicas: '${{THANOS_RECEIVE_REPLICAS}}',
-    //   replicationFactor: 3,
-    //   resources: {
-    //     requests: {
-    //       cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
-    //       memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
-    //     },
-    //     limits: {
-    //       cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
-    //       memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
-    //     },
-    //   },
-    //   volumeClaimTemplate: {
-    //     spec: {
-    //       accessModes: ['ReadWriteOnce'],
-    //       resources: {
-    //         requests: {
-    //           storage: '50Gi',
-    //         },
-    //       },
-    //       storageClassName: '${STORAGE_CLASS}',
-    //     },
-    //   },
-    //   jaegerAgent: {
-    //     image: obs.config.jaegerAgentImage,
-    //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
-    //   },
-    // },
+    loki+:: {},
+    lokiCaches+:: {},
 
-    // queryFrontend+: {
-    //   image: obs.config.thanosImage,
-    //   version: obs.config.thanosVersion,
-    //   replicas: '${{THANOS_QUERY_FRONTEND_REPLICAS}}',
-    //   resources: {
-    //     requests: {
-    //       cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
-    //       memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
-    //     },
-    //     limits: {
-    //       cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
-    //       memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
-    //     },
-    //   },
-    //   splitInterval: '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
-    //   maxRetries: '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
-    //   logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
-    //   fifoCache: {
-    //     maxSize: '0',
-    //     maxSizeItems: 2048,
-    //     validity: '6h',
-    //   },
-    //   oauthProxy: {
-    //     image: obs.config.oauthProxyImage,
-    //     httpsPort: 9091,
-    //     upstream: 'http://localhost:' + obs.queryFrontend.service.spec.ports[0].port,
-    //     tlsSecretName: 'query-frontend-tls',
-    //     sessionSecretName: 'query-frontend-proxy',
-    //     sessionSecret: '',
-    //     serviceAccountName: 'prometheus-telemeter',
-    //     resources: {
-    //       requests: {
-    //         cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-    //         memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-    //       },
-    //       limits: {
-    //         cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-    //         memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-    //       },
-    //     },
-    //   },
-    //   jaegerAgent: {
-    //     image: obs.config.jaegerAgentImage,
-    //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
-    //   },
-    // },
-
-    gubernator+: {
-      local guber = self,
-      version: '${GUBERNATOR_IMAGE_TAG}',
-      image: '%s:%s' % ['${GUBERNATOR_IMAGE}', guber.version],
-      replicas: '${{GUBERNATOR_REPLICAS}}',
-      resources: {
-        requests: {
-          cpu: '${GUBERNATOR_CPU_REQUEST}',
-          memory: '${GUBERNATOR_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${GUBERNATOR_CPU_LIMIT}',
-          memory: '${GUBERNATOR_MEMORY_LIMIT}',
-        },
-      },
-    },
-
-    // TODO(kakkoyun): ??
-    // api+: {
-    //   local api = self,
-    //   version: '${OBSERVATORIUM_API_IMAGE_TAG}',
-    //   image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', api.version],
-    //   replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
-    //   logs: {
-    //     readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-    //       obs.loki.manifests['query-frontend-http-service'].metadata.name,
-    //       '${OBSERVATORIUM_LOGS_NAMESPACE}',
-    //       obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
-    //     ],
-    //     tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-    //       obs.loki.manifests['querier-http-service'].metadata.name,
-    //       '${OBSERVATORIUM_LOGS_NAMESPACE}',
-    //       obs.loki.manifests['querier-http-service'].spec.ports[0].port,
-    //     ],
-    //     writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-    //       obs.loki.manifests['distributor-http-service'].metadata.name,
-    //       '${OBSERVATORIUM_LOGS_NAMESPACE}',
-    //       obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
-    //     ],
-    //   },
-    //   metrics: {
-    //     readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-    //       obs.queryFrontend.service.metadata.name,
-    //       obs.queryFrontend.service.metadata.namespace,
-    //       obs.queryFrontend.service.spec.ports[0].port,
-    //     ],
-    //     writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-    //       obs.receiveService.metadata.name,
-    //       obs.receiveService.metadata.namespace,
-    //       obs.receiveService.spec.ports[2].port,
-    //     ],
-    //   },
-    //   rateLimiter: {
-    //     grpcAddress: '%s.%s.svc.cluster.local:%d' % [
-    //       obs.gubernator.service.metadata.name,
-    //       obs.gubernator.service.metadata.namespace,
-    //       obs.gubernator.service.spec.ports[1].port,
-    //     ],
-    //   },
-    //   rbac: {
-    //     roles: [
-    //       {
-    //         name: 'rhobs',
-    //         resources: [
-    //           'metrics',
-    //           'logs',
-    //         ],
-    //         tenants: [
-    //           'rhobs',
-    //         ],
-    //         permissions: [
-    //           'read',
-    //           'write',
-    //         ],
-    //       },
-    //       {
-    //         name: 'telemeter-write',
-    //         resources: [
-    //           'metrics',
-    //         ],
-    //         tenants: [
-    //           'telemeter',
-    //         ],
-    //         permissions: [
-    //           'write',
-    //         ],
-    //       },
-    //       {
-    //         name: 'dptp-write',
-    //         resources: [
-    //           'logs',
-    //         ],
-    //         tenants: [
-    //           'dptp',
-    //         ],
-    //         permissions: [
-    //           'write',
-    //         ],
-    //       },
-    //       {
-    //         name: 'dptp-read',
-    //         resources: [
-    //           'logs',
-    //         ],
-    //         tenants: [
-    //           'dptp',
-    //         ],
-    //         permissions: [
-    //           'read',
-    //         ],
-    //       },
-    //     ],
-    //     roleBindings: [
-    //       {
-    //         name: 'rhobs',
-    //         roles: [
-    //           'rhobs',
-    //         ],
-    //         subjects: [
-    //           {
-    //             name: 'rhobs',
-    //             kind: 'group',
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         name: 'telemeter-server',
-    //         roles: [
-    //           'telemeter-write',
-    //         ],
-    //         subjects: [
-    //           {
-    //             name: 'service-account-telemeter-service-staging',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'service-account-telemeter-service',
-    //             kind: 'user',
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         name: 'dptp-collector',
-    //         roles: [
-    //           'dptp-write',
-    //         ],
-    //         subjects: [
-    //           {
-    //             name: 'service-account-observatorium-dptp-collector',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'service-account-observatorium-dptp-collector-staging',
-    //             kind: 'user',
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         name: 'dptp-reader',
-    //         roles: [
-    //           'dptp-read',
-    //         ],
-    //         subjects: [
-    //           {
-    //             name: 'service-account-observatorium-dptp-reader',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'service-account-observatorium-dptp-reader-staging',
-    //             kind: 'user',
-    //           },
-    //           // OpenShift Logging Team
-    //           {
-    //             name: 'rhn-engineering-aconway',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'brejones',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'cvogel1',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'ewolinet@redhat.com',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'jcantril@redhat.com',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'ptsiraki@redhat.com',
-    //             kind: 'user',
-    //           },
-    //           // OpenShift DPTP team
-    //           {
-    //             name: 'dmace@redhat.com',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'sbatsche@redhat.com',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'vrutkovs@redhat.com',
-    //             kind: 'user',
-    //           },
-    //           {
-    //             name: 'trking',
-    //             kind: 'user',
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   },
-    //   tenants: {
-    //     tenants: [
-    //       {
-    //         name: 'rhobs',
-    //         id: '770c1124-6ae8-4324-a9d4-9ce08590094b',
-    //         oidc: {
-    //           clientID: 'id',
-    //           clientSecret: 'secret',
-    //           issuerURL: 'https://rhobs.tenants.observatorium.io',
-    //           usernameClaim: 'preferred_username',
-    //           groupClaim: 'groups',
-    //         },
-    //       },
-    //       {
-    //         name: 'telemeter',
-    //         id: 'FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
-    //         oidc: {
-    //           clientID: 'id',
-    //           clientSecret: 'secret',
-    //           issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-    //           usernameClaim: 'preferred_username',
-    //         },
-    //       },
-    //       {
-    //         name: 'dptp',
-    //         id: 'AC879303-C60F-4D0D-A6D5-A485CFD638B8',
-    //         oidc: {
-    //           clientID: 'id',
-    //           clientSecret: 'secret',
-    //           issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-    //           usernameClaim: 'preferred_username',
-    //         },
-    //       },
-    //     ],
-    //   },
-    //   resources: {
-    //     requests: {
-    //       cpu: '${OBSERVATORIUM_API_CPU_REQUEST}',
-    //       memory: '${OBSERVATORIUM_API_MEMORY_REQUEST}',
-    //     },
-    //     limits: {
-    //       cpu: '${OBSERVATORIUM_API_CPU_LIMIT}',
-    //       memory: '${OBSERVATORIUM_API_MEMORY_LIMIT}',
-    //     },
-    //   },
-    //   oauthProxy: {
-    //     image: obs.config.oauthProxyImage,
-    //     httpsPort: 9091,
-    //     upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
-    //     tlsSecretName: 'observatorium-api-tls',
-    //     sessionSecretName: 'observatorium-api-proxy',
-    //     sessionSecret: '',
-    //     serviceAccountName: 'prometheus-telemeter',
-    //     resources: {
-    //       requests: {
-    //         cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-    //         memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-    //       },
-    //       limits: {
-    //         cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-    //         memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-    //       },
-    //     },
-    //   },
-    // },
-
+    // TODO(kakkoyun): Extract as a sidecar.
     'opa-ams'+:: {
       image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
       secretName: obs.api.config.name,
@@ -1154,44 +383,11 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
         },
       },
     },
-
-    loki+:: {},
-    lokiCaches+:: {},
-
-    up: {
-      local cfg = self,
-      name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
-      namespace: obs.config.namespace,
-      endpointType: 'metrics',
-      readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryFrontend.service.metadata.name, obs.queryFrontend.service.metadata.namespace],
-      version: 'master-2020-06-15-d763595',
-      image: 'quay.io/observatorium/up:' + cfg.version,
-      queryConfig: (import 'queries.libsonnet'),
-      serviceMonitor: true,
-      resources: {
-        requests: {
-          cpu: '5m',
-          memory: '10Mi',
-        },
-        limits: {
-          cpu: '20m',
-          memory: '50Mi',
-        },
-      },
-
-      commonLabels+:: obs.config.commonLabels,
-    },
   },
 } + (import 'github.com/observatorium/deployments/components/observatorium-configure.libsonnet') + {
   local obs = self,
-  // TODO(kakkoyun): Up!!
-  // up+:: {
-  //   config+:: obs.config.up {
-  //     queryConfig: (import 'queries.libsonnet'),
-  //   },
-  // },
 
-
+  // TODO(kakkoyun): Extract as a sidecar.
   'opa-ams'+:: {
     config+:: obs.config['opa-ams'],
   },

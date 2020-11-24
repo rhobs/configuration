@@ -360,6 +360,26 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         },
         spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
       },
+      deployment+: {
+        spec+: {
+          template+: {
+            spec+: {
+              containers: [
+                if c.name == 'thanos-query-frontend' then c {
+                  args+: [
+                    '--labels.split-interval=%s' % '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
+                    '--labels.max_retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
+                    '--labels.default-time-range=336h',
+                    '--labels.response-cache-config="config":\n"max_size": "0"\n"max_size_items": 2048\n"validity": "6h"\n"type": "in-memory"',
+                    '--cache-compression-type=snappy',
+                  ],
+                } else c
+                for c in super.containers
+              ],
+            },
+          },
+        },
+      },
     } +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet') +
     (import 'github.com/observatorium/deployments/components/oauth-proxy.libsonnet').deploymentMixin +

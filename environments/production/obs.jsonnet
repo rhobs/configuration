@@ -370,7 +370,14 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
                     '--labels.split-interval=%s' % '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
                     '--labels.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
                     '--labels.default-time-range=336h',
-                    '--labels.response-cache-config="config":\n"max_size": "0"\n"max_size_items": 2048\n"validity": "6h"\n"type": "in-memory"',
+                    '--labels.response-cache-config=' + std.manifestYamlDoc({
+                      config: {
+                        max_size: '0',
+                        max_size_items: 2048,
+                        validity: '6h',
+                      },
+                      type: 'in-memory',
+                    }),
                     '--cache-compression-type=snappy',
                   ],
                 } else c

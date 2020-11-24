@@ -1097,9 +1097,9 @@ objects:
           - --labels.default-time-range=336h
           - |-
             --labels.response-cache-config="config":
-            "max_size": "0"
-            "max_size_items": 2048
-            "validity": "6h"
+              "max_size": 0
+              "max_size_items": 2048
+              "validity": "6h"
             "type": "in-memory"
           - --cache-compression-type=snappy
           - |

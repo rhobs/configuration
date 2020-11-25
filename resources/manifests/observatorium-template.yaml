@@ -111,7 +111,7 @@ objects:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${NAMESPACE}.svc.cluster.local:9090
-          - --metrics.write.endpoint=http://..svc.cluster.local:0
+          - --metrics.write.endpoint=http://observatorium-thanos-receivers.${NAMESPACE}.svc.cluster.local:19291
           - --log.level=warn
           - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100

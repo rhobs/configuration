@@ -83,13 +83,9 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
           obs.queryFrontend.service.spec.ports[0].port,
         ],
         writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          // TODO(kakkoyun): Fix after creting receivers service.
-          '',
-          '',
-          0,
-          // obs.receiversService.metadata.name,
-          // obs.receiversService.metadata.namespace,
-          // obs.receiversService.spec.ports[2].port,
+          obs.receiversService.metadata.name,
+          obs.receiversService.metadata.namespace,
+          obs.receiversService.spec.ports[2].port,
         ],
       },
       rateLimiter: {

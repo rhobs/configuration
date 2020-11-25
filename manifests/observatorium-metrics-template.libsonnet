@@ -308,6 +308,22 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     }, super.receivers),
 
+  // TODO(kakkoyun): receivers Service monitor!
+  // receiversMonitor:: {
+  //   serviceMonitor+: {
+  //     metadata+: {
+  //       labels+: {
+  //         prometheus: 'app-sre',
+  //         'app.kubernetes.io/version':: 'hidden',
+  //       },
+  //       namespace:: 'hidden',
+  //     },
+  //     spec+: {
+  //       namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+  //     },
+  //   },
+  // },
+
   receiveController+:: {
     statefulSet+: jaegerAgentSidecar.statefulSet,
 

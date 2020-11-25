@@ -283,78 +283,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     }),
 
-  queryFrontend::
-    t.queryFrontend(thanosSharedConfig {
-      name: 'observatorium-thanos-query-frontend',
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      downstreamURL: 'http',
-      serviceMonitor: true,
-      queryRangeCache: {
-        type: 'in-memory',
-        config+: {
-          max_size: '0',
-        },
-      },
-      resources: {
-        requests: {
-          cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
-          memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
-          memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
-        },
-      },
-    }),
-
-  // TODO(kakkoyun): Clean up!
-  // hashrings: [
-  //   {
-  //     hashring: 'default',
-  //     tenants: [
-  //       // Match all for now
-  //       // 'foo',
-  //       // 'bar',
-  //     ],
-  //   },
-  // ],
-
-  // TODO(kakkoyun): Clean up!
-  // receivers+: {
-  //   logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
-  //   debug: '${THANOS_RECEIVE_DEBUG_ENV}',
-  //   image: obs.config.thanosImage,
-  //   version: obs.config.thanosVersion,
-  //   objectStorageConfig: obs.config.objectStorageConfig.thanos,
-  //   hashrings: obs.config.hashrings,
-  //   replicas: '${{THANOS_RECEIVE_REPLICAS}}',
-  //   replicationFactor: 3,
-  //   resources: {
-  //     requests: {
-  //       cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
-  //       memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
-  //     },
-  //     limits: {
-  //       cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
-  //       memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
-  //     },
-  //   },
-  //   volumeClaimTemplate: {
-  //     spec: {
-  //       accessModes: ['ReadWriteOnce'],
-  //       resources: {
-  //         requests: {
-  //           storage: '50Gi',
-  //         },
-  //       },
-  //       storageClassName: '${STORAGE_CLASS}',
-  //     },
-  //   },
-  //   jaegerAgent: {
-  //     image: obs.config.jaegerAgentImage,
-  //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
-  //   },
-  // },
 
   // TODO(kakkoyun): Clean up!
   // queryFrontend+: {
@@ -404,6 +332,66 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
   //   },
   // },
 
+  queryFrontend::
+    t.queryFrontend(thanosSharedConfig {
+      name: 'observatorium-thanos-query-frontend',
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      downstreamURL: 'http',
+      serviceMonitor: true,
+      queryRangeCache: {
+        type: 'in-memory',
+        config+: {
+          max_size: '0',
+        },
+      },
+      resources: {
+        requests: {
+          cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
+          memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
+          memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
+        },
+      },
+    }),
+
+  // TODO(kakkoyun): Clean up!
+  // receivers+: {
+  //   logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
+  //   debug: '${THANOS_RECEIVE_DEBUG_ENV}',
+  //   image: obs.config.thanosImage,
+  //   version: obs.config.thanosVersion,
+  //   objectStorageConfig: obs.config.objectStorageConfig.thanos,
+  //   hashrings: obs.config.hashrings,
+  //   replicas: '${{THANOS_RECEIVE_REPLICAS}}',
+  //   replicationFactor: 3,
+  //   resources: {
+  //     requests: {
+  //       cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
+  //       memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
+  //     },
+  //     limits: {
+  //       cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
+  //       memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
+  //     },
+  //   },
+  //   volumeClaimTemplate: {
+  //     spec: {
+  //       accessModes: ['ReadWriteOnce'],
+  //       resources: {
+  //         requests: {
+  //           storage: '50Gi',
+  //         },
+  //       },
+  //       storageClassName: '${STORAGE_CLASS}',
+  //     },
+  //   },
+  //   jaegerAgent: {
+  //     image: obs.config.jaegerAgentImage,
+  //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
+  //   },
+  // },
 
   local hashrings = [{
     hashring: 'default',
@@ -443,6 +431,24 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     for hashring in hashrings
   },
 
+  receiversService:: {
+    apiVersion: 'v1',
+    kind: 'Service',
+    metadata: {
+      name: 'observatorium-thanos-receivers',
+      namespace: thanosSharedConfig.namespace,
+      labels: thanosSharedConfig.commonLabels { 'app.kubernetes.io/name': 'thanos-receive' },
+    },
+    spec: {
+      selector: { 'app.kubernetes.io/name': 'thanos-receive' },
+      ports: [
+        { name: 'grpc', port: 10901, targetPort: 10901 },
+        { name: 'http', port: 10902, targetPort: 10902 },
+        { name: 'remote-write', port: 19291, targetPort: 19291 },
+      ],
+    },
+  },
+
   receiveController:: trc({
     serviceMonitor: true,
     name: 'observatorium-thanos-receive-controller',
@@ -461,21 +467,4 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
   }),
-
-  // TODO(kakkoyun): receivers Service monitor!
-  // receiversMonitor:: t.store.withServiceMonitor {
-  //   config:: obs.receivers.default.config,
-  //   serviceMonitor+: {
-  //     metadata+: {
-  //       labels+: {
-  //         prometheus: 'app-sre',
-  //         'app.kubernetes.io/version':: 'hidden',
-  //       },
-  //       namespace:: 'hidden',
-  //     },
-  //     spec+: {
-  //       namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-  //     },
-  //   },
-  // },
 }

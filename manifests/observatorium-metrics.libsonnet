@@ -435,7 +435,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     apiVersion: 'v1',
     kind: 'Service',
     metadata: {
-      name: 'observatorium-thanos-receivers',
+      name: 'observatorium-thanos-receive',
       namespace: thanosSharedConfig.namespace,
       labels: thanosSharedConfig.commonLabels { 'app.kubernetes.io/name': 'thanos-receive' },
     },

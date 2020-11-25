@@ -5,7 +5,7 @@ local ja = (import './sidecars/jaeger-agent.libsonnet');
 // JaegerAgent sidecar shared across components, thus instantiated outside components.
 local jaegerAgentSidecar = (import './sidecars/jaeger-agent.libsonnet')({
   image: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
-  collectorAddress: 'dns:///jaeger-collector-headless.$(JAEGER_COLLECTOR_NAMESPACE).svc:14250',
+  collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
 });
 
 {

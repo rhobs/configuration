@@ -54,6 +54,13 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     api({
       local cfg = self,
       name: 'observatorium-api',
+      commonLabels:: {
+        'app.kubernetes.io/component': 'api',
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/name': 'observatorium-api',
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/version': '${OBSERVATORIUM_API_IMAGE_TAG}',
+      },
       version: '${OBSERVATORIUM_API_IMAGE_TAG}',
       image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', cfg.version],
       // replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
@@ -92,7 +99,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
         grpcAddress: '%s.%s.svc.cluster.local:%d' % [
           obs.gubernator.service.metadata.name,
           obs.gubernator.service.metadata.namespace,
-          obs.gubernator.service.spec.ports[1].port,
+          obs.gubernator.config.ports.grpc,
         ],
       },
       rbac: (import '../configuration/observatorium/rbac.libsonnet'),
@@ -182,7 +189,9 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       }),
 
       deployment+: opaAms.deployment,
+
       service+: opaAms.service,
+
       serviceMonitor+: opaAms.serviceMonitor,
     },
 

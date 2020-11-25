@@ -74,8 +74,9 @@ objects:
       qontract.recycle: "true"
     labels:
       app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium-api
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api
 - apiVersion: apps/v1
@@ -83,8 +84,9 @@ objects:
   metadata:
     labels:
       app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium-api
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api
   spec:
@@ -92,8 +94,9 @@ objects:
     selector:
       matchLabels:
         app.kubernetes.io/component: api
-        app.kubernetes.io/instance: observatorium-api
+        app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: observatorium
     strategy:
       rollingUpdate:
         maxSurge: 0
@@ -102,8 +105,9 @@ objects:
       metadata:
         labels:
           app.kubernetes.io/component: api
-          app.kubernetes.io/instance: observatorium-api
+          app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: observatorium-api
+          app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
       spec:
         containers:
@@ -111,14 +115,14 @@ objects:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${NAMESPACE}.svc.cluster.local:9090
-          - --metrics.write.endpoint=http://observatorium-thanos-receivers.${NAMESPACE}.svc.cluster.local:19291
+          - --metrics.write.endpoint=http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291
           - --log.level=warn
           - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.write.endpoint=http://observatorium-loki-distributor-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
-          - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8080
+          - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -267,8 +271,9 @@ objects:
   metadata:
     labels:
       app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium-api
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api
   stringData:
@@ -303,8 +308,9 @@ objects:
       service.alpha.openshift.io/serving-cert-secret-name: observatorium-api-tls
     labels:
       app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium-api
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api
   spec:
@@ -326,15 +332,17 @@ objects:
       targetPort: 8083
     selector:
       app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium-api
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
     labels:
       app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium-api
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api
 - apiVersion: monitoring.coreos.com/v1
@@ -353,8 +361,9 @@ objects:
     selector:
       matchLabels:
         app.kubernetes.io/component: api
-        app.kubernetes.io/instance: observatorium-api
+        app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

@@ -161,133 +161,34 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
           annotations+: { 'qontract.recycle': 'true' },
         },
       },
-    }
-    // TODO(kakkoyun): Extract as a sidecar.
-    + (if obs['opa-ams'] != null then {
-         deployment+: {
-           spec+: {
-             template+: {
-               spec+: {
-                 containers+: [
-                   {
-                     name: 'opa-ams',
-                     image: obs['opa-ams'].config.image,
-                     args: [
-                       '--web.listen=127.0.0.1:%s' % obs['opa-ams'].config.ports.api,
-                       '--web.internal.listen=0.0.0.0:%s' % obs['opa-ams'].config.ports.metrics,
-                       '--web.healthchecks.url=http://127.0.0.1:%s' % obs['opa-ams'].config.ports.api,
-                       '--log.level=warn',
-                       '--ams.url=' + obs['opa-ams'].config.amsURL,
-                       '--resource-type-prefix=' + obs['opa-ams'].config.resourceTypePrefix,
-                       '--oidc.client-id=$(CLIENT_ID)',
-                       '--oidc.client-secret=$(CLIENT_SECRET)',
-                       '--oidc.issuer-url=$(ISSUER_URL)',
-                       '--opa.package=' + obs['opa-ams'].config.opaPackage,
-                     ] + (
-                       if std.objectHas(obs['opa-ams'].config, 'memcached') then
-                         [
-                           '--memcached=' + obs['opa-ams'].config.memcached,
-                         ]
-                       else []
-                     ) + (
-                       if std.objectHas(obs['opa-ams'].config, 'memcachedExpire') then
-                         [
-                           '--memcached.expire=' + obs['opa-ams'].config.memcachedExpire,
-                         ]
-                       else []
-                     ) + (
-                       if std.objectHas(obs['opa-ams'].config, 'mappings') then
-                         [
-                           '--ams.mappings=%s=%s' % [tenant, obs['opa-ams'].config.mappings[tenant]]
-                           for tenant in std.objectFields(obs['opa-ams'].config.mappings)
-                         ]
-                       else []
-                     ),
-                     env: [
-                       {
-                         name: 'ISSUER_URL',
-                         valueFrom: {
-                           secretKeyRef: {
-                             name: obs['opa-ams'].config.secretName,
-                             key: obs['opa-ams'].config.issuerURLKey,
-                           },
-                         },
-                       },
-                       {
-                         name: 'CLIENT_ID',
-                         valueFrom: {
-                           secretKeyRef: {
-                             name: obs['opa-ams'].config.secretName,
-                             key: obs['opa-ams'].config.clientIDKey,
-                           },
-                         },
-                       },
-                       {
-                         name: 'CLIENT_SECRET',
-                         valueFrom: {
-                           secretKeyRef: {
-                             name: obs['opa-ams'].config.secretName,
-                             key: obs['opa-ams'].config.clientSecretKey,
-                           },
-                         },
-                       },
-                     ],
-                     ports: [
-                       {
-                         name: 'opa-ams-' + name,
-                         containerPort: obs['opa-ams'].config.ports[name],
-                       }
-                       for name in std.objectFields(obs['opa-ams'].config.ports)
-                     ],
-                     livenessProbe: {
-                       failureThreshold: 10,
-                       periodSeconds: 30,
-                       httpGet: {
-                         path: '/live',
-                         port: obs['opa-ams'].config.ports.metrics,
-                         scheme: 'HTTP',
-                       },
-                     },
-                     readinessProbe: {
-                       failureThreshold: 12,
-                       periodSeconds: 5,
-                       httpGet: {
-                         path: '/ready',
-                         port: obs['opa-ams'].config.ports.metrics,
-                         scheme: 'HTTP',
-                       },
-                     },
-                     resources: obs['opa-ams'].config.resources,
-                   },
-                 ],
-               },
-             },
-           },
-         },
+    } + {
+      local opaAms = (import './sidecars/opa-ams.libsonnet')({
+        image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
+        clientIDKey: 'client-id',
+        clientSecretKey: 'client-secret',
+        secretName: obs.api.config.name,
+        issuerURLKey: 'issuer-url',
+        amsURL: '${AMS_URL}',
+        memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
+        memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
+        opaPackage: 'observatorium',
+        resourceTypePrefix: 'observatorium',
+        resources: {
+          requests: {
+            cpu: '${OPA_AMS_CPU_REQUEST}',
+            memory: '${OPA_AMS_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${OPA_AMS_CPU_LIMIT}',
+            memory: '${OPA_AMS_MEMORY_LIMIT}',
+          },
+        },
+      }),
 
-         // TODO(kakkoyun): Extract as a sidecar.
-         service+: {
-           spec+: {
-             ports+: [
-               {
-                 name: 'opa-ams-' + name,
-                 port: obs['opa-ams'].config.ports[name],
-                 targetPort: obs['opa-ams'].config.ports[name],
-               }
-               for name in std.objectFields(obs['opa-ams'].config.ports)
-             ],
-           },
-         },
-
-         // TODO(kakkoyun): Extract as a sidecar.
-         serviceMonitor+: {
-           spec+: {
-             endpoints+: [
-               { port: 'opa-ams-metrics' },
-             ],
-           },
-         },
-       } else {}),
+      deployment+: opaAms.deployment,
+      service+: opaAms.service,
+      serviceMonitor+: opaAms.serviceMonitor,
+    },
 
   up:: up({
     local cfg = self,
@@ -351,47 +252,8 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
 
     loki+:: {},
     lokiCaches+:: {},
-
-    // TODO(kakkoyun): Extract as a sidecar.
-    'opa-ams'+:: {
-      image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
-      secretName: obs.api.config.name,
-      clientIDKey: 'client-id',
-      clientSecretKey: 'client-secret',
-      issuerURLKey: 'issuer-url',
-      amsURL: '${AMS_URL}',
-      memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
-      memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
-      mappings: {
-        // A map from Observatorium tenant names to AMS organization IDs, e.g.:
-        // tenant: 'organizationID',
-      },
-      ports: {
-        api: 8082,
-        metrics: 8083,
-      },
-      opaPackage: 'observatorium',
-      resourceTypePrefix: 'observatorium',
-      resources: {
-        requests: {
-          cpu: '${OPA_AMS_CPU_REQUEST}',
-          memory: '${OPA_AMS_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${OPA_AMS_CPU_LIMIT}',
-          memory: '${OPA_AMS_MEMORY_LIMIT}',
-        },
-      },
-    },
   },
 } + (import 'github.com/observatorium/deployments/components/observatorium-configure.libsonnet') + {
-  local obs = self,
-
-  // TODO(kakkoyun): Extract as a sidecar.
-  'opa-ams'+:: {
-    config+:: obs.config['opa-ams'],
-  },
-} + {
   local obs = self,
 
   local telemeter = (import 'telemeter.jsonnet') {

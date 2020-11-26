@@ -28,7 +28,7 @@
         clientID: 'id',
         clientSecret: 'secret',
         issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-        usernameClaim: 'email',
+        usernameClaim: 'preferred_username',
       },
     },
   ],

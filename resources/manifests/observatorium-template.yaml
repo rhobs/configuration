@@ -37,6 +37,26 @@ objects:
           "name": "service-account-observatorium-dptp-reader"
         - "kind": "user"
           "name": "service-account-observatorium-dptp-reader-staging"
+        - "kind": "user"
+          "name": "rhn-engineering-aconway"
+        - "kind": "user"
+          "name": "brejones"
+        - "kind": "user"
+          "name": "cvogel1"
+        - "kind": "user"
+          "name": "ewolinet@redhat.com"
+        - "kind": "user"
+          "name": "jcantril@redhat.com"
+        - "kind": "user"
+          "name": "ptsiraki@redhat.com"
+        - "kind": "user"
+          "name": "dmace@redhat.com"
+        - "kind": "user"
+          "name": "sbatsche@redhat.com"
+        - "kind": "user"
+          "name": "vrutkovs@redhat.com"
+        - "kind": "user"
+          "name": "trking"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -300,7 +320,7 @@ objects:
           "clientID": "id"
           "clientSecret": "secret"
           "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
-          "usernameClaim": "email"
+          "usernameClaim": "preferred_username"
 - apiVersion: v1
   kind: Service
   metadata:

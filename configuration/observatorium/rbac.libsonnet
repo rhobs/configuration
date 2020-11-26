@@ -110,6 +110,48 @@
           name: 'service-account-observatorium-dptp-reader-staging',
           kind: 'user',
         },
+        // OpenShift Logging Team
+        {
+          name: 'rhn-engineering-aconway',
+          kind: 'user',
+        },
+        {
+          name: 'brejones',
+          kind: 'user',
+        },
+        {
+          name: 'cvogel1',
+          kind: 'user',
+        },
+        {
+          name: 'ewolinet@redhat.com',
+          kind: 'user',
+        },
+        {
+          name: 'jcantril@redhat.com',
+          kind: 'user',
+        },
+        {
+          name: 'ptsiraki@redhat.com',
+          kind: 'user',
+        },
+        // OpenShift DPTP team
+        {
+          name: 'dmace@redhat.com',
+          kind: 'user',
+        },
+        {
+          name: 'sbatsche@redhat.com',
+          kind: 'user',
+        },
+        {
+          name: 'vrutkovs@redhat.com',
+          kind: 'user',
+        },
+        {
+          name: 'trking',
+          kind: 'user',
+        },
       ],
     },
   ],

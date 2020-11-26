@@ -27,9 +27,9 @@ local jaegerAgentSidecar = (import './sidecars/jaeger-agent.libsonnet')({
         enableIndexQueryCache: true,
         enableResultsCache: true,
         replicas: {
-          chunk_cache: '${{LOKI_CHUNK_CACHE_REPLICAS}}',
-          index_query_cache: '${{LOKI_INDEX_QUERY_CACHE_REPLICAS}}',
-          results_cache: '${{LOKI_RESULTS_CACHE_REPLICAS}}',
+          chunk_cache: 1,  // overwritten in observatorium-logs-template.libsonnet
+          index_query_cache: 1,  // overwritten in observatorium-logs-template.libsonnet
+          results_cache: 1,  // overwritten in observatorium-logs-template.libsonnet
         },
       },
       serviceMonitors: {

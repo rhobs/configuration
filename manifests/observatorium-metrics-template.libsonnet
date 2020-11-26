@@ -171,6 +171,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
   storeIndexCache+:: {
     statefulSet+: {
       spec+: {
+        replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
         volumeClaimTemplates:: null,
       },
     },
@@ -189,6 +190,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
   storeBucketCache+:: {
     statefulSet+: {
       spec+: {
+        replicas: '${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}',
         volumeClaimTemplates:: null,
       },
     },

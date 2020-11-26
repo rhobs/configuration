@@ -16,6 +16,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     namespace: obs.config.namespace,
     version: '${GUBERNATOR_IMAGE_TAG}',
     image: '%s:%s' % ['${GUBERNATOR_IMAGE}', cfg.version],
+    // TODO(kakkoyun):!
     // replicas: '${{GUBERNATOR_REPLICAS}}',
     replicas: 1,
     commonLabels+:: obs.config.commonLabels,
@@ -50,150 +51,149 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     },
   },
 
-  api::
-    api({
-      local cfg = self,
+  api:: api({
+    local cfg = self,
+    name: 'observatorium-api',
+    commonLabels:: {
+      'app.kubernetes.io/component': 'api',
+      'app.kubernetes.io/instance': 'observatorium',
+      'app.kubernetes.io/name': 'observatorium-api',
+      'app.kubernetes.io/part-of': 'observatorium',
+      'app.kubernetes.io/version': '${OBSERVATORIUM_API_IMAGE_TAG}',
+    },
+    version: '${OBSERVATORIUM_API_IMAGE_TAG}',
+    image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', cfg.version],
+    // replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
+    replicas: 1,
+    serviceMonitor: true,
+    logs: {
+      readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.loki.manifests['query-frontend-http-service'].metadata.name,
+        '${OBSERVATORIUM_LOGS_NAMESPACE}',
+        obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
+      ],
+      tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.loki.manifests['querier-http-service'].metadata.name,
+        '${OBSERVATORIUM_LOGS_NAMESPACE}',
+        obs.loki.manifests['querier-http-service'].spec.ports[0].port,
+      ],
+      writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.loki.manifests['distributor-http-service'].metadata.name,
+        '${OBSERVATORIUM_LOGS_NAMESPACE}',
+        obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
+      ],
+    },
+    metrics: {
+      readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.queryFrontend.service.metadata.name,
+        obs.queryFrontend.service.metadata.namespace,
+        obs.queryFrontend.service.spec.ports[0].port,
+      ],
+      writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.receiversService.metadata.name,
+        obs.receiversService.metadata.namespace,
+        obs.receiversService.spec.ports[2].port,
+      ],
+    },
+    rateLimiter: {
+      grpcAddress: '%s.%s.svc.cluster.local:%d' % [
+        obs.gubernator.service.metadata.name,
+        obs.gubernator.service.metadata.namespace,
+        obs.gubernator.config.ports.grpc,
+      ],
+    },
+    rbac: (import '../configuration/observatorium/rbac.libsonnet'),
+    tenants: (import '../configuration/observatorium/tenants.libsonnet'),
+    resources: {
+      requests: {
+        cpu: '${OBSERVATORIUM_API_CPU_REQUEST}',
+        memory: '${OBSERVATORIUM_API_MEMORY_REQUEST}',
+      },
+      limits: {
+        cpu: '${OBSERVATORIUM_API_CPU_LIMIT}',
+        memory: '${OBSERVATORIUM_API_MEMORY_LIMIT}',
+      },
+    },
+  }) + {
+    local oauth = (import './sidecars/oauth-proxy.libsonnet')({
       name: 'observatorium-api',
-      commonLabels:: {
-        'app.kubernetes.io/component': 'api',
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/name': 'observatorium-api',
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/version': '${OBSERVATORIUM_API_IMAGE_TAG}',
-      },
-      version: '${OBSERVATORIUM_API_IMAGE_TAG}',
-      image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', cfg.version],
-      // replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
-      replicas: 1,
-      serviceMonitor: true,
-      logs: {
-        readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          obs.loki.manifests['query-frontend-http-service'].metadata.name,
-          '${OBSERVATORIUM_LOGS_NAMESPACE}',
-          obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
-        ],
-        tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          obs.loki.manifests['querier-http-service'].metadata.name,
-          '${OBSERVATORIUM_LOGS_NAMESPACE}',
-          obs.loki.manifests['querier-http-service'].spec.ports[0].port,
-        ],
-        writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          obs.loki.manifests['distributor-http-service'].metadata.name,
-          '${OBSERVATORIUM_LOGS_NAMESPACE}',
-          obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
-        ],
-      },
-      metrics: {
-        readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          obs.queryFrontend.service.metadata.name,
-          obs.queryFrontend.service.metadata.namespace,
-          obs.queryFrontend.service.spec.ports[0].port,
-        ],
-        writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-          obs.receiversService.metadata.name,
-          obs.receiversService.metadata.namespace,
-          obs.receiversService.spec.ports[2].port,
-        ],
-      },
-      rateLimiter: {
-        grpcAddress: '%s.%s.svc.cluster.local:%d' % [
-          obs.gubernator.service.metadata.name,
-          obs.gubernator.service.metadata.namespace,
-          obs.gubernator.config.ports.grpc,
-        ],
-      },
-      rbac: (import '../configuration/observatorium/rbac.libsonnet'),
-      tenants: (import '../configuration/observatorium/tenants.libsonnet'),
+      image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
+      httpsPort: 9091,
+      upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
+      tlsSecretName: 'observatorium-api-tls',
+      sessionSecretName: 'observatorium-api-proxy',
+      sessionSecret: '',
+      serviceAccountName: 'observatorium-api',
       resources: {
         requests: {
-          cpu: '${OBSERVATORIUM_API_CPU_REQUEST}',
-          memory: '${OBSERVATORIUM_API_MEMORY_REQUEST}',
+          cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+          memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
         },
         limits: {
-          cpu: '${OBSERVATORIUM_API_CPU_LIMIT}',
-          memory: '${OBSERVATORIUM_API_MEMORY_LIMIT}',
+          cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+          memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
         },
       },
-    }) + {
-      local oauth = (import './sidecars/oauth-proxy.libsonnet')({
+    }),
+
+    proxySecret: oauth.proxySecret,
+
+    service+: oauth.service,
+
+    deployment+: oauth.deployment,
+  } + {
+    serviceMonitor+: {
+      metadata+: {
         name: 'observatorium-api',
-        image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
-        httpsPort: 9091,
-        upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
-        tlsSecretName: 'observatorium-api-tls',
-        sessionSecretName: 'observatorium-api-proxy',
-        sessionSecret: '',
-        serviceAccountName: 'observatorium-api',
-        resources: {
-          requests: {
-            cpu: '${OAUTH_PROXY_CPU_REQUEST}',
-            memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${OAUTH_PROXY_CPU_LIMITS}',
-            memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
-          },
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
         },
-      }),
-
-      proxySecret: oauth.proxySecret,
-
-      service+: oauth.service,
-
-      deployment+: oauth.deployment,
-    } + {
-      serviceMonitor+: {
-        metadata+: {
-          name: 'observatorium-api',
-          labels+: {
-            prometheus: 'app-sre',
+      },
+      spec+: {
+        selector+: {
+          matchLabels+: {
             'app.kubernetes.io/version':: 'hidden',
           },
         },
-        spec+: {
-          selector+: {
-            matchLabels+: {
-              'app.kubernetes.io/version':: 'hidden',
-            },
-          },
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-        },
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
       },
-      configmap+: {
-        metadata+: {
-          annotations+: { 'qontract.recycle': 'true' },
-        },
-      },
-    } + {
-      local opaAms = (import './sidecars/opa-ams.libsonnet')({
-        image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
-        clientIDKey: 'client-id',
-        clientSecretKey: 'client-secret',
-        secretName: obs.api.config.name,
-        issuerURLKey: 'issuer-url',
-        amsURL: '${AMS_URL}',
-        memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
-        memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
-        opaPackage: 'observatorium',
-        resourceTypePrefix: 'observatorium',
-        resources: {
-          requests: {
-            cpu: '${OPA_AMS_CPU_REQUEST}',
-            memory: '${OPA_AMS_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${OPA_AMS_CPU_LIMIT}',
-            memory: '${OPA_AMS_MEMORY_LIMIT}',
-          },
-        },
-      }),
-
-      deployment+: opaAms.deployment,
-
-      service+: opaAms.service,
-
-      serviceMonitor+: opaAms.serviceMonitor,
     },
+    configmap+: {
+      metadata+: {
+        annotations+: { 'qontract.recycle': 'true' },
+      },
+    },
+  } + {
+    local opaAms = (import './sidecars/opa-ams.libsonnet')({
+      image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
+      clientIDKey: 'client-id',
+      clientSecretKey: 'client-secret',
+      secretName: obs.api.config.name,
+      issuerURLKey: 'issuer-url',
+      amsURL: '${AMS_URL}',
+      memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
+      memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
+      opaPackage: 'observatorium',
+      resourceTypePrefix: 'observatorium',
+      resources: {
+        requests: {
+          cpu: '${OPA_AMS_CPU_REQUEST}',
+          memory: '${OPA_AMS_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${OPA_AMS_CPU_LIMIT}',
+          memory: '${OPA_AMS_MEMORY_LIMIT}',
+        },
+      },
+    }),
+
+    deployment+: opaAms.deployment,
+
+    service+: opaAms.service,
+
+    serviceMonitor+: opaAms.serviceMonitor,
+  },
 
   up:: up({
     local cfg = self,
@@ -285,534 +285,159 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     objects:
       [
         obs.manifests[name] {
-          metadata+: {
-            namespace:: 'hidden',
-          },
+          metadata+: { namespace:: 'hidden' },
         }
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null
       ] +
+      // TODO(kakkoyun): !!?
       // [obs.storeMonitor.serviceMonitor] +
       // [obs.receiversMonitor.serviceMonitor] +
       [
         obs.storeIndexCache[name] {
-          metadata+: {
-            namespace:: 'hidden',
-          },
+          metadata+: { namespace:: 'hidden' },
         }
         for name in std.objectFields(obs.storeIndexCache)
       ] +
       [
         obs.storeBucketCache[name] {
-          metadata+: {
-            namespace:: 'hidden',
-          },
+          metadata+: { namespace:: 'hidden' },
         }
         for name in std.objectFields(obs.storeBucketCache)
       ] + [
         object {
-          metadata+: {
-            namespace:: 'hidden',
-          },
+          metadata+: { namespace:: 'hidden' },
         }
         for object in telemeter.objects
       ] + [
         object {
-          metadata+: {
-            namespace:: 'hidden',
-          },
+          metadata+: { namespace:: 'hidden' },
         }
         for object in prometheusAMS.objects
       ],
     parameters: [
-      {
-        name: 'NAMESPACE',
-        value: obsNS,
-      },
-      {
-        name: 'OBSERVATORIUM_LOGS_NAMESPACE',
-        value: obsLogsNS,
-      },
-      {
-        name: 'THANOS_IMAGE',
-        value: 'quay.io/thanos/thanos',
-      },
-      {
-        name: 'THANOS_IMAGE_TAG',
-        value: 'master-2020-08-12-70f89d83',
-      },
-      {
-        name: 'STORAGE_CLASS',
-        value: 'gp2',
-      },
-      {
-        name: 'PROXY_IMAGE',
-        value: 'quay.io/openshift/origin-oauth-proxy',
-      },
-      {
-        name: 'PROXY_IMAGE_TAG',
-        value: '4.4.0',
-      },
-      {
-        name: 'JAEGER_AGENT_IMAGE',
-        value: 'jaegertracing/jaeger-agent',
-      },
-      {
-        name: 'JAEGER_AGENT_IMAGE_TAG',
-        value: '1.14.0',
-      },
-      {
-        name: 'THANOS_RECEIVE_CONTROLLER_IMAGE',
-        value: 'quay.io/observatorium/thanos-receive-controller',
-      },
-      {
-        name: 'THANOS_RECEIVE_CONTROLLER_IMAGE_TAG',
-        value: 'master-2019-10-18-d55fee2',
-      },
-      {
-        name: 'THANOS_QUERIER_REPLICAS',
-        value: '3',
-      },
-      {
-        name: 'THANOS_STORE_REPLICAS',
-        value: '5',
-      },
-      {
-        name: 'THANOS_COMPACTOR_LOG_LEVEL',
-        value: 'info',
-      },
-      {
-        name: 'THANOS_COMPACTOR_REPLICAS',
-        value: '1',
-      },
-      {
-        name: 'THANOS_RECEIVE_REPLICAS',
-        value: '5',
-      },
-      {
-        name: 'THANOS_CONFIG_SECRET',
-        value: 'thanos-objectstorage',
-      },
-      {
-        name: 'THANOS_S3_SECRET',
-        value: 'telemeter-thanos-stage-s3',
-      },
-      {
-        name: 'THANOS_QUERIER_LOG_LEVEL',
-        value: 'info',
-      },
-      {
-        name: 'THANOS_QUERIER_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'THANOS_QUERIER_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'THANOS_QUERIER_MEMORY_REQUEST',
-        value: '256Mi',
-      },
-      {
-        name: 'THANOS_QUERIER_MEMORY_LIMIT',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_REPLICAS',
-        value: '3',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_MEMORY_REQUEST',
-        value: '256Mi',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_MEMORY_LIMIT',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_SPLIT_INTERVAL',
-        value: '24h',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_MAX_RETRIES',
-        value: '0',
-      },
-      {
-        name: 'THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN',
-        value: '5s',
-      },
-      {
-        name: 'THANOS_STORE_LOG_LEVEL',
-        value: 'info',
-      },
-      {
-        name: 'THANOS_STORE_CPU_REQUEST',
-        value: '500m',
-      },
-      {
-        name: 'THANOS_STORE_CPU_LIMIT',
-        value: '2',
-      },
-      {
-        name: 'THANOS_STORE_MEMORY_REQUEST',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_STORE_MEMORY_LIMIT',
-        value: '8Gi',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_REPLICAS',
-        value: '3',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB',
-        value: '2048',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT',
-        value: '3072',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST',
-        value: '500m',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT',
-        value: '3',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST',
-        value: '2558Mi',
-      },
-      {
-        name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT',
-        value: '3Gi',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_REPLICAS',
-        value: '3',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB',
-        value: '2048',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT',
-        value: '3072',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST',
-        value: '500m',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT',
-        value: '3',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST',
-        value: '2558Mi',
-      },
-      {
-        name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT',
-        value: '3Gi',
-      },
-      {
-        name: 'THANOS_RECEIVE_CPU_REQUEST',
-        value: '1',
-      },
-      {
-        name: 'THANOS_RECEIVE_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'THANOS_RECEIVE_MEMORY_REQUEST',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_RECEIVE_MEMORY_LIMIT',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_RECEIVE_DEBUG_ENV',
-        value: '',
-      },
-      {
-        name: 'THANOS_RECEIVE_LOG_LEVEL',
-        value: 'info',
-      },
-      {
-        name: 'THANOS_COMPACTOR_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'THANOS_COMPACTOR_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'THANOS_COMPACTOR_MEMORY_REQUEST',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_COMPACTOR_MEMORY_LIMIT',
-        value: '5Gi',
-      },
-      {
-        name: 'THANOS_COMPACTOR_PVC_REQUEST',
-        value: '50Gi',
-      },
-      {
-        name: 'THANOS_RULER_LOG_LEVEL',
-        value: 'info',
-      },
-      {
-        name: 'THANOS_RULER_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'THANOS_RULER_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'THANOS_RULER_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'THANOS_RULER_MEMORY_REQUEST',
-        value: '512Mi',
-      },
-      {
-        name: 'THANOS_RULER_MEMORY_LIMIT',
-        value: '1Gi',
-      },
-      {
-        name: 'THANOS_QUERIER_SVC_URL',
-        value: 'http://thanos-querier.observatorium.svc:9090',
-      },
-      {
-        name: 'GUBERNATOR_IMAGE',
-        value: 'thrawn01/gubernator',
-      },
-      {
-        name: 'GUBERNATOR_IMAGE_TAG',
-        value: '1.0.0-rc.1',
-      },
-      {
-        name: 'GUBERNATOR_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'GUBERNATOR_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'GUBERNATOR_CPU_LIMIT',
-        value: '200m',
-      },
-      {
-        name: 'GUBERNATOR_MEMORY_REQUEST',
-        value: '100Mi',
-      },
-      {
-        name: 'GUBERNATOR_MEMORY_LIMIT',
-        value: '200Mi',
-      },
-      {
-        name: 'OBSERVATORIUM_API_IMAGE',
-        value: 'quay.io/observatorium/observatorium',
-      },
-      {
-        name: 'OBSERVATORIUM_API_IMAGE_TAG',
-        value: 'master-2020-11-02-v0.1.1-192-ge324057',
-      },
-      {
-        name: 'OBSERVATORIUM_API_REPLICAS',
-        value: '3',
-      },
-      {
-        name: 'OBSERVATORIUM_API_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'OBSERVATORIUM_API_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'OBSERVATORIUM_API_MEMORY_REQUEST',
-        value: '256Mi',
-      },
-      {
-        name: 'OBSERVATORIUM_API_MEMORY_LIMIT',
-        value: '1Gi',
-      },
-      {
-        name: 'OPA_AMS_IMAGE',
-        value: 'quay.io/observatorium/opa-ams',
-      },
-      {
-        name: 'OPA_AMS_IMAGE_TAG',
-        value: 'master-2020-10-28-902d400',
-      },
-      {
-        name: 'OPA_AMS_MEMCACHED_EXPIRE',
-        value: '300',
-      },
-      {
-        name: 'OPA_AMS_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'OPA_AMS_MEMORY_REQUEST',
-        value: '100Mi',
-      },
-      {
-        name: 'OPA_AMS_CPU_LIMIT',
-        value: '200m',
-      },
-      {
-        name: 'OPA_AMS_MEMORY_LIMIT',
-        value: '200Mi',
-      },
-      {
-        name: 'JAEGER_PROXY_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'JAEGER_PROXY_MEMORY_REQUEST',
-        value: '100Mi',
-      },
-      {
-        name: 'JAEGER_PROXY_CPU_LIMITS',
-        value: '200m',
-      },
-      {
-        name: 'JAEGER_PROXY_MEMORY_LIMITS',
-        value: '200Mi',
-      },
-      {
-        name: 'IMAGE',
-        value: 'quay.io/openshift/origin-telemeter',
-      },
-      {
-        name: 'IMAGE_TAG',
-        value: 'v4.0',
-      },
-      {
-        name: 'REPLICAS',
-        value: '10',
-      },
-      {
-        name: 'IMAGE_CANARY',
-        value: 'quay.io/openshift/origin-telemeter',
-      },
-      {
-        name: 'IMAGE_CANARY_TAG',
-        value: 'v4.0',
-      },
-      {
-        name: 'REPLICAS_CANARY',
-        value: '0',
-      },
-      {
-        name: 'TELEMETER_SERVER_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'TELEMETER_SERVER_CPU_LIMIT',
-        value: '1',
-      },
-      {
-        name: 'TELEMETER_SERVER_MEMORY_REQUEST',
-        value: '500Mi',
-      },
-      {
-        name: 'TELEMETER_SERVER_MEMORY_LIMIT',
-        value: '1Gi',
-      },
-      {
-        name: 'MEMCACHED_IMAGE',
-        value: 'docker.io/memcached',
-      },
-      {
-        name: 'MEMCACHED_IMAGE_TAG',
-        value: '1.5.20-alpine',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_IMAGE',
-        value: 'docker.io/prom/memcached-exporter',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_IMAGE_TAG',
-        value: 'v0.6.0',
-      },
-      {
-        name: 'MEMCACHED_CPU_REQUEST',
-        value: '500m',
-      },
-      {
-        name: 'MEMCACHED_CPU_LIMIT',
-        value: '3',
-      },
-      {
-        name: 'MEMCACHED_MEMORY_REQUEST',
-        value: '1329Mi',
-      },
-      {
-        name: 'MEMCACHED_MEMORY_LIMIT',
-        value: '1844Mi',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_CPU_REQUEST',
-        value: '50m',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_CPU_LIMIT',
-        value: '200m',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST',
-        value: '50Mi',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT',
-        value: '200Mi',
-      },
-      {
-        name: 'TELEMETER_FORWARD_URL',
-        value: '',
-      },
-      {
-        name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE',
-        value: 'quay.io/app-sre/observatorium-receive-proxy',
-      },
-      {
-        name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION',
-        value: '14e844d',
-      },
-      {
-        name: 'THANOS_RECEIVE_TSDB_PATH',
-        value: '/var/thanos/receive',
-      },
-      {
-        name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET',
-        value: 'observatorium-thanos-receive',
-      },
-      {
-        name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS',
-        value: '3600',
-      },
-      {
-        name: 'TELEMETER_LOG_LEVEL',
-        value: 'warn',
-      },
+      { name: 'NAMESPACE', value: obsNS },
+      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: obsLogsNS },
+      { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },
+      { name: 'THANOS_IMAGE_TAG', value: 'master-2020-08-12-70f89d83' },
+      { name: 'STORAGE_CLASS', value: 'gp2' },
+      { name: 'PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
+      { name: 'PROXY_IMAGE_TAG', value: '4.4.0' },
+      { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
+      { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.14.0' },
+      { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE', value: 'quay.io/observatorium/thanos-receive-controller' },
+      { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE_TAG', value: 'master-2019-10-18-d55fee2' },
+      { name: 'THANOS_QUERIER_REPLICAS', value: '3' },
+      { name: 'THANOS_STORE_REPLICAS', value: '5' },
+      { name: 'THANOS_COMPACTOR_LOG_LEVEL', value: 'info' },
+      { name: 'THANOS_COMPACTOR_REPLICAS', value: '1' },
+      { name: 'THANOS_RECEIVE_REPLICAS', value: '5' },
+      { name: 'THANOS_CONFIG_SECRET', value: 'thanos-objectstorage' },
+      { name: 'THANOS_S3_SECRET', value: 'telemeter-thanos-stage-s3' },
+      { name: 'THANOS_QUERIER_LOG_LEVEL', value: 'info' },
+      { name: 'THANOS_QUERIER_CPU_REQUEST', value: '100m' },
+      { name: 'THANOS_QUERIER_CPU_LIMIT', value: '1' },
+      { name: 'THANOS_QUERIER_MEMORY_REQUEST', value: '256Mi' },
+      { name: 'THANOS_QUERIER_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'THANOS_QUERY_FRONTEND_REPLICAS', value: '3' },
+      { name: 'THANOS_QUERY_FRONTEND_CPU_REQUEST', value: '100m' },
+      { name: 'THANOS_QUERY_FRONTEND_CPU_LIMIT', value: '1' },
+      { name: 'THANOS_QUERY_FRONTEND_MEMORY_REQUEST', value: '256Mi' },
+      { name: 'THANOS_QUERY_FRONTEND_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'THANOS_QUERY_FRONTEND_SPLIT_INTERVAL', value: '24h' },
+      { name: 'THANOS_QUERY_FRONTEND_MAX_RETRIES', value: '0' },
+      { name: 'THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN', value: '5s' },
+      { name: 'THANOS_STORE_LOG_LEVEL', value: 'info' },
+      { name: 'THANOS_STORE_CPU_REQUEST', value: '500m' },
+      { name: 'THANOS_STORE_CPU_LIMIT', value: '2' },
+      { name: 'THANOS_STORE_MEMORY_REQUEST', value: '1Gi' },
+      { name: 'THANOS_STORE_MEMORY_LIMIT', value: '8Gi' },
+      { name: 'THANOS_STORE_INDEX_CACHE_REPLICAS', value: '3' },
+      { name: 'THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB', value: '2048' },
+      { name: 'THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT', value: '3072' },
+      { name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST', value: '500m' },
+      { name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT', value: '3' },
+      { name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST', value: '2558Mi' },
+      { name: 'THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT', value: '3Gi' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_REPLICAS', value: '3' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB', value: '2048' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT', value: '3072' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST', value: '500m' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT', value: '3' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST', value: '2558Mi' },
+      { name: 'THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT', value: '3Gi' },
+      { name: 'THANOS_RECEIVE_CPU_REQUEST', value: '1' },
+      { name: 'THANOS_RECEIVE_CPU_LIMIT', value: '1' },
+      { name: 'THANOS_RECEIVE_MEMORY_REQUEST', value: '1Gi' },
+      { name: 'THANOS_RECEIVE_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'THANOS_RECEIVE_DEBUG_ENV', value: '' },
+      { name: 'THANOS_RECEIVE_LOG_LEVEL', value: 'info' },
+      { name: 'THANOS_COMPACTOR_CPU_REQUEST', value: '100m' },
+      { name: 'THANOS_COMPACTOR_CPU_LIMIT', value: '1' },
+      { name: 'THANOS_COMPACTOR_MEMORY_REQUEST', value: '1Gi' },
+      { name: 'THANOS_COMPACTOR_MEMORY_LIMIT', value: '5Gi' },
+      { name: 'THANOS_COMPACTOR_PVC_REQUEST', value: '50Gi' },
+      { name: 'THANOS_RULER_LOG_LEVEL', value: 'info' },
+      { name: 'THANOS_RULER_REPLICAS', value: '2' },
+      { name: 'THANOS_RULER_CPU_REQUEST', value: '100m' },
+      { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },
+      { name: 'THANOS_RULER_MEMORY_REQUEST', value: '512Mi' },
+      { name: 'THANOS_RULER_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'THANOS_QUERIER_SVC_URL', value: 'http://thanos-querier.observatorium.svc:9090' },
+      { name: 'GUBERNATOR_IMAGE', value: 'thrawn01/gubernator' },
+      { name: 'GUBERNATOR_IMAGE_TAG', value: '1.0.0-rc.1' },
+      { name: 'GUBERNATOR_REPLICAS', value: '2' },
+      { name: 'GUBERNATOR_CPU_REQUEST', value: '100m' },
+      { name: 'GUBERNATOR_CPU_LIMIT', value: '200m' },
+      { name: 'GUBERNATOR_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'GUBERNATOR_MEMORY_LIMIT', value: '200Mi' },
+      { name: 'OBSERVATORIUM_API_IMAGE', value: 'quay.io/observatorium/observatorium' },
+      { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'master-2020-11-02-v0.1.1-192-ge324057' },
+      { name: 'OBSERVATORIUM_API_REPLICAS', value: '3' },
+      { name: 'OBSERVATORIUM_API_CPU_REQUEST', value: '100m' },
+      { name: 'OBSERVATORIUM_API_CPU_LIMIT', value: '1' },
+      { name: 'OBSERVATORIUM_API_MEMORY_REQUEST', value: '256Mi' },
+      { name: 'OBSERVATORIUM_API_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'OPA_AMS_IMAGE', value: 'quay.io/observatorium/opa-ams' },
+      { name: 'OPA_AMS_IMAGE_TAG', value: 'master-2020-10-28-902d400' },
+      { name: 'OPA_AMS_MEMCACHED_EXPIRE', value: '300' },
+      { name: 'OPA_AMS_CPU_REQUEST', value: '100m' },
+      { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'OPA_AMS_CPU_LIMIT', value: '200m' },
+      { name: 'OPA_AMS_MEMORY_LIMIT', value: '200Mi' },
+      { name: 'JAEGER_PROXY_CPU_REQUEST', value: '100m' },
+      { name: 'JAEGER_PROXY_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'JAEGER_PROXY_CPU_LIMITS', value: '200m' },
+      { name: 'JAEGER_PROXY_MEMORY_LIMITS', value: '200Mi' },
+      { name: 'IMAGE', value: 'quay.io/openshift/origin-telemeter' },
+      { name: 'IMAGE_TAG', value: 'v4.0' },
+      { name: 'REPLICAS', value: '10' },
+      { name: 'IMAGE_CANARY', value: 'quay.io/openshift/origin-telemeter' },
+      { name: 'IMAGE_CANARY_TAG', value: 'v4.0' },
+      { name: 'REPLICAS_CANARY', value: '0' },
+      { name: 'TELEMETER_SERVER_CPU_REQUEST', value: '100m' },
+      { name: 'TELEMETER_SERVER_CPU_LIMIT', value: '1' },
+      { name: 'TELEMETER_SERVER_MEMORY_REQUEST', value: '500Mi' },
+      { name: 'TELEMETER_SERVER_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'MEMCACHED_IMAGE', value: 'docker.io/memcached' },
+      { name: 'MEMCACHED_IMAGE_TAG', value: '1.5.20-alpine' },
+      { name: 'MEMCACHED_EXPORTER_IMAGE', value: 'docker.io/prom/memcached-exporter' },
+      { name: 'MEMCACHED_EXPORTER_IMAGE_TAG', value: 'v0.6.0' },
+      { name: 'MEMCACHED_CPU_REQUEST', value: '500m' },
+      { name: 'MEMCACHED_CPU_LIMIT', value: '3' },
+      { name: 'MEMCACHED_MEMORY_REQUEST', value: '1329Mi' },
+      { name: 'MEMCACHED_MEMORY_LIMIT', value: '1844Mi' },
+      { name: 'MEMCACHED_EXPORTER_CPU_REQUEST', value: '50m' },
+      { name: 'MEMCACHED_EXPORTER_CPU_LIMIT', value: '200m' },
+      { name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST', value: '50Mi' },
+      { name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT', value: '200Mi' },
+      { name: 'TELEMETER_FORWARD_URL', value: '' },
+      { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE', value: 'quay.io/app-sre/observatorium-receive-proxy' },
+      { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION', value: '14e844d' },
+      { name: 'THANOS_RECEIVE_TSDB_PATH', value: '/var/thanos/receive' },
+      { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET', value: 'observatorium-thanos-receive' },
+      { name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS', value: '3600' },
+      { name: 'TELEMETER_LOG_LEVEL', value: 'warn' },
     ],
   },
 
@@ -838,232 +463,70 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       for name in std.objectFields(obs.loki.manifests)
     ],
     parameters: [
-      {
-        name: 'NAMESPACE',
-        value: obsLogsNS,
-      },
-      {
-        name: 'STORAGE_CLASS',
-        value: 'gp2',
-      },
-      {
-        name: 'LOKI_IMAGE_TAG',
-        value: '2.0.0',
-      },
-      {
-        name: 'LOKI_IMAGE',
-        value: 'docker.io/grafana/loki',
-      },
-      {
-        name: 'LOKI_S3_SECRET',
-        value: 'observatorium-logs-stage-s3',
-      },
-      {
-        name: 'LOKI_COMPACTOR_CPU_REQUESTS',
-        value: '500m',
-      },
-      {
-        name: 'LOKI_COMPACTOR_CPU_LIMITS',
-        value: '1000m',
-      },
-      {
-        name: 'LOKI_COMPACTOR_MEMORY_REQUESTS',
-        value: '2Gi',
-      },
-      {
-        name: 'LOKI_COMPACTOR_MEMORY_LIMITS',
-        value: '4Gi',
-      },
-      {
-        name: 'LOKI_DISTRIBUTOR_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_DISTRIBUTOR_CPU_REQUESTS',
-        value: '500m',
-      },
-      {
-        name: 'LOKI_DISTRIBUTOR_CPU_LIMITS',
-        value: '1000m',
-      },
-      {
-        name: 'LOKI_DISTRIBUTOR_MEMORY_REQUESTS',
-        value: '500Mi',
-      },
-      {
-        name: 'LOKI_DISTRIBUTOR_MEMORY_LIMITS',
-        value: '1Gi',
-      },
-      {
-        name: 'LOKI_INGESTER_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_INGESTER_CPU_REQUESTS',
-        value: '1000m',
-      },
-      {
-        name: 'LOKI_INGESTER_CPU_LIMITS',
-        value: '2000m',
-      },
-      {
-        name: 'LOKI_INGESTER_MEMORY_REQUESTS',
-        value: '5Gi',
-      },
-      {
-        name: 'LOKI_INGESTER_MEMORY_LIMITS',
-        value: '10Gi',
-      },
-      {
-        name: 'LOKI_QUERIER_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_QUERIER_CPU_REQUESTS',
-        value: '500m',
-      },
-      {
-        name: 'LOKI_QUERIER_CPU_LIMITS',
-        value: '500m',
-      },
-      {
-        name: 'LOKI_QUERIER_MEMORY_REQUESTS',
-        value: '600Mi',
-      },
-      {
-        name: 'LOKI_QUERIER_MEMORY_LIMITS',
-        value: '1200Mi',
-      },
-      {
-        name: 'LOKI_QUERY_FRONTEND_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_QUERY_FRONTEND_CPU_REQUESTS',
-        value: '500m',
-      },
-      {
-        name: 'LOKI_QUERY_FRONTEND_CPU_LIMITS',
-        value: '500m',
-      },
-      {
-        name: 'LOKI_QUERY_FRONTEND_MEMORY_REQUESTS',
-        value: '600Mi',
-      },
-      {
-        name: 'LOKI_QUERY_FRONTEND_MEMORY_LIMITS',
-        value: '1200Mi',
-      },
-      {
-        name: 'LOKI_REPLICATION_FACTOR',
-        // This value should be set equal to
-        // LOKI_REPLICATION_FACTOR <= LOKI_INGESTER_REPLICAS
-        value: '2',
-      },
-      {
-        name: 'LOKI_QUERY_PARALLELISM',
-        // The querier concurrency should be equal to (or less than) the CPU cores of the system the querier runs.
-        // A higher value will lead to a querier trying to process more requests than there are available
-        // cores and will result in scheduling delays.
-        // This value should be set equal to:
-        //
-        // std.floor( querier-concurrency / LOKI_QUERY_FRONTEND_REPLICAS)
-        //
-        // e.g. limit to N/2 worker threads per frontend, as we have two frontends.
-        value: '2',
-      },
-      {
-        name: 'LOKI_CHUNK_CACHE_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_INDEX_QUERY_CACHE_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_RESULTS_CACHE_REPLICAS',
-        value: '2',
-      },
-      {
-        name: 'LOKI_PVC_REQUEST',
-        value: '50Gi',
-      },
-      {
-        name: 'JAEGER_COLLECTOR_NAMESPACE',
-        value: obsNS,
-      },
-      {
-        name: 'JAEGER_AGENT_IMAGE',
-        value: 'jaegertracing/jaeger-agent',
-      },
-      {
-        name: 'JAEGER_AGENT_IMAGE_TAG',
-        value: '1.14.0',
-      },
-      {
-        name: 'JAEGER_PROXY_CPU_REQUEST',
-        value: '100m',
-      },
-      {
-        name: 'JAEGER_PROXY_MEMORY_REQUEST',
-        value: '100Mi',
-      },
-      {
-        name: 'JAEGER_PROXY_CPU_LIMITS',
-        value: '200m',
-      },
-      {
-        name: 'JAEGER_PROXY_MEMORY_LIMITS',
-        value: '200Mi',
-      },
-      {
-        name: 'MEMCACHED_IMAGE',
-        value: 'docker.io/memcached',
-      },
-      {
-        name: 'MEMCACHED_IMAGE_TAG',
-        value: '1.5.20-alpine',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_IMAGE',
-        value: 'docker.io/prom/memcached-exporter',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_IMAGE_TAG',
-        value: 'v0.6.0',
-      },
-      {
-        name: 'MEMCACHED_CPU_REQUEST',
-        value: '500m',
-      },
-      {
-        name: 'MEMCACHED_CPU_LIMIT',
-        value: '3',
-      },
-      {
-        name: 'MEMCACHED_MEMORY_REQUEST',
-        value: '1329Mi',
-      },
-      {
-        name: 'MEMCACHED_MEMORY_LIMIT',
-        value: '1844Mi',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_CPU_REQUEST',
-        value: '50m',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_CPU_LIMIT',
-        value: '200m',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST',
-        value: '50Mi',
-      },
-      {
-        name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT',
-        value: '200Mi',
-      },
+      { name: 'NAMESPACE', value: obsLogsNS },
+      { name: 'STORAGE_CLASS', value: 'gp2' },
+      { name: 'LOKI_IMAGE_TAG', value: '2.0.0' },
+      { name: 'LOKI_IMAGE', value: 'docker.io/grafana/loki' },
+      { name: 'LOKI_S3_SECRET', value: 'observatorium-logs-stage-s3' },
+      { name: 'LOKI_COMPACTOR_CPU_REQUESTS', value: '500m' },
+      { name: 'LOKI_COMPACTOR_CPU_LIMITS', value: '1000m' },
+      { name: 'LOKI_COMPACTOR_MEMORY_REQUESTS', value: '2Gi' },
+      { name: 'LOKI_COMPACTOR_MEMORY_LIMITS', value: '4Gi' },
+      { name: 'LOKI_DISTRIBUTOR_REPLICAS', value: '2' },
+      { name: 'LOKI_DISTRIBUTOR_CPU_REQUESTS', value: '500m' },
+      { name: 'LOKI_DISTRIBUTOR_CPU_LIMITS', value: '1000m' },
+      { name: 'LOKI_DISTRIBUTOR_MEMORY_REQUESTS', value: '500Mi' },
+      { name: 'LOKI_DISTRIBUTOR_MEMORY_LIMITS', value: '1Gi' },
+      { name: 'LOKI_INGESTER_REPLICAS', value: '2' },
+      { name: 'LOKI_INGESTER_CPU_REQUESTS', value: '1000m' },
+      { name: 'LOKI_INGESTER_CPU_LIMITS', value: '2000m' },
+      { name: 'LOKI_INGESTER_MEMORY_REQUESTS', value: '5Gi' },
+      { name: 'LOKI_INGESTER_MEMORY_LIMITS', value: '10Gi' },
+      { name: 'LOKI_QUERIER_REPLICAS', value: '2' },
+      { name: 'LOKI_QUERIER_CPU_REQUESTS', value: '500m' },
+      { name: 'LOKI_QUERIER_CPU_LIMITS', value: '500m' },
+      { name: 'LOKI_QUERIER_MEMORY_REQUESTS', value: '600Mi' },
+      { name: 'LOKI_QUERIER_MEMORY_LIMITS', value: '1200Mi' },
+      { name: 'LOKI_QUERY_FRONTEND_REPLICAS', value: '2' },
+      { name: 'LOKI_QUERY_FRONTEND_CPU_REQUESTS', value: '500m' },
+      { name: 'LOKI_QUERY_FRONTEND_CPU_LIMITS', value: '500m' },
+      { name: 'LOKI_QUERY_FRONTEND_MEMORY_REQUESTS', value: '600Mi' },
+      { name: 'LOKI_QUERY_FRONTEND_MEMORY_LIMITS', value: '1200Mi' },
+      // This value should be set equal t
+      // LOKI_REPLICATION_FACTOR <= LOKI_INGESTER_REPLICAS
+      { name: 'LOKI_REPLICATION_FACTOR', value: '2' },
+      // The querier concurrency should be equal to (or less than) the CPU cores of the system the querier runs
+      // A higher value will lead to a querier trying to process more requests than there are available
+      // cores and will result in scheduling delays.
+      // This value should be set equal to:
+      //
+      // std.floor( querier-concurrency / LOKI_QUERY_FRONTEND_REPLICAS)
+      //
+      // e.g. limit to N/2 worker threads per frontend, as we have two frontends.
+      { name: 'LOKI_QUERY_PARALLELISM', value: '2' },
+      { name: 'LOKI_CHUNK_CACHE_REPLICAS', value: '2' },
+      { name: 'LOKI_INDEX_QUERY_CACHE_REPLICAS', value: '2' },
+      { name: 'LOKI_RESULTS_CACHE_REPLICAS', value: '2' },
+      { name: 'LOKI_PVC_REQUEST', value: '50Gi' },
+      { name: 'JAEGER_COLLECTOR_NAMESPACE', value: obsNS },
+      { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
+      { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.14.0' },
+      { name: 'JAEGER_PROXY_CPU_REQUEST', value: '100m' },
+      { name: 'JAEGER_PROXY_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'JAEGER_PROXY_CPU_LIMITS', value: '200m' },
+      { name: 'JAEGER_PROXY_MEMORY_LIMITS', value: '200Mi' },
+      { name: 'MEMCACHED_IMAGE', value: 'docker.io/memcached' },
+      { name: 'MEMCACHED_IMAGE_TAG', value: '1.5.20-alpine' },
+      { name: 'MEMCACHED_EXPORTER_IMAGE', value: 'docker.io/prom/memcached-exporter' },
+      { name: 'MEMCACHED_EXPORTER_IMAGE_TAG', value: 'v0.6.0' },
+      { name: 'MEMCACHED_CPU_REQUEST', value: '500m' },
+      { name: 'MEMCACHED_CPU_LIMIT', value: '3' },
+      { name: 'MEMCACHED_MEMORY_REQUEST', value: '1329Mi' },
+      { name: 'MEMCACHED_MEMORY_LIMIT', value: '1844Mi' },
+      { name: 'MEMCACHED_EXPORTER_CPU_REQUEST', value: '50m' },
+      { name: 'MEMCACHED_EXPORTER_CPU_LIMIT', value: '200m' },
+      { name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST', value: '50Mi' },
+      { name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT', value: '200Mi' },
     ],
   },
 

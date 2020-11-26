@@ -193,7 +193,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
     memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
     maxItemSize: '5m',
-    replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
+    replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
     resources: {
       memcached: {
         requests: {
@@ -238,7 +238,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
     connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
     memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
-    replicas: '${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}',
+    replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
     resources: {
       memcached: {
         requests: {

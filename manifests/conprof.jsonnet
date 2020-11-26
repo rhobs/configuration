@@ -1,4 +1,4 @@
-local c = import 'conprof/conprof.libsonnet';
+local c = import 'github.com/conprof/conprof/deployments/jsonnet/conprof/conprof.libsonnet';
 
 local conprof = c + c.withConfigMap {
   local conprof = self,

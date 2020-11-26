@@ -1,4 +1,4 @@
-local mixin = (import 'jaeger-mixin/mixin.libsonnet');
+local mixin = (import 'github.com/jaegertracing/jaeger/monitoring/jaeger-mixin/mixin.libsonnet');
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
 local jaeger = (import './jaeger-collector.libsonnet')({

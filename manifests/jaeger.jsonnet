@@ -1,103 +1,133 @@
-local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
+local mixin = (import 'jaeger-mixin/mixin.libsonnet');
+local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
-local jaeger =
-  // (import 'kube-jaeger.libsonnet')
-  (import './jaeger-collector.libsonnet')({
-    namespace:: '${NAMESPACE}',
-    image:: '${IMAGE}:${IMAGE_TAG}',
-    version:: '${IMAGE_TAG}',
-    replicas:: '${{REPLICAS}}',  // additional parenthesis does matter, they convert argument to an int.
-    pvc+:: { class: 'gp2' },
-    serviceMonitor: true,
-  }) + {
-    local j = self,
+local jaeger = (import './jaeger-collector.libsonnet')({
+  namespace:: '${NAMESPACE}',
+  image:: '${IMAGE}:${IMAGE_TAG}',
+  version:: '${IMAGE_TAG}',
+  replicas: 1,
+  pvc+:: { class: 'gp2' },
+  serviceMonitor: true,
+}) + {
+  local j = self,
 
-    queryService+: {
-      metadata+: {
-        annotations+: {
-          'service.alpha.openshift.io/serving-cert-secret-name': 'jaeger-query-tls',
-        },
+  local oauth = oauthProxy({
+    name: 'jaeger',
+    image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
+    upstream: 'http://localhost:%d' % j.queryService.spec.ports[0].port,
+    serviceAccountName: 'prometheus-telemeter',
+    tlsSecretName: 'jaeger-query-tls',
+    sessionSecretName: 'jaeger-proxy',
+    resources: {
+      requests: {
+        cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+        memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
       },
-      spec+: {
-        ports+: [
-          { name: 'https', port: 16687, targetPort: 16687 },
-        ],
+      limits: {
+        cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+        memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
       },
     },
+  }),
 
-    local deployment = k.apps.v1.deployment,
-    local volume = deployment.mixin.spec.template.spec.volumesType,
-    local container = deployment.mixin.spec.template.spec.containersType,
-    local volumeMount = container.volumeMountsType,
+  proxySecret: oauth.proxySecret {
+    metadata+: {
+      labels+: {
+        'app.kubernetes.io/component': 'tracing',
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/name': 'jaeger',
+        'app.kubernetes.io/part-of': 'observatorium',
+      },
+    },
+  },
 
-    deployment+: {
-      spec+: {
-        template+: {
-          spec+: {
-            containers: [
-              super.containers[0] {
-                resources: {
-                  requests: {
-                    cpu: '${JAEGER_CPU_REQUEST}',
-                    memory: '${JAEGER_MEMORY_REQUEST}',
-                  },
-                  limits: {
-                    cpu: '${JAEGER_CPU_LIMITS}',
-                    memory: '${JAEGER_MEMORY_LIMITS}',
-                  },
+  service+: oauth.service,
+
+  // TODO(kakkoyun): Do we need this anymore?
+  queryService+: {
+    metadata+: {
+      annotations+: {
+        'service.alpha.openshift.io/serving-cert-secret-name': 'jaeger-query-tls',
+      },
+    },
+    spec+: {
+      ports+: [
+        { name: 'https', port: 16687, targetPort: 16687 },
+      ],
+    },
+  },
+
+  deployment+: {
+    spec+: {
+      replicas: '${{REPLICAS}}',  // additional parenthesis does matter, they convert argument to an int.
+      template+: {
+        spec+: {
+          containers: [
+            super.containers[0] {
+              resources: {
+                requests: {
+                  cpu: '${JAEGER_CPU_REQUEST}',
+                  memory: '${JAEGER_MEMORY_REQUEST}',
                 },
-                args+: [
-                  '--memory.max-traces=${JAEGER_MAX_TRACES}',
-                ],
+                limits: {
+                  cpu: '${JAEGER_CPU_LIMITS}',
+                  memory: '${JAEGER_MEMORY_LIMITS}',
+                },
               },
-            ] + [
-              container.new('proxy', '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}') +
-              container.withArgs([
-                '-provider=openshift',
-                '-https-address=:%d' % j.queryService.spec.ports[1].port,
-                '-http-address=',
-                '-email-domain=*',
-                '-upstream=http://localhost:%d' % j.queryService.spec.ports[0].port,
-                '-openshift-service-account=prometheus-telemeter',
-                '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
-                '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
-                '-tls-cert=/etc/tls/private/tls.crt',
-                '-tls-key=/etc/tls/private/tls.key',
-                '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token',
-                '-cookie-secret-file=/etc/proxy/secrets/session_secret',
-                '-openshift-ca=/etc/pki/tls/cert.pem',
-                '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
-              ]) +
-              container.withPorts([
-                { name: 'https', containerPort: j.queryService.spec.ports[1].port },
-              ]) +
-              container.withVolumeMounts(
-                [
-                  volumeMount.new('secret-jaeger-query-tls', '/etc/tls/private'),
-                  volumeMount.new('secret-jaeger-proxy', '/etc/proxy/secrets'),
-                ]
-              ) +
-              container.mixin.resources.withRequests({
-                cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-                memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-              }) +
-              container.mixin.resources.withLimits({
-                cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-                memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-              }),
-            ],
-
-            serviceAccount: 'prometheus-telemeter',
-            serviceAccountName: 'prometheus-telemeter',
-            volumes+: [
-              { name: 'secret-jaeger-query-tls', secret: { secretName: 'jaeger-query-tls' } },
-              { name: 'secret-jaeger-proxy', secret: { secretName: 'jaeger-proxy' } },
-            ],
-          },
+              args+: ['--memory.max-traces=${JAEGER_MAX_TRACES}'],
+            },
+          ],
         },
       },
     },
-  };
+  } + oauth.deployment,
+
+  serviceMonitor+: {
+    metadata+: {
+      labels+: {
+        prometheus: 'app-sre',
+        'app.kubernetes.io/version':: 'hidden',
+      },
+    },
+  },
+
+  serviceMonitorAgent: {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'ServiceMonitor',
+    metadata+: {
+      name: 'observatorium-jaeger-agent',
+      namespace: '${NAMESPACE}',
+      labels+: {
+        prometheus: 'app-sre',
+      },
+    },
+    spec: {
+      namespaceSelector: { matchNames: ['${NAMESPACE}'] },
+      selector: {
+        matchLabels: {
+          'app.kubernetes.io/name': 'jaeger-agent',
+        },
+      },
+      endpoints: [
+        { port: 'metrics' },
+      ],
+    },
+  },
+
+  // TODO(kakkoyun): Check if this actually works!
+  prometheusRule: {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: 'observatorium-jaeger',
+      labels: {
+        prometheus: 'app-sre',
+        role: 'alert-rules',
+      },
+    },
+    spec: mixin.prometheusAlerts,
+  },
+};
 
 {
   apiVersion: 'v1',
@@ -122,12 +152,12 @@ local jaeger =
     { name: 'JAEGER_MEMORY_REQUEST', value: '4Gi' },
     { name: 'JAEGER_CPU_LIMITS', value: '4' },
     { name: 'JAEGER_MEMORY_LIMITS', value: '8Gi' },
-    { name: 'PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
-    { name: 'PROXY_IMAGE_TAG', value: '4.4.0' },
-    { name: 'JAEGER_PROXY_CPU_REQUEST', value: '100m' },
-    { name: 'JAEGER_PROXY_MEMORY_REQUEST', value: '100Mi' },
-    { name: 'JAEGER_PROXY_CPU_LIMITS', value: '200m' },
-    { name: 'JAEGER_PROXY_MEMORY_LIMITS', value: '200Mi' },
-    { name: 'JAEGER_MAX_TRACES', value: '100000' },
+    { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
+    { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.4.0' },
+    { name: 'OAUTH_PROXY_CPU_REQUEST', value: '100m' },
+    { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
+    { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
+    { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
+    { name: 'OAUTH_MAX_TRACES', value: '100000' },
   ],
 }

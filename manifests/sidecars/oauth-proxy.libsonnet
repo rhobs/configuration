@@ -5,7 +5,6 @@ local defaults = {
   upstream: error 'must provide upstream',
   tlsSecretName: defaults.name + '-tls',
   sessionSecretName: error 'must provide sessionSecretName',
-  sessionSecret: error 'must provide proxySessionSecret',
   serviceAccountName: error 'must provide serviceAccountName',
   resources: {},
   ports: {

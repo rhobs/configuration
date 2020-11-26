@@ -2811,13 +2811,13 @@ parameters:
   value: 200m
 - name: OPA_AMS_MEMORY_LIMIT
   value: 200Mi
-- name: JAEGER_PROXY_CPU_REQUEST
+- name: OATUH_PROXY_CPU_REQUEST
   value: 100m
-- name: JAEGER_PROXY_MEMORY_REQUEST
+- name: OATUH_PROXY_MEMORY_REQUEST
   value: 100Mi
-- name: JAEGER_PROXY_CPU_LIMITS
+- name: OATUH_PROXY_CPU_LIMITS
   value: 200m
-- name: JAEGER_PROXY_MEMORY_LIMITS
+- name: OATUH_PROXY_MEMORY_LIMITS
   value: 200Mi
 - name: IMAGE
   value: quay.io/openshift/origin-telemeter

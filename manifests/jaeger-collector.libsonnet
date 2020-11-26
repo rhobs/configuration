@@ -31,7 +31,7 @@ local defaults = {
   podLabelSelector:: {
     [labelName]: defaults.commonLabels[labelName]
     for labelName in std.objectFields(defaults.commonLabels)
-    if !std.setMember(labelName, ['app.kubernetes.io/version'])
+    if labelName != 'app.kubernetes.io/version'
   },
 };
 
@@ -41,10 +41,9 @@ function(params) {
   // Combine the defaults and the passed params to make the component's config.
   config:: defaults + params,
   // Safety checks for combined config of defaults and params
-  // TODO(kakkoyun): Enable later after figuring out template injection.
-  //   assert std.isNumber(j.config.replicas) && j.config.replicas >= 0 : 'jaeger replicas has to be number >= 0',
-  //   assert std.isObject(j.config.resources),
-  //   assert std.isBoolean(j.config.serviceMonitor),
+  assert std.isNumber(j.config.replicas) && j.config.replicas >= 0 : 'jaeger replicas has to be number >= 0',
+  assert std.isObject(j.config.resources),
+  assert std.isBoolean(j.config.serviceMonitor),
 
   headlessService: {
     apiVersion: 'v1',
@@ -171,17 +170,16 @@ function(params) {
 
 
     {
-      local labels = { 'app.kubernetes.io/name': j.deployment.metadata.name },
       apiVersion: 'apps/v1',
       kind: 'Deployment',
       metadata: {
-        name: 'jaeger-all-in-one',
-        namespace: j.namespace,
-        labels: labels,
+        name: j.config.name,
+        namespace: j.config.namespace,
+        labels: j.config.commonLabels,
       },
       spec: {
         replicas: j.config.replicas,
-        selector: { matchLabels: j.deployment.metadata.labels },
+        selector: { matchLabels: j.config.podLabelSelector },
         strategy: {
           rollingUpdate: {
             maxSurge: 0,
@@ -190,7 +188,7 @@ function(params) {
         },
         template: {
           metadata: {
-            labels: labels,
+            labels: j.deployment.metadata.labels,
           },
           spec: {
             containers: [c],
@@ -216,8 +214,9 @@ function(params) {
     spec: {
       selector: { matchLabels: j.config.podLabelSelector },
       endpoints: [
-        { port: 'http' },
+        { port: 'admin' },
       ],
+      namespaceSelector: { matchNames: ['${NAMESPACE}'] },
     },
   },
 }

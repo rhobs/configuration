@@ -7,7 +7,7 @@ objects:
   kind: Service
   metadata:
     labels:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/name: jaeger-collector
     name: jaeger-admin
   spec:
     ports:
@@ -15,7 +15,10 @@ objects:
       port: 14269
       targetPort: 14269
     selector:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/component: tracing
+      app.kubernetes.io/instance: jaeger-collector
+      app.kubernetes.io/name: jaeger-collector
+      app.kubernetes.io/version: ${IMAGE_TAG}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -33,13 +36,18 @@ objects:
   kind: Deployment
   metadata:
     labels:
-      app.kubernetes.io/name: jaeger-all-in-one
-    name: jaeger-all-in-one
+      app.kubernetes.io/component: tracing
+      app.kubernetes.io/instance: jaeger-collector
+      app.kubernetes.io/name: jaeger-collector
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: jaeger-collector
   spec:
     replicas: ${{REPLICAS}}
     selector:
       matchLabels:
-        app.kubernetes.io/name: jaeger-all-in-one
+        app.kubernetes.io/component: tracing
+        app.kubernetes.io/instance: jaeger-collector
+        app.kubernetes.io/name: jaeger-collector
     strategy:
       rollingUpdate:
         maxSurge: 0
@@ -47,7 +55,10 @@ objects:
     template:
       metadata:
         labels:
-          app.kubernetes.io/name: jaeger-all-in-one
+          app.kubernetes.io/component: tracing
+          app.kubernetes.io/instance: jaeger-collector
+          app.kubernetes.io/name: jaeger-collector
+          app.kubernetes.io/version: ${IMAGE_TAG}
       spec:
         containers:
         - args:
@@ -64,7 +75,7 @@ objects:
               port: 14269
               scheme: HTTP
             periodSeconds: 30
-          name: jaeger-all-in-one
+          name: jaeger-collector
           ports:
           - name: admin
             port: 14269
@@ -99,7 +110,7 @@ objects:
             readOnly: false
         - args:
           - -provider=openshift
-          - -https-address=:16687
+          - -https-address=:8443
           - -http-address=
           - -email-domain=*
           - -upstream=http://localhost:16686
@@ -112,42 +123,38 @@ objects:
           - -cookie-secret-file=/etc/proxy/secrets/session_secret
           - -openshift-ca=/etc/pki/tls/cert.pem
           - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: ${PROXY_IMAGE}:${PROXY_IMAGE_TAG}
-          name: proxy
+          image: ${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}
+          name: oauth-proxy
           ports:
-          - containerPort: 16687
+          - containerPort: 8443
             name: https
           resources:
             limits:
-              cpu: ${JAEGER_PROXY_CPU_LIMITS}
-              memory: ${JAEGER_PROXY_MEMORY_LIMITS}
+              cpu: ${OAUTH_PROXY_CPU_LIMITS}
+              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
             requests:
-              cpu: ${JAEGER_PROXY_CPU_REQUEST}
-              memory: ${JAEGER_PROXY_MEMORY_REQUEST}
+              cpu: ${OAUTH_PROXY_CPU_REQUEST}
+              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /etc/tls/private
-            name: secret-jaeger-query-tls
+            name: jaeger-query-tls
             readOnly: false
           - mountPath: /etc/proxy/secrets
-            name: secret-jaeger-proxy
+            name: jaeger-proxy
             readOnly: false
-        serviceAccount: prometheus-telemeter
         serviceAccountName: prometheus-telemeter
         volumes:
-        - name: jaeger-store-data
-          persistentVolumeClaim:
-            claimName: jaeger-store-data
-        - name: secret-jaeger-query-tls
+        - name: jaeger-query-tls
           secret:
             secretName: jaeger-query-tls
-        - name: secret-jaeger-proxy
+        - name: jaeger-proxy
           secret:
             secretName: jaeger-proxy
 - apiVersion: v1
   kind: Service
   metadata:
     labels:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/name: jaeger-collector
     name: jaeger-collector-headless
   spec:
     clusterIP: None
@@ -156,14 +163,104 @@ objects:
       port: 14250
       targetPort: 14250
     selector:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/component: tracing
+      app.kubernetes.io/instance: jaeger-collector
+      app.kubernetes.io/name: jaeger-collector
+      app.kubernetes.io/version: ${IMAGE_TAG}
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    labels:
+      prometheus: app-sre
+      role: alert-rules
+    name: observatorium-jaeger
+  spec:
+    groups:
+    - name: jaeger_alerts
+      rules:
+      - alert: JaegerHTTPServerErrs
+        annotations:
+          message: |
+            {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% HTTP errors.
+        expr: 100 * sum(rate(jaeger_agent_http_server_errors_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_http_server_total[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerRPCRequestsErrors
+        annotations:
+          message: |
+            {{ $labels.job }} {{ $labels.instance }} is experiencing {{ printf "%.2f" $value }}% RPC HTTP errors.
+        expr: 100 * sum(rate(jaeger_client_jaeger_rpc_http_requests{status_code=~"4xx|5xx"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_client_jaeger_rpc_http_requests[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerClientSpansDropped
+        annotations:
+          message: |
+            service {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
+        expr: 100 * sum(rate(jaeger_reporter_spans{result=~"dropped|err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_reporter_spans[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerAgentSpansDropped
+        annotations:
+          message: |
+            agent {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
+        expr: 100 * sum(rate(jaeger_agent_reporter_batches_failures_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_agent_reporter_batches_submitted_total[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerCollectorDroppingSpans
+        annotations:
+          message: |
+            collector {{ $labels.job }} {{ $labels.instance }} is dropping {{ printf "%.2f" $value }}% spans.
+        expr: 100 * sum(rate(jaeger_collector_spans_dropped_total[1m])) by (instance, job, namespace) / sum(rate(jaeger_collector_spans_received_total[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerSamplingUpdateFailing
+        annotations:
+          message: |
+            {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating sampling policies.
+        expr: 100 * sum(rate(jaeger_sampler_queries{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_sampler_queries[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerThrottlingUpdateFailing
+        annotations:
+          message: |
+            {{ $labels.job }} {{ $labels.instance }} is failing {{ printf "%.2f" $value }}% in updating throttling policies.
+        expr: 100 * sum(rate(jaeger_throttler_updates{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_throttler_updates[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+      - alert: JaegerQueryReqsFailing
+        annotations:
+          message: |
+            {{ $labels.job }} {{ $labels.instance }} is seeing {{ printf "%.2f" $value }}% query errors on {{ $labels.operation }}.
+        expr: 100 * sum(rate(jaeger_query_requests_total{result="err"}[1m])) by (instance, job, namespace) / sum(rate(jaeger_query_requests_total[1m])) by (instance, job, namespace)> 1
+        for: 15m
+        labels:
+          severity: warning
+- apiVersion: v1
+  data:
+    session_secret: ""
+  kind: Secret
+  metadata:
+    labels:
+      app.kubernetes.io/component: tracing
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: jaeger
+      app.kubernetes.io/part-of: observatorium
+    name: jaeger-proxy
+  type: Opaque
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       service.alpha.openshift.io/serving-cert-secret-name: jaeger-query-tls
     labels:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/name: jaeger-collector
     name: jaeger-query
   spec:
     ports:
@@ -174,7 +271,18 @@ objects:
       port: 16687
       targetPort: 16687
     selector:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/component: tracing
+      app.kubernetes.io/instance: jaeger-collector
+      app.kubernetes.io/name: jaeger-collector
+      app.kubernetes.io/version: ${IMAGE_TAG}
+- metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: jaeger-query-tls
+  spec:
+    ports:
+    - name: https
+      port: 8443
+      targetPort: 8443
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -182,21 +290,39 @@ objects:
       app.kubernetes.io/component: tracing
       app.kubernetes.io/instance: jaeger-collector
       app.kubernetes.io/name: jaeger-collector
-      app.kubernetes.io/version: ${IMAGE_TAG}
+      prometheus: app-sre
     name: jaeger-collector
   spec:
     endpoints:
-    - port: http
+    - port: admin
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: tracing
         app.kubernetes.io/instance: jaeger-collector
         app.kubernetes.io/name: jaeger-collector
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-jaeger-agent
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: jaeger-agent
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
     labels:
-      app.kubernetes.io/name: jaeger-all-in-one
+      app.kubernetes.io/name: jaeger-collector
     name: jaeger-store-data
   spec:
     accessModes:
@@ -222,17 +348,17 @@ parameters:
   value: "4"
 - name: JAEGER_MEMORY_LIMITS
   value: 8Gi
-- name: PROXY_IMAGE
+- name: OAUTH_PROXY_IMAGE
   value: quay.io/openshift/origin-oauth-proxy
-- name: PROXY_IMAGE_TAG
+- name: OAUTH_PROXY_IMAGE_TAG
   value: 4.4.0
-- name: JAEGER_PROXY_CPU_REQUEST
+- name: OAUTH_PROXY_CPU_REQUEST
   value: 100m
-- name: JAEGER_PROXY_MEMORY_REQUEST
+- name: OAUTH_PROXY_MEMORY_REQUEST
   value: 100Mi
-- name: JAEGER_PROXY_CPU_LIMITS
+- name: OAUTH_PROXY_CPU_LIMITS
   value: 200m
-- name: JAEGER_PROXY_MEMORY_LIMITS
+- name: OAUTH_PROXY_MEMORY_LIMITS
   value: 200Mi
-- name: JAEGER_MAX_TRACES
+- name: OAUTH_MAX_TRACES
   value: "100000"

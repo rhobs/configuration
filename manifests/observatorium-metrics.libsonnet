@@ -313,7 +313,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
   //     upstream: 'http://localhost:' + obs.queryFrontend.service.spec.ports[0].port,
   //     tlsSecretName: 'query-frontend-tls',
   //     sessionSecretName: 'query-frontend-proxy',
-  //     sessionSecret: '',
   //     serviceAccountName: 'prometheus-telemeter',
   //     resources: {
   //       requests: {

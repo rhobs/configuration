@@ -122,7 +122,6 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
       tlsSecretName: 'observatorium-api-tls',
       sessionSecretName: 'observatorium-api-proxy',
-      sessionSecret: '',
       serviceAccountName: 'observatorium-api',
       resources: {
         requests: {
@@ -405,10 +404,10 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
       { name: 'OPA_AMS_CPU_LIMIT', value: '200m' },
       { name: 'OPA_AMS_MEMORY_LIMIT', value: '200Mi' },
-      { name: 'JAEGER_PROXY_CPU_REQUEST', value: '100m' },
-      { name: 'JAEGER_PROXY_MEMORY_REQUEST', value: '100Mi' },
-      { name: 'JAEGER_PROXY_CPU_LIMITS', value: '200m' },
-      { name: 'JAEGER_PROXY_MEMORY_LIMITS', value: '200Mi' },
+      { name: 'OATUH_PROXY_CPU_REQUEST', value: '100m' },
+      { name: 'OATUH_PROXY_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'OATUH_PROXY_CPU_LIMITS', value: '200m' },
+      { name: 'OATUH_PROXY_MEMORY_LIMITS', value: '200Mi' },
       { name: 'IMAGE', value: 'quay.io/openshift/origin-telemeter' },
       { name: 'IMAGE_TAG', value: 'v4.0' },
       { name: 'REPLICAS', value: '10' },

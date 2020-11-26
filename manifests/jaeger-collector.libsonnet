@@ -168,7 +168,6 @@ function(params) {
       },
     };
 
-
     {
       apiVersion: 'apps/v1',
       kind: 'Deployment',

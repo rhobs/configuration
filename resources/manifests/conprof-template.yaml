@@ -184,7 +184,6 @@ objects:
             readOnly: false
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccount: prometheus-telemeter
         serviceAccountName: prometheus-telemeter
         volumes:
         - emptyDir: {}

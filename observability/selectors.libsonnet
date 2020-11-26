@@ -1,4 +1,4 @@
-local utils = (import 'mixin-utils/utils.libsonnet');
+local utils = (import 'github.com/grafana/jsonnet-libs/mixin-utils/utils.libsonnet');
 local obs = (import '../manifests/obs.jsonnet');
 
 {

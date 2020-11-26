@@ -1,4 +1,4 @@
-local loki = (import 'loki-mixin/mixin.libsonnet');
+local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet');
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
 local obs = import '../manifests/obs.jsonnet';
 
@@ -264,13 +264,13 @@ local renderAlerts(name, namespace, mixin) = {
 
 {
   local thanosAlerts =
-    (import 'thanos-mixin/alerts/absent.libsonnet') +
-    (import 'thanos-mixin/alerts/compact.libsonnet') +
-    (import 'thanos-mixin/alerts/query.libsonnet') +
-    (import 'thanos-mixin/alerts/receive.libsonnet') +
-    (import 'thanos-mixin/alerts/store.libsonnet') +
-    (import 'thanos-mixin/alerts/rule.libsonnet') +
-    (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/absent.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/compact.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/query.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/receive.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/store.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/rule.libsonnet') +
+    (import 'github.com/observatorium/thanos-receive-controller/jsonnet/thanos-receive-controller-mixin/mixin.libsonnet') +
     (import 'selectors.libsonnet').thanos {
       query+:: {
         p99QueryLatencyThreshold: 90,

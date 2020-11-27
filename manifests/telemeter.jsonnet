@@ -1,4 +1,4 @@
-local list = import 'telemeter/lib/list.libsonnet';
+local list = import 'github.com/openshift/telemeter/jsonnet/telemeter/lib/list.libsonnet';
 
 // TODO(kakkoyun): Remove kube-telemeter!
 (import 'kube-telemeter.libsonnet') +

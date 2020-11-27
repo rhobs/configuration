@@ -2566,20 +2566,22 @@ objects:
   kind: ConfigMap
   metadata:
     labels:
+      app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-      app.kubernetes.io/part-of: prometheus-ams
+      app.kubernetes.io/part-of: observatorium
     name: prometheus-remote-write-proxy-config
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
+      app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-      app.kubernetes.io/part-of: prometheus-ams
+      app.kubernetes.io/part-of: observatorium
     name: prometheus-remote-write-proxy
   spec:
-    replicas: 1
+    replicas: '{{REPLICAS}}'
     selector:
       matchLabels:
         app.kubernetes.io/instance: remote-write-proxy
@@ -2587,15 +2589,16 @@ objects:
     template:
       metadata:
         labels:
+          app.kubernetes.io/component: prometheus-ams
           app.kubernetes.io/instance: remote-write-proxy
           app.kubernetes.io/name: nginx
+          app.kubernetes.io/part-of: observatorium
       spec:
         containers:
         - args:
           - -c
           - /config/nginx.conf
-          command:
-          - nginx
+          command: nginx
           image: ${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE}:${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION}
           name: remote-write-proxy
           ports:
@@ -2620,9 +2623,10 @@ objects:
   kind: Service
   metadata:
     labels:
+      app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-      app.kubernetes.io/part-of: prometheus-ams
+      app.kubernetes.io/part-of: observatorium
     name: prometheus-ams-remote-write-proxy
   spec:
     ports:

@@ -1,5 +1,4 @@
 local defaults = {
-  local defaults = self,
   name: error 'provide a name for the oauth proxy',
   image: error 'must provide image',
   clientIDKey: 'client-id',

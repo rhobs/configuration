@@ -1,6 +1,5 @@
 local l = (import 'github.com/observatorium/deployments/components/loki.libsonnet');
 local lc = (import './loki-caches.libsonnet');
-local ja = (import './sidecars/jaeger-agent.libsonnet');
 
 // JaegerAgent sidecar shared across components, thus instantiated outside components.
 local jaegerAgentSidecar = (import './sidecars/jaeger-agent.libsonnet')({

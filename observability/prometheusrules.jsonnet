@@ -165,23 +165,6 @@ local appSREOverwrites(namespace) = {
   ],
 };
 
-
-local renderPrometheusRules(name, namespace, mixin) = {
-  apiVersion: 'monitoring.coreos.com/v1',
-  kind: 'PrometheusRule',
-  metadata: {
-    name: name,
-    labels: {
-      prometheus: 'app-sre',
-      role: 'all-rules',
-    },
-  },
-  spec: mixin {
-          prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
-        }.prometheusAlerts +
-        mixin.prometheusRules,
-};
-
 local renderRules(name, _namespace, mixin) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PrometheusRule',
@@ -288,7 +271,7 @@ local renderAlerts(name, namespace, mixin) = {
   local obsSLOs = {
     local logsGroup = 'logsv1',
     local metricsGroup = 'metricsv1',
-    local metricLatency = 'http_request_duration_seconds',
+    // local metricLatency = 'http_request_duration_seconds',
     local metricError = 'http_requests_total',
     local writeMetricsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
@@ -314,7 +297,7 @@ local renderAlerts(name, namespace, mixin) = {
 
     local alertNameLogsErrors = 'ObservatoriumAPILogsErrorsSLOBudgetBurn',
     local alertNameMetricsErrors = 'ObservatoriumAPIMetricsErrorsSLOBudgetBurn',
-    local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
+    // local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
 
     errorBurn:: [
       {

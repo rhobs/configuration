@@ -15,9 +15,9 @@ format: $(JSONNET_SRC) $(JSONNETFMT)
 	$(JSONNETFMT) -n 2 --max-blank-lines 2 --string-style s --comment-style s -i $(JSONNET_SRC)
 
 .PHONY: lint
-lint: format $(JSONNET_SRC) $(JSONNET_LINT)
+lint: $(JSONNET_LINT) vendor
 	@echo ">>>>> Running linter"
-	find . -type f -not -path './*vendor/*' -name '*.libsonnet' -o -name '*.jsonnet' -exec $(JSONNET_LINT) -J vendor {} \;
+	echo ${JSONNET_SRC} | xargs -n 1 -- $(JSONNET_LINT) -J vendor
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules

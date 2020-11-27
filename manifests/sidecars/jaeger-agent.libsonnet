@@ -1,5 +1,4 @@
 local defaults = {
-  local defaults = self,
   image: error 'must provide image',
   collectorAddress: 'localhost:16879',
   ports: {

@@ -1,5 +1,3 @@
-local list = import 'github.com/openshift/telemeter/jsonnet/telemeter/lib/list.libsonnet';
-
 // These are the defaults for this components configuration.
 local prometheusAms = {
   local pa = self,

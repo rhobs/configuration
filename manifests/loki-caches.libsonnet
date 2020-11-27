@@ -26,7 +26,6 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
   serviceMonitors: {},
 
   chunkCache:: memcached({
-    local cfg = self,
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-chunk-cache',
     namespace: lc.config.namespace,
     commonLabels+:: lc.config.commonLabels {
@@ -45,7 +44,6 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
   } else {},
 
   indexQueryCache:: memcached({
-    local cfg = self,
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-index-query-cache',
     namespace: lc.config.namespace,
     commonLabels+:: lc.config.commonLabels {
@@ -63,7 +61,6 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
   } else {},
 
   resultsCache:: memcached({
-    local cfg = self,
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-results-cache',
     namespace: lc.config.namespace,
     commonLabels+:: lc.config.commonLabels {

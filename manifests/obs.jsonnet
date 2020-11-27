@@ -239,8 +239,6 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     if obs.up[name] != null
   },
 } + {
-  local obs = self,
-
   config+:: {
     name: 'observatorium',
     namespace:: '${NAMESPACE}',

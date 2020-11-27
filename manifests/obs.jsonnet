@@ -16,8 +16,6 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     namespace: obs.config.namespace,
     version: '${GUBERNATOR_IMAGE_TAG}',
     image: '%s:%s' % ['${GUBERNATOR_IMAGE}', cfg.version],
-    // TODO(kakkoyun):!
-    // replicas: '${{GUBERNATOR_REPLICAS}}',
     replicas: 1,
     commonLabels+:: obs.config.commonLabels,
     serviceMonitor: true,
@@ -32,6 +30,11 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       },
     },
   }) {
+    deployment+: {
+      spec+: {
+        replicas: '${{GUBERNATOR_REPLICAS}}',
+      },
+    },
     serviceMonitor+: {
       metadata+: {
         name: 'observatorium-gubernator',
@@ -63,7 +66,6 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     },
     version: '${OBSERVATORIUM_API_IMAGE_TAG}',
     image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', cfg.version],
-    // replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
     replicas: 1,
     serviceMonitor: true,
     logs: {
@@ -135,35 +137,6 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       },
     }),
 
-    proxySecret: oauth.proxySecret,
-
-    service+: oauth.service,
-
-    deployment+: oauth.deployment,
-  } + {
-    serviceMonitor+: {
-      metadata+: {
-        name: 'observatorium-api',
-        labels+: {
-          prometheus: 'app-sre',
-          'app.kubernetes.io/version':: 'hidden',
-        },
-      },
-      spec+: {
-        selector+: {
-          matchLabels+: {
-            'app.kubernetes.io/version':: 'hidden',
-          },
-        },
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
-      },
-    },
-    configmap+: {
-      metadata+: {
-        annotations+: { 'qontract.recycle': 'true' },
-      },
-    },
-  } + {
     local opaAms = (import './sidecars/opa-ams.libsonnet')({
       image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
       clientIDKey: 'client-id',
@@ -187,11 +160,39 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       },
     }),
 
-    deployment+: opaAms.deployment,
+    proxySecret: oauth.proxySecret,
 
-    service+: opaAms.service,
+    service+: oauth.service + opaAms.service,
 
-    serviceMonitor+: opaAms.serviceMonitor,
+    deployment+: {
+      spec+: {
+        replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
+      },
+    } + oauth.deployment + opaAms.deployment,
+
+    configmap+: {
+      metadata+: {
+        annotations+: { 'qontract.recycle': 'true' },
+      },
+    },
+
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-api',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: {
+        selector+: {
+          matchLabels+: {
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+      },
+    } + opaAms.serviceMonitor,
   },
 
   up:: up({
@@ -241,6 +242,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     name: 'observatorium',
     namespace:: '${NAMESPACE}',
     objectStorageConfig:: {
+      // TOOD(kakkoyun): Cleans!
       //   thanos: {
       //     name: '${THANOS_CONFIG_SECRET}',
       //     key: 'thanos.yaml',
@@ -257,6 +259,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     loki+:: {},
     lokiCaches+:: {},
   },
+  // TODO(kakkoyun): Remove after Loki changes.
 } + (import 'github.com/observatorium/deployments/components/observatorium-configure.libsonnet') + {
   local obs = self,
 
@@ -266,14 +269,8 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     },
   },
 
-  local prometheusAMS = (import 'telemeter-prometheus-ams.jsonnet') {
-    _config+:: {
-      namespace: obs.config.namespace,
-    },
-  },
-
-  local obsNS = 'telemeter',
-  local obsLogsNS = 'observatorium-logs',
+  local observatoriumNamespace = 'telemeter',
+  local observatoriumLogsNamespace = 'observatorium-logs',
 
   metricsOpenshiftTemplate:: {
     apiVersion: 'v1',
@@ -289,7 +286,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null
       ] +
-      // TODO(kakkoyun): !!?
+      // TODO(kakkoyun): Fix
       // [obs.storeMonitor.serviceMonitor] +
       // [obs.receiversMonitor.serviceMonitor] +
       [
@@ -312,11 +309,11 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
         object {
           metadata+: { namespace:: 'hidden' },
         }
-        for object in prometheusAMS.objects
+        for object in (import 'telemeter-prometheus-ams.jsonnet').objects
       ],
     parameters: [
-      { name: 'NAMESPACE', value: obsNS },
-      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: obsLogsNS },
+      { name: 'NAMESPACE', value: observatoriumNamespace },
+      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: observatoriumLogsNamespace },
       { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },
       { name: 'THANOS_IMAGE_TAG', value: 'master-2020-08-12-70f89d83' },
       { name: 'STORAGE_CLASS', value: 'gp2' },
@@ -462,7 +459,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       for name in std.objectFields(obs.loki.manifests)
     ],
     parameters: [
-      { name: 'NAMESPACE', value: obsLogsNS },
+      { name: 'NAMESPACE', value: observatoriumLogsNamespace },
       { name: 'STORAGE_CLASS', value: 'gp2' },
       { name: 'LOKI_IMAGE_TAG', value: '2.0.0' },
       { name: 'LOKI_IMAGE', value: 'docker.io/grafana/loki' },
@@ -507,7 +504,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       { name: 'LOKI_INDEX_QUERY_CACHE_REPLICAS', value: '2' },
       { name: 'LOKI_RESULTS_CACHE_REPLICAS', value: '2' },
       { name: 'LOKI_PVC_REQUEST', value: '50Gi' },
-      { name: 'JAEGER_COLLECTOR_NAMESPACE', value: obsNS },
+      { name: 'JAEGER_COLLECTOR_NAMESPACE', value: observatoriumNamespace },
       { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
       { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.14.0' },
       { name: 'JAEGER_PROXY_CPU_REQUEST', value: '100m' },

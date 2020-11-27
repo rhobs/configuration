@@ -144,6 +144,9 @@ objects:
             readOnly: false
         serviceAccountName: prometheus-telemeter
         volumes:
+        - name: jaeger-store-data
+          persistentVolumeClaim:
+            claimName: jaeger-store-data
         - name: jaeger-query-tls
           secret:
             secretName: jaeger-query-tls

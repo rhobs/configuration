@@ -46,7 +46,6 @@ function(params) {
     },
   },
 
-
   // Spec is shared for both Deployment and StatefulSet
   local spec = {
     template+: {

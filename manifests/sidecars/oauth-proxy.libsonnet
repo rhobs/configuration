@@ -76,7 +76,7 @@ function(params) {
           ],
           resources: oap.config.resources,
         }],
-        volumes: [
+        volumes+: [
           { name: oap.config.tlsSecretName, secret: { secretName: oap.config.tlsSecretName } },
           { name: oap.config.sessionSecretName, secret: { secretName: oap.config.sessionSecretName } },
         ],

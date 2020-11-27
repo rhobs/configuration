@@ -110,7 +110,7 @@ objects:
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: observatorium-api
   spec:
-    replicas: 1
+    replicas: ${{OBSERVATORIUM_API_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: api
@@ -273,6 +273,12 @@ objects:
               memory: ${OPA_AMS_MEMORY_REQUEST}
         serviceAccountName: observatorium-api
         volumes:
+        - configMap:
+            name: observatorium-api
+          name: rbac
+        - name: tenants
+          secret:
+            secretName: observatorium-api
         - name: observatorium-api-tls
           secret:
             secretName: observatorium-api-tls
@@ -395,7 +401,7 @@ objects:
       app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
     name: observatorium-gubernator
   spec:
-    replicas: 1
+    replicas: ${{GUBERNATOR_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: rate-limiter

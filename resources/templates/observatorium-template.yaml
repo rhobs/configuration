@@ -98,7 +98,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-api
+    name: observatorium-observatorium-api
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -108,7 +108,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-api
+    name: observatorium-observatorium-api
   spec:
     replicas: ${{OBSERVATORIUM_API_REPLICAS}}
     selector:
@@ -181,40 +181,6 @@ objects:
             readOnly: true
             subPath: tenants.yaml
         - args:
-          - -provider=openshift
-          - -https-address=:8443
-          - -http-address=
-          - -email-domain=*
-          - -upstream=http://localhost:8080
-          - -openshift-service-account=observatorium-api
-          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
-          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
-          - -tls-cert=/etc/tls/private/tls.crt
-          - -tls-key=/etc/tls/private/tls.key
-          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-          - -cookie-secret-file=/etc/proxy/secrets/session_secret
-          - -openshift-ca=/etc/pki/tls/cert.pem
-          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: ${PROXY_IMAGE}:${PROXY_IMAGE_TAG}
-          name: oauth-proxy
-          ports:
-          - containerPort: 8443
-            name: https
-          resources:
-            limits:
-              cpu: ${OAUTH_PROXY_CPU_LIMITS}
-              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
-            requests:
-              cpu: ${OAUTH_PROXY_CPU_REQUEST}
-              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
-          volumeMounts:
-          - mountPath: /etc/tls/private
-            name: observatorium-api-tls
-            readOnly: false
-          - mountPath: /etc/proxy/secrets
-            name: observatorium-api-proxy
-            readOnly: false
-        - args:
           - --web.listen=127.0.0.1:8082
           - --web.internal.listen=0.0.0.0:8083
           - --web.healthchecks.url=http://127.0.0.1:8082
@@ -232,17 +198,17 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: issuer-url
-                name: observatorium-api
+                name: observatorium-observatorium-api
           - name: CLIENT_ID
             valueFrom:
               secretKeyRef:
                 key: client-id
-                name: observatorium-api
+                name: observatorium-observatorium-api
           - name: CLIENT_SECRET
             valueFrom:
               secretKeyRef:
                 key: client-secret
-                name: observatorium-api
+                name: observatorium-observatorium-api
           image: ${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -271,27 +237,14 @@ objects:
             requests:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
-        serviceAccountName: observatorium-api
+        serviceAccountName: observatorium-observatorium-api
         volumes:
         - configMap:
-            name: observatorium-api
+            name: observatorium-observatorium-api
           name: rbac
         - name: tenants
           secret:
-            secretName: observatorium-api
-        - name: observatorium-api-tls
-          secret:
-            secretName: observatorium-api-tls
-        - name: observatorium-api-proxy
-          secret:
-            secretName: observatorium-api-proxy
-- apiVersion: v1
-  data:
-    session_secret: ""
-  kind: Secret
-  metadata:
-    name: observatorium-api-proxy
-  type: Opaque
+            secretName: observatorium-observatorium-api
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -301,7 +254,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-api
+    name: observatorium-observatorium-api
   stringData:
     tenants.yaml: |-
       "tenants":
@@ -330,15 +283,13 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: observatorium-api-tls
     labels:
       app.kubernetes.io/component: api
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-api
+    name: observatorium-observatorium-api
   spec:
     ports:
     - name: internal
@@ -347,9 +298,6 @@ objects:
     - name: public
       port: 8080
       targetPort: 8080
-    - name: https
-      port: 8443
-      targetPort: 8443
     - name: opa-ams-api
       port: 8082
       targetPort: 8082
@@ -370,7 +318,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-api
+    name: observatorium-observatorium-api
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:

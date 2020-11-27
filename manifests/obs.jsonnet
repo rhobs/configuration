@@ -56,7 +56,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
 
   api:: api({
     local cfg = self,
-    name: 'observatorium-api',
+    name: 'observatorium-observatorium-api',
     commonLabels:: {
       'app.kubernetes.io/component': 'api',
       'app.kubernetes.io/instance': 'observatorium',
@@ -117,25 +117,26 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       },
     },
   }) + {
-    local oauth = (import './sidecars/oauth-proxy.libsonnet')({
-      name: 'observatorium-api',
-      image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
-      httpsPort: 9091,
-      upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
-      tlsSecretName: 'observatorium-api-tls',
-      sessionSecretName: 'observatorium-api-proxy',
-      serviceAccountName: 'observatorium-api',
-      resources: {
-        requests: {
-          cpu: '${OAUTH_PROXY_CPU_REQUEST}',
-          memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${OAUTH_PROXY_CPU_LIMITS}',
-          memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
-        },
-      },
-    }),
+    // TODO: Enable in a separate MR.
+    // local oauth = (import './sidecars/oauth-proxy.libsonnet')({
+    //   name: 'observatorium-api',
+    //   image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
+    //   httpsPort: 9091,
+    //   upstream: 'http://localhost:' + obs.api.service.spec.ports[1].port,
+    //   tlsSecretName: 'observatorium-api-tls',
+    //   sessionSecretName: 'observatorium-api-proxy',
+    //   serviceAccountName: 'observatorium-api',
+    //   resources: {
+    //     requests: {
+    //       cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+    //       memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
+    //     },
+    //     limits: {
+    //       cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+    //       memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
+    //     },
+    //   },
+    // }),
 
     local opaAms = (import './sidecars/opa-ams.libsonnet')({
       image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
@@ -160,15 +161,17 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       },
     }),
 
-    proxySecret: oauth.proxySecret,
+    // proxySecret: oauth.proxySecret,
 
-    service+: oauth.service + opaAms.service,
+    // service+: oauth.service + opaAms.service,
+    service+: opaAms.service,
 
     deployment+: {
       spec+: {
         replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
       },
-    } + oauth.deployment + opaAms.deployment,
+    } + opaAms.deployment,
+    // + oauth.deployment
 
     configmap+: {
       metadata+: {

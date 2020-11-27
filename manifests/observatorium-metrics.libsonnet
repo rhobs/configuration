@@ -7,34 +7,34 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
 // Please check observatorium-metrics-template.libsonnet for OpenShift Template specific overwrites.
 
 // TODO(kakkoyun): Shouldn't anything that touches templates be moved to other file?
+// TODO(kakkoyun): More Code reuse!!
 {
-  local thanosSharedConfig = {
-    image: '${THANOS_IMAGE}:${THANOS_IMAGE_TAG}',
-    version: '${THANOS_IMAGE_TAG}',
-    namespace: '${NAMESPACE}',
-    replicaLabels: ['replica', 'rule_replica', 'prometheus_replica'],
-    objectStorageConfig: {
-      name: '${THANOS_CONFIG_SECRET}',
-      key: 'thanos.yaml',
-    },
-    tracing: {
-      type: 'JAEGER',
-      config+: {
-        sampler_type: 'ratelimiting',
-        sampler_param: 2,
+  thanos+:: {
+    local thanos = self,
+
+    local thanosSharedConfig = {
+      image: '${THANOS_IMAGE}:${THANOS_IMAGE_TAG}',
+      version: '${THANOS_IMAGE_TAG}',
+      namespace: '${NAMESPACE}',
+      replicaLabels: ['replica', 'rule_replica', 'prometheus_replica'],
+      objectStorageConfig: {
+        name: '${THANOS_CONFIG_SECRET}',
+        key: 'thanos.yaml',
+      },
+      tracing: {
+        type: 'JAEGER',
+        config+: {
+          sampler_type: 'ratelimiting',
+          sampler_param: 2,
+        },
       },
     },
-  },
 
-  compact::
-    t.compact(thanosSharedConfig {
+    compact:: t.compact(thanosSharedConfig {
       name: 'observatorium-thanos-compact',
-      commonLabels:: {
-        'app.kubernetes.io/component': 'database-compactor',
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/name': 'thanos-compact',
+      commonLabels+:: {
         'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/version': '${THANOS_IMAGE_TAG}',
+        'app.kubernetes.io/instance': 'observatorium',
       },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
@@ -65,24 +65,21 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           },
         },
       },
-      tracing: {},  // disable globally enabled tracing for compact
+      tracing: {},  // disable globally enabled tracing for compact.
     }),
 
-  rule::
-    t.rule(thanosSharedConfig {
+    rule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-rule',
-      commonLabels:: {
-        'app.kubernetes.io/component': 'rule-evaluation-engine',
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/name': 'thanos-rule',
+      commonLabels+:: {
         'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/version': '${THANOS_IMAGE_TAG}',
+        'app.kubernetes.io/instance': 'observatorium',
       },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
       queriers: [
-        'dnssrv+_http._tcp.%s.${NAMESPACE}.svc.cluster.local' % 'observatorium-thanos-query',  // TODO: Replace with actual reference one query is moved
+        // TODO(kakkoyun): Replace with actual reference one query is moved.
+        'dnssrv+_http._tcp.%s.${NAMESPACE}.svc.cluster.local' % 'observatorium-thanos-query',
       ],
       rulesConfig: [
         {
@@ -139,138 +136,213 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     },
 
-  local storeShards = 3,
-  store:: {
-    // Sharding should be moved upstream into kube-thanos.
-    ['shard' + i]+:
-      t.store(thanosSharedConfig {
-        name: 'observatorium-thanos-store',
-        replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-        logLevel: '${THANOS_STORE_LOG_LEVEL}',
-        bucketCache: {
-          type: 'memcached',
-          config: {
-            addresses: ['dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc'],
+    local storeShards = 3,
+    stores:: t.storeShards(thanosSharedConfig {
+      shards: storeShards,
+      name: 'observatorium-thanos-store-shard',
+      namespace: '${NAMESPACE}',
+      commonLabels+:: thanos.config.commonLabels,
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      ignoreDeletionMarksDelay: '24h',
+      volumeClaimTemplate: {
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          storageClassName: '${STORAGE_CLASS}',
+          resources: {
+            requests: {
+              storage: '50Gi',
+            },
           },
         },
-        indexCache: {
-          type: 'memcached',
-          config: {
-            addresses: ['dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc'],
-          },
+      },
+      logLevel: '${THANOS_STORE_LOG_LEVEL}',
+      local memcachedDefaults = {
+        timeout: '2s',
+        max_idle_connections: 1000,
+        max_async_concurrency: 100,
+        max_async_buffer_size: 100000,
+        max_get_multi_concurrency: 900,
+        max_get_multi_batch_size: 1000,
+      },
+      indexCache: {
+        type: 'memcached',
+        config+: memcachedDefaults {
+          addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeIndexCache.service.metadata.name, thanos.storeIndexCache.service.metadata.namespace]],
+          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
+          max_idle_connections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
+          timeout: '400ms',  // default: 500ms
+          max_async_buffer_size: 200000,  // default: 10_000
+          max_async_concurrency: 200,  // default: 20
+          max_get_multi_batch_size: 100,  // default: 0 - No batching.
+          max_get_multi_concurrency: 1000,  // default: 100
+          max_item_size: '5MiB',  // default: 1Mb
         },
-        resources: {
+      },
+      bucketCache: {
+        type: 'memcached',
+        config+: memcachedDefaults {
+          addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeBucketCache.service.metadata.name, thanos.storeBucketCache.service.metadata.namespace]],
+          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
+          max_idle_connections: 1100,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
+          timeout: '400ms',  // default: 500ms
+          max_async_buffer_size: 25000,  // default: 10_000
+          max_async_concurrency: 50,  // default: 20
+          max_get_multi_batch_size: 100,  // default: 0 - No batching.
+          max_get_multi_concurrency: 1000,  // default: 100
+        },
+      },
+      resources: {
+        requests: {
+          cpu: '${THANOS_STORE_CPU_REQUEST}',
+          memory: '${THANOS_STORE_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${THANOS_STORE_CPU_LIMIT}',
+          memory: '${THANOS_STORE_MEMORY_LIMIT}',
+        },
+      },
+    }),
+
+    storesServiceMonitor:: {
+      apiVersion: 'monitoring.coreos.com/v1',
+      kind: 'ServiceMonitor',
+      metadata+: {
+        name: 'observatorium-thanos-store-shard',
+        namespace: '${NAMESPACE}',
+        labels: thanos.stores.config.commonLabels {
+          prometheus: 'app-sre',
+        },
+      },
+      spec: {
+        selector: {
+          matchLabels: thanos.stores.config.podLabelSelector,
+        },
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        endpoints: [
+          {
+            port: 'http',
+            relabelings: [{
+              sourceLabels: ['namespace', 'pod'],
+              separator: '/',
+              targetLabel: 'instance',
+            }],
+          },
+        ],
+      },
+    },
+
+    // We use separated memcached instances for index and bucket cache, so disable default.
+    storeCache:: {},
+
+    storeIndexCache:: memcached({
+      local cfg = self,
+      serviceMonitor: true,
+      name: 'observatorium-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+      namespace: thanosSharedConfig.namespace,
+      commonLabels:: {
+        'app.kubernetes.io/component': 'store-index-cache',
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/name': 'memcached',
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/version': cfg.version,
+      },
+
+      version: '${MEMCACHED_IMAGE_TAG}',
+      image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
+      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
+      connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
+      memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
+      maxItemSize: '5m',
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      resources: {
+        memcached: {
           requests: {
-            cpu: '${THANOS_STORE_CPU_REQUEST}',
-            memory: '${THANOS_STORE_MEMORY_REQUEST}',
+            cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}',
+            memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}',
           },
           limits: {
-            cpu: '${THANOS_STORE_CPU_LIMIT}',
-            memory: '${THANOS_STORE_MEMORY_LIMIT}',
+            cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}',
+            memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}',
           },
         },
-      })
-    for i in std.range(0, storeShards - 1)
-  },
 
-  storeIndexCache:: memcached({
-    local cfg = self,
-    serviceMonitor: true,
-    name: 'observatorium-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
-    namespace: thanosSharedConfig.namespace,
-    commonLabels:: {
-      'app.kubernetes.io/component': 'store-index-cache',
-      'app.kubernetes.io/instance': 'observatorium',
-      'app.kubernetes.io/name': 'memcached',
-      'app.kubernetes.io/part-of': 'observatorium',
-      'app.kubernetes.io/version': cfg.version,
-    },
-
-    version: '${MEMCACHED_IMAGE_TAG}',
-    image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
-    exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
-    exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
-    connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
-    memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
-    maxItemSize: '5m',
-    replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-    resources: {
-      memcached: {
-        requests: {
-          cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}',
-          memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}',
-          memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}',
+        exporter: {
+          requests: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+          },
         },
       },
+    }),
 
-      exporter: {
-        requests: {
-          cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
-          memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
-          memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
-        },
-      },
-    },
-  }),
-
-  storeBucketCache:: memcached({
-    local cfg = self,
-    name: 'observatorium-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
-    namespace: thanosSharedConfig.namespace,
-    commonLabels:: {
-      'app.kubernetes.io/component': 'store-bucket-cache',
-      'app.kubernetes.io/instance': 'observatorium',
-      'app.kubernetes.io/name': 'memcached',
-      'app.kubernetes.io/part-of': 'observatorium',
-      'app.kubernetes.io/version': cfg.version,
-    },
-
-    serviceMonitor: true,
-    version: '${MEMCACHED_IMAGE_TAG}',
-    image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
-    exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
-    exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
-    connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
-    memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
-    replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-    resources: {
-      memcached: {
-        requests: {
-          cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}',
-          memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}',
-          memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}',
-        },
+    storeBucketCache:: memcached({
+      local cfg = self,
+      name: 'observatorium-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+      namespace: thanosSharedConfig.namespace,
+      commonLabels:: {
+        'app.kubernetes.io/component': 'store-bucket-cache',
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/name': 'memcached',
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/version': cfg.version,
       },
 
-      exporter: {
-        requests: {
-          cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
-          memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+      serviceMonitor: true,
+      version: '${MEMCACHED_IMAGE_TAG}',
+      image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
+      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
+      connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
+      memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      resources: {
+        memcached: {
+          requests: {
+            cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}',
+            memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}',
+            memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}',
+          },
         },
-        limits: {
-          cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
-          memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+
+        exporter: {
+          requests: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+          },
         },
       },
-    },
-  }),
+    }),
 
-  query::
-    t.query(thanosSharedConfig {
+    query:: t.query(thanosSharedConfig {
       name: 'observatorium-thanos-query',
+      commonLabels+:: {
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/part-of': 'observatorium',
+      },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_QUERIER_LOG_LEVEL}',
       lookbackDelta: '15m',
       queryTimeout: '15m',
+      stores: [
+        'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
+        for service in
+          [thanos.rule.service] +
+          [thanos.stores[shard].service for shard in std.objectFields(thanos.stores)] +
+          [thanos.receivers[hashring].service for hashring in std.objectFields(thanos.receivers)]
+      ],
+      serviceMonitor: true,
       resources: {
         requests: {
           cpu: '${THANOS_QUERIER_CPU_REQUEST}',
@@ -283,65 +355,32 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     }),
 
-
-  // TODO(kakkoyun): Clean up!
-  // queryFrontend+: {
-  //   image: obs.config.thanosImage,
-  //   version: obs.config.thanosVersion,
-  //   replicas: '${{THANOS_QUERY_FRONTEND_REPLICAS}}',
-  //   resources: {
-  //     requests: {
-  //       cpu: '${THANOS_QUERY_FRONTEND_CPU_REQUEST}',
-  //       memory: '${THANOS_QUERY_FRONTEND_MEMORY_REQUEST}',
-  //     },
-  //     limits: {
-  //       cpu: '${THANOS_QUERY_FRONTEND_CPU_LIMIT}',
-  //       memory: '${THANOS_QUERY_FRONTEND_MEMORY_LIMIT}',
-  //     },
-  //   },
-  //   splitInterval: '${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}',
-  //   maxRetries: '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
-  //   logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
-  //   fifoCache: {
-  //     maxSize: '0',
-  //     maxSizeItems: 2048,
-  //     validity: '6h',
-  //   },
-  //   oauthProxy: {
-  //     image: obs.config.oauthProxyImage,
-  //     httpsPort: 9091,
-  //     upstream: 'http://localhost:' + obs.queryFrontend.service.spec.ports[0].port,
-  //     tlsSecretName: 'query-frontend-tls',
-  //     sessionSecretName: 'query-frontend-proxy',
-  //     serviceAccountName: 'prometheus-telemeter',
-  //     resources: {
-  //       requests: {
-  //         cpu: '${JAEGER_PROXY_CPU_REQUEST}',
-  //         memory: '${JAEGER_PROXY_MEMORY_REQUEST}',
-  //       },
-  //       limits: {
-  //         cpu: '${JAEGER_PROXY_CPU_LIMITS}',
-  //         memory: '${JAEGER_PROXY_MEMORY_LIMITS}',
-  //       },
-  //     },
-  //   },
-  //   jaegerAgent: {
-  //     image: obs.config.jaegerAgentImage,
-  //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
-  //   },
-  // },
-
-  queryFrontend::
-    t.queryFrontend(thanosSharedConfig {
+    queryFrontend:: t.queryFrontend(thanosSharedConfig {
       name: 'observatorium-thanos-query-frontend',
+      commonLabels+:: {
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/part-of': 'observatorium',
+      },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      downstreamURL: 'http',
+      downstreamURL: 'http://%s.%s.svc.cluster.local.:%d' % [
+        thanos.query.service.metadata.name,
+        thanos.query.service.metadata.namespace,
+        thanos.query.service.spec.ports[1].port,
+      ],
       serviceMonitor: true,
       queryRangeCache: {
         type: 'in-memory',
         config+: {
           max_size: '0',
+          max_size_items: 2048,
+          validity: '6h',
         },
+      },
+      logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
+      fifoCache: {
+        maxSize: '0',
+        maxSizeItems: 2048,
+        validity: '6h',
       },
       resources: {
         requests: {
@@ -355,115 +394,103 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
     }),
 
-  // TODO(kakkoyun): Clean up!
-  // receivers+: {
-  //   logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
-  //   debug: '${THANOS_RECEIVE_DEBUG_ENV}',
-  //   image: obs.config.thanosImage,
-  //   version: obs.config.thanosVersion,
-  //   objectStorageConfig: obs.config.objectStorageConfig.thanos,
-  //   hashrings: obs.config.hashrings,
-  //   replicas: '${{THANOS_RECEIVE_REPLICAS}}',
-  //   replicationFactor: 3,
-  //   resources: {
-  //     requests: {
-  //       cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
-  //       memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
-  //     },
-  //     limits: {
-  //       cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
-  //       memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
-  //     },
-  //   },
-  //   volumeClaimTemplate: {
-  //     spec: {
-  //       accessModes: ['ReadWriteOnce'],
-  //       resources: {
-  //         requests: {
-  //           storage: '50Gi',
-  //         },
-  //       },
-  //       storageClassName: '${STORAGE_CLASS}',
-  //     },
-  //   },
-  //   jaegerAgent: {
-  //     image: obs.config.jaegerAgentImage,
-  //     collectorAddress: obs.config.jaegerAgentCollectorAddress,
-  //   },
-  // },
+    // For now, just use an in-memory cache.
+    queryFrontendCache:: {},
 
-  local hashrings = [{
-    hashring: 'default',
-    tenants: [],
-  }],
+    local hashrings = [{
+      hashring: 'default',
+      tenants: [],
+    }],
 
-  receivers:: {
-    [hashring.hashring]+:
-      t.receive(thanosSharedConfig {
-        name: 'observatorium-thanos-receive-default',
-        replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-        replicationFactor: 3,
-        hashringConfigMapName: 'observatorium-thanos-receive-controller-tenants-generated',
-        logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
-        resources: {
-          requests: {
-            cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
-            memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
-            memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
-          },
+    receivers:: t.receiveHashrings(thanosSharedConfig {
+      hashrings: thanos.config.hashrings,
+      name: 'observatorium-thanos-receive',
+      namespace: '${NAMESPACE}',
+      commonLabels+:: {
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/part-of': 'observatorium',
+      },
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      replicationFactor: 3,
+      retention: '4d',
+      replicaLabels: thanos.config.replicaLabels,
+      debug: '${THANOS_RECEIVE_DEBUG_ENV}',
+      resources: {
+        requests: {
+          cpu: '${THANOS_RECEIVE_CPU_REQUEST}',
+          memory: '${THANOS_RECEIVE_MEMORY_REQUEST}',
         },
-        volumeClaimTemplate: {
-          spec: {
-            accessModes: ['ReadWriteOnce'],
-            storageClassName: '${STORAGE_CLASS}',
-            resources: {
-              requests: {
-                storage: '50Gi',
-              },
+        limits: {
+          cpu: '${THANOS_RECEIVE_CPU_LIMIT}',
+          memory: '${THANOS_RECEIVE_MEMORY_LIMIT}',
+        },
+      },
+      volumeClaimTemplate: {
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          storageClassName: '${STORAGE_CLASS}',
+          resources: {
+            requests: {
+              storage: '50Gi',
             },
           },
         },
-      })
-    for hashring in hashrings
-  },
-
-  receiversService:: {
-    apiVersion: 'v1',
-    kind: 'Service',
-    metadata: {
-      name: 'observatorium-thanos-receive',
-      namespace: thanosSharedConfig.namespace,
-      labels: thanosSharedConfig.commonLabels { 'app.kubernetes.io/name': 'thanos-receive' },
-    },
-    spec: {
-      selector: { 'app.kubernetes.io/name': 'thanos-receive' },
-      ports: [
-        { name: 'grpc', port: 10901, targetPort: 10901 },
-        { name: 'http', port: 10902, targetPort: 10902 },
-        { name: 'remote-write', port: 19291, targetPort: 19291 },
-      ],
-    },
-  },
-
-  receiveController:: trc({
-    serviceMonitor: true,
-    name: 'observatorium-thanos-receive-controller',
-    image: '${THANOS_RECEIVE_CONTROLLER_IMAGE}:${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
-    version: '${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
-    replicas: 1,
-    hashrings: hashrings,
-    resources: {
-      requests: {
-        cpu: '10m',
-        memory: '24Mi',
       },
-      limits: {
-        cpu: '64m',
-        memory: '128Mi',
+      // hashringConfigMapName: 'observatorium-thanos-receive-controller-tenants-generated',
+      hashringConfigMapName: '%s-generated' % thanos.receiveController.configmap.metadata.name,
+      logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
+    }),
+
+    receiversServiceMonitor:: {
+      apiVersion: 'monitoring.coreos.com/v1',
+      kind: 'ServiceMonitor',
+      metadata+: {
+        name: 'observatorium-thanos-receive',
+        namespace: '${NAMESPACE}',
+        labels: thanos.receivers.config.commonLabels {
+          prometheus: 'app-sre',
+        },
+      },
+      spec: {
+        selector: {
+          matchLabels: thanos.receivers.config.podLabelSelector,
+        },
+        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        endpoints: [
+          {
+            port: 'http',
+            relabelings: [{
+              sourceLabels: ['namespace', 'pod'],
+              separator: '/',
+              targetLabel: 'instance',
+            }],
+          },
+        ],
       },
     },
-  }),
+
+    receiveController:: trc({
+      namespace: '${NAMESPACE}',
+      commonLabels+:: {
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/part-of': 'observatorium',
+      },
+      name: 'observatorium-thanos-receive-controller',
+      image: '${THANOS_RECEIVE_CONTROLLER_IMAGE}:${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
+      version: '${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
+      replicas: 1,
+      hashrings: hashrings,
+      resources: {
+        requests: {
+          cpu: '10m',
+          memory: '24Mi',
+        },
+        limits: {
+          cpu: '64m',
+          memory: '128Mi',
+        },
+      },
+      serviceMonitor: true,
+    }),
+  },
 }

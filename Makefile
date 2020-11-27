@@ -31,7 +31,7 @@ resources/observability/prometheusrules: format observability/prometheusrules.js
 
 
 .PHONY: grafana
-grafana: resources/observability/grafana/observatorium resources/observability/grafana/observatorium-logs
+grafana: resources/observability/grafana/observatorium resources/observability/grafana/observatorium-logs $(VENDOR_DIR)
 
 resources/observability/grafana/observatorium: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
@@ -61,17 +61,17 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 	cp /tmp/metrics.json configuration/telemeter/metrics.json
 
 .PHONY: manifests
-manifests: format $(VENDOR_DIR) resources/manifests/conprof-template.yaml resources/manifests/jaeger-template.yaml resources/manifests/observatorium-template.yaml
+manifests: format resources/templates/conprof-template.yaml resources/templates/jaeger-template.yaml resources/templates/observatorium-template.yaml $(VENDOR_DIR)
 
-resources/manifests/conprof-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/templates/conprof-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running conprof-template"
-	$(JSONNET) -J vendor -m resources/manifests manifests/conprof.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	$(JSONNET) -J vendor -m resources/templates manifests/conprof.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
-resources/manifests/jaeger-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/templates/jaeger-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"
-	$(JSONNET) -J vendor manifests/jaeger.jsonnet | $(GOJSONTOYAML) > resources/manifests/jaeger-template.yaml
+	$(JSONNET) -J vendor manifests/jaeger.jsonnet | $(GOJSONTOYAML) > resources/templates/jaeger-template.yaml
 
-resources/manifests/observatorium-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/templates/observatorium-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"
-	$(JSONNET) -J vendor -m resources/manifests manifests/main.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	find resources/manifests -type f ! -name '*.yaml' -delete
+	$(JSONNET) -J vendor -m resources/templates manifests/main.jsonnet | xargs -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	find resources/templates -type f ! -name '*.yaml' -delete

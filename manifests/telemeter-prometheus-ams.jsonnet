@@ -45,7 +45,7 @@ local prometheusAms = {
     local c = {
       name: 'remote-write-proxy',
       image: '${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE}:${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION}',
-      command: 'nginx',
+      command: ['nginx'],
       args: [
         '-c',
         '/config/nginx.conf',

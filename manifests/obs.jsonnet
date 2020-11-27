@@ -2,7 +2,7 @@ local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observat
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
 
-(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +
+(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +  // TODO(kakkoyun): Remove after Loki.
 (import './observatorium-metrics.libsonnet') +
 (import './observatorium-metrics-template.libsonnet') +
 (import './observatorium-logs.libsonnet') +
@@ -87,14 +87,14 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     },
     metrics: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.queryFrontend.service.metadata.name,
-        obs.queryFrontend.service.metadata.namespace,
-        obs.queryFrontend.service.spec.ports[0].port,
+        obs.thanos.queryFrontend.service.metadata.name,
+        obs.thanos.queryFrontend.service.metadata.namespace,
+        obs.thanos.queryFrontend.service.spec.ports[0].port,
       ],
       writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.receiversService.metadata.name,
-        obs.receiversService.metadata.namespace,
-        obs.receiversService.spec.ports[2].port,
+        obs.thanos.receiversService.metadata.name,
+        obs.thanos.receiversService.metadata.namespace,
+        obs.thanos.receiversService.spec.ports[2].port,
       ],
     },
     rateLimiter: {
@@ -204,7 +204,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     image: 'quay.io/observatorium/up:' + cfg.version,
     replicas: 1,
     endpointType: 'metrics',
-    readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.queryFrontend.service.metadata.name, obs.queryFrontend.service.metadata.namespace],
+    readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.thanos.queryFrontend.service.metadata.name, obs.thanos.queryFrontend.service.metadata.namespace],
     queryConfig: (import '../configuration/observatorium/queries.libsonnet'),
     serviceMonitor: true,
     resources: {
@@ -275,9 +275,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
   metricsOpenshiftTemplate:: {
     apiVersion: 'v1',
     kind: 'Template',
-    metadata: {
-      name: 'observatorium',
-    },
+    metadata: { name: 'observatorium' },
     objects:
       [
         obs.manifests[name] {
@@ -286,20 +284,19 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
         for name in std.objectFields(obs.manifests)
         if obs.manifests[name] != null
       ] +
-      // TODO(kakkoyun): Fix
-      // [obs.storeMonitor.serviceMonitor] +
-      // [obs.receiversMonitor.serviceMonitor] +
+      [obs.thanos.storesServiceMonitor] +
+      [obs.thanos.receiversServiceMonitor] +
       [
-        obs.storeIndexCache[name] {
+        obs.thanos.storeIndexCache[name] {
           metadata+: { namespace:: 'hidden' },
         }
-        for name in std.objectFields(obs.storeIndexCache)
+        for name in std.objectFields(obs.thanos.storeIndexCache)
       ] +
       [
-        obs.storeBucketCache[name] {
+        obs.thanos.storeBucketCache[name] {
           metadata+: { namespace:: 'hidden' },
         }
-        for name in std.objectFields(obs.storeBucketCache)
+        for name in std.objectFields(obs.thanos.storeBucketCache)
       ] + [
         object {
           metadata+: { namespace:: 'hidden' },
@@ -401,10 +398,10 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
       { name: 'OPA_AMS_CPU_LIMIT', value: '200m' },
       { name: 'OPA_AMS_MEMORY_LIMIT', value: '200Mi' },
-      { name: 'OATUH_PROXY_CPU_REQUEST', value: '100m' },
-      { name: 'OATUH_PROXY_MEMORY_REQUEST', value: '100Mi' },
-      { name: 'OATUH_PROXY_CPU_LIMITS', value: '200m' },
-      { name: 'OATUH_PROXY_MEMORY_LIMITS', value: '200Mi' },
+      { name: 'OAUTH_PROXY_CPU_REQUEST', value: '100m' },
+      { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
+      { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
+      { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
       { name: 'IMAGE', value: 'quay.io/openshift/origin-telemeter' },
       { name: 'IMAGE_TAG', value: 'v4.0' },
       { name: 'REPLICAS', value: '10' },

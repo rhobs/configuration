@@ -14,7 +14,7 @@ local jaeger = (import './jaeger-collector.libsonnet')({
   local oauth = oauthProxy({
     name: 'jaeger',
     image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
-    upstream: 'http://localhost:%d' % j.queryService.spec.ports[0].port,
+    upstream: 'http://localhost:%d' % j.config.ports.query,
     serviceAccountName: 'prometheus-telemeter',
     tlsSecretName: 'jaeger-query-tls',
     sessionSecretName: 'jaeger-proxy',
@@ -41,21 +41,7 @@ local jaeger = (import './jaeger-collector.libsonnet')({
     },
   },
 
-  service+: oauth.service,
-
-  // TODO(kakkoyun): Do we need this anymore?
-  queryService+: {
-    metadata+: {
-      annotations+: {
-        'service.alpha.openshift.io/serving-cert-secret-name': 'jaeger-query-tls',
-      },
-    },
-    spec+: {
-      ports+: [
-        { name: 'https', port: 16687, targetPort: 16687 },
-      ],
-    },
-  },
+  queryService+: oauth.service,
 
   deployment+: {
     spec+: {

@@ -68,6 +68,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       tracing: {},  // disable globally enabled tracing for compact.
     }),
 
+    local observatoriumRules = 'observatorium-rules',
     rule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-rule',
       commonLabels+:: {
@@ -83,7 +84,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       ],
       rulesConfig: [
         {
-          name: 'observatorium-rules',
+          name: observatoriumRules,
           key: 'foo',
           rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
         },
@@ -115,7 +116,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: {
-          name: 'observatorium-rule',
+          name: observatoriumRules,
           annotations: {
             'qontract.recycle': 'true',
           },

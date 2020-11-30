@@ -1,6 +1,4 @@
-local c = import 'conprof/conprof.libsonnet';
-local k3 = import 'ksonnet/ksonnet.beta.3/k.libsonnet';
-local k = import 'ksonnet/ksonnet.beta.4/k.libsonnet';
+local c = import 'github.com/conprof/conprof/deployments/jsonnet/conprof/conprof.libsonnet';
 
 local conprof = c + c.withConfigMap {
   local conprof = self,
@@ -127,40 +125,42 @@ local conprof = c + c.withConfigMap {
   },
 
   roles:
-    local role = k.rbac.v1.role;
-    local policyRule = role.rulesType;
-    local coreRule = policyRule.new() +
-                     policyRule.withApiGroups(['']) +
-                     policyRule.withResources([
-                       'services',
-                       'endpoints',
-                       'pods',
-                     ]) +
-                     policyRule.withVerbs(['get', 'list', 'watch']);
-
-    local newSpecificRole(namespace) =
-      role.new() +
-      role.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
-      role.mixin.metadata.withNamespace(namespace) +
-      role.mixin.metadata.withLabels(conprof.config.commonLabels) +
-      role.withRules(coreRule);
+    local newSpecificRole(namespace) = {
+      apiVersion: 'rbac.authorization.k8s.io/v1',
+      kind: 'Role',
+      metadata: {
+        name: conprof.config.name + '-' + namespace,
+        namespace: namespace,
+        labels: conprof.config.commonLabels,
+      },
+      rules: [{
+        apiGroups: [''],
+        resources: ['services', 'endpoints', 'pods'],
+        verbs: ['get', 'list', 'watch'],
+      }],
+    };
     {
       'conprof-observatorium': newSpecificRole(conprof.config.namespaces[0]),
       'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces[1]),
     },
 
   roleBindings:
-    local roleBinding = k.rbac.v1.roleBinding;
+    local newSpecificRoleBinding(namespace) = {
+      apiVersion: 'rbac.authorization.k8s.io/v1',
+      kind: 'RoleBinding',
+      metadata: {
+        name: conprof.config.name + '-' + namespace,
+        namespace: namespace,
+        labels: conprof.config.commonLabels,
+      },
+      roleRef: {
+        apiGroup: 'rbac.authorization.k8s.io',
+        kind: 'Role',
+        name: conprof.config.name + '-' + namespace,
+      },
+      subjects: [{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }],
+    };
 
-    local newSpecificRoleBinding(namespace) =
-      roleBinding.new() +
-      roleBinding.mixin.metadata.withName(conprof.config.name + '-' + namespace) +
-      roleBinding.mixin.metadata.withNamespace(namespace) +
-      roleBinding.mixin.metadata.withLabels(conprof.config.commonLabels) +
-      roleBinding.mixin.roleRef.withApiGroup('rbac.authorization.k8s.io') +
-      roleBinding.mixin.roleRef.withName(conprof.config.name + '-' + namespace) +
-      roleBinding.mixin.roleRef.mixinInstance({ kind: 'Role' }) +
-      roleBinding.withSubjects([{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }]);
     {
       'conprof-observatorium': newSpecificRoleBinding(conprof.config.namespaces[0]),
       'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces[1]),
@@ -179,10 +179,43 @@ local conprof = c + c.withConfigMap {
     },
   },
 
-  local statefulset = k.apps.v1.statefulSet,
-  local volume = statefulset.mixin.spec.template.spec.volumesType,
-  local container = statefulset.mixin.spec.template.spec.containersType,
-  local volumeMount = container.volumeMountsType,
+  local c = {
+    name: 'proxy',
+    image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
+    args: [
+      '-provider=openshift',
+      '-https-address=:%d' % conprof.service.spec.ports[1].port,
+      '-http-address=',
+      '-email-domain=*',
+      '-upstream=http://localhost:%d' % conprof.service.spec.ports[0].port,
+      '-openshift-service-account=prometheus-telemeter',
+      '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
+      '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
+      '-tls-cert=/etc/tls/private/tls.crt',
+      '-tls-key=/etc/tls/private/tls.key',
+      '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token',
+      '-cookie-secret-file=/etc/proxy/secrets/session_secret',
+      '-openshift-ca=/etc/pki/tls/cert.pem',
+      '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
+    ],
+    ports: [
+      { name: 'https', containerPort: conprof.service.spec.ports[1].port },
+    ],
+    volumeMounts: [
+      { name: 'secret-conprof-tls', mountPath: '/etc/tls/private', readOnly: false },
+      { name: 'secret-conprof-proxy', mountPath: '/etc/proxy/secrets', readOnly: false },
+    ],
+    resources: {
+      requests: {
+        cpu: '${CONPROF_PROXY_CPU_REQUEST}',
+        memory: '${CONPROF_PROXY_MEMORY_REQUEST}',
+      },
+      limits: {
+        cpu: '${CONPROF_PROXY_CPU_LIMITS}',
+        memory: '${CONPROF_PROXY_MEMORY_LIMITS}',
+      },
+    },
+  },
 
   statefulset+: {
     spec+: {
@@ -190,58 +223,20 @@ local conprof = c + c.withConfigMap {
       template+: {
         spec+: {
           containers: std.map(
-                        function(c) if c.name == 'conprof' then c {
-                          resources: {
-                            requests: {
-                              cpu: '${CONPROF_CPU_REQUEST}',
-                              memory: '${CONPROF_MEMORY_REQUEST}',
-                            },
-                            limits: {
-                              cpu: '${CONPROF_CPU_LIMITS}',
-                              memory: '${CONPROF_MEMORY_LIMITS}',
-                            },
-                          },
-                        } else c,
-                        super.containers
-                      )
-                      + [
-                        container.new('proxy', '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}') +
-                        container.withArgs([
-                          '-provider=openshift',
-                          '-https-address=:%d' % conprof.service.spec.ports[1].port,
-                          '-http-address=',
-                          '-email-domain=*',
-                          '-upstream=http://localhost:%d' % conprof.service.spec.ports[0].port,
-                          '-openshift-service-account=prometheus-telemeter',
-                          '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
-                          '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
-                          '-tls-cert=/etc/tls/private/tls.crt',
-                          '-tls-key=/etc/tls/private/tls.key',
-                          '-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token',
-                          '-cookie-secret-file=/etc/proxy/secrets/session_secret',
-                          '-openshift-ca=/etc/pki/tls/cert.pem',
-                          '-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
-                        ]) +
-                        container.withPorts([
-                          { name: 'https', containerPort: conprof.service.spec.ports[1].port },
-                        ]) +
-                        container.withVolumeMounts(
-                          [
-                            volumeMount.new('secret-conprof-tls', '/etc/tls/private'),
-                            volumeMount.new('secret-conprof-proxy', '/etc/proxy/secrets'),
-                          ]
-                        ) +
-                        container.mixin.resources.withRequests({
-                          cpu: '${CONPROF_PROXY_CPU_REQUEST}',
-                          memory: '${CONPROF_PROXY_MEMORY_REQUEST}',
-                        }) +
-                        container.mixin.resources.withLimits({
-                          cpu: '${CONPROF_PROXY_CPU_LIMITS}',
-                          memory: '${CONPROF_PROXY_MEMORY_LIMITS}',
-                        }),
-                      ],
-
-          serviceAccount: 'prometheus-telemeter',
+            function(c) if c.name == 'conprof' then c {
+              resources: {
+                requests: {
+                  cpu: '${CONPROF_CPU_REQUEST}',
+                  memory: '${CONPROF_MEMORY_REQUEST}',
+                },
+                limits: {
+                  cpu: '${CONPROF_CPU_LIMITS}',
+                  memory: '${CONPROF_MEMORY_LIMITS}',
+                },
+              },
+            } else c,
+            super.containers
+          ) + [c],
           serviceAccountName: 'prometheus-telemeter',
           volumes+: [
             { name: 'secret-conprof-tls', secret: { secretName: 'conprof-tls' } },
@@ -270,25 +265,17 @@ local conprof = c + c.withConfigMap {
         },
       },
       conprof.statefulset {
-        metadata+: {
-          namespace:: 'hidden',
-        },
+        metadata+: { namespace:: 'hidden' },
       },
       conprof.service {
-        metadata+: {
-          namespace:: 'hidden',
-        },
+        metadata+: { namespace:: 'hidden' },
       },
     ] + [
       conprof.roles['conprof-observatorium'] {
-        metadata+: {
-          namespace:: 'hidden',
-        },
+        metadata+: { namespace:: 'hidden' },
       },
       conprof.roleBindings['conprof-observatorium'] {
-        metadata+: {
-          namespace:: 'hidden',
-        },
+        metadata+: { namespace:: 'hidden' },
       },
     ],
     parameters: [

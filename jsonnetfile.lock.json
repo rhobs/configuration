@@ -99,8 +99,8 @@
           "subdir": ""
         }
       },
-      "version": "8da730a0ed7ab191e8ce262ead1d1273d4d4f0a8",
-      "sum": "hpzuApDf1lBaHcJuD0RK5MVR3XWl74kCtCUC4DEmHW4="
+      "version": "bc24613708574e718c6a8363c58eeee3fb465273",
+      "sum": "Z4Gzt+LqzKpoa1gTzp5Sua6gVhXXZ3CzxVhjCrExdi4="
     },
     {
       "source": {
@@ -109,8 +109,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "e8aa228b5e565accc295f0fe6d0650fa0945f2a3",
-      "sum": "+WhNmHXCF/5awOIqBz03uIcDSD7jQ4tLLS39bFszUHA=",
+      "version": "cd90bd3d69cd1e2a86311f8589812f60770df877",
+      "sum": "COiE/nS+SDkbOomr5Q0nj9gD1O/BBCtiGHFjlNgjsU4=",
       "name": "observatorium"
     },
     {
@@ -120,8 +120,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "a9d9169ef2c4da1eafd6badbc90a4b4804c8c101",
-      "sum": "iUbwzPZ/0QrozWTfoXlmRhd1CMAnkcCaWtATTlSnoMk=",
+      "version": "429ae1f5f2ce5f7c4234251e97df6007aeb4a29a",
+      "sum": "sqF9titAn3N2HHKY9mCzbZ+d/xL5ZBQ/ej/t190jY6o=",
       "name": "thanos-receive-controller"
     },
     {
@@ -131,8 +131,19 @@
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
-      "version": "a9d9169ef2c4da1eafd6badbc90a4b4804c8c101",
+      "version": "429ae1f5f2ce5f7c4234251e97df6007aeb4a29a",
       "sum": "/m671jdzWQfkKGuPN2jN6W8/rnbzEBgG6bLzr4erRGs="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/up.git",
+          "subdir": "jsonnet"
+        }
+      },
+      "version": "ec9ecc69c91cce9d6f6d7ce4c0054424c697a8a4",
+      "sum": "0FKabnXd0rMeu8YpkkopEOknqBf5PLq/DIIDd0ve7cU=",
+      "name": "up"
     },
     {
       "source": {
@@ -151,8 +162,8 @@
           "subdir": "jsonnet/kube-thanos"
         }
       },
-      "version": "4eb672b042a59e17fbfb7c3a8dea123089bbac97",
-      "sum": "v6pFvS5r9WNC8FusRLShjYRP79zQOwQBdmBntTFssf8="
+      "version": "6a4a1749db41118422133e2f3f3da3c98c6e853a",
+      "sum": "DoIVNwwkwcB6rwHaoOSQqIZSe06GGB8E4xNTbYdJ6aY="
     },
     {
       "source": {

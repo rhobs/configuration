@@ -237,7 +237,7 @@ objects:
             requests:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
-        serviceAccount: observatorium-observatorium-api
+        serviceAccountName: observatorium-observatorium-api
         volumes:
         - configMap:
             name: observatorium-observatorium-api
@@ -390,10 +390,10 @@ objects:
           image: ${GUBERNATOR_IMAGE}:${GUBERNATOR_IMAGE_TAG}
           name: gubernator
           ports:
-          - containerPort: 8080
-            name: http
           - containerPort: 8081
             name: grpc
+          - containerPort: 8080
+            name: http
           readinessProbe:
             failureThreshold: 3
             httpGet:
@@ -411,7 +411,7 @@ objects:
               cpu: ${GUBERNATOR_CPU_REQUEST}
               memory: ${GUBERNATOR_MEMORY_REQUEST}
         restartPolicy: Always
-        serviceAccount: observatorium-gubernator
+        serviceAccountName: observatorium-gubernator
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
@@ -461,12 +461,12 @@ objects:
     name: observatorium-gubernator
   spec:
     ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
     - name: grpc
       port: 8081
       targetPort: 8081
+    - name: http
+      port: 8080
+      targetPort: 8080
     selector:
       app.kubernetes.io/component: rate-limiter
       app.kubernetes.io/instance: observatorium
@@ -566,6 +566,12 @@ objects:
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2020-06-15-d763595
     name: observatorium-observatorium-up
   spec:
     replicas: 1
@@ -678,10 +684,10 @@ objects:
     ports:
     - name: http
       port: 10902
-      targetPort: http
+      targetPort: 10902
     - name: https
       port: 8443
-      targetPort: https
+      targetPort: 8443
     selector:
       app.kubernetes.io/component: database-compactor
       app.kubernetes.io/instance: observatorium
@@ -696,7 +702,7 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
-    name: observatorium-thanos-compactor
+    name: observatorium-thanos-compact
   spec:
     endpoints:
     - port: http
@@ -748,6 +754,7 @@ objects:
           - compact
           - --wait
           - --log.level=${THANOS_COMPACTOR_LOG_LEVEL}
+          - --log.format=logfmt
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --data-dir=/var/thanos/compact
           - --debug.accept-malformed-index
@@ -755,8 +762,8 @@ objects:
           - --retention.resolution-5m=1s
           - --retention.resolution-1h=1s
           - --delete-delay=48h
-          - --deduplication.replica-label=replica
           - --downsampling.disable
+          - --deduplication.replica-label=replica
           - --debug.max-compaction-level=3
           env:
           - name: OBJSTORE_CONFIG
@@ -827,11 +834,11 @@ objects:
             name: https
           resources:
             limits:
-              cpu: ${JAEGER_PROXY_CPU_LIMITS}
-              memory: ${JAEGER_PROXY_MEMORY_LIMITS}
+              cpu: ${OAUTH_PROXY_CPU_LIMITS}
+              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
             requests:
-              cpu: ${JAEGER_PROXY_CPU_REQUEST}
-              memory: ${JAEGER_PROXY_MEMORY_REQUEST}
+              cpu: ${OAUTH_PROXY_CPU_REQUEST}
+              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /etc/tls/private
             name: compact-tls
@@ -908,12 +915,13 @@ objects:
         containers:
         - args:
           - query
-          - --log.level=${THANOS_QUERIER_LOG_LEVEL}
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:9090
-          - --query.replica-label=prometheus_replica
-          - --query.replica-label=rule_replica
+          - --log.level=${THANOS_QUERIER_LOG_LEVEL}
+          - --log.format=logfmt
           - --query.replica-label=replica
+          - --query.replica-label=rule_replica
+          - --query.replica-label=prometheus_replica
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
@@ -921,13 +929,12 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
           - --query.timeout=15m
           - --query.lookback-delta=15m
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-query
-                sampler_type: ratelimiting
-                sampler_param: 2
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-query"
+            "type": "JAEGER"
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 4
@@ -942,6 +949,8 @@ objects:
             name: grpc
           - containerPort: 9090
             name: http
+          - containerPort: 9091
+            name: https
           readinessProbe:
             failureThreshold: 20
             httpGet:
@@ -979,11 +988,11 @@ objects:
             name: https
           resources:
             limits:
-              cpu: ${JAEGER_PROXY_CPU_LIMITS}
-              memory: ${JAEGER_PROXY_MEMORY_LIMITS}
+              cpu: ${OAUTH_PROXY_CPU_LIMITS}
+              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
             requests:
-              cpu: ${JAEGER_PROXY_CPU_REQUEST}
-              memory: ${JAEGER_PROXY_MEMORY_REQUEST}
+              cpu: ${OAUTH_PROXY_CPU_REQUEST}
+              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /etc/tls/private
             name: query-tls
@@ -1013,10 +1022,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -1080,11 +1089,11 @@ objects:
         containers:
         - args:
           - query-frontend
+          - --log.level=info
+          - --log.format=logfmt
           - --query-frontend.compress-responses
           - --http-address=0.0.0.0:9090
           - --query-frontend.downstream-url=http://observatorium-thanos-query.${NAMESPACE}.svc.cluster.local.:9090
-          - --query-range.split-interval=${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}
-          - --query-range.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --query-frontend.log-queries-longer-than=${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}
           - |-
             --query-range.response-cache-config="config":
@@ -1092,7 +1101,15 @@ objects:
               "max_size_items": 2048
               "validity": "6h"
             "type": "in-memory"
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-query-frontend"
+            "type": "JAEGER"
+          - --query-range.split-interval=${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}
           - --labels.split-interval=${THANOS_QUERY_FRONTEND_SPLIT_INTERVAL}
+          - --query-range.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --labels.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --labels.default-time-range=336h
           - |-
@@ -1102,13 +1119,6 @@ objects:
               "validity": "6h"
             "type": "in-memory"
           - --cache-compression-type=snappy
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-query-frontend
-                sampler_type: ratelimiting
-                sampler_param: 2
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 4
@@ -1158,11 +1168,11 @@ objects:
             name: https
           resources:
             limits:
-              cpu: ${JAEGER_PROXY_CPU_LIMITS}
-              memory: ${JAEGER_PROXY_MEMORY_LIMITS}
+              cpu: ${OAUTH_PROXY_CPU_LIMITS}
+              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
             requests:
-              cpu: ${JAEGER_PROXY_CPU_REQUEST}
-              memory: ${JAEGER_PROXY_MEMORY_REQUEST}
+              cpu: ${OAUTH_PROXY_CPU_REQUEST}
+              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /etc/tls/private
             name: query-frontend-tls
@@ -1192,10 +1202,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -1243,10 +1253,10 @@ objects:
     ports:
     - name: http
       port: 9090
-      targetPort: http
+      targetPort: 9090
     - name: https
       port: 9091
-      targetPort: https
+      targetPort: 9091
     selector:
       app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
@@ -1309,13 +1319,13 @@ objects:
     ports:
     - name: grpc
       port: 10901
-      targetPort: grpc
+      targetPort: 10901
     - name: http
       port: 9090
-      targetPort: http
+      targetPort: 9090
     - name: https
       port: 9091
-      targetPort: https
+      targetPort: 9091
     selector:
       app.kubernetes.io/component: query-layer
       app.kubernetes.io/instance: observatorium
@@ -1330,7 +1340,7 @@ objects:
       app.kubernetes.io/name: thanos-query
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
-    name: observatorium-thanos-querier
+    name: observatorium-thanos-query
   spec:
     endpoints:
     - port: http
@@ -1515,19 +1525,6 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-receive-controller
         app.kubernetes.io/part-of: observatorium
-- apiVersion: policy/v1beta1
-  kind: PodDisruptionBudget
-  metadata:
-    name: observatorium-thanos-receive-default
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-write-hashring
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-receive
-        app.kubernetes.io/part-of: observatorium
-        controller.receive.thanos.io/hashring: default
 - apiVersion: v1
   kind: Service
   metadata:
@@ -1627,6 +1624,7 @@ objects:
         - args:
           - receive
           - --log.level=${THANOS_RECEIVE_LOG_LEVEL}
+          - --log.format=logfmt
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --remote-write.address=0.0.0.0:19291
@@ -1635,17 +1633,16 @@ objects:
           - --tsdb.path=${THANOS_RECEIVE_TSDB_PATH}
           - --label=replica="$(NAME)"
           - --label=receive="true"
-          - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --tsdb.retention=4d
+          - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-receive"
+            "type": "JAEGER"
           - --receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-receive
-                sampler_type: ratelimiting
-                sampler_param: 2
           env:
           - name: NAME
             valueFrom:
@@ -1672,6 +1669,8 @@ objects:
               secretKeyRef:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
+          - name: DEBUG
+            value: ${THANOS_RECEIVE_DEBUG_ENV}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 8
@@ -1731,10 +1730,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -1768,6 +1767,10 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive
+      app.kubernetes.io/part-of: observatorium
     name: observatorium-thanos-receive
   spec:
     ports:
@@ -1842,10 +1845,10 @@ objects:
     ports:
     - name: grpc
       port: 10901
-      targetPort: grpc
+      targetPort: 10901
     - name: http
       port: 10902
-      targetPort: http
+      targetPort: 10902
     selector:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: observatorium
@@ -1912,6 +1915,7 @@ objects:
         - args:
           - rule
           - --log.level=${THANOS_RULER_LOG_LEVEL}
+          - --log.format=logfmt
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
@@ -1919,14 +1923,13 @@ objects:
           - --label=rule_replica="$(NAME)"
           - --alert.label-drop=rule_replica
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-rule
-                sampler_type: ratelimiting
-                sampler_param: 2
-          - --rule-file=/var/thanos/config/rules/observatorium.yaml
+          - --rule-file=/etc/thanos/rules/observatorium.rules/foo
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-rule"
+            "type": "JAEGER"
           env:
           - name: NAME
             valueFrom:
@@ -1981,8 +1984,8 @@ objects:
           - mountPath: /var/thanos/rule
             name: data
             readOnly: false
-          - mountPath: /var/thanos/config/rules
-            name: observatorium-rule
+          - mountPath: /etc/thanos/rules/observatorium.rules
+            name: observatorium.rules
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
           - --reporter.type=grpc
@@ -2005,10 +2008,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -2019,12 +2022,24 @@ objects:
               cpu: 32m
               memory: 64Mi
         volumes:
-        - emptyDir: {}
-          name: data
         - configMap:
-            name: observatorium-rule
-          name: observatorium-rule
-    volumeClaimTemplates: null
+            name: observatorium.rules
+          name: observatorium.rules
+    volumeClaimTemplates:
+    - metadata:
+        labels:
+          app.kubernetes.io/component: rule-evaluation-engine
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: thanos-rule
+          app.kubernetes.io/part-of: observatorium
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: ${THANOS_RULER_PVC_REQUEST}
+        storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2105,10 +2120,12 @@ objects:
         - args:
           - store
           - --log.level=${THANOS_STORE_LOG_LEVEL}
+          - --log.format=logfmt
           - --data-dir=/var/thanos/store
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
+          - --ignore-deletion-marks-delay=24h
           - --experimental.enable-index-cache-postings-compression
           - |-
             --index-cache.config="config":
@@ -2145,7 +2162,12 @@ objects:
             "metafile_exists_ttl": "2h"
             "metafile_max_size": "1MiB"
             "type": "memcached"
-          - --ignore-deletion-marks-delay=24h
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-store"
+            "type": "JAEGER"
           - |
             --selector.relabel-config=
               - action: hashmod
@@ -2155,13 +2177,6 @@ objects:
               - action: keep
                 source_labels: ["shard"]
                 regex: 0
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-store
-                sampler_type: ratelimiting
-                sampler_param: 2
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -2233,10 +2248,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -2344,10 +2359,12 @@ objects:
         - args:
           - store
           - --log.level=${THANOS_STORE_LOG_LEVEL}
+          - --log.format=logfmt
           - --data-dir=/var/thanos/store
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
+          - --ignore-deletion-marks-delay=24h
           - --experimental.enable-index-cache-postings-compression
           - |-
             --index-cache.config="config":
@@ -2384,7 +2401,12 @@ objects:
             "metafile_exists_ttl": "2h"
             "metafile_max_size": "1MiB"
             "type": "memcached"
-          - --ignore-deletion-marks-delay=24h
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-store"
+            "type": "JAEGER"
           - |
             --selector.relabel-config=
               - action: hashmod
@@ -2394,13 +2416,6 @@ objects:
               - action: keep
                 source_labels: ["shard"]
                 regex: 1
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-store
-                sampler_type: ratelimiting
-                sampler_param: 2
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -2472,10 +2487,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -2583,10 +2598,12 @@ objects:
         - args:
           - store
           - --log.level=${THANOS_STORE_LOG_LEVEL}
+          - --log.format=logfmt
           - --data-dir=/var/thanos/store
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
+          - --ignore-deletion-marks-delay=24h
           - --experimental.enable-index-cache-postings-compression
           - |-
             --index-cache.config="config":
@@ -2623,7 +2640,12 @@ objects:
             "metafile_exists_ttl": "2h"
             "metafile_max_size": "1MiB"
             "type": "memcached"
-          - --ignore-deletion-marks-delay=24h
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-store"
+            "type": "JAEGER"
           - |
             --selector.relabel-config=
               - action: hashmod
@@ -2633,13 +2655,6 @@ objects:
               - action: keep
                 source_labels: ["shard"]
                 regex: 2
-          - |
-            --tracing.config=
-              type: JAEGER
-              config:
-                service_name: thanos-store
-                sampler_type: ratelimiting
-                sampler_param: 2
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -2711,10 +2726,10 @@ objects:
               scheme: HTTP
           name: jaeger-agent
           ports:
-          - containerPort: 6831
-            name: jaeger-thrift
           - containerPort: 5778
             name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
           - containerPort: 14271
             name: metrics
           resources:
@@ -2750,8 +2765,10 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       prometheus: app-sre
     name: observatorium-thanos-store-shard
+    namespace: ${NAMESPACE}
   spec:
     endpoints:
     - port: http
@@ -2778,9 +2795,10 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive
       app.kubernetes.io/part-of: observatorium
-      controller.receive.thanos.io/hashring: default
+      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       prometheus: app-sre
-    name: observatorium-thanos-receive-default
+    name: observatorium-thanos-receive
+    namespace: ${NAMESPACE}
   spec:
     endpoints:
     - port: http
@@ -2799,7 +2817,6 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-receive
         app.kubernetes.io/part-of: observatorium
-        controller.receive.thanos.io/hashring: default
 - apiVersion: v1
   kind: Service
   metadata:
@@ -3520,6 +3537,7 @@ objects:
   kind: ConfigMap
   metadata:
     labels:
+      app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
       app.kubernetes.io/part-of: prometheus-ams
@@ -3528,6 +3546,7 @@ objects:
   kind: Deployment
   metadata:
     labels:
+      app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
       app.kubernetes.io/part-of: prometheus-ams
@@ -3541,8 +3560,10 @@ objects:
     template:
       metadata:
         labels:
+          app.kubernetes.io/component: prometheus-ams
           app.kubernetes.io/instance: remote-write-proxy
           app.kubernetes.io/name: nginx
+          app.kubernetes.io/part-of: prometheus-ams
       spec:
         containers:
         - args:
@@ -3574,6 +3595,7 @@ objects:
   kind: Service
   metadata:
     labels:
+      app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
       app.kubernetes.io/part-of: prometheus-ams
@@ -3765,13 +3787,13 @@ parameters:
   value: 200m
 - name: OPA_AMS_MEMORY_LIMIT
   value: 200Mi
-- name: JAEGER_PROXY_CPU_REQUEST
+- name: OAUTH_PROXY_CPU_REQUEST
   value: 100m
-- name: JAEGER_PROXY_MEMORY_REQUEST
+- name: OAUTH_PROXY_MEMORY_REQUEST
   value: 100Mi
-- name: JAEGER_PROXY_CPU_LIMITS
+- name: OAUTH_PROXY_CPU_LIMITS
   value: 200m
-- name: JAEGER_PROXY_MEMORY_LIMITS
+- name: OAUTH_PROXY_MEMORY_LIMITS
   value: 200Mi
 - name: IMAGE
   value: quay.io/openshift/origin-telemeter

@@ -1,6 +1,6 @@
-local loki = (import 'loki-mixin/mixin.libsonnet');
-local obs = import 'environments/production/obs.jsonnet';
+local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet');
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
+local obs = import '../manifests/obs.jsonnet';
 
 local absent(name, job) = {
   prometheusAlerts+:: {
@@ -165,23 +165,6 @@ local appSREOverwrites(namespace) = {
   ],
 };
 
-
-local renderPrometheusRules(name, namespace, mixin) = {
-  apiVersion: 'monitoring.coreos.com/v1',
-  kind: 'PrometheusRule',
-  metadata: {
-    name: name,
-    labels: {
-      prometheus: 'app-sre',
-      role: 'all-rules',
-    },
-  },
-  spec: mixin {
-          prometheusAlerts+:: appSREOverwrites(super.prometheusAlerts, namespace),
-        }.prometheusAlerts +
-        mixin.prometheusRules,
-};
-
 local renderRules(name, _namespace, mixin) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PrometheusRule',
@@ -264,14 +247,14 @@ local renderAlerts(name, namespace, mixin) = {
 
 {
   local thanosAlerts =
-    (import 'thanos-mixin/alerts/absent.libsonnet') +
-    (import 'thanos-mixin/alerts/compact.libsonnet') +
-    (import 'thanos-mixin/alerts/query.libsonnet') +
-    (import 'thanos-mixin/alerts/receive.libsonnet') +
-    (import 'thanos-mixin/alerts/store.libsonnet') +
-    (import 'thanos-mixin/alerts/rule.libsonnet') +
-    (import 'thanos-receive-controller-mixin/mixin.libsonnet') +
-    (import 'environments/production/selectors.libsonnet').thanos {
+    (import 'github.com/thanos-io/thanos/mixin/alerts/absent.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/compact.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/query.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/receive.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/store.libsonnet') +
+    (import 'github.com/thanos-io/thanos/mixin/alerts/rule.libsonnet') +
+    (import 'github.com/observatorium/thanos-receive-controller/jsonnet/thanos-receive-controller-mixin/mixin.libsonnet') +
+    (import 'selectors.libsonnet').thanos {
       query+:: {
         p99QueryLatencyThreshold: 90,
       },
@@ -288,7 +271,7 @@ local renderAlerts(name, namespace, mixin) = {
   local obsSLOs = {
     local logsGroup = 'logsv1',
     local metricsGroup = 'metricsv1',
-    local metricLatency = 'http_request_duration_seconds',
+    // local metricLatency = 'http_request_duration_seconds',
     local metricError = 'http_requests_total',
     local writeMetricsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
@@ -314,7 +297,7 @@ local renderAlerts(name, namespace, mixin) = {
 
     local alertNameLogsErrors = 'ObservatoriumAPILogsErrorsSLOBudgetBurn',
     local alertNameMetricsErrors = 'ObservatoriumAPIMetricsErrorsSLOBudgetBurn',
-    local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
+    // local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
 
     errorBurn:: [
       {

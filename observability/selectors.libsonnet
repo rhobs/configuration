@@ -1,5 +1,5 @@
-local obs = (import 'obs.jsonnet');
-local utils = (import 'mixin-utils/utils.libsonnet');
+local utils = (import 'github.com/grafana/jsonnet-libs/mixin-utils/utils.libsonnet');
+local thanos = (import '../manifests/obs.jsonnet').thanos;
 
 {
   thanos: {
@@ -8,7 +8,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
       local cfg = self,
       // TODO: Move this to the new style of selectors that kube-thanos uses
       thanosReceiveSelector: t.receive.selector,
-      thanosReceiveControllerJobPrefix: obs.thanosReceiveController.service.metadata.name,
+      thanosReceiveControllerJobPrefix: thanos.receiveController.service.metadata.name,
       thanosReceiveControllerSelector: 'job="%s"' % cfg.thanosReceiveControllerJobPrefix,
     },
 
@@ -21,19 +21,19 @@ local utils = (import 'mixin-utils/utils.libsonnet');
     },
     compact+:: {
       local compact = self,
-      jobPrefix: obs.compact.service.metadata.name,
+      jobPrefix: thanos.compact.service.metadata.name,
       selector: 'job="%s"' % compact.jobPrefix,
       title: '%(prefix)sCompact' % t.dashboard.prefix,
     },
     query+:: {
       local query = self,
-      jobPrefix: obs.query.service.metadata.name,
+      jobPrefix: thanos.query.service.metadata.name,
       selector: 'job="%s"' % query.jobPrefix,
       title: '%(prefix)sQuery' % t.dashboard.prefix,
     },
     receive+:: {
       local receive = self,
-      jobPrefix: obs.receivers.default.service.metadata.name,
+      jobPrefix: thanos.receivers.default.service.metadata.name,
       selector: 'job=~"%s.*"' % receive.jobPrefix,
       title: '%(prefix)sReceive' % t.dashboard.prefix,
     },
@@ -45,7 +45,7 @@ local utils = (import 'mixin-utils/utils.libsonnet');
     },
     rule+:: {
       local rule = self,
-      jobPrefix: obs.rule.service.metadata.name,
+      jobPrefix: thanos.rule.service.metadata.name,
       selector: 'job="%s"' % rule.jobPrefix,
       title: '%(prefix)sRule' % t.dashboard.prefix,
     },

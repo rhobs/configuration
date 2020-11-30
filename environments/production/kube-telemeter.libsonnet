@@ -1,4 +1,4 @@
-(import 'telemeter/server/kubernetes.libsonnet') +
+(import 'github.com/openshift/telemeter/jsonnet/telemeter/server/kubernetes.libsonnet') +
 {
   _config+:: {
     namespace: 'observatorium',

@@ -1,5 +1,6 @@
-local list = import 'telemeter/lib/list.libsonnet';
+local list = import 'github.com/openshift/telemeter/jsonnet/telemeter/lib/list.libsonnet';
 
+// TODO(kakkoyun): Remove kube-telemeter!
 (import 'kube-telemeter.libsonnet') +
 {
   telemeterServer+:: {
@@ -118,10 +119,8 @@ local list = import 'telemeter/lib/list.libsonnet';
 
   _config+:: {
     telemeterServer+: {
-      whitelist+: (import 'metrics.json'),
-      elideLabels+: [
-        'prometheus_replica',
-      ],
+      whitelist+: (import '../configuration/telemeter/metrics.json'),
+      elideLabels+: ['prometheus_replica'],
     },
   },
   memcached+:: {

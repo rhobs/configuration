@@ -1829,7 +1829,7 @@ objects:
     labels:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/part-of: observatorium
-    name: observatorium-rule
+    name: observatorium-rules
 - apiVersion: v1
   kind: Service
   metadata:

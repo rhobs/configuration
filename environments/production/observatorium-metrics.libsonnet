@@ -83,7 +83,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       ],
       rulesConfig: [
         {
-          name: 'observatorium.rules',
+          name: 'observatorium-rules',
           key: 'foo',
           rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
         },

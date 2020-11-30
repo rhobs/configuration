@@ -2765,10 +2765,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       prometheus: app-sre
     name: observatorium-thanos-store-shard
-    namespace: ${NAMESPACE}
   spec:
     endpoints:
     - port: http
@@ -2795,10 +2793,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       prometheus: app-sre
     name: observatorium-thanos-receive
-    namespace: ${NAMESPACE}
   spec:
     endpoints:
     - port: http

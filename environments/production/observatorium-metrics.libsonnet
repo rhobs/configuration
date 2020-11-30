@@ -208,9 +208,9 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       kind: 'ServiceMonitor',
       metadata+: {
         name: 'observatorium-thanos-store-shard',
-        namespace: '${NAMESPACE}',
         labels: thanos.stores.config.commonLabels {
           prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
         },
       },
       spec: {
@@ -446,9 +446,9 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       kind: 'ServiceMonitor',
       metadata+: {
         name: 'observatorium-thanos-receive',
-        namespace: '${NAMESPACE}',
         labels: thanos.receivers.config.commonLabels {
           prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
         },
       },
       spec: {

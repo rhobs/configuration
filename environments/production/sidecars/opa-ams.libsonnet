@@ -1,15 +1,14 @@
 local defaults = {
-  name: error 'provide a name for the oauth proxy',
+  name: error 'provide a name for the OPA-APS container',
   image: error 'must provide image',
   clientIDKey: 'client-id',
-  clientSecretKey: error 'must provide client-secret',
-  issuerURLKey: error 'must provide issuer-url',
+  clientSecretKey: 'client-secret',
+  issuerURLKey: 'issuer-url',
   amsURL: error 'must provide ams-url',
-  memcached: error 'must provide memcached address',
-  memcachedExpire: error 'must provide memcached-expire',
-  opaPackage: error 'must provide opa-package',
-  resourceTypePrefix: error 'must provide resourse-type-prefix',
+  opaPackage: '',
+  resourceTypePrefix: '',
   resources: {},
+  secretName: error 'must provide secret-name',
   ports: {
     api: 8082,
     metrics: 8083,
@@ -21,7 +20,7 @@ local defaults = {
 };
 
 function(params) {
-  local oap = self,
+  local opa = self,
   config:: defaults + params,
 
   service+: {
@@ -29,10 +28,10 @@ function(params) {
       ports+: [
         {
           name: 'opa-ams-' + name,
-          port: oap.config.ports[name],
-          targetPort: oap.config.ports[name],
+          port: opa.config.ports[name],
+          targetPort: opa.config.ports[name],
         }
-        for name in std.objectFields(oap.config.ports)
+        for name in std.objectFields(opa.config.ports)
       ],
     },
   },
@@ -51,31 +50,31 @@ function(params) {
       spec+: {
         containers+: [{
           name: 'opa-ams',
-          image: oap.config.image,
+          image: opa.config.image,
           args: [
-            '--web.listen=127.0.0.1:%s' % oap.config.ports.api,
-            '--web.internal.listen=0.0.0.0:%s' % oap.config.ports.metrics,
-            '--web.healthchecks.url=http://127.0.0.1:%s' % oap.config.ports.api,
+            '--web.listen=127.0.0.1:%s' % opa.config.ports.api,
+            '--web.internal.listen=0.0.0.0:%s' % opa.config.ports.metrics,
+            '--web.healthchecks.url=http://127.0.0.1:%s' % opa.config.ports.api,
             '--log.level=warn',
-            '--ams.url=' + oap.config.amsURL,
-            '--resource-type-prefix=' + oap.config.resourceTypePrefix,
+            '--ams.url=' + opa.config.amsURL,
+            '--resource-type-prefix=' + opa.config.resourceTypePrefix,
             '--oidc.client-id=$(CLIENT_ID)',
             '--oidc.client-secret=$(CLIENT_SECRET)',
             '--oidc.issuer-url=$(ISSUER_URL)',
-            '--opa.package=' + oap.config.opaPackage,
+            '--opa.package=' + opa.config.opaPackage,
           ] + (
-            if std.objectHas(oap.config, 'memcached') then
-              ['--memcached=' + oap.config.memcached]
+            if std.objectHas(opa.config, 'memcached') then
+              ['--memcached=' + opa.config.memcached]
             else []
           ) + (
-            if std.objectHas(oap.config, 'memcachedExpire') then
-              ['--memcached.expire=' + oap.config.memcachedExpire]
+            if std.objectHas(opa.config, 'memcachedExpire') then
+              ['--memcached.expire=' + opa.config.memcachedExpire]
             else []
           ) + (
-            if std.objectHas(oap.config, 'mappings') then
+            if std.objectHas(opa.config, 'mappings') then
               [
-                '--ams.mappings=%s=%s' % [tenant, oap.config.mappings[tenant]]
-                for tenant in std.objectFields(oap.config.mappings)
+                '--ams.mappings=%s=%s' % [tenant, opa.config.mappings[tenant]]
+                for tenant in std.objectFields(opa.config.mappings)
               ]
             else []
           ),
@@ -84,8 +83,8 @@ function(params) {
               name: 'ISSUER_URL',
               valueFrom: {
                 secretKeyRef: {
-                  name: oap.config.secretName,
-                  key: oap.config.issuerURLKey,
+                  name: opa.config.secretName,
+                  key: opa.config.issuerURLKey,
                 },
               },
             },
@@ -93,8 +92,8 @@ function(params) {
               name: 'CLIENT_ID',
               valueFrom: {
                 secretKeyRef: {
-                  name: oap.config.secretName,
-                  key: oap.config.clientIDKey,
+                  name: opa.config.secretName,
+                  key: opa.config.clientIDKey,
                 },
               },
             },
@@ -102,8 +101,8 @@ function(params) {
               name: 'CLIENT_SECRET',
               valueFrom: {
                 secretKeyRef: {
-                  name: oap.config.secretName,
-                  key: oap.config.clientSecretKey,
+                  name: opa.config.secretName,
+                  key: opa.config.clientSecretKey,
                 },
               },
             },
@@ -111,16 +110,16 @@ function(params) {
           ports: [
             {
               name: 'opa-ams-' + name,
-              containerPort: oap.config.ports[name],
+              containerPort: opa.config.ports[name],
             }
-            for name in std.objectFields(oap.config.ports)
+            for name in std.objectFields(opa.config.ports)
           ],
           livenessProbe: {
             failureThreshold: 10,
             periodSeconds: 30,
             httpGet: {
               path: '/live',
-              port: oap.config.ports.metrics,
+              port: opa.config.ports.metrics,
               scheme: 'HTTP',
             },
           },
@@ -129,18 +128,18 @@ function(params) {
             periodSeconds: 5,
             httpGet: {
               path: '/ready',
-              port: oap.config.ports.metrics,
+              port: opa.config.ports.metrics,
               scheme: 'HTTP',
             },
           },
-          resources: oap.config.resources,
+          resources: opa.config.resources,
         }],
       },
     },
   },
 
   statefulSet+: {
-    spec+: spec {},
+    spec+: spec,
   },
 
   deployment+: {

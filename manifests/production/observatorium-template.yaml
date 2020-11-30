@@ -2126,7 +2126,6 @@ objects:
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --ignore-deletion-marks-delay=24h
-          - --experimental.enable-index-cache-postings-compression
           - |-
             --index-cache.config="config":
               "addresses":
@@ -2365,7 +2364,6 @@ objects:
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --ignore-deletion-marks-delay=24h
-          - --experimental.enable-index-cache-postings-compression
           - |-
             --index-cache.config="config":
               "addresses":
@@ -2604,7 +2602,6 @@ objects:
           - --http-address=0.0.0.0:10902
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --ignore-deletion-marks-delay=24h
-          - --experimental.enable-index-cache-postings-compression
           - |-
             --index-cache.config="config":
               "addresses":

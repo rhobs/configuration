@@ -331,6 +331,8 @@ parameters:
   value: 1.14.0
 - name: REPLICAS
   value: "1"
+- name: JAEGER_MAX_TRACES
+  value: "100000"
 - name: JAEGER_CPU_REQUEST
   value: "1"
 - name: JAEGER_MEMORY_REQUEST
@@ -351,5 +353,3 @@ parameters:
   value: 200m
 - name: OAUTH_PROXY_MEMORY_LIMITS
   value: 200Mi
-- name: OAUTH_MAX_TRACES
-  value: "100000"

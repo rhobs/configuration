@@ -134,6 +134,7 @@ local jaeger = (import './jaeger-collector.libsonnet')({
     { name: 'IMAGE', value: 'jaegertracing/all-in-one' },
     { name: 'IMAGE_TAG', value: '1.14.0' },
     { name: 'REPLICAS', value: '1' },
+    { name: 'JAEGER_MAX_TRACES', value: '100000' },
     { name: 'JAEGER_CPU_REQUEST', value: '1' },
     { name: 'JAEGER_MEMORY_REQUEST', value: '4Gi' },
     { name: 'JAEGER_CPU_LIMITS', value: '4' },
@@ -144,6 +145,5 @@ local jaeger = (import './jaeger-collector.libsonnet')({
     { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
-    { name: 'OAUTH_MAX_TRACES', value: '100000' },
   ],
 }

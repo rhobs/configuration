@@ -48,7 +48,6 @@ local prometheusAms = {
         '-c',
         '/config/nginx.conf',
       ],
-
       ports: [{ name: 'http', containerPort: pa.config.ports.proxy }],
       volumeMounts: [
         { name: pa.configmap.metadata.name, mountPath: '/config', readOnly: true },

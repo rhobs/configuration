@@ -70,14 +70,14 @@ manifests: format manifests/production/conprof-template.yaml manifests/productio
 
 manifests/production/conprof-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running conprof-template"
-	$(JSONNET) -J vendor -m manifests/production manifests/conprof.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	$(JSONNET) -J vendor -m manifests/production environments/production/conprof.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find manifests/production -type f ! -name '*.yaml' -delete
 
 manifests/production/jaeger-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"
-	$(JSONNET) -J vendor manifests/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
+	$(JSONNET) -J vendor environments/production/jaeger.jsonnet | $(GOJSONTOYAML) > manifests/production/jaeger-template.yaml
 
 manifests/production/observatorium-template.yaml: $(shell find manifests -type f) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"
-	$(JSONNET) -J vendor -m manifests/production manifests/main.jsonnet 	| $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+	$(JSONNET) -J vendor -m manifests/production environments/production/main.jsonnet 	| $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find manifests/production -type f ! -name '*.yaml' -delete

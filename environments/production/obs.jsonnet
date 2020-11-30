@@ -377,6 +377,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },
       { name: 'THANOS_RULER_MEMORY_REQUEST', value: '512Mi' },
       { name: 'THANOS_RULER_MEMORY_LIMIT', value: '1Gi' },
+      { name: 'THANOS_RULER_PVC_REQUEST', value: '50Gi' },
       { name: 'THANOS_QUERIER_SVC_URL', value: 'http://thanos-querier.observatorium.svc:9090' },
       { name: 'GUBERNATOR_IMAGE', value: 'thrawn01/gubernator' },
       { name: 'GUBERNATOR_IMAGE_TAG', value: '1.0.0-rc.1' },

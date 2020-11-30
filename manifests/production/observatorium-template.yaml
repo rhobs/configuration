@@ -3540,7 +3540,7 @@ objects:
       app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/part-of: prometheus-ams
     name: prometheus-remote-write-proxy-config
 - apiVersion: apps/v1
   kind: Deployment
@@ -3549,10 +3549,10 @@ objects:
       app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/part-of: prometheus-ams
     name: prometheus-remote-write-proxy
   spec:
-    replicas: '{{REPLICAS}}'
+    replicas: 1
     selector:
       matchLabels:
         app.kubernetes.io/instance: remote-write-proxy
@@ -3563,7 +3563,7 @@ objects:
           app.kubernetes.io/component: prometheus-ams
           app.kubernetes.io/instance: remote-write-proxy
           app.kubernetes.io/name: nginx
-          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/part-of: prometheus-ams
       spec:
         containers:
         - args:
@@ -3598,7 +3598,7 @@ objects:
       app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
       app.kubernetes.io/name: nginx
-      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/part-of: prometheus-ams
     name: prometheus-ams-remote-write-proxy
   spec:
     ports:

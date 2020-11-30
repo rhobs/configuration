@@ -12,7 +12,7 @@ local prometheusAms = {
     },
 
     commonLabels:: {
-      'app.kubernetes.io/part-of': 'observatorium',
+      'app.kubernetes.io/part-of': 'prometheus-ams',  // TODO(kakkoyun): Should be "observatorium"
       'app.kubernetes.io/name': 'nginx',
       'app.kubernetes.io/instance': 'remote-write-proxy',
       'app.kubernetes.io/component': 'prometheus-ams',
@@ -68,7 +68,7 @@ local prometheusAms = {
         labels: pa.config.commonLabels,
       },
       spec: {
-        replicas: '{{REPLICAS}}',
+        replicas: 1,
         selector: { matchLabels: pa.config.selectorLabels },
         template: {
           metadata: {
@@ -126,6 +126,5 @@ local prometheusAms = {
     { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION', value: '14e844d' },
     { name: 'PROMETHEUS_IMAGE', value: 'quay.io/prometheus/prometheus' },
     { name: 'PROMETHEUS_VERSION', value: 'v2.12.0' },
-    { name: 'REPLICAS', value: '1' },
   ],
 }

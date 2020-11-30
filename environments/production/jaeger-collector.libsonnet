@@ -144,8 +144,7 @@ function(params) {
           assert std.isNumber(j.config.ports[name]),
 
           name: name,
-          port: j.config.ports[name],
-          targetPort: j.config.ports[name],
+          containerPort: j.config.ports[name],
         }
         for name in std.objectFields(j.config.ports)
       ],

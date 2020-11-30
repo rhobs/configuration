@@ -77,18 +77,14 @@ objects:
             periodSeconds: 30
           name: jaeger-collector
           ports:
-          - name: admin
-            port: 14269
-            targetPort: 14269
-          - name: grpc
-            port: 14250
-            targetPort: 14250
-          - name: metrics
-            port: 14271
-            targetPort: 14271
-          - name: query
-            port: 16686
-            targetPort: 16686
+          - containerPort: 14269
+            name: admin
+          - containerPort: 14250
+            name: grpc
+          - containerPort: 14271
+            name: metrics
+          - containerPort: 16686
+            name: query
           readinessProbe:
             failureThreshold: 3
             httpGet:

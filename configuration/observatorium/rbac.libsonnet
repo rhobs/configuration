@@ -135,6 +135,22 @@
           name: 'ptsiraki@redhat.com',
           kind: 'user',
         },
+        {
+          name: 'vparfono',
+          kind: 'user',
+        },
+        {
+          name: 'vimalkum',
+          kind: 'user',
+        },
+        {
+          name: 'sasagarw',
+          kind: 'user',
+        },
+        {
+          name: 'ikarpukh',
+          kind: 'user',
+        },
         // OpenShift DPTP team
         {
           name: 'dmace@redhat.com',

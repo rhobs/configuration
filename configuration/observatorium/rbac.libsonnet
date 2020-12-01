@@ -151,6 +151,10 @@
           name: 'ikarpukh',
           kind: 'user',
         },
+        {
+          name: 'eraichst',
+          kind: 'user',
+        },
         // OpenShift DPTP team
         {
           name: 'dmace@redhat.com',

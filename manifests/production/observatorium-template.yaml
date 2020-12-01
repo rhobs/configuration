@@ -58,6 +58,8 @@ objects:
         - "kind": "user"
           "name": "ikarpukh"
         - "kind": "user"
+          "name": "eraichst"
+        - "kind": "user"
           "name": "dmace@redhat.com"
         - "kind": "user"
           "name": "sbatsche@redhat.com"

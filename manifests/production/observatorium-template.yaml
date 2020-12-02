@@ -1933,7 +1933,7 @@ objects:
           - --label=rule_replica="$(NAME)"
           - --alert.label-drop=rule_replica
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
-          - --rule-file=/etc/thanos/rules/observatorium-rules/foo
+          - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":
               "sampler_param": 2

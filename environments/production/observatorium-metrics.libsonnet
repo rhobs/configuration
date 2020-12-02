@@ -69,6 +69,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     }),
 
     local observatoriumRules = 'observatorium-rules',
+    local observatoriumRulesKey = 'observatorium.yaml',
     rule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-rule',
       commonLabels+:: {
@@ -85,7 +86,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       rulesConfig: [
         {
           name: observatoriumRules,
-          key: 'foo',
+          key: observatoriumRulesKey,
           rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
         },
       ],
@@ -126,7 +127,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           },
         },
         data: {
-          'observatorium.yaml': std.manifestYamlDoc({
+          [observatoriumRulesKey]: std.manifestYamlDoc({
             groups: [{
               name: 'observatorium.rules',
               interval: '3m',

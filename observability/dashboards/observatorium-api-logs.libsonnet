@@ -191,7 +191,7 @@ function(datasource, namespace) {
             tableColumn: '',
             targets: [
               {
-                expr: 'sum(rate(http_request_duration_seconds_bucket{job="observatorium-loki-query-frontend",handler="query",le="3",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="observatorium-loki-query-frontend",handler="query"}[28d]))',
+                expr: 'sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",group="logsv1",handler="query",le="3",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",group="logsv1",handler="query"}[28d]))',
                 instant: true,
                 refId: 'A',
               },
@@ -810,7 +810,7 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum by (code) (rate(http_requests_total{job="observatorium-loki-query-frontend",handler="query_range"}[5m]))',
+                expr: 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",group="logsv1",handler="query_range"}[5m]))',
                 format: 'time_series',
                 intervalFactor: 1,
                 legendFormat: '{{code}}',
@@ -912,7 +912,7 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum(rate(http_requests_total{job="observatorium-loki-query-frontend",handler="query_range",code=~"5.."}[5m])) / \nsum(rate(http_requests_total{job="observatorium-loki-query-frontend",handler="query_range"}[5m]))',
+                expr: 'sum(rate(http_requests_total{job="observatorium-observatorium-api",group="logsv1",handler="query_range",code=~"5.."}[5m])) / \nsum(rate(http_requests_total{job="observatorium-observatorium-api",group="logsv1",handler="query_range"}[5m]))',
                 format: 'time_series',
                 intervalFactor: 1,
                 legendFormat: 'errors',
@@ -1025,21 +1025,21 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-loki-query-frontend",code!~"5..",handler="query_range"}[5m])))',
+                expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",group="logsv1",code!~"5..",handler="query_range"}[5m])))',
                 format: 'time_series',
                 intervalFactor: 1,
                 legendFormat: '99th',
                 refId: 'A',
               },
               {
-                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-loki-query-frontend",code!~"5..",handler="query_range"}[5m])))',
+                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",group="logsv1",code!~"5..",handler="query_range"}[5m])))',
                 format: 'time_series',
                 intervalFactor: 1,
                 legendFormat: '90th',
                 refId: 'B',
               },
               {
-                expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-loki-query-frontend",code!~"5..",handler="query_range"}[5m])))',
+                expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",group="logsv1",code!~"5..",handler="query_range"}[5m])))',
                 format: 'time_series',
                 intervalFactor: 1,
                 legendFormat: '50th',

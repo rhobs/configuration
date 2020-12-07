@@ -67,6 +67,7 @@ local jaegerAgentSidecar = (import './sidecars/jaeger-agent.libsonnet')({
 
   loki+::
     l +
+    l.withConfig +
     l.withMemberList +
     l.withResources +
     l.withVolumeClaimTemplate +
@@ -81,6 +82,11 @@ local jaegerAgentSidecar = (import './sidecars/jaeger-agent.libsonnet')({
         version: '${LOKI_IMAGE_TAG}',
         image: '%s:%s' % ['${LOKI_IMAGE}', lConfig.version],
         commonLabels+: obs.config.commonLabels,
+        config: {
+          limits_config+: {
+            max_global_streams_per_user: 25000,
+          },
+        },
         objectStorageConfig: {
           secretName: '${LOKI_S3_SECRET}',
           bucketsKey: 'bucket',

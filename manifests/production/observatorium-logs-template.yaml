@@ -421,6 +421,13 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
           name: observatorium-loki-compactor
           ports:
           - containerPort: 3100
@@ -700,6 +707,13 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
           name: observatorium-loki-distributor
           ports:
           - containerPort: 3100
@@ -844,7 +858,7 @@ objects:
   spec:
     clusterIP: None
     ports:
-    - name: gossip-ring
+    - name: gossip
       port: 7946
       protocol: TCP
       targetPort: 7946
@@ -979,6 +993,13 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
           name: observatorium-loki-ingester
           ports:
           - containerPort: 3100
@@ -1187,6 +1208,13 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
           name: observatorium-loki-querier
           ports:
           - containerPort: 3100
@@ -1330,6 +1358,13 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
           name: observatorium-loki-query-frontend
           ports:
           - containerPort: 3100

@@ -1,29 +1,52 @@
 local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 
-{
-  local lc = self,
+// These are the defaults for this components configuration.
+// When calling the function to generate the component's manifest,
+// you can pass an object structured like the default to overwrite default values.
+local defaults = {
+  local defaults = self,
+  name: error 'must provide name',
+  namespace: error 'must provide namespace',
+  version: error 'must provide version',
+  image: error 'must provide image',
+  exporterVersion: error 'must provide exporter version',
+  exporterImage: error 'must provide exporter image',
 
-  config:: {
-    name:: error 'must provide name',
-    namespace:: error 'must provide namespace',
-    version:: error 'must provide version',
-    image:: error 'must provide image',
-    exporterVersion:: error 'must provide exporter version',
-    exporterImage:: error 'must provide exporter image',
-    replicas:: error 'must provide replicas',
-
-    enableChuckCache: false,
-    enableIndexQueryCache: false,
-    enableResultsCache: false,
-
-    commonLabels:: {
-      'app.kubernetes.io/name': 'loki',
-      'app.kubernetes.io/instance': lc.config.name,
-      'app.kubernetes.io/version': lc.config.version,
+  components: {
+    chunkCache: {
+      replicas: 1,
+      withServiceMonitor: false,
+    },
+    indexQueryCache: {
+      replicas: 1,
+      withServiceMonitor: false,
+    },
+    resultsCache: {
+      replicas: 1,
+      withServiceMonitor: false,
     },
   },
 
-  serviceMonitors: {},
+  commonLabels:: {
+    'app.kubernetes.io/name': 'loki',
+    'app.kubernetes.io/instance': defaults.name,
+    'app.kubernetes.io/version': defaults.version,
+  },
+
+  podLabelSelector:: {
+    [labelName]: defaults.commonLabels[labelName]
+    for labelName in std.objectFields(defaults.commonLabels)
+    if labelName != 'app.kubernetes.io/version'
+  },
+};
+
+function(params) {
+  local lc = self,
+
+  // Combine the defaults and the passed params to make the component's config.
+  config:: defaults + params,
+  // Safety checks for combined config of defaults and params.
+  assert std.isObject(lc.config.components),
 
   chunkCache:: memcached({
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-chunk-cache',
@@ -35,13 +58,11 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
     image:: lc.config.image,
     exporterVersion: lc.config.exporterVersion,
     exporterImage:: lc.config.exporterImage,
-    replicas: lc.config.replicas.chunk_cache,
+    replicas: lc.config.components.chunkCache.replicas,
+    serviceMonitor: lc.config.components.chunkCache.withServiceMonitor,
     maxItemSize:: '2m',
     memoryLimitMb: 4096,
-    serviceMonitor: true,
-  }) + if std.objectHas(lc.serviceMonitors, 'chunk_cache') then {
-    serviceMonitor+: lc.serviceMonitors.chunk_cache,
-  } else {},
+  }),
 
   indexQueryCache:: memcached({
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-index-query-cache',
@@ -53,12 +74,10 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
     image:: lc.config.image,
     exporterVersion: lc.config.exporterVersion,
     exporterImage:: lc.config.exporterImage,
-    replicas: lc.config.replicas.index_query_cache,
+    replicas: lc.config.components.indexQueryCache.replicas,
+    serviceMonitor: lc.config.components.indexQueryCache.withServiceMonitor,
     maxItemSize:: '5m',
-    serviceMonitor: true,
-  }) + if std.objectHas(lc.serviceMonitors, 'index_query_cache') then {
-    serviceMonitor+: lc.serviceMonitors.index_query_cache,
-  } else {},
+  }),
 
   resultsCache:: memcached({
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-results-cache',
@@ -70,35 +89,25 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
     image:: lc.config.image,
     exporterVersion: lc.config.exporterVersion,
     exporterImage:: lc.config.exporterImage,
-    replicas: lc.config.replicas.results_cache,
-    serviceMonitor: true,
-  }) + if std.objectHas(lc.serviceMonitors, 'results_cache') then {
-    serviceMonitor+: lc.serviceMonitors.results_cache,
-  } else {},
-
-  withServiceMonitors: {
-    local l = self,
-    serviceMonitors:: {},
-
-    manifests+:: {
-      'chunk-cache-service-monitor': l.chunkCache.serviceMonitor,
-      'index-query-cache-service-monitor': l.indexQueryCache.serviceMonitor,
-      'results-cache-service-monitor': l.resultsCache.serviceMonitor,
-    },
-  },
+    replicas: lc.config.components.resultsCache.replicas,
+    serviceMonitor: lc.config.components.resultsCache.withServiceMonitor,
+  }),
 
   manifests::
     {} +
-    (if lc.config.enableChuckCache then {
+    (if std.objectHas(lc.config.components, 'chunkCache') && lc.config.components.chunkCache.replicas > 0 then {
        'chunk-cache-service': lc.chunkCache.service,
        'chunk-cache-statefulset': lc.chunkCache.statefulSet,
+       'chunk-cache-service-monitor': lc.chunkCache.serviceMonitor,
      } else {}) +
-    (if lc.config.enableIndexQueryCache then {
+    (if std.objectHas(lc.config.components, 'indexQueryCache') && lc.config.components.indexQueryCache.replicas > 0 then {
        'index-query-cache-service': lc.indexQueryCache.service,
        'index-query-cache-statefulset': lc.indexQueryCache.statefulSet,
+       'index-query-cache-service-monitor': lc.indexQueryCache.serviceMonitor,
      } else {}) +
-    (if lc.config.enableResultsCache then {
+    (if std.objectHas(lc.config.components, 'resultsCache') && lc.config.components.resultsCache.replicas > 0 then {
        'results-cache-service': lc.resultsCache.service,
        'results-cache-statefulset': lc.resultsCache.statefulSet,
+       'results-cache-service-monitor': lc.resultsCache.serviceMonitor,
      } else {}),
 }

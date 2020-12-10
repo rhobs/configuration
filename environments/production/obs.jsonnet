@@ -2,13 +2,23 @@ local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observat
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
 
-(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +  // TODO(kakkoyun): Remove after Loki.
+(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +
 (import './observatorium-metrics.libsonnet') +
 (import './observatorium-metrics-template.libsonnet') +
 (import './observatorium-logs.libsonnet') +
 (import './observatorium-logs-template.libsonnet') +
 {
   local obs = self,
+
+  config:: {
+    name: 'observatorium',
+    namespace: '${NAMESPACE}',
+
+    commonLabels:: {
+      'app.kubernetes.io/part-of': 'observatorium',
+      'app.kubernetes.io/instance': obs.config.name,
+    },
+  },
 
   gubernator:: gubernator({
     local cfg = self,
@@ -239,29 +249,6 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     if obs.up[name] != null
   },
 } + {
-  config+:: {
-    name: 'observatorium',
-    namespace:: '${NAMESPACE}',
-    objectStorageConfig:: {
-      // TOOD(kakkoyun): Cleans!
-      //   thanos: {
-      //     name: '${THANOS_CONFIG_SECRET}',
-      //     key: 'thanos.yaml',
-      //   },
-      loki: {
-        secretName: '${LOKI_S3_SECRET}',
-        bucketsKey: 'buckets',
-        regionKey: 'region',
-        accessKeyIdKey: 'aws_access_key_id',
-        secretAccessKeyKey: 'aws_secret_access_key',
-      },
-    },
-
-    loki+:: {},
-    lokiCaches+:: {},
-  },
-  // TODO(kakkoyun): Remove after Loki changes.
-} + (import 'github.com/observatorium/deployments/components/observatorium-configure.libsonnet') + {
   local obs = self,
 
   local telemeter = (import 'telemeter.jsonnet') {
@@ -283,7 +270,16 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
           metadata+: { namespace:: 'hidden' },
         }
         for name in std.objectFields(obs.manifests)
-        if obs.manifests[name] != null
+        if obs.manifests[name] != null &&
+        !std.startsWith(name, 'thanos-') &&
+        !std.startsWith(name, 'loki-')
+      ] +
+      [
+        obs.thanos.manifests[name] {
+          metadata+: { namespace:: 'hidden' },
+        }
+        for name in std.objectFields(obs.thanos.manifests)
+        if obs.thanos.manifests[name] != null
       ] +
       [obs.thanos.storesServiceMonitor] +
       [obs.thanos.receiversServiceMonitor] +
@@ -298,12 +294,14 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
           metadata+: { namespace:: 'hidden' },
         }
         for name in std.objectFields(obs.thanos.storeBucketCache)
-      ] + [
+      ] +
+      [
         object {
           metadata+: { namespace:: 'hidden' },
         }
         for object in telemeter.objects
-      ] + [
+      ] +
+      [
         object {
           metadata+: { namespace:: 'hidden' },
         }

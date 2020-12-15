@@ -3,11 +3,6 @@ local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/
 local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 
-// This file contains all components as configured per upstream projects like kube-thanos etc.
-// Please check observatorium-metrics-template.libsonnet for OpenShift Template specific overwrites.
-
-// TODO(kakkoyun): Shouldn't anything that touches templates be moved to other file?
-// TODO(kakkoyun): More Code reuse!!
 {
   thanos+:: {
     local thanos = self,
@@ -80,8 +75,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
       queriers: [
-        // TODO(kakkoyun): Replace with actual reference one query is moved.
-        'dnssrv+_http._tcp.%s.${NAMESPACE}.svc.cluster.local' % 'observatorium-thanos-query',
+        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
       rulesConfig: [
         {
@@ -129,7 +123,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         data: {
           [observatoriumRulesKey]: std.manifestYamlDoc({
             groups: [{
-              name: 'observatorium.rules',
+              name: 'observatorium.rules',  // TODO(kakkoyun): Drop .rules suffix.
               interval: '3m',
               rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
             }],
@@ -494,5 +488,16 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       },
       serviceMonitor: true,
     }),
+
+    manifests+: {
+      'stores-service-monitor': thanos.storesServiceMonitor,
+      'receivers-service-monitor': thanos.receiversServiceMonitor,
+    } + {
+      ['store-index-cache-' + name]: thanos.storeIndexCache[name]
+      for name in std.objectFields(thanos.storeIndexCache)
+    } + {
+      ['store-bucket-cache-' + name]: thanos.storeBucketCache[name]
+      for name in std.objectFields(thanos.storeBucketCache)
+    },
   },
 }

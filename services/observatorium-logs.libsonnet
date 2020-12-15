@@ -1,5 +1,5 @@
 local loki = (import 'github.com/observatorium/deployments/components/loki.libsonnet');
-local lokiCaches = (import './loki-caches.libsonnet');
+local lokiCaches = (import 'components/loki-caches.libsonnet');
 
 {
   local obs = self,

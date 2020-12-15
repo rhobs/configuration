@@ -9,10 +9,13 @@ local conprof = c + c.withConfigMap {
     image: '${IMAGE}:${IMAGE_TAG}',
     version: '${IMAGE_TAG}',
 
-    namespaces: [
-      '${NAMESPACE}',
-      '${OBSERVATORIUM_LOGS_NAMESPACE}',
-    ],
+    serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
+
+    namespaces: {
+      default: '${NAMESPACE}',
+      metrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
+      logs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
+    },
 
     rawconfig+:: {
       scrape_configs: [{
@@ -140,8 +143,9 @@ local conprof = c + c.withConfigMap {
       }],
     };
     {
-      'conprof-observatorium': newSpecificRole(conprof.config.namespaces[0]),
-      'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces[1]),
+      'conprof-observatorium': newSpecificRole(conprof.config.namespaces.default),
+      'conprof-observatorium-metrics': newSpecificRole(conprof.config.namespaces.metrics),
+      'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces.logs),
     },
 
   roleBindings:
@@ -158,12 +162,13 @@ local conprof = c + c.withConfigMap {
         kind: 'Role',
         name: conprof.config.name + '-' + namespace,
       },
-      subjects: [{ kind: 'ServiceAccount', name: 'prometheus-telemeter', namespace: conprof.config.namespace }],
+      subjects: [{ kind: 'ServiceAccount', name: conprof.config.serviceAccountName, namespace: conprof.config.namespace }],
     };
 
     {
-      'conprof-observatorium': newSpecificRoleBinding(conprof.config.namespaces[0]),
-      'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces[1]),
+      'conprof-observatorium': newSpecificRoleBinding(conprof.config.namespaces.default),
+      'conprof-observatorium-metrics': newSpecificRoleBinding(conprof.config.namespaces.metrics),
+      'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces.logs),
     },
 
   service+: {
@@ -181,14 +186,14 @@ local conprof = c + c.withConfigMap {
 
   local c = {
     name: 'proxy',
-    image: '${PROXY_IMAGE}:${PROXY_IMAGE_TAG}',
+    image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
     args: [
       '-provider=openshift',
       '-https-address=:%d' % conprof.service.spec.ports[1].port,
       '-http-address=',
       '-email-domain=*',
       '-upstream=http://localhost:%d' % conprof.service.spec.ports[0].port,
-      '-openshift-service-account=prometheus-telemeter',
+      '-openshift-service-account=' + conprof.config.serviceAccountName,
       '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
       '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
       '-tls-cert=/etc/tls/private/tls.crt',
@@ -237,7 +242,7 @@ local conprof = c + c.withConfigMap {
             } else c,
             super.containers
           ) + [c],
-          serviceAccountName: 'prometheus-telemeter',
+          serviceAccountName: conprof.config.serviceAccountName,
           volumes+: [
             { name: 'secret-conprof-tls', secret: { secretName: 'conprof-tls' } },
             { name: 'secret-conprof-proxy', secret: { secretName: 'conprof-proxy' } },
@@ -279,7 +284,8 @@ local conprof = c + c.withConfigMap {
       },
     ],
     parameters: [
-      { name: 'NAMESPACE', value: 'telemeter' },
+      { name: 'NAMESPACE', value: 'telemeter' },  // TODO(kakkoyun): observatorium
+      { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'IMAGE', value: 'quay.io/conprof/conprof' },
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
@@ -288,12 +294,13 @@ local conprof = c + c.withConfigMap {
       { name: 'CONPROF_MEMORY_REQUEST', value: '4Gi' },
       { name: 'CONPROF_CPU_LIMITS', value: '4' },
       { name: 'CONPROF_MEMORY_LIMITS', value: '8Gi' },
-      { name: 'PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
-      { name: 'PROXY_IMAGE_TAG', value: '4.4.0' },
+      { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
+      { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
       { name: 'CONPROF_PROXY_CPU_REQUEST', value: '100m' },
       { name: 'CONPROF_PROXY_MEMORY_REQUEST', value: '100Mi' },
       { name: 'CONPROF_PROXY_CPU_LIMITS', value: '200m' },
       { name: 'CONPROF_PROXY_MEMORY_LIMITS', value: '200Mi' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },
   'conprof-observatorium-logs-rbac-template': {
@@ -310,6 +317,7 @@ local conprof = c + c.withConfigMap {
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
       { name: 'NAMESPACE', value: 'telemeter' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },
 }

@@ -1,5 +1,5 @@
 local utils = (import 'github.com/grafana/jsonnet-libs/mixin-utils/utils.libsonnet');
-local thanos = (import '../manifests/obs.jsonnet').thanos;
+local thanos = (import '../services/observatorium.libsonnet').thanos;
 
 {
   thanos: {

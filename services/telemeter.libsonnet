@@ -1,0 +1,148 @@
+(import 'github.com/openshift/telemeter/jsonnet/telemeter/server/kubernetes.libsonnet') +
+{
+  local config = self._config,
+  _config+:: {
+    namespace: 'telemeter',
+
+    telemeterServer+:: {
+      image: 'quay.io/app-sre/telemeter:c205c41',
+      replicas: 3,
+      logLevel: 'warn',
+      tokenExpireSeconds: '3600',
+      telemeterForwardURL: error 'must provide telemeterForwardURL',
+    },
+
+    telemeterServerCanary:: {
+      image: 'quay.io/app-sre/telemeter:c205c41',
+      replicas: 0,
+    },
+
+    memcachedExporter:: {
+      resourceRequests: { cpu: '50m', memory: '50Mi' },
+      resourceLimits: { cpu: '200m', memory: '200Mi' },
+    },
+  },
+
+  telemeterServer+:: {
+    statefulSet+: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              if c.name == 'telemeter-server' then c {
+                image: config.telemeterServer.image,
+                command+: [
+                  '--log-level=' + config.telemeterServer.logLevel,
+                  '--token-expire-seconds=' + config.telemeterServer.tokenExpireSeconds,
+                  '--limit-bytes=5242880',
+                  '--forward-url=' + config.telemeterServer.telemeterForwardURL,
+                ],
+              }
+              for c in super.containers
+            ],
+          },
+        },
+      },
+    },
+
+    serviceMonitor+: {
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
+        },
+      },
+      spec+: {
+        namespaceSelector+: { matchNames: [config.namespace] },
+        endpoints: [
+          {
+            interval: '60s',
+            port: 'internal',
+            scheme: 'https',
+            tlsConfig: {
+              insecureSkipVerify: true,
+            },
+          },
+        ],
+      },
+    },
+
+    statefulSetCanary: self.statefulSet {
+      metadata+: {
+        name: super.name + '-canary',
+      },
+      spec+: {
+        replicas: config.telemeterServerCanary.replicas,
+        selector+: {
+          matchLabels+: {
+            track: 'canary',
+          },
+        },
+        template+: {
+          metadata+: {
+            labels+: {
+              track: 'canary',
+            },
+          },
+          spec+: {
+            containers: [
+              if c.name == 'telemeter-server' then c {
+                image: config.telemeterServerCanary.image,
+                command+: ['--log-level=debug'],  // Always enable debug logging for canary deployments.
+              }
+              for c in super.containers
+            ],
+          },
+        },
+      },
+    },
+  },
+
+  memcached+:: {
+    statefulSet+: {
+      metadata+: {
+        labels+: {
+          'app.kubernetes.io/component': 'telemeter-cache',
+          'app.kubernetes.io/instance': 'telemeter',
+          'app.kubernetes.io/name': 'memcached',
+          'app.kubernetes.io/part-of': 'telemeter',
+        },
+      },
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              super.containers[0],
+              super.containers[1] {
+                name: 'memcached-exporter',
+                resources: {
+                  limits: {
+                    cpu: config.memcachedExporter.resourceLimits.cpu,
+                    memory: config.memcachedExporter.resourceLimits.memory,
+                  },
+                  requests: {
+                    cpu: config.memcachedExporter.resourceRequests.cpu,
+                    memory: config.memcachedExporter.resourceRequests.memory,
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+
+    serviceMonitor+: {
+      spec+: {
+        jobLabel: 'app.kubernetes.io/component',
+        selector+: {
+          matchLabels+: {
+            'app.kubernetes.io/component': 'telemeter-cache',
+            'app.kubernetes.io/instance': 'telemeter',
+            'app.kubernetes.io/name': 'memcached',
+            'app.kubernetes.io/part-of': 'telemeter',
+          },
+        },
+      },
+    },
+  },
+}

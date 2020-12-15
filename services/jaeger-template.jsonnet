@@ -1,7 +1,7 @@
 local mixin = (import 'github.com/jaegertracing/jaeger/monitoring/jaeger-mixin/mixin.libsonnet');
-local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
+local oauthProxy = import 'sidecars/oauth-proxy.libsonnet';
 
-local jaeger = (import './jaeger-collector.libsonnet')({
+local jaeger = (import 'components/jaeger-collector.libsonnet')({
   namespace:: '${NAMESPACE}',
   image:: '${IMAGE}:${IMAGE_TAG}',
   version:: '${IMAGE_TAG}',
@@ -15,7 +15,7 @@ local jaeger = (import './jaeger-collector.libsonnet')({
     name: 'jaeger',
     image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
     upstream: 'http://localhost:%d' % j.config.ports.query,
-    serviceAccountName: 'prometheus-telemeter',
+    serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
     tlsSecretName: 'jaeger-query-tls',
     sessionSecretName: 'jaeger-proxy',
     resources: {
@@ -130,7 +130,7 @@ local jaeger = (import './jaeger-collector.libsonnet')({
     for name in std.objectFields(jaeger)
   ],
   parameters: [
-    { name: 'NAMESPACE', value: 'telemeter' },
+    { name: 'NAMESPACE', value: 'telemeter' },  // TODO(kakkoyun): observatorium
     { name: 'IMAGE', value: 'jaegertracing/all-in-one' },
     { name: 'IMAGE_TAG', value: '1.14.0' },
     { name: 'REPLICAS', value: '1' },
@@ -140,10 +140,11 @@ local jaeger = (import './jaeger-collector.libsonnet')({
     { name: 'JAEGER_CPU_LIMITS', value: '4' },
     { name: 'JAEGER_MEMORY_LIMITS', value: '8Gi' },
     { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
-    { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.4.0' },
+    { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
     { name: 'OAUTH_PROXY_CPU_REQUEST', value: '100m' },
     { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
+    { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
   ],
 }

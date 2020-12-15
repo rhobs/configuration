@@ -1,4 +1,5 @@
 [
+  "{__name__=\":apiserver_v1_image_imports:sum\"}",
   "{__name__=\"ALERTS\",alertstate=\"firing\"}",
   "{__name__=\"cam_app_workload_migrations\"}",
   "{__name__=\"cco_credentials_mode\"}",

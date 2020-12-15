@@ -23,7 +23,7 @@ jb update
 
 ## Grafana dashboards
 
-All dashboards are generated in `manifests/production/grafana` with:
+All dashboards are generated in `resources/observability/grafana` (legacy: `manifests/production/grafana`) with:
 
 ```console
 make grafana
@@ -39,7 +39,7 @@ Use `synchronize.sh` to create a MR against `app-interface` to update dashboards
 
 ## Components - Deployments, ServiceMonitors, ConfigMaps etc...
 
-All components manifests are generated in `manifests/production/` with:
+All components manifests are generated in `resources/services` (legacy: `manifests/production/`) with:
 
 ```console
 make manifests

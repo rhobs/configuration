@@ -1,6 +1,6 @@
 local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet');
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
-local obs = import '../manifests/obs.jsonnet';
+local obs = import '../services/observatorium.libsonnet';
 
 local absent(name, job) = {
   prometheusAlerts+:: {

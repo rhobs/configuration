@@ -18,6 +18,7 @@ local dashboards = {
   for name in std.objectFields(loki.grafanaDashboards)
 } + {
   'grafana-dashboard-observatorium-api-logs.configmap': (import 'dashboards/observatorium-api-logs.libsonnet')(obsDatasource, obsNamespace),
+  'grafana-dashboard-observatorium-logs-loki-overview.configmap': (import 'observatorium-logs/loki-overview.libsonnet')(obsDatasource, obsNamespace),
 };
 
 {

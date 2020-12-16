@@ -1,7 +1,6 @@
-local obs = import 'observatorium.libsonnet';
 local telemeter = (import 'telemeter.libsonnet') {
   _config+:: {
-    namespace: obs.config.namespace,
+    namespace: '${NAMESPACE}',
 
     telemeterServerCanary:: {
       image: '${IMAGE_CANARY}:${IMAGE_CANARY_TAG}',

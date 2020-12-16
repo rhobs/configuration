@@ -256,7 +256,7 @@ objects:
     namespace: ${NAMESPACE}
 parameters:
 - name: NAMESPACE
-  value: telemeter
+  value: observatorium
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
 - name: OBSERVATORIUM_LOGS_NAMESPACE

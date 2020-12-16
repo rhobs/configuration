@@ -367,6 +367,7 @@ local observatorium =
         ],
       parameters: [
         { name: 'NAMESPACE', value: observatoriumNamespace },
+        { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: observatoriumNamespace },
         { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: observatoriumLogsNamespace },
         { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
         { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },

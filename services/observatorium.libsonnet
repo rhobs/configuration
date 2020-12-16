@@ -12,7 +12,11 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
 
   config:: {
     name: 'observatorium',
-    namespace: '${NAMESPACE}',
+    namespaces: {
+      default: '${NAMESPACE}',
+      metrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
+      logs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
+    },
 
     commonLabels:: {
       'app.kubernetes.io/part-of': 'observatorium',
@@ -23,7 +27,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
   gubernator:: gubernator({
     local cfg = self,
     name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
-    namespace: obs.config.namespace,
+    namespace: obs.config.namespaces.default,
     version: '${GUBERNATOR_IMAGE_TAG}',
     image: '%s:%s' % ['${GUBERNATOR_IMAGE}', cfg.version],
     replicas: 1,
@@ -81,36 +85,36 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     logs: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.loki.manifests['query-frontend-http-service'].metadata.name,
-        '${OBSERVATORIUM_LOGS_NAMESPACE}',
+        obs.config.namespaces.logs,
         obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
       ],
       tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.loki.manifests['querier-http-service'].metadata.name,
-        '${OBSERVATORIUM_LOGS_NAMESPACE}',
+        obs.config.namespaces.logs,
         obs.loki.manifests['querier-http-service'].spec.ports[0].port,
       ],
       writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.loki.manifests['distributor-http-service'].metadata.name,
-        '${OBSERVATORIUM_LOGS_NAMESPACE}',
+        obs.config.namespaces.logs,
         obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
       ],
     },
     metrics: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.thanos.queryFrontend.service.metadata.name,
-        obs.thanos.queryFrontend.service.metadata.namespace,
+        obs.config.namespaces.metrics,
         obs.thanos.queryFrontend.service.spec.ports[0].port,
       ],
       writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.thanos.receiversService.metadata.name,
-        obs.thanos.receiversService.metadata.namespace,
+        obs.config.namespaces.metrics,
         obs.thanos.receiversService.spec.ports[2].port,
       ],
     },
     rateLimiter: {
       grpcAddress: '%s.%s.svc.cluster.local:%d' % [
         obs.gubernator.service.metadata.name,
-        obs.gubernator.service.metadata.namespace,
+        obs.config.namespaces.default,
         obs.gubernator.config.ports.grpc,
       ],
     },
@@ -211,7 +215,7 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
   up:: up({
     local cfg = self,
     name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
-    namespace: obs.config.namespace,
+    namespace: obs.config.namespaces.default,
     commonLabels+:: obs.config.commonLabels,
     version: 'master-2020-06-15-d763595',
     image: 'quay.io/observatorium/up:' + cfg.version,

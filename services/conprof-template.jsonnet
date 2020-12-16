@@ -284,7 +284,7 @@ local conprof = c + c.withConfigMap {
       },
     ],
     parameters: [
-      { name: 'NAMESPACE', value: 'telemeter' },  // TODO(kakkoyun): observatorium
+      { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'IMAGE', value: 'quay.io/conprof/conprof' },

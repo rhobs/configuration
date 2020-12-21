@@ -18,14 +18,44 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       chunkCache: {
         replicas: 1,  // overwritten in observatorium-logs-template.libsonnet
         withServiceMonitor: true,
+        resources+: {
+          requests: {
+            cpu: '${LOKI_CHUNK_CACHE_CPU_REQUESTS}',
+            memory: '${LOKI_CHUNK_CACHE_MEMORY_REQUESTS}',
+          },
+          limits: {
+            cpu: '${LOKI_CHUNK_CACHE_CPU_LIMITS}',
+            memory: '${LOKI_CHUNK_CACHE_MEMORY_LIMITS}',
+          },
+        },
       },
       indexQueryCache: {
         replicas: 1,  // overwritten in observatorium-logs-template.libsonnet
         withServiceMonitor: true,
+        resources+: {
+          requests: {
+            cpu: '${LOKI_INDEX_QUERY_CACHE_CPU_REQUESTS}',
+            memory: '${LOKI_INDEX_QUERY_CACHE_MEMORY_REQUESTS}',
+          },
+          limits: {
+            cpu: '${LOKI_INDEX_QUERY_CACHE_CPU_LIMITS}',
+            memory: '${LOKI_INDEX_QUERY_CACHE_MEMORY_LIMITS}',
+          },
+        },
       },
       resultsCache: {
         replicas: 1,  // overwritten in observatorium-logs-template.libsonnet
         withServiceMonitor: true,
+        resources+: {
+          requests: {
+            cpu: '${LOKI_RESULTS_CACHE_CPU_REQUESTS}',
+            memory: '${LOKI_RESULTS_CACHE_MEMORY_REQUESTS}',
+          },
+          limits: {
+            cpu: '${LOKI_RESULTS_CACHE_CPU_LIMITS}',
+            memory: '${LOKI_RESULTS_CACHE_MEMORY_LIMITS}',
+          },
+        },
       },
     },
   }),

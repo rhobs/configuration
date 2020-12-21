@@ -16,14 +16,44 @@ local defaults = {
     chunkCache: {
       replicas: 1,
       withServiceMonitor: false,
+      resources: {
+        requests: {
+          cpu: '500m',
+          memory: '5016Mi',
+        },
+        limits: {
+          cpu: '3',
+          memory: '6Gi',
+        },
+      },
     },
     indexQueryCache: {
       replicas: 1,
       withServiceMonitor: false,
+      resources: {
+        requests: {
+          cpu: '500m',
+          memory: '1329Mi',
+        },
+        limits: {
+          cpu: '3',
+          memory: '1536Mi',
+        },
+      },
     },
     resultsCache: {
       replicas: 1,
       withServiceMonitor: false,
+      resources: {
+        requests: {
+          cpu: '500m',
+          memory: '1329Mi',
+        },
+        limits: {
+          cpu: '3',
+          memory: '1536Mi',
+        },
+      },  
     },
   },
 
@@ -62,6 +92,18 @@ function(params) {
     serviceMonitor: lc.config.components.chunkCache.withServiceMonitor,
     maxItemSize:: '2m',
     memoryLimitMb: 4096,
+    resources: {
+      memcached: {
+        requests: {
+          cpu: lc.config.components.chunkCache.resources.requests.cpu,
+          memory: lc.config.components.chunkCache.resources.requests.memory,
+        },
+        limits: {
+          cpu: lc.config.components.chunkCache.resources.limits.cpu,
+          memory: lc.config.components.chunkCache.resources.limits.memory,
+        },
+      },
+    },
   }),
 
   indexQueryCache:: memcached({
@@ -77,6 +119,18 @@ function(params) {
     replicas: lc.config.components.indexQueryCache.replicas,
     serviceMonitor: lc.config.components.indexQueryCache.withServiceMonitor,
     maxItemSize:: '5m',
+    resources: {
+      memcached: {
+        requests: {
+          cpu: lc.config.components.indexQueryCache.resources.requests.cpu,
+          memory: lc.config.components.indexQueryCache.resources.requests.memory,
+        },
+        limits: {
+          cpu: lc.config.components.indexQueryCache.resources.limits.cpu,
+          memory: lc.config.components.indexQueryCache.resources.limits.memory,
+        },
+      },
+    },
   }),
 
   resultsCache:: memcached({
@@ -91,6 +145,19 @@ function(params) {
     exporterImage:: lc.config.exporterImage,
     replicas: lc.config.components.resultsCache.replicas,
     serviceMonitor: lc.config.components.resultsCache.withServiceMonitor,
+    resources: {
+      memcached: {
+        requests: {
+          cpu: lc.config.components.resultsCache.resources.requests.cpu,
+          memory: lc.config.components.resultsCache.resources.requests.memory,
+        },
+        limits: {
+          cpu: lc.config.components.resultsCache.resources.limits.cpu,
+          memory: lc.config.components.resultsCache.resources.limits.memory,
+        },
+      },
+    },
+
   }),
 
   manifests::

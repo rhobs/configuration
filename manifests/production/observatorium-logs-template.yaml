@@ -86,11 +86,11 @@ objects:
             name: client
           resources:
             limits:
-              cpu: "3"
-              memory: 6Gi
+              cpu: ${LOKI_CHUNK_CACHE_CPU_LIMITS}
+              memory: ${LOKI_CHUNK_CACHE_MEMORY_LIMITS}
             requests:
-              cpu: 500m
-              memory: 5016Mi
+              cpu: ${LOKI_CHUNK_CACHE_CPU_REQUESTS}
+              memory: ${LOKI_CHUNK_CACHE_MEMORY_REQUESTS}
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:11211
@@ -184,11 +184,11 @@ objects:
             name: client
           resources:
             limits:
-              cpu: "3"
-              memory: 1536Mi
+              cpu: ${LOKI_INDEX_QUERY_CACHE_CPU_LIMITS}
+              memory: ${LOKI_INDEX_QUERY_CACHE_MEMORY_LIMITS}
             requests:
-              cpu: 500m
-              memory: 1329Mi
+              cpu: ${LOKI_INDEX_QUERY_CACHE_CPU_REQUESTS}
+              memory: ${LOKI_INDEX_QUERY_CACHE_MEMORY_REQUESTS}
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:11211
@@ -282,11 +282,11 @@ objects:
             name: client
           resources:
             limits:
-              cpu: "3"
-              memory: 1536Mi
+              cpu: ${LOKI_RESULTS_CACHE_CPU_LIMITS}
+              memory: ${LOKI_RESULTS_CACHE_MEMORY_LIMITS}
             requests:
-              cpu: 500m
-              memory: 1329Mi
+              cpu: ${LOKI_RESULTS_CACHE_CPU_REQUESTS}
+              memory: ${LOKI_RESULTS_CACHE_MEMORY_REQUESTS}
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:11211

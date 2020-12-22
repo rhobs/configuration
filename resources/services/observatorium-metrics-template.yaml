@@ -2488,13 +2488,13 @@ parameters:
 - name: THANOS_RULER_REPLICAS
   value: "2"
 - name: THANOS_RULER_CPU_REQUEST
-  value: 100m
+  value: 500m
 - name: THANOS_RULER_CPU_LIMIT
   value: "1"
 - name: THANOS_RULER_MEMORY_REQUEST
-  value: 512Mi
+  value: 2Gi
 - name: THANOS_RULER_MEMORY_LIMIT
-  value: 1Gi
+  value: 2Gi
 - name: THANOS_RULER_PVC_REQUEST
   value: 50Gi
 - name: THANOS_QUERIER_SVC_URL

@@ -23,7 +23,8 @@ function(datasource, namespace) {
         editable: true,
         gnetId: null,
         graphTooltip: 1,
-        iteration: 1592219595074,
+        id: 117,
+        iteration: 1610358450922,
         links: [],
         panels: [
           {
@@ -50,6 +51,12 @@ function(datasource, namespace) {
               '#299c46',
             ],
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+              },
+              overrides: [],
+            },
             format: 'percentunit',
             gauge: {
               maxValue: 100,
@@ -81,7 +88,6 @@ function(datasource, namespace) {
             maxDataPoints: 100,
             nullPointMode: 'connected',
             nullText: null,
-            options: {},
             postfix: '',
             postfixFontSize: '50%',
             prefix: '',
@@ -131,6 +137,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 10,
             fillGradient: 0,
             gridPos: {
@@ -155,9 +168,10 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 2,
             points: false,
             renderer: 'flot',
@@ -171,6 +185,7 @@ function(datasource, namespace) {
               {
                 expr: '(\n  (\n    1 -\n    sum(increase(haproxy_server_http_responses_total{route=~"telemeter-server-authorize|telemeter-server-upload",code="5xx"}[28d]))\n    /\n    sum(increase(haproxy_server_http_responses_total{route=~"telemeter-server-authorize|telemeter-server-upload"}[28d]))\n  ) - 0.98\n)\n/ \n(1 - 0.98)',
                 instant: false,
+                interval: '',
                 intervalFactor: 10,
                 legendFormat: 'errorbudget',
                 refId: 'A',
@@ -242,6 +257,12 @@ function(datasource, namespace) {
             ],
             datasource: '$datasource',
             decimals: 3,
+            fieldConfig: {
+              defaults: {
+                custom: {},
+              },
+              overrides: [],
+            },
             format: 'percentunit',
             gauge: {
               maxValue: 100,
@@ -273,7 +294,6 @@ function(datasource, namespace) {
             maxDataPoints: 100,
             nullPointMode: 'connected',
             nullText: null,
-            options: {},
             postfix: '',
             postfixFontSize: '50%',
             prefix: '',
@@ -327,6 +347,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 10,
             fillGradient: 0,
             gridPos: {
@@ -351,10 +378,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 5,
             points: false,
             renderer: 'flot',
@@ -387,8 +415,9 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[5m]))',
+                expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[$interval]))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '{{code}}',
                 refId: 'A',
@@ -446,6 +475,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 10,
             fillGradient: 0,
             gridPos: {
@@ -470,10 +506,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 5,
             points: false,
             renderer: 'flot',
@@ -489,8 +526,9 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum(rate(haproxy_server_http_responses_total{route="telemeter-server-authorize",code="5xx"}[5m])) / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[5m]))',
+                expr: 'sum(rate(haproxy_server_http_responses_total{route="telemeter-server-authorize",code="5xx"}[$interval])) / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-authorize"}[$interval]))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: 'errors',
                 refId: 'A',
@@ -549,6 +587,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 0,
             fillGradient: 0,
             gridPos: {
@@ -573,10 +618,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 5,
             points: false,
             renderer: 'flot',
@@ -602,22 +648,25 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="authorize"}[5m])))',
+                expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="authorize"}[$interval])))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '99th',
                 refId: 'A',
               },
               {
-                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="authorize"}[5m])))',
+                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="authorize"}[$interval])))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '90th',
                 refId: 'B',
               },
               {
-                expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="authorize"}[5m])))',
+                expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="authorize"}[$interval])))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '50th',
                 refId: 'C',
@@ -688,6 +737,12 @@ function(datasource, namespace) {
             ],
             datasource: '$datasource',
             decimals: 3,
+            fieldConfig: {
+              defaults: {
+                custom: {},
+              },
+              overrides: [],
+            },
             format: 'percentunit',
             gauge: {
               maxValue: 100,
@@ -719,7 +774,6 @@ function(datasource, namespace) {
             maxDataPoints: 100,
             nullPointMode: 'connected',
             nullText: null,
-            options: {},
             postfix: '',
             postfixFontSize: '50%',
             prefix: '',
@@ -773,6 +827,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 10,
             fillGradient: 0,
             gridPos: {
@@ -797,10 +858,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 5,
             points: false,
             renderer: 'flot',
@@ -832,8 +894,9 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[5m]))',
+                expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[$interval]))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '{{code}}',
                 refId: 'A',
@@ -891,6 +954,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 10,
             fillGradient: 0,
             gridPos: {
@@ -915,10 +985,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 5,
             points: false,
             renderer: 'flot',
@@ -934,8 +1005,9 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[5m])) / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[5m]))',
+                expr: 'sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[$interval])) / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[$interval]))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: 'errors',
                 refId: 'A',
@@ -994,6 +1066,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 0,
             fillGradient: 0,
             gridPos: {
@@ -1018,10 +1097,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 5,
             points: false,
             renderer: 'flot',
@@ -1047,22 +1127,25 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="upload"}[5m])))',
+                expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="upload"}[$interval])))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '99th',
                 refId: 'A',
               },
               {
-                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="upload"}[5m])))',
+                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="upload"}[$interval])))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '90th',
                 refId: 'B',
               },
               {
-                expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="upload"}[5m])))',
+                expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="upload"}[$interval])))',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '50th',
                 refId: 'C',
@@ -1132,6 +1215,12 @@ function(datasource, namespace) {
                 ],
                 datasource: '$datasource',
                 decimals: 3,
+                fieldConfig: {
+                  defaults: {
+                    custom: {},
+                  },
+                  overrides: [],
+                },
                 format: 'percentunit',
                 gauge: {
                   maxValue: 100,
@@ -1163,7 +1252,6 @@ function(datasource, namespace) {
                 maxDataPoints: 100,
                 nullPointMode: 'connected',
                 nullText: null,
-                options: {},
                 postfix: '',
                 postfixFontSize: '50%',
                 prefix: '',
@@ -1217,6 +1305,13 @@ function(datasource, namespace) {
                 dashLength: 10,
                 dashes: false,
                 datasource: '$datasource',
+                fieldConfig: {
+                  defaults: {
+                    custom: {},
+                    links: [],
+                  },
+                  overrides: [],
+                },
                 fill: 10,
                 fillGradient: 0,
                 gridPos: {
@@ -1241,10 +1336,11 @@ function(datasource, namespace) {
                 links: [],
                 nullPointMode: 'null',
                 options: {
-                  dataLinks: [],
+                  alertThreshold: true,
                 },
                 paceLength: 10,
                 percentage: false,
+                pluginVersion: '7.2.1',
                 pointradius: 5,
                 points: false,
                 renderer: 'flot',
@@ -1276,8 +1372,9 @@ function(datasource, namespace) {
                 steppedLine: false,
                 targets: [
                   {
-                    expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[5m]))',
+                    expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[$interval]))',
                     format: 'time_series',
+                    interval: '',
                     intervalFactor: 1,
                     legendFormat: '{{code}}',
                     refId: 'A',
@@ -1335,6 +1432,13 @@ function(datasource, namespace) {
                 dashLength: 10,
                 dashes: false,
                 datasource: '$datasource',
+                fieldConfig: {
+                  defaults: {
+                    custom: {},
+                    links: [],
+                  },
+                  overrides: [],
+                },
                 fill: 10,
                 fillGradient: 0,
                 gridPos: {
@@ -1359,10 +1463,11 @@ function(datasource, namespace) {
                 links: [],
                 nullPointMode: 'null',
                 options: {
-                  dataLinks: [],
+                  alertThreshold: true,
                 },
                 paceLength: 10,
                 percentage: false,
+                pluginVersion: '7.2.1',
                 pointradius: 5,
                 points: false,
                 renderer: 'flot',
@@ -1378,8 +1483,9 @@ function(datasource, namespace) {
                 steppedLine: false,
                 targets: [
                   {
-                    expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[5m])) / sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[5m]))',
+                    expr: 'sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[$interval])) / sum by (code) (rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[$interval]))',
                     format: 'time_series',
+                    interval: '',
                     intervalFactor: 1,
                     legendFormat: 'errors',
                     refId: 'A',
@@ -1437,6 +1543,13 @@ function(datasource, namespace) {
                 dashLength: 10,
                 dashes: false,
                 datasource: '$datasource',
+                fieldConfig: {
+                  defaults: {
+                    custom: {},
+                    links: [],
+                  },
+                  overrides: [],
+                },
                 fill: 0,
                 fillGradient: 0,
                 gridPos: {
@@ -1461,10 +1574,11 @@ function(datasource, namespace) {
                 links: [],
                 nullPointMode: 'null',
                 options: {
-                  dataLinks: [],
+                  alertThreshold: true,
                 },
                 paceLength: 10,
                 percentage: false,
+                pluginVersion: '7.2.1',
                 pointradius: 5,
                 points: false,
                 renderer: 'flot',
@@ -1490,22 +1604,25 @@ function(datasource, namespace) {
                 steppedLine: false,
                 targets: [
                   {
-                    expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="receive"}[5m])))',
+                    expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="receive"}[$interval])))',
                     format: 'time_series',
+                    interval: '',
                     intervalFactor: 1,
                     legendFormat: '99th',
                     refId: 'A',
                   },
                   {
-                    expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="receive"}[5m])))',
+                    expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="receive"}[$interval])))',
                     format: 'time_series',
+                    interval: '',
                     intervalFactor: 1,
                     legendFormat: '90th',
                     refId: 'B',
                   },
                   {
-                    expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="receive"}[5m])))',
+                    expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"5..",handler="receive"}[$interval])))',
                     format: 'time_series',
+                    interval: '',
                     intervalFactor: 1,
                     legendFormat: '50th',
                     refId: 'C',
@@ -1579,6 +1696,13 @@ function(datasource, namespace) {
             dashLength: 10,
             dashes: false,
             datasource: '$datasource',
+            fieldConfig: {
+              defaults: {
+                custom: {},
+                links: [],
+              },
+              overrides: [],
+            },
             fill: 10,
             fillGradient: 0,
             gridPos: {
@@ -1603,10 +1727,11 @@ function(datasource, namespace) {
             links: [],
             nullPointMode: 'null',
             options: {
-              dataLinks: [],
+              alertThreshold: true,
             },
             paceLength: 10,
             percentage: false,
+            pluginVersion: '7.2.1',
             pointradius: 2,
             points: false,
             renderer: 'flot',
@@ -1637,8 +1762,9 @@ function(datasource, namespace) {
             steppedLine: false,
             targets: [
               {
-                expr: 'sum(label_replace(\n   rate(client_api_requests_total{namespace="$namespace",client="oauth"}[5m]),\n  "status_code", "${1}xx", "code", "([0-9]).."\n)) by (status_code)',
+                expr: 'sum(label_replace(\n   rate(client_api_requests_total{namespace="$namespace",client="oauth"}[$interval]),\n  "status_code", "${1}xx", "code", "([0-9]).."\n)) by (status_code)',
                 format: 'time_series',
+                interval: '',
                 intervalFactor: 1,
                 legendFormat: '{{ status_code }}',
                 refId: 'A',
@@ -1996,7 +2122,7 @@ function(datasource, namespace) {
                   value_type: 'individual',
                 },
                 transform: 'table',
-                type: 'table',
+                type: 'table-old',
                 xaxis: {
                   buckets: null,
                   mode: 'time',
@@ -2323,7 +2449,7 @@ function(datasource, namespace) {
                   value_type: 'individual',
                 },
                 transform: 'table',
-                type: 'table',
+                type: 'table-old',
                 xaxis: {
                   buckets: null,
                   mode: 'time',
@@ -2356,25 +2482,23 @@ function(datasource, namespace) {
           },
         ],
         refresh: '1m',
-        schemaVersion: 22,
+        schemaVersion: 26,
         style: 'dark',
         tags: [],
         templating: {
           list: [
             {
               current: {
-                selected: true,
-                text: datasource,
-                value: datasource,
+                selected: false,
+                text: 'telemeter-prod-01-prometheus',
+                value: 'telemeter-prod-01-prometheus',
               },
               hide: 0,
               includeAll: false,
               label: null,
               multi: false,
               name: 'datasource',
-              options: [
-
-              ],
+              options: [],
               query: 'prometheus',
               refresh: 1,
               regex: '',
@@ -2384,8 +2508,9 @@ function(datasource, namespace) {
             {
               allValue: null,
               current: {
-                text: namespace,
-                value: namespace,
+                selected: false,
+                text: 'telemeter-production',
+                value: 'telemeter-production',
               },
               datasource: '$datasource',
               definition: 'label_values(kube_pod_info, namespace)',
@@ -2405,6 +2530,81 @@ function(datasource, namespace) {
               tagsQuery: '',
               type: 'query',
               useTags: false,
+            },
+            {
+              auto: false,
+              auto_count: 30,
+              auto_min: '10s',
+              current: {
+                selected: false,
+                text: '5m',
+                value: '5m',
+              },
+              hide: 0,
+              label: 'Rate Interval',
+              name: 'interval',
+              options: [
+                {
+                  selected: false,
+                  text: '1m',
+                  value: '1m',
+                },
+                {
+                  selected: true,
+                  text: '5m',
+                  value: '5m',
+                },
+                {
+                  selected: false,
+                  text: '10m',
+                  value: '10m',
+                },
+                {
+                  selected: false,
+                  text: '30m',
+                  value: '30m',
+                },
+                {
+                  selected: false,
+                  text: '1h',
+                  value: '1h',
+                },
+                {
+                  selected: false,
+                  text: '6h',
+                  value: '6h',
+                },
+                {
+                  selected: false,
+                  text: '12h',
+                  value: '12h',
+                },
+                {
+                  selected: false,
+                  text: '1d',
+                  value: '1d',
+                },
+                {
+                  selected: false,
+                  text: '7d',
+                  value: '7d',
+                },
+                {
+                  selected: false,
+                  text: '14d',
+                  value: '14d',
+                },
+                {
+                  selected: false,
+                  text: '30d',
+                  value: '30d',
+                },
+              ],
+              query: '1m,5m,10m,30m,1h,6h,12h,1d,7d,14d,30d',
+              queryValue: '',
+              refresh: 2,
+              skipUrlSync: false,
+              type: 'interval',
             },
           ],
         },

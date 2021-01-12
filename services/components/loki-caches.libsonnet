@@ -53,7 +53,7 @@ local defaults = {
           cpu: '3',
           memory: '1536Mi',
         },
-      },  
+      },
     },
   },
 

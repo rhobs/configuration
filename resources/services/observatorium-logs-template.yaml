@@ -86,8 +86,8 @@ objects:
             name: client
           resources:
             limits:
-              cpu: ${LOKI_INDEX_QUERY_CACHE_CPU_LIMITS}
-              memory: ${LOKI_INDEX_QUERY_CACHE_MEMORY_LIMITS}
+              cpu: ${LOKI_CHUNK_CACHE_CPU_LIMITS}
+              memory: ${LOKI_CHUNK_CACHE_MEMORY_LIMITS}
             requests:
               cpu: ${LOKI_CHUNK_CACHE_CPU_REQUESTS}
               memory: ${LOKI_CHUNK_CACHE_MEMORY_REQUESTS}

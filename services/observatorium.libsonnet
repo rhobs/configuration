@@ -1,6 +1,7 @@
 local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
+local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
 
 (import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
@@ -67,6 +68,52 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       },
     },
   },
+
+  memcached: memcached({
+    local cfg = self,
+    serviceMonitor: true,
+    name: 'observatorium-api-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+    namespace: obs.config.namespaces.default,
+    commonLabels:: {
+      'app.kubernetes.io/component': 'api-cache',
+      'app.kubernetes.io/instance': 'observatorium',
+      'app.kubernetes.io/name': 'memcached',
+      'app.kubernetes.io/part-of': 'observatorium',
+      'app.kubernetes.io/version': cfg.version,
+    },
+
+    version: '${MEMCACHED_IMAGE_TAG}',
+    image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
+    exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+    exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
+    connectionLimit: '${MEMCACHED_CONNECTION_LIMIT}',
+    memoryLimitMb: '${MEMCACHED_MEMORY_LIMIT_MB}',
+    maxItemSize: '5m',
+    replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+    resources: {
+      memcached: {
+        requests: {
+          cpu: '${MEMCACHED_CPU_REQUEST}',
+          memory: '${MEMCACHED_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${MEMCACHED_CPU_LIMIT}',
+          memory: '${MEMCACHED_MEMORY_LIMIT}',
+        },
+      },
+
+      exporter: {
+        requests: {
+          cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+          memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+          memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+        },
+      },
+    },
+  }),
 
   api:: api({
     local cfg = self,
@@ -159,7 +206,11 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
       secretName: obs.api.config.name,
       issuerURLKey: 'issuer-url',
       amsURL: '${AMS_URL}',
-      memcached: 'memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211',
+      memcached: '%s.%s.svc.cluster.local:%d' % [
+        obs.memcached.service.metadata.name,
+        obs.config.namespaces.default,
+        obs.memcached.service.spec.ports[0].port,
+      ],
       memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
       opaPackage: 'observatorium',
       resourceTypePrefix: 'observatorium',
@@ -251,5 +302,9 @@ local gubernator = (import 'github.com/observatorium/deployments/components/gube
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
     if obs.up[name] != null
+  } + {
+    ['observatorium-cache-' + name]: obs.memcached[name]
+    for name in std.objectFields(obs.memcached)
+    if obs.memcached[name] != null
   },
 }

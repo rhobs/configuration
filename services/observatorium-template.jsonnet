@@ -17,7 +17,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'NAMESPACE', value: 'observatorium' },
     { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
-    { name: 'GUBERNATOR_IMAGE', value: 'thrawn01/gubernator' },
+    { name: 'GUBERNATOR_IMAGE', value: 'quay.io/app-sre/gubernator' },
     { name: 'GUBERNATOR_IMAGE_TAG', value: '1.0.0-rc.1' },
     { name: 'GUBERNATOR_REPLICAS', value: '2' },
     { name: 'GUBERNATOR_CPU_REQUEST', value: '100m' },

@@ -2503,9 +2503,9 @@ parameters:
 - name: THANOS_QUERIER_SVC_URL
   value: http://thanos-querier.observatorium.svc:9090
 - name: JAEGER_AGENT_IMAGE
-  value: jaegertracing/jaeger-agent
+  value: quay.io/app-sre/jaegertracing-jaeger-agent
 - name: JAEGER_AGENT_IMAGE_TAG
-  value: 1.14.0
+  value: "1"
 - name: OAUTH_PROXY_IMAGE
   value: quay.io/openshift/origin-oauth-proxy
 - name: OAUTH_PROXY_IMAGE_TAG

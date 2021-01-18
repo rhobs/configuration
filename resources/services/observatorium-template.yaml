@@ -772,7 +772,7 @@ parameters:
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs
 - name: GUBERNATOR_IMAGE
-  value: thrawn01/gubernator
+  value: quay.io/app-sre/gubernator
 - name: GUBERNATOR_IMAGE_TAG
   value: 1.0.0-rc.1
 - name: GUBERNATOR_REPLICAS

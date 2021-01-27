@@ -206,6 +206,9 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
       secretName: obs.api.config.name,
       issuerURLKey: 'issuer-url',
       amsURL: '${AMS_URL}',
+      mappings: {
+        osd: '${OSD_ORGANIZATION_ID}',
+      },
       memcached: '%s.%s.svc.cluster.local:%d' % [
         obs.memcached.service.metadata.name,
         obs.config.namespaces.default,

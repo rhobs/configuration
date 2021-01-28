@@ -203,6 +203,7 @@ objects:
           - --opa.package=observatorium
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
+          - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
           env:
           - name: ISSUER_URL
             valueFrom:
@@ -3135,6 +3136,7 @@ objects:
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
           - --whitelist={__name__="cluster:cpu_usage_cores:sum"}
+          - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:memory_usage_bytes:sum"}
@@ -3143,6 +3145,9 @@ objects:
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
+          - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_vcenter_info:sum"}
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}
           - --whitelist={__name__="cluster_installer"}
@@ -3186,6 +3191,7 @@ objects:
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="subscription_sync_total"}
           - --whitelist={__name__="up"}
+          - --whitelist={__name__="visual_web_terminal_sessions_total"}
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
@@ -3300,6 +3306,7 @@ objects:
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
           - --whitelist={__name__="cluster:cpu_usage_cores:sum"}
+          - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:memory_usage_bytes:sum"}
@@ -3308,6 +3315,9 @@ objects:
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
+          - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_vcenter_info:sum"}
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}
           - --whitelist={__name__="cluster_installer"}
@@ -3351,6 +3361,7 @@ objects:
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="subscription_sync_total"}
           - --whitelist={__name__="up"}
+          - --whitelist={__name__="visual_web_terminal_sessions_total"}
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
@@ -3783,6 +3794,8 @@ parameters:
   value: 256Mi
 - name: OBSERVATORIUM_API_MEMORY_LIMIT
   value: 1Gi
+- name: AMS_URL
+  value: ""
 - name: OPA_AMS_IMAGE
   value: quay.io/observatorium/opa-ams
 - name: OPA_AMS_IMAGE_TAG
@@ -3797,6 +3810,8 @@ parameters:
   value: 200m
 - name: OPA_AMS_MEMORY_LIMIT
   value: 200Mi
+- name: OSD_ORGANIZATION_ID
+  value: ""
 - name: OAUTH_PROXY_IMAGE
   value: quay.io/openshift/origin-oauth-proxy
 - name: OAUTH_PROXY_IMAGE_TAG

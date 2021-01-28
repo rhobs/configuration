@@ -117,7 +117,8 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
 
   api:: api({
     local cfg = self,
-    name: '${OBSERVATORIUM_OBSERVATORIUM_API}',
+    // OBSERVATORIUM_API_IDENTIFIER referes to all the associated resource names (config map, secret, service) required for serving Observatorium API.
+    name: '${OBSERVATORIUM_API_IDENTIFIER}',
     commonLabels:: {
       'app.kubernetes.io/component': 'api',
       'app.kubernetes.io/instance': 'observatorium',

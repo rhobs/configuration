@@ -31,7 +31,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OBSERVATORIUM_API_CPU_LIMIT', value: '1' },
     { name: 'OBSERVATORIUM_API_MEMORY_REQUEST', value: '256Mi' },
     { name: 'OBSERVATORIUM_API_MEMORY_LIMIT', value: '1Gi' },
-    { name: 'OBSERVATORIUM_OBSERVATORIUM_API', value: 'observatorium-observatorium-api' },
+    { name: 'OBSERVATORIUM_API_IDENTIFIER', value: 'observatorium-observatorium-api' },
     { name: 'OPA_AMS_IMAGE', value: 'quay.io/observatorium/opa-ams' },
     { name: 'OPA_AMS_IMAGE_TAG', value: 'master-2020-10-28-902d400' },
     { name: 'OPA_AMS_MEMCACHED_EXPIRE', value: '300' },

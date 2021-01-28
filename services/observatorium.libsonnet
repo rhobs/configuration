@@ -117,7 +117,7 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
 
   api:: api({
     local cfg = self,
-    name: 'observatorium-observatorium-api',
+    name: '${OBSERVATORIUM_OBSERVATORIUM_API}',
     commonLabels:: {
       'app.kubernetes.io/component': 'api',
       'app.kubernetes.io/instance': 'observatorium',

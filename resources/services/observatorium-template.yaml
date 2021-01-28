@@ -108,7 +108,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api
+    name: ${OBSERVATORIUM_OBSERVATORIUM_API}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -118,7 +118,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api
+    name: ${OBSERVATORIUM_OBSERVATORIUM_API}
   spec:
     replicas: ${{OBSERVATORIUM_API_REPLICAS}}
     selector:
@@ -208,17 +208,17 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: issuer-url
-                name: observatorium-observatorium-api
+                name: ${OBSERVATORIUM_OBSERVATORIUM_API}
           - name: CLIENT_ID
             valueFrom:
               secretKeyRef:
                 key: client-id
-                name: observatorium-observatorium-api
+                name: ${OBSERVATORIUM_OBSERVATORIUM_API}
           - name: CLIENT_SECRET
             valueFrom:
               secretKeyRef:
                 key: client-secret
-                name: observatorium-observatorium-api
+                name: ${OBSERVATORIUM_OBSERVATORIUM_API}
           image: ${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -247,14 +247,14 @@ objects:
             requests:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
-        serviceAccountName: observatorium-observatorium-api
+        serviceAccountName: ${OBSERVATORIUM_OBSERVATORIUM_API}
         volumes:
         - configMap:
-            name: observatorium-observatorium-api
+            name: ${OBSERVATORIUM_OBSERVATORIUM_API}
           name: rbac
         - name: tenants
           secret:
-            secretName: observatorium-observatorium-api
+            secretName: ${OBSERVATORIUM_OBSERVATORIUM_API}
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -264,7 +264,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api
+    name: ${OBSERVATORIUM_OBSERVATORIUM_API}
   stringData:
     tenants.yaml: |-
       "tenants":
@@ -299,7 +299,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api
+    name: ${OBSERVATORIUM_OBSERVATORIUM_API}
   spec:
     ports:
     - name: internal
@@ -328,7 +328,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
-    name: observatorium-observatorium-api
+    name: ${OBSERVATORIUM_OBSERVATORIUM_API}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -799,6 +799,8 @@ parameters:
   value: 256Mi
 - name: OBSERVATORIUM_API_MEMORY_LIMIT
   value: 1Gi
+- name: OBSERVATORIUM_OBSERVATORIUM_API
+  value: observatorium-observatorium-api
 - name: OPA_AMS_IMAGE
   value: quay.io/observatorium/opa-ams
 - name: OPA_AMS_IMAGE_TAG

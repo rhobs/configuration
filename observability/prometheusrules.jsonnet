@@ -259,7 +259,9 @@ local renderAlerts(name, namespace, mixin) = {
         p99QueryLatencyThreshold: 90,
       },
       store+:: {
-        bucketOpsP99LatencyThreshold: 6,
+        // NOTICE: Check tail latency for tuning the threshold.
+        // https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=6h&g0.expr=histogram_quantile(0.99%2C%20sum%20by%20(job%2C%20le)%20(rate(thanos_objstore_bucket_operation_duration_seconds_bucket%7Bjob%3D~%22observatorium-thanos-store.*%22%7D%5B5m%5D)))&g0.tab=0
+        bucketOpsP99LatencyThreshold: 7,
       },
     },
 

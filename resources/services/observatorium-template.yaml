@@ -817,7 +817,7 @@ parameters:
 - name: OPA_AMS_MEMORY_LIMIT
   value: 200Mi
 - name: AMS_URL
-  value: https://api.openshift.com/api/accounts_mgmt/v1/cluster_registrations
+  value: https://api.openshift.com
 - name: OAUTH_PROXY_IMAGE
   value: quay.io/openshift/origin-oauth-proxy
 - name: OAUTH_PROXY_IMAGE_TAG

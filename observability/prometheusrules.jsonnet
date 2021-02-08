@@ -58,6 +58,8 @@ local appSREOverwrites(namespace) = {
       else if
         name == 'thanos-component-absent.rules' then 'no-dashboard'
       else if
+        name == 'observatorium-metrics.rules' then 'no-dashboard'
+      else if
         std.startsWith(name, 'observatorium-api') then 'Tg-mH0rizaSJDKSADX'
       else if
         std.startsWith(name, 'telemeter') then 'Tg-mH0rizaSJDKSADJ'
@@ -268,31 +270,31 @@ local renderAlerts(name, namespace, mixin) = {
 }
 
 {
-  local obsSLOs = {
+  local obsSLOs(name) = {
     local logsGroup = 'logsv1',
     local metricsGroup = 'metricsv1',
     // local metricLatency = 'http_request_duration_seconds',
     local metricError = 'http_requests_total',
     local writeMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
     },
     local queryMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler=~"query|query_legacy"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler=~"query|query_legacy"', 'job="%s"' % name],
     },
     local queryRangeMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
     },
     local pushLogsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % name],
     },
     local queryLogsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler=~"query|label|labels|label_values"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler=~"query|label|labels|label_values"', 'job="%s"' % name],
     },
     local queryRangeLogsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
     },
     local tailLogsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="tail|prom_tail"', 'job="%s"' % obs.manifests['api-service'].metadata.name],
+      selectors: ['group="%s"' % group, 'handler="tail|prom_tail"', 'job="%s"' % name],
     },
 
     local alertNameLogsErrors = 'ObservatoriumAPILogsErrorsSLOBudgetBurn',
@@ -437,7 +439,11 @@ local renderAlerts(name, namespace, mixin) = {
             d.recordingrules +
             d.alerts,
         }
-        for s in obsSLOs.errorBurn
+        // NOTICE: Templating systems conflicting here.
+        // The value of obs.manifests['api-service'].metadata.name was used.
+        // That value is no OBSERVATORIUM_API_IDENTIFIER
+        // So passing it here manually.
+        for s in obsSLOs('observatorium-observatorium-api').errorBurn
       ],
     },
   },
@@ -458,4 +464,37 @@ local renderAlerts(name, namespace, mixin) = {
 
   'observatorium-gubernator-stage.prometheusrules': renderAlerts('observatorium-gubernator-stage', 'telemeter-stage', gubernator),
   'observatorium-gubernator-production.prometheusrules': renderAlerts('observatorium-gubernator-production', 'telemeter-production', gubernator),
+}
+
+{
+  local customAlerts = {
+    // Custom alerts.
+    prometheusAlerts+:: {
+      groups: [
+        {
+          name: 'observatorium-metrics.rules',
+          rules: [
+            {
+
+              alert: 'ObservatoriumNoRulesLoaded',
+              annotations: {
+                description: 'Observatorium Thanos Ruler {{$labels.job}} has not any rules loaded.',
+                summary: 'Observatorium Thanos Ruler has not any rule to evaluate. This should not have happened. Check out the configuration.',
+              },
+              expr: |||
+                sum(thanos_rule_loaded_rules{%(selector)s}) == 0
+              ||| % (import 'selectors.libsonnet').thanos.rule,
+              'for': '5m',
+              labels: {
+                severity: 'critical',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  'observatorium-custom-metrics-stage.prometheusrules': renderAlerts('observatorium-metrics-stage', 'telemeter-stage', customAlerts),
+  'observatorium-custom-metrics-production.prometheusrules': renderAlerts('observatorium-metrics-production', 'telemeter-production', customAlerts),
 }

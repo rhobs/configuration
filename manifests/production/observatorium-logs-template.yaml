@@ -1494,7 +1494,7 @@ parameters:
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
-  value: 2.0.0
+  value: 2.1.0
 - name: LOKI_IMAGE
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET

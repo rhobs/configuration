@@ -29,44 +29,6 @@ objects:
           "name": "service-account-observatorium-dptp-collector"
         - "kind": "user"
           "name": "service-account-observatorium-dptp-collector-staging"
-      - "name": "dptp-reader"
-        "roles":
-        - "dptp-read"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-reader"
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-reader-staging"
-        - "kind": "user"
-          "name": "rhn-engineering-aconway"
-        - "kind": "user"
-          "name": "brejones"
-        - "kind": "user"
-          "name": "cvogel1"
-        - "kind": "user"
-          "name": "ewolinet@redhat.com"
-        - "kind": "user"
-          "name": "jcantril@redhat.com"
-        - "kind": "user"
-          "name": "ptsiraki@redhat.com"
-        - "kind": "user"
-          "name": "vparfono"
-        - "kind": "user"
-          "name": "vimalkum"
-        - "kind": "user"
-          "name": "sasagarw"
-        - "kind": "user"
-          "name": "ikarpukh"
-        - "kind": "user"
-          "name": "eraichst"
-        - "kind": "user"
-          "name": "dmace@redhat.com"
-        - "kind": "user"
-          "name": "sbatsche@redhat.com"
-        - "kind": "user"
-          "name": "vrutkovs@redhat.com"
-        - "kind": "user"
-          "name": "trking"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -87,13 +49,6 @@ objects:
       - "name": "dptp-write"
         "permissions":
         - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "dptp"
-      - "name": "dptp-read"
-        "permissions":
-        - "read"
         "resources":
         - "logs"
         "tenants":
@@ -1371,9 +1326,9 @@ objects:
         app.kubernetes.io/name: thanos-query
         app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
-  data:
-    hashrings.json: |-
-      [
+  data: |-
+    {
+      "hashrings.json": [
         {
           "hashring": "default",
           "tenants": [
@@ -1381,6 +1336,7 @@ objects:
           ]
         }
       ]
+    }
   kind: ConfigMap
   metadata:
     labels:

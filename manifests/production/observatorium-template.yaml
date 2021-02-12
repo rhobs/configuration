@@ -1311,9 +1311,9 @@ objects:
         app.kubernetes.io/name: thanos-query
         app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
-  data: |-
-    {
-      "hashrings.json": [
+  data:
+    hashrings.json: |-
+      [
         {
           "hashring": "default",
           "tenants": [
@@ -1321,7 +1321,6 @@ objects:
           ]
         }
       ]
-    }
   kind: ConfigMap
   metadata:
     labels:

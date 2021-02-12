@@ -21,14 +21,6 @@ objects:
           "name": "service-account-telemeter-service-staging"
         - "kind": "user"
           "name": "service-account-telemeter-service"
-      - "name": "dptp-collector"
-        "roles":
-        - "dptp-write"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-collector"
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-collector-staging"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -46,13 +38,6 @@ objects:
         - "metrics"
         "tenants":
         - "telemeter"
-      - "name": "dptp-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "dptp"
   kind: ConfigMap
   metadata:
     annotations:

@@ -26,18 +26,6 @@
         'write',
       ],
     },
-    {
-      name: 'dptp-write',
-      resources: [
-        'logs',
-      ],
-      tenants: [
-        'dptp',
-      ],
-      permissions: [
-        'write',
-      ],
-    },
   ],
   roleBindings: [
     {
@@ -64,22 +52,6 @@
         },
         {
           name: 'service-account-telemeter-service',
-          kind: 'user',
-        },
-      ],
-    },
-    {
-      name: 'dptp-collector',
-      roles: [
-        'dptp-write',
-      ],
-      subjects: [
-        {
-          name: 'service-account-observatorium-dptp-collector',
-          kind: 'user',
-        },
-        {
-          name: 'service-account-observatorium-dptp-collector-staging',
           kind: 'user',
         },
       ],

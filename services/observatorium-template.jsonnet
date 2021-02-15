@@ -39,6 +39,8 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OPA_AMS_CPU_LIMIT', value: '200m' },
     { name: 'OPA_AMS_MEMORY_LIMIT', value: '200Mi' },
+    { name: 'OSD_ORGANIZATION_ID', value: '' },
+    { name: 'DPTP_ORGANIZATION_ID', value: '' },
     { name: 'AMS_URL', value: 'https://api.openshift.com' },
     { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
     { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },

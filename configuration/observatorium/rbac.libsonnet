@@ -26,6 +26,18 @@
         'write',
       ],
     },
+    {
+      name: 'telemeter-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'telemeter',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
   ],
   roleBindings: [
     {
@@ -52,6 +64,22 @@
         },
         {
           name: 'service-account-telemeter-service',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'subwatch',
+      roles: [
+        'telemeter-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-subwatch-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-subwatch',
           kind: 'user',
         },
       ],

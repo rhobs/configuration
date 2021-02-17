@@ -455,7 +455,7 @@ local observatorium =
         { name: 'OBSERVATORIUM_API_MEMORY_LIMIT', value: '1Gi' },
         { name: 'AMS_URL', value: '' },
         { name: 'OPA_AMS_IMAGE', value: 'quay.io/observatorium/opa-ams' },
-        { name: 'OPA_AMS_IMAGE_TAG', value: 'master-2020-10-28-902d400' },
+        { name: 'OPA_AMS_IMAGE_TAG', value: 'master-2021-02-17-ed50046' },
         { name: 'OPA_AMS_MEMCACHED_EXPIRE', value: '300' },
         { name: 'OPA_AMS_CPU_REQUEST', value: '100m' },
         { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },

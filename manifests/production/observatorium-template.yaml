@@ -3740,7 +3740,7 @@ parameters:
 - name: OPA_AMS_IMAGE
   value: quay.io/observatorium/opa-ams
 - name: OPA_AMS_IMAGE_TAG
-  value: master-2020-10-28-902d400
+  value: master-2021-02-17-ed50046
 - name: OPA_AMS_MEMCACHED_EXPIRE
   value: "300"
 - name: OPA_AMS_CPU_REQUEST

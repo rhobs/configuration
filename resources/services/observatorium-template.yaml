@@ -21,6 +21,14 @@ objects:
           "name": "service-account-telemeter-service-staging"
         - "kind": "user"
           "name": "service-account-telemeter-service"
+      - "name": "subwatch"
+        "roles":
+        - "telemeter-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-subwatch-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-subwatch"
       "roles":
       - "name": "rhobs"
         "permissions":
@@ -34,6 +42,13 @@ objects:
       - "name": "telemeter-write"
         "permissions":
         - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "telemeter"
+      - "name": "telemeter-read"
+        "permissions":
+        - "read"
         "resources":
         - "metrics"
         "tenants":

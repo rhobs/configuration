@@ -288,7 +288,12 @@ local oauthProxy = import 'sidecars/oauth-proxy.libsonnet';
           },
         },
         spec+: {
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+          namespaceSelector+: {
+            matchNames: [
+              '${NAMESPACE}',
+              '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+            ],
+          },
           selector+: { matchLabels+: { 'app.kubernetes.io/version':: 'hidden' } },
         },
       },

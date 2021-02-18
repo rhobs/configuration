@@ -63,6 +63,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
@@ -632,6 +633,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-cache
@@ -701,6 +703,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-layer
@@ -867,6 +870,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: kubernetes-controller
@@ -1255,6 +1259,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: rule-evaluation-engine
@@ -1455,6 +1460,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: store-bucket-cache
@@ -1559,6 +1565,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: store-index-cache
@@ -2372,6 +2379,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium-metrics
+- name: MST_NAMESPACE
+  value: observatorium-mst-production
 - name: STORAGE_CLASS
   value: gp2
 - name: SERVICE_ACCOUNT_NAME

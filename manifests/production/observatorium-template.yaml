@@ -299,6 +299,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: api
@@ -461,6 +462,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: rate-limiter
@@ -682,6 +684,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
@@ -1251,6 +1254,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-cache
@@ -1320,6 +1324,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-layer
@@ -1486,6 +1491,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: kubernetes-controller
@@ -1874,6 +1880,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: rule-evaluation-engine
@@ -2074,6 +2081,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: store-bucket-cache
@@ -2178,6 +2186,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: store-index-cache
@@ -3586,6 +3595,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: telemeter
+- name: MST_NAMESPACE
+  value: observatorium-mst-production
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: telemeter
 - name: OBSERVATORIUM_LOGS_NAMESPACE

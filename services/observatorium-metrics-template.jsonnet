@@ -12,6 +12,7 @@ local obs = import 'observatorium.libsonnet';
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },
+    { name: 'MST_NAMESPACE', value: 'observatorium-mst-production' },
     { name: 'STORAGE_CLASS', value: 'gp2' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },

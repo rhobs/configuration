@@ -61,7 +61,12 @@ local observatorium =
               'app.kubernetes.io/version':: 'hidden',
             },
           },
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+          namespaceSelector+: {
+            matchNames+: [
+              '${NAMESPACE}',
+              '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+            ],
+          },
         },
       },
     },
@@ -209,7 +214,12 @@ local observatorium =
               'app.kubernetes.io/version':: 'hidden',
             },
           },
-          namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+          namespaceSelector+: {
+            matchNames+: [
+              '${NAMESPACE}',
+              '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+            ],
+          },
         },
       } + opaAms.serviceMonitor,
     },
@@ -371,6 +381,7 @@ local observatorium =
         ],
       parameters: [
         { name: 'NAMESPACE', value: observatoriumNamespace },
+        { name: 'MST_NAMESPACE', value: 'observatorium-mst-production' },
         { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: observatoriumNamespace },
         { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: observatoriumLogsNamespace },
         { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },

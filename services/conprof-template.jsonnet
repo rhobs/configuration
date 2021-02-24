@@ -185,7 +185,8 @@ local conprof = c + c.withConfigMap {
       },
     },
     spec+: {
-      ports+: [
+      ports: [
+        { name: 'http', port: 10902, targetPort: 10902 },
         { name: 'https', port: 8443, targetPort: 8443 },
       ],
     },

@@ -155,7 +155,7 @@ objects:
           - -https-address=:8443
           - -http-address=
           - -email-domain=*
-          - -upstream=http://localhost:8080
+          - -upstream=http://localhost:10902
           - -openshift-service-account=${SERVICE_ACCOUNT_NAME}
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
@@ -213,8 +213,8 @@ objects:
     clusterIP: None
     ports:
     - name: http
-      port: 8080
-      targetPort: http
+      port: 10902
+      targetPort: 10902
     - name: https
       port: 8443
       targetPort: 8443

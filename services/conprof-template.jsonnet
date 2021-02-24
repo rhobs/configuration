@@ -5,7 +5,7 @@ local conprof = c + c.withConfigMap {
 
   config+:: {
     name: 'conprof',
-    namespace: '${NAMESPACE}',
+    namespace: '${NAMESPACE}',  // Target namespace to deploy Conprof.
     image: '${IMAGE}:${IMAGE_TAG}',
     version: '${IMAGE_TAG}',
 
@@ -14,6 +14,7 @@ local conprof = c + c.withConfigMap {
     namespaces: {
       default: '${NAMESPACE}',
       metrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
+      mst: '${OBSERVATORIUM_MST_NAMESPACE}',
       logs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
     },
 
@@ -21,7 +22,11 @@ local conprof = c + c.withConfigMap {
       scrape_configs: [{
         job_name: 'thanos',
         kubernetes_sd_configs: [{
-          namespaces: { names: ['${NAMESPACE}'] },
+          namespaces: { names: [
+            conprof.config.namespaces.default,
+            conprof.config.namespaces.metrics,
+            conprof.config.namespaces.mst,
+          ] },
           role: 'pod',
         }],
         relabel_configs: [
@@ -90,7 +95,7 @@ local conprof = c + c.withConfigMap {
       }, {
         job_name: 'telemeter',
         kubernetes_sd_configs: [{
-          namespaces: { names: ['${NAMESPACE}'] },
+          namespaces: { names: [conprof.config.namespaces.default] },
           role: 'pod',
         }],
         relabel_configs: [
@@ -145,6 +150,7 @@ local conprof = c + c.withConfigMap {
     {
       'conprof-observatorium': newSpecificRole(conprof.config.namespaces.default),
       'conprof-observatorium-metrics': newSpecificRole(conprof.config.namespaces.metrics),
+      'conprof-observatorium-mst': newSpecificRole(conprof.config.namespaces.mst),
       'conprof-observatorium-logs': newSpecificRole(conprof.config.namespaces.logs),
     },
 
@@ -168,6 +174,7 @@ local conprof = c + c.withConfigMap {
     {
       'conprof-observatorium': newSpecificRoleBinding(conprof.config.namespaces.default),
       'conprof-observatorium-metrics': newSpecificRoleBinding(conprof.config.namespaces.metrics),
+      'conprof-observatorium-mst': newSpecificRoleBinding(conprof.config.namespaces.mst),
       'conprof-observatorium-logs': newSpecificRoleBinding(conprof.config.namespaces.logs),
     },
 
@@ -286,6 +293,7 @@ local conprof = c + c.withConfigMap {
     parameters: [
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
+      { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'IMAGE', value: 'quay.io/conprof/conprof' },
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
@@ -303,6 +311,7 @@ local conprof = c + c.withConfigMap {
       { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },
+  // TODO(kakkoyun): Find a more scalable way.
   'conprof-observatorium-logs-rbac-template': {
     apiVersion: 'v1',
     kind: 'Template',
@@ -317,6 +326,24 @@ local conprof = c + c.withConfigMap {
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
       { name: 'NAMESPACE', value: 'telemeter' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
+    ],
+  },
+  // TODO(kakkoyun): Find a more scalable way.
+  'conprof-observatorium-mst-rbac-template': {
+    apiVersion: 'v1',
+    kind: 'Template',
+    metadata: {
+      name: 'conprof-observatorium-mst-rbac',
+    },
+    objects: [
+      conprof.roles['conprof-observatorium-mst'],
+      conprof.roleBindings['conprof-observatorium-mst'],
+    ],
+    parameters: [
+      { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
+      { name: 'NAMESPACE', value: 'telemeter' },
+      { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
       { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },

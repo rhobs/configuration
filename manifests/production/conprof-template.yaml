@@ -12,6 +12,8 @@ objects:
         - "namespaces":
             "names":
             - "${NAMESPACE}"
+            - "${OBSERVATORIUM_METRICS_NAMESPACE}"
+            - "${OBSERVATORIUM_MST_NAMESPACE}"
           "role": "pod"
         "relabel_configs":
         - "action": "keep"
@@ -259,6 +261,8 @@ parameters:
   value: observatorium
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
+- name: OBSERVATORIUM_MST_NAMESPACE
+  value: observatorium-mst
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs
 - name: IMAGE

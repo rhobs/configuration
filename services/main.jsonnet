@@ -255,7 +255,12 @@ local observatorium =
             'app.kubernetes.io/version':: 'hidden',
           },
         },
-        spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+        spec+: { namespaceSelector+: {
+          matchNames: [
+            '${NAMESPACE}',
+            '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+          ],
+        } },
       },
     },
 

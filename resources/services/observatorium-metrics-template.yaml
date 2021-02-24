@@ -1159,6 +1159,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring
@@ -2370,6 +2371,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway

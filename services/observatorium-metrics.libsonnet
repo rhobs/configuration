@@ -213,7 +213,12 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         selector: {
           matchLabels: thanos.stores.config.podLabelSelector,
         },
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        namespaceSelector+: {
+          matchNames: [
+            '${NAMESPACE}',
+            '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+          ],
+        },
         endpoints: [
           {
             port: 'http',
@@ -451,7 +456,12 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         selector: {
           matchLabels: thanos.receivers.config.podLabelSelector,
         },
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        namespaceSelector+: {
+          matchNames: [
+            '${NAMESPACE}',
+            '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+          ],
+        },
         endpoints: [
           {
             port: 'http',

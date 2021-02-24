@@ -64,7 +64,10 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
             'app.kubernetes.io/version':: 'hidden',
           },
         },
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        namespaceSelector+: { matchNames: [
+          '${NAMESPACE}',
+          '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+        ] },
       },
     },
   },
@@ -263,7 +266,10 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
             'app.kubernetes.io/version':: 'hidden',
           },
         },
-        namespaceSelector+: { matchNames: ['${NAMESPACE}'] },
+        namespaceSelector+: { matchNames: [
+          '${NAMESPACE}',
+          '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+        ] },
       },
     } + opaAms.serviceMonitor,
   },
@@ -299,7 +305,10 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
           'app.kubernetes.io/version':: 'hidden',
         },
       },
-      spec+: { namespaceSelector+: { matchNames: ['${NAMESPACE}'] } },
+      spec+: { namespaceSelector+: { matchNames: [
+        '${NAMESPACE}',
+        '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+      ] } },
     },
   },
 

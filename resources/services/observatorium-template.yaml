@@ -299,6 +299,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: api
@@ -461,6 +462,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: rate-limiter
@@ -715,6 +717,7 @@ objects:
     namespaceSelector:
       matchNames:
       - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: blackbox-prober

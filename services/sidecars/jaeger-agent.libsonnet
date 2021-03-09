@@ -50,6 +50,7 @@ function(params) {
           },
           resources: ja.config.resources,
         }],
+        serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
       },
     },
   },

@@ -490,6 +490,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-loki
@@ -778,6 +779,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-loki
@@ -1064,6 +1066,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-loki
@@ -1279,6 +1282,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-loki
@@ -1420,6 +1424,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-loki

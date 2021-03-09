@@ -1095,6 +1095,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 900
         volumes:
         - configMap:
@@ -1406,6 +1407,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-rules
@@ -1855,6 +1857,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes: []
     volumeClaimTemplates:
@@ -2093,6 +2096,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes: []
     volumeClaimTemplates:
@@ -2331,6 +2335,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes: []
     volumeClaimTemplates:

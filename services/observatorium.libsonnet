@@ -216,6 +216,7 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
       mappings: {
         osd: '${OSD_ORGANIZATION_ID}',
         dptp: '${DPTP_ORGANIZATION_ID}',
+        managedkafka: '${MANAGEDKAFKA_ORGANIZATION_ID}',
       },
       memcached: '%s.%s.svc.cluster.local:%d' % [
         obs.memcached.service.metadata.name,

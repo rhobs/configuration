@@ -159,6 +159,7 @@ objects:
           - --memcached=observatorium-api-cache-memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
           - --ams.mappings=dptp=${DPTP_ORGANIZATION_ID}
+          - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
           env:
           - name: ISSUER_URL
@@ -780,6 +781,8 @@ parameters:
 - name: OSD_ORGANIZATION_ID
   value: ""
 - name: DPTP_ORGANIZATION_ID
+  value: ""
+- name: MANAGEDKAFKA_ORGANIZATION_ID
   value: ""
 - name: AMS_URL
   value: https://api.openshift.com

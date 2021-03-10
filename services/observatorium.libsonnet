@@ -50,6 +50,9 @@ local memcached = (import 'github.com/observatorium/deployments/components/memca
         replicas: '${{GUBERNATOR_REPLICAS}}',
       },
     },
+    serviceAccount+: {
+      imagePullSecrets+: [{ name: 'quay.io' }],
+    },
     serviceMonitor+: {
       metadata+: {
         name: 'observatorium-gubernator',

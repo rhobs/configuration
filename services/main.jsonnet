@@ -47,6 +47,9 @@ local observatorium =
           replicas: '${{GUBERNATOR_REPLICAS}}',
         },
       },
+      serviceAccount+: {
+        imagePullSecrets+: [{ name: 'quay.io' }],
+      },
       serviceMonitor+: {
         metadata+: {
           name: 'observatorium-gubernator',

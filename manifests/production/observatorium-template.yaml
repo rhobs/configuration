@@ -93,6 +93,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: observatorium-api
           app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/tracing: jaeger-agent
           app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
       spec:
         containers:
@@ -108,6 +109,7 @@ objects:
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
+          - --internal.tracing.endpoint=localhost:6831
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -205,7 +207,42 @@ objects:
             requests:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
-        serviceAccountName: observatorium-observatorium-api
+        - args:
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.type=grpc
+          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
+          - containerPort: 14271
+            name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
             name: observatorium-observatorium-api

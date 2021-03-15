@@ -136,6 +136,11 @@ local observatorium =
           memory: '${OBSERVATORIUM_API_MEMORY_LIMIT}',
         },
       },
+      internal: {
+        tracing: {
+          endpoint: 'localhost:6831',
+        },
+      },
     }) + {
       // TODO: Enable in a separate MR.
       // local oauth = (import 'sidecars/oauth-proxy.libsonnet')({
@@ -157,6 +162,11 @@ local observatorium =
       //     },
       //   },
       // }),
+
+      local jaegerAgent = (import './sidecars/jaeger-agent.libsonnet')({
+        image: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
+        collectorAddress: 'dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250',
+      }),
 
       local opaAms = (import './sidecars/opa-ams.libsonnet')({
         image: '${OPA_AMS_IMAGE}:${OPA_AMS_IMAGE_TAG}',
@@ -195,7 +205,7 @@ local observatorium =
         spec+: {
           replicas: '${{OBSERVATORIUM_API_REPLICAS}}',
         },
-      } + opaAms.deployment,
+      } + opaAms.deployment + jaegerAgent.deployment,
       // + oauth.deployment
 
       configmap+: {

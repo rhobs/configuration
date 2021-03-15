@@ -208,7 +208,7 @@ objects:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1012,7 +1012,7 @@ objects:
             name: query-proxy
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1192,7 +1192,7 @@ objects:
             name: query-frontend-proxy
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1723,7 +1723,7 @@ objects:
           - mountPath: /var/lib/thanos-receive
             name: hashring-config
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -2035,7 +2035,7 @@ objects:
           - mountPath: /etc/thanos/rules/observatorium-rules
             name: observatorium-rules
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -2485,7 +2485,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -2724,7 +2724,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -2963,7 +2963,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
           - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -3661,6 +3661,8 @@ parameters:
   value: jaegertracing/jaeger-agent
 - name: JAEGER_AGENT_IMAGE_TAG
   value: 1.14.0
+- name: JAEGER_COLLECTOR_NAMESPACE
+  value: $(NAMESPACE)
 - name: THANOS_RECEIVE_CONTROLLER_IMAGE
   value: quay.io/observatorium/thanos-receive-controller
 - name: THANOS_RECEIVE_CONTROLLER_IMAGE_TAG

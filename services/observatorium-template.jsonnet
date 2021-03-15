@@ -65,5 +65,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT', value: '200Mi' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.22.0' },
+    { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
   ],
 }

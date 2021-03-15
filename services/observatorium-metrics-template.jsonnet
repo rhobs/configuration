@@ -80,6 +80,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_QUERIER_SVC_URL', value: 'http://thanos-querier.observatorium.svc:9090' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'quay.io/app-sre/jaegertracing-jaeger-agent' },
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.15.0' },
+    { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
     { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
     { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
     { name: 'OAUTH_PROXY_CPU_REQUEST', value: '100m' },

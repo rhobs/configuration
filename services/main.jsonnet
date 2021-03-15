@@ -165,7 +165,7 @@ local observatorium =
 
       local jaegerAgent = (import './sidecars/jaeger-agent.libsonnet')({
         image: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
-        collectorAddress: 'dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250',
+        collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
       }),
 
       local opaAms = (import './sidecars/opa-ams.libsonnet')({
@@ -409,6 +409,7 @@ local observatorium =
         { name: 'STORAGE_CLASS', value: 'gp2' },
         { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
         { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.14.0' },
+        { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
         { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE', value: 'quay.io/observatorium/thanos-receive-controller' },
         { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE_TAG', value: 'master-2019-10-18-d55fee2' },
         { name: 'THANOS_QUERIER_REPLICAS', value: '3' },

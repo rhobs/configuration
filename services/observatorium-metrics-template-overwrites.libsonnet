@@ -1,8 +1,8 @@
 // This is the file overwriting and extending the upstream objects to, in the end,
 // generate a OpenShift template specifically for AppSRE.
 
-local jaegerAgent = import 'sidecars/jaeger-agent.libsonnet';
-local oauthProxy = import 'sidecars/oauth-proxy.libsonnet';
+local jaegerAgent = import './sidecars/jaeger-agent.libsonnet';
+local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
 {
   local s3EnvVars = [

@@ -30,7 +30,7 @@ function(params) {
           args: [
             '--reporter.grpc.host-port=' + ja.config.collectorAddress,
             '--reporter.type=grpc',
-            '--jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)',
+            '--agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)',
           ],
           env: [
             { name: 'NAMESPACE', valueFrom: { fieldRef: { fieldPath: 'metadata.namespace' } } },

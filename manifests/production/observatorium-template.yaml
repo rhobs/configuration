@@ -210,7 +210,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -1014,7 +1014,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -1194,7 +1194,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -1725,7 +1725,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -2037,7 +2037,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -2487,7 +2487,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -2726,7 +2726,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:
@@ -2965,7 +2965,7 @@ objects:
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
-          - --jaeger.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
           - name: NAMESPACE
             valueFrom:

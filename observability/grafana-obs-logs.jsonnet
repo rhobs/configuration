@@ -1,5 +1,5 @@
-local selectors = (import 'selectors.libsonnet');
-local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet') + selectors.loki;
+local config = (import 'config.libsonnet');
+local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet') + config.loki;
 
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'telemeter-production';

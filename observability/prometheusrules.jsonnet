@@ -2,11 +2,24 @@ local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libson
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
 local obs = import '../services/observatorium.libsonnet';
 
+local config = (import 'config.libsonnet') {
+  thanos+: {
+    query+:: {
+      p99QueryLatencyThreshold: 90,
+    },
+    store+:: {
+      // NOTICE: Check tail latency for tuning the threshold.
+      // https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=6h&g0.expr=histogram_quantile(0.99%2C%20sum%20by%20(job%2C%20le)%20(rate(thanos_objstore_bucket_operation_duration_seconds_bucket%7Bjob%3D~%22observatorium-thanos-store.*%22%7D%5B5m%5D)))&g0.tab=0
+      bucketOpsP99LatencyThreshold: 7,
+    },
+  },
+};
+
 local absent(name, job) = {
   prometheusAlerts+:: {
     groups+: [
       {
-        name: '%s-absent.rules' % name,
+        name: '%s-absent' % name,
         rules: [
           {
             alert: '%sIsDown' % name,
@@ -29,9 +42,7 @@ local absent(name, job) = {
 
 // Add dashboards and runbook anntotations.
 // Overwrite severity to medium and high.
-local appSREOverwrites(namespace) = {
-  local nscomponents = std.split(namespace, '-'),
-  local environment = nscomponents[std.length(nscomponents) - 1],
+local appSREOverwrites(environment) = {
   local dashboardDatasource = function(environment) {
     datasource:
       if
@@ -44,21 +55,21 @@ local appSREOverwrites(namespace) = {
   local dashboardID = function(name) {
     id:
       if
-        name == 'thanos-query.rules' then '98fde97ddeaf2981041745f1f2ba68c2'
+        name == 'thanos-query' then '98fde97ddeaf2981041745f1f2ba68c2'
       else if
-        name == 'thanos-compact.rules' then '651943d05a8123e32867b4673963f42b'
+        name == 'thanos-compact' then '651943d05a8123e32867b4673963f42b'
       else if
-        name == 'thanos-receive.rules' then '916a852b00ccc5ed81056644718fa4fb'
+        name == 'thanos-receive' then '916a852b00ccc5ed81056644718fa4fb'
       else if
-        name == 'thanos-store.rules' then 'e832e8f26403d95fac0ea1c59837588b'
+        name == 'thanos-store' then 'e832e8f26403d95fac0ea1c59837588b'
       else if
-        name == 'thanos-rule.rules' then '35da848f5f92b2dc612e0c3a0577b8a1'
+        name == 'thanos-rule' then '35da848f5f92b2dc612e0c3a0577b8a1'
       else if
-        name == 'thanos-receive-controller.rules' then 'no-dashboard'
+        name == 'thanos-receive-controller' then 'no-dashboard'
       else if
-        name == 'thanos-component-absent.rules' then 'no-dashboard'
+        name == 'thanos-component-absent' then 'no-dashboard'
       else if
-        name == 'observatorium-metrics.rules' then 'no-dashboard'
+        name == 'observatorium-metrics' then 'no-dashboard'
       else if
         std.startsWith(name, 'observatorium-api') then 'Tg-mH0rizaSJDKSADX'
       else if
@@ -130,11 +141,10 @@ local appSREOverwrites(namespace) = {
               else
                 {
                   runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace=%s&var-job=All&var-pod=All&var-interval=5m' % [
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
                     dashboardID(g.name).id,
                     g.name,
                     dashboardDatasource(environment).datasource,
-                    namespace,
                   ],
                 },
             labels: pruneUnsupportedLabels(r.labels {
@@ -167,7 +177,7 @@ local appSREOverwrites(namespace) = {
   ],
 };
 
-local renderRules(name, _namespace, mixin) = {
+local renderRules(name, mixin) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PrometheusRule',
   metadata: {
@@ -180,7 +190,7 @@ local renderRules(name, _namespace, mixin) = {
   spec: mixin.prometheusRules,
 };
 
-local renderAlerts(name, namespace, mixin) = {
+local renderAlerts(name, environment, mixin) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PrometheusRule',
   metadata: {
@@ -192,14 +202,14 @@ local renderAlerts(name, namespace, mixin) = {
   },
 
   spec: mixin {
-    prometheusAlerts+:: appSREOverwrites(namespace),
+    prometheusAlerts+:: appSREOverwrites(environment),
   }.prometheusAlerts,
 };
 
 {
   local telemeterSLOs = [
     {
-      name: 'telemeter-upload.slo.rules',
+      name: 'telemeter-upload.slo',
       slos: [
         slo.errorburn({
           alertName: 'TelemeterUploadErrorBudgetBurning',
@@ -212,7 +222,7 @@ local renderAlerts(name, namespace, mixin) = {
       ],
     },
     {
-      name: 'telemeter-authorize.slo.rules',
+      name: 'telemeter-authorize.slo',
       slos: [
         slo.errorburn({
           alertName: 'TelemeterAuthorizeErrorBudgetBurning',
@@ -243,8 +253,8 @@ local renderAlerts(name, namespace, mixin) = {
     },
   },
 
-  'telemeter-slos-stage.prometheusrules': renderAlerts('telemeter-slos-stage', 'telemeter-stage', telemeter),
-  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'telemeter-production', telemeter),
+  'telemeter-slos-stage.prometheusrules': renderAlerts('telemeter-slos-stage', 'stage', telemeter),
+  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'production', telemeter),
 }
 
 {
@@ -256,19 +266,10 @@ local renderAlerts(name, namespace, mixin) = {
     (import 'github.com/thanos-io/thanos/mixin/alerts/store.libsonnet') +
     (import 'github.com/thanos-io/thanos/mixin/alerts/rule.libsonnet') +
     (import 'github.com/observatorium/thanos-receive-controller/jsonnet/thanos-receive-controller-mixin/mixin.libsonnet') +
-    (import 'selectors.libsonnet').thanos {
-      query+:: {
-        p99QueryLatencyThreshold: 90,
-      },
-      store+:: {
-        // NOTICE: Check tail latency for tuning the threshold.
-        // https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=6h&g0.expr=histogram_quantile(0.99%2C%20sum%20by%20(job%2C%20le)%20(rate(thanos_objstore_bucket_operation_duration_seconds_bucket%7Bjob%3D~%22observatorium-thanos-store.*%22%7D%5B5m%5D)))&g0.tab=0
-        bucketOpsP99LatencyThreshold: 7,
-      },
-    },
+    config.thanos,
 
-  'observatorium-thanos-stage.prometheusrules': renderAlerts('observatorium-thanos-stage', 'telemeter-stage', thanosAlerts),
-  'observatorium-thanos-production.prometheusrules': renderAlerts('observatorium-thanos-production', 'telemeter-production', thanosAlerts),
+  'observatorium-thanos-stage.prometheusrules': renderAlerts('observatorium-thanos-stage', 'stage', thanosAlerts),
+  'observatorium-thanos-production.prometheusrules': renderAlerts('observatorium-thanos-production', 'production', thanosAlerts),
 }
 
 {
@@ -305,7 +306,7 @@ local renderAlerts(name, namespace, mixin) = {
 
     errorBurn:: [
       {
-        name: 'observatorium-api-write-metrics-errors.slo.rules',
+        name: 'observatorium-api-write-metrics-errors.slo',
         config: writeMetricsSelector(metricsGroup) {
           alertName: alertNameMetricsErrors,
           metric: metricError,
@@ -313,7 +314,7 @@ local renderAlerts(name, namespace, mixin) = {
         },
       },
       {
-        name: 'observatorium-api-query-metrics-errors.slo.rules',
+        name: 'observatorium-api-query-metrics-errors.slo',
         config: queryMetricsSelector(metricsGroup) {
           alertName: alertNameMetricsErrors,
           metric: metricError,
@@ -321,7 +322,7 @@ local renderAlerts(name, namespace, mixin) = {
         },
       },
       {
-        name: 'observatorium-api-query-range-metrics-errors.slo.rules',
+        name: 'observatorium-api-query-range-metrics-errors.slo',
         config: queryRangeMetricsSelector(metricsGroup) {
           alertName: alertNameMetricsErrors,
           metric: metricError,
@@ -329,7 +330,7 @@ local renderAlerts(name, namespace, mixin) = {
         },
       },
       {
-        name: 'observatorium-api-push-logs-errors.slo.rules',
+        name: 'observatorium-api-push-logs-errors.slo',
         config: pushLogsSelector(logsGroup) {
           alertName: alertNameLogsErrors,
           metric: metricError,
@@ -337,7 +338,7 @@ local renderAlerts(name, namespace, mixin) = {
         },
       },
       {
-        name: 'observatorium-api-query-logs-errors.slo.rules',
+        name: 'observatorium-api-query-logs-errors.slo',
         config: queryLogsSelector(logsGroup) {
           alertName: alertNameLogsErrors,
           metric: metricError,
@@ -345,7 +346,7 @@ local renderAlerts(name, namespace, mixin) = {
         },
       },
       {
-        name: 'observatorium-api-query-range-logs-errors.slo.rules',
+        name: 'observatorium-api-query-range-logs-errors.slo',
         config: queryRangeLogsSelector(logsGroup) {
           alertName: alertNameLogsErrors,
           metric: metricError,
@@ -353,7 +354,7 @@ local renderAlerts(name, namespace, mixin) = {
         },
       },
       {
-        name: 'observatorium-api-tail-logs-errors.slo.rules',
+        name: 'observatorium-api-tail-logs-errors.slo',
         config: tailLogsSelector(logsGroup) {
           alertName: alertNameLogsErrors,
           metric: metricError,
@@ -365,7 +366,7 @@ local renderAlerts(name, namespace, mixin) = {
     // TODO: add these only when we have enough metrics to have an SLO
     //   latencyBurn:: [
     //     {
-    //       name: 'observatorium-api-write-latency-low.slo.rules',
+    //       name: 'observatorium-api-write-latency-low.slo',
     //       config: writeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
@@ -374,7 +375,7 @@ local renderAlerts(name, namespace, mixin) = {
     //       },
     //     },
     //     {
-    //       name: 'observatorium-api-write-latency-high.slo.rules',
+    //       name: 'observatorium-api-write-latency-high.slo',
     //       config: writeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
@@ -383,7 +384,7 @@ local renderAlerts(name, namespace, mixin) = {
     //       },
     //     },
     //     {
-    //       name: 'observatorium-api-query-latency-low.slo.rules',
+    //       name: 'observatorium-api-query-latency-low.slo',
     //       config: queryMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
@@ -392,7 +393,7 @@ local renderAlerts(name, namespace, mixin) = {
     //       },
     //     },
     //     {
-    //       name: 'observatorium-api-query-latency-high.slo.rules',
+    //       name: 'observatorium-api-query-latency-high.slo',
     //       config: queryMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
@@ -401,7 +402,7 @@ local renderAlerts(name, namespace, mixin) = {
     //       },
     //     },
     //     {
-    //       name: 'observatorium-api-query-range-latency-low.slo.rules',
+    //       name: 'observatorium-api-query-range-latency-low.slo',
     //       config: queryRangeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
@@ -410,7 +411,7 @@ local renderAlerts(name, namespace, mixin) = {
     //       },
     //     },
     //     {
-    //       name: 'observatorium-api-query-range-latency-high.slo.rules',
+    //       name: 'observatorium-api-query-range-latency-high.slo',
     //       config: queryRangeMetricsSelector {
     //         alertName: alertNameLatency,
     //         metric: metricLatency,
@@ -450,22 +451,22 @@ local renderAlerts(name, namespace, mixin) = {
     },
   },
 
-  'observatorium-api-stage.prometheusrules': renderAlerts('observatorium-api-stage', 'telemeter-stage', api),
-  'observatorium-api-production.prometheusrules': renderAlerts('observatorium-api-production', 'telemeter-production', api),
+  'observatorium-api-stage.prometheusrules': renderAlerts('observatorium-api-stage', 'stage', api),
+  'observatorium-api-production.prometheusrules': renderAlerts('observatorium-api-production', 'production', api),
 }
 
 {
-  'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', 'observatorium-logs', loki),
+  'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', loki),
 
-  'observatorium-logs-stage.prometheusrules': renderAlerts('observatorium-logs-stage', 'observatorium-logs-stage', loki),
-  'observatorium-logs-production.prometheusrules': renderAlerts('observatorium-logs-production', 'observatorium-logs-production', loki),
+  'observatorium-logs-stage.prometheusrules': renderAlerts('observatorium-logs-stage', 'stage', loki),
+  'observatorium-logs-production.prometheusrules': renderAlerts('observatorium-logs-production', 'production', loki),
 }
 
 {
   local gubernator = absent('gubernator', 'observatorium-gubernator'),
 
-  'observatorium-gubernator-stage.prometheusrules': renderAlerts('observatorium-gubernator-stage', 'telemeter-stage', gubernator),
-  'observatorium-gubernator-production.prometheusrules': renderAlerts('observatorium-gubernator-production', 'telemeter-production', gubernator),
+  'observatorium-gubernator-stage.prometheusrules': renderAlerts('observatorium-gubernator-stage', 'stage', gubernator),
+  'observatorium-gubernator-production.prometheusrules': renderAlerts('observatorium-gubernator-production', 'production', gubernator),
 }
 
 {
@@ -474,18 +475,18 @@ local renderAlerts(name, namespace, mixin) = {
     prometheusAlerts+:: {
       groups: [
         {
-          name: 'observatorium-metrics.rules',
+          name: 'observatorium-metrics',
           rules: [
             {
 
               alert: 'ObservatoriumNoRulesLoaded',
               annotations: {
-                description: 'Observatorium Thanos Ruler {{$labels.job}} has not any rules loaded.',
+                description: 'Observatorium Thanos Ruler {{$labels.namespace}}/{{$labels.job}} has not any rules loaded.',
                 summary: 'Observatorium Thanos Ruler has not any rule to evaluate. This should not have happened. Check out the configuration.',
               },
               expr: |||
-                sum(thanos_rule_loaded_rules{%(selector)s}) == 0
-              ||| % (import 'selectors.libsonnet').thanos.rule,
+                sum by (namespace, job) (thanos_rule_loaded_rules{%(selector)s}) == 0
+              ||| % config.thanos.rule,
               'for': '5m',
               labels: {
                 severity: 'critical',
@@ -497,6 +498,6 @@ local renderAlerts(name, namespace, mixin) = {
     },
   },
 
-  'observatorium-custom-metrics-stage.prometheusrules': renderAlerts('observatorium-metrics-stage', 'telemeter-stage', customAlerts),
-  'observatorium-custom-metrics-production.prometheusrules': renderAlerts('observatorium-metrics-production', 'telemeter-production', customAlerts),
+  'observatorium-custom-metrics-stage.prometheusrules': renderAlerts('observatorium-metrics-stage', 'stage', customAlerts),
+  'observatorium-custom-metrics-production.prometheusrules': renderAlerts('observatorium-metrics-production', 'production', customAlerts),
 }

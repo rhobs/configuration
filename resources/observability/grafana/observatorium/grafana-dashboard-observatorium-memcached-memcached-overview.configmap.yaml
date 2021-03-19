@@ -73,7 +73,7 @@ data:
               "timeShift": null,
               "title": "Hit Rate",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -171,7 +171,7 @@ data:
               "timeShift": null,
               "title": "Commands",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -257,7 +257,7 @@ data:
               "timeShift": null,
               "title": "Evictions",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -343,7 +343,7 @@ data:
               "timeShift": null,
               "title": "Stored",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -441,7 +441,7 @@ data:
               "timeShift": null,
               "title": "Memory",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -527,7 +527,7 @@ data:
               "timeShift": null,
               "title": "Items",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -641,7 +641,7 @@ data:
               "timeShift": null,
               "title": "Connections",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -727,7 +727,7 @@ data:
               "timeShift": null,
               "title": "Reads",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -813,7 +813,7 @@ data:
               "timeShift": null,
               "title": "Writes",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -1039,7 +1039,7 @@ data:
               "timeShift": null,
               "title": "Memcached Info",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -1106,7 +1106,7 @@ data:
             "type": "datasource"
           },
           {
-            "allValue": null,
+            "allValue": ".+",
             "current": {
               "selected": true,
               "text": "All",
@@ -1134,7 +1134,7 @@ data:
             "useTags": false
           },
           {
-            "allValue": null,
+            "allValue": ".+",
             "current": {
               "selected": true,
               "text": "All",
@@ -1162,7 +1162,7 @@ data:
             "useTags": false
           },
           {
-            "allValue": null,
+            "allValue": ".+",
             "current": {
               "selected": true,
               "text": "All",

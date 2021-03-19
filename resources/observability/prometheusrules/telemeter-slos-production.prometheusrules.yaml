@@ -9,7 +9,7 @@ metadata:
   name: telemeter-slos-production
 spec:
   groups:
-  - name: telemeter-upload.slo.rules
+  - name: telemeter-upload.slo
     rules:
     - alert: TelemeterUploadErrorBudgetBurning
       annotations:
@@ -116,7 +116,7 @@ spec:
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate6h
-  - name: telemeter-authorize.slo.rules
+  - name: telemeter-authorize.slo
     rules:
     - alert: TelemeterAuthorizeErrorBudgetBurning
       annotations:

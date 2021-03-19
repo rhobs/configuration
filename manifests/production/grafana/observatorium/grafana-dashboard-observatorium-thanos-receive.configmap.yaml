@@ -22,13 +22,7 @@ data:
           "panels": [
             {
               "aliasColors": {
-                "1xx": "#EAB839",
-                "2xx": "#7EB26D",
-                "3xx": "#6ED0E0",
-                "4xx": "#EF843C",
-                "5xx": "#E24D42",
-                "error": "#E24D42",
-                "success": "#7EB26D"
+
               },
               "bars": false,
               "dashLength": 10,
@@ -57,7 +51,26 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "/1../",
+                  "color": "#EAB839"
+                },
+                {
+                  "alias": "/2../",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "/3../",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/4../",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/5../",
+                  "color": "#C4162A"
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -65,10 +78,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(label_replace(rate(http_requests_total{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\"}[$interval]),\"status_code\", \"${1}xx\", \"code\", \"([0-9])..\")) by (job, handler, status_code)",
+                  "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{handler}} {{status_code}}",
+                  "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
                   "refId": "A",
                   "step": 10
                 }
@@ -152,7 +165,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(http_requests_total{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\",code=~\"5..\"}[$interval])) / sum(rate(http_requests_total{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=\"$job\", handler=\"receive\",code=~\"5..\"}[$interval])) / sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -231,7 +244,24 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "p99",
+                  "color": "#FA6400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p90",
+                  "color": "#E0B400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p50",
+                  "color": "#37872D",
+                  "fill": 10,
+                  "fillGradient": 0
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -239,27 +269,36 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}}",
+                  "legendFormat": "p50 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
                   "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(http_request_duration_seconds_sum{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job) * 1 / sum(rate(http_request_duration_seconds_count{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job)",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "mean {{job}}",
-                  "refId": "B",
+                  "legendFormat": "p90 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{handler=\"receive\",namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}}",
-                  "refId": "C",
+                  "legendFormat": "p99 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -354,7 +393,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_replications_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job)",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all {{job}}",
@@ -441,7 +480,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_replications_total{namespace=\"$namespace\",job=~\"$job\",result=\"error\"}[$interval])) / sum(rate(thanos_receive_replications_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=\"$job\", result=\"error\"}[$interval])) / sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -540,7 +579,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_forward_requests_total{namespace=\"$namespace\",job=~\"$job\"}[$interval])) by (job)",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all {{job}}",
@@ -627,7 +666,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_forward_requests_total{namespace=\"$namespace\",job=~\"$job\",result=\"error\"}[$interval])) / sum(rate(thanos_receive_forward_requests_total{namespace=\"$namespace\",job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=\"$job\", result=\"error\"}[$interval])) / sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -689,24 +728,7 @@ data:
           "panels": [
             {
               "aliasColors": {
-                "Aborted": "#EAB839",
-                "AlreadyExists": "#7EB26D",
-                "Canceled": "#E24D42",
-                "DataLoss": "#E24D42",
-                "DeadlineExceeded": "#E24D42",
-                "FailedPrecondition": "#6ED0E0",
-                "Internal": "#E24D42",
-                "InvalidArgument": "#EF843C",
-                "NotFound": "#EF843C",
-                "OK": "#7EB26D",
-                "OutOfRange": "#E24D42",
-                "PermissionDenied": "#EF843C",
-                "ResourceExhausted": "#E24D42",
-                "Unauthenticated": "#EF843C",
-                "Unavailable": "#E24D42",
-                "Unimplemented": "#6ED0E0",
-                "Unknown": "#E24D42",
-                "error": "#E24D42"
+
               },
               "bars": false,
               "dashLength": 10,
@@ -735,7 +757,78 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "/Aborted/",
+                  "color": "#EAB839"
+                },
+                {
+                  "alias": "/AlreadyExists/",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "/FailedPrecondition/",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/Unimplemented/",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/InvalidArgument/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/NotFound/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/PermissionDenied/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/Unauthenticated/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/Canceled/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/DataLoss/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/DeadlineExceeded/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Internal/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/OutOfRange/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/ResourceExhausted/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Unavailable/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Unknown/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/OK/",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "error",
+                  "color": "#C4162A"
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -743,10 +836,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval])) by (job, grpc_method, grpc_code)",
+                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
+                  "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
                   "refId": "A",
                   "step": 10
                 }
@@ -830,7 +923,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval])) / sum(rate(grpc_server_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -909,7 +1002,24 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "p99",
+                  "color": "#FA6400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p90",
+                  "color": "#E0B400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p50",
+                  "color": "#37872D",
+                  "fill": 10,
+                  "fillGradient": 0
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -917,27 +1027,36 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p50 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval])) by (job)\n",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "mean {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p90 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method=\"RemoteWrite\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p99 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -995,24 +1114,7 @@ data:
           "panels": [
             {
               "aliasColors": {
-                "Aborted": "#EAB839",
-                "AlreadyExists": "#7EB26D",
-                "Canceled": "#E24D42",
-                "DataLoss": "#E24D42",
-                "DeadlineExceeded": "#E24D42",
-                "FailedPrecondition": "#6ED0E0",
-                "Internal": "#E24D42",
-                "InvalidArgument": "#EF843C",
-                "NotFound": "#EF843C",
-                "OK": "#7EB26D",
-                "OutOfRange": "#E24D42",
-                "PermissionDenied": "#EF843C",
-                "ResourceExhausted": "#E24D42",
-                "Unauthenticated": "#EF843C",
-                "Unavailable": "#E24D42",
-                "Unimplemented": "#6ED0E0",
-                "Unknown": "#E24D42",
-                "error": "#E24D42"
+
               },
               "bars": false,
               "dashLength": 10,
@@ -1041,7 +1143,78 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "/Aborted/",
+                  "color": "#EAB839"
+                },
+                {
+                  "alias": "/AlreadyExists/",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "/FailedPrecondition/",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/Unimplemented/",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/InvalidArgument/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/NotFound/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/PermissionDenied/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/Unauthenticated/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/Canceled/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/DataLoss/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/DeadlineExceeded/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Internal/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/OutOfRange/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/ResourceExhausted/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Unavailable/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Unknown/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/OK/",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "error",
+                  "color": "#C4162A"
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -1049,10 +1222,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval])) by (job, grpc_method, grpc_code)",
+                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
+                  "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
                   "refId": "A",
                   "step": 10
                 }
@@ -1136,7 +1309,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval])) / sum(rate(grpc_server_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1215,7 +1388,24 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "p99",
+                  "color": "#FA6400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p90",
+                  "color": "#E0B400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p50",
+                  "color": "#37872D",
+                  "fill": 10,
+                  "fillGradient": 0
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -1223,27 +1413,36 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p50 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval])) by (job)\n",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "mean {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p90 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"unary\",grpc_method!=\"RemoteWrite\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p99 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1301,24 +1500,7 @@ data:
           "panels": [
             {
               "aliasColors": {
-                "Aborted": "#EAB839",
-                "AlreadyExists": "#7EB26D",
-                "Canceled": "#E24D42",
-                "DataLoss": "#E24D42",
-                "DeadlineExceeded": "#E24D42",
-                "FailedPrecondition": "#6ED0E0",
-                "Internal": "#E24D42",
-                "InvalidArgument": "#EF843C",
-                "NotFound": "#EF843C",
-                "OK": "#7EB26D",
-                "OutOfRange": "#E24D42",
-                "PermissionDenied": "#EF843C",
-                "ResourceExhausted": "#E24D42",
-                "Unauthenticated": "#EF843C",
-                "Unavailable": "#E24D42",
-                "Unimplemented": "#6ED0E0",
-                "Unknown": "#E24D42",
-                "error": "#E24D42"
+
               },
               "bars": false,
               "dashLength": 10,
@@ -1347,7 +1529,78 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "/Aborted/",
+                  "color": "#EAB839"
+                },
+                {
+                  "alias": "/AlreadyExists/",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "/FailedPrecondition/",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/Unimplemented/",
+                  "color": "#E0B400"
+                },
+                {
+                  "alias": "/InvalidArgument/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/NotFound/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/PermissionDenied/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/Unauthenticated/",
+                  "color": "#1F60C4"
+                },
+                {
+                  "alias": "/Canceled/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/DataLoss/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/DeadlineExceeded/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Internal/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/OutOfRange/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/ResourceExhausted/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Unavailable/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/Unknown/",
+                  "color": "#C4162A"
+                },
+                {
+                  "alias": "/OK/",
+                  "color": "#37872D"
+                },
+                {
+                  "alias": "error",
+                  "color": "#C4162A"
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -1355,10 +1608,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_server_handled_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, grpc_code)",
+                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{job}} {{grpc_method}} {{grpc_code}}",
+                  "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
                   "refId": "A",
                   "step": 10
                 }
@@ -1442,7 +1695,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) / sum(rate(grpc_server_started_total{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1521,7 +1774,24 @@ data:
               "points": false,
               "renderer": "flot",
               "seriesOverrides": [
-
+                {
+                  "alias": "p99",
+                  "color": "#FA6400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p90",
+                  "color": "#E0B400",
+                  "fill": 1,
+                  "fillGradient": 1
+                },
+                {
+                  "alias": "p50",
+                  "color": "#37872D",
+                  "fill": 10,
+                  "fillGradient": 0
+                }
               ],
               "spaceLength": 10,
               "span": 4,
@@ -1529,27 +1799,36 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P99 {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p50 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "sum(rate(grpc_server_handling_seconds_sum{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job) * 1\n/\nsum(rate(grpc_server_handling_seconds_count{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job)\n",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "mean {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p90 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.50, sum(rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\",job=~\"$job\",grpc_type=\"server_stream\"}[$interval])) by (job, grpc_method, le)) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "P50 {{job}} {{grpc_method}}",
-                  "legendLink": null,
+                  "legendFormat": "p99 {{namespace}} {{job}}",
+                  "logBase": 10,
+                  "max": null,
+                  "min": null,
+                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1686,7 +1965,7 @@ data:
               ],
               "targets": [
                 {
-                  "expr": "time() - max(thanos_objstore_bucket_last_successful_upload_time{namespace=\"$namespace\",job=~\"$job\"}) by (job, bucket)",
+                  "expr": "time() - max by (namespace, job, bucket) (thanos_objstore_bucket_last_successful_upload_time{namespace=\"$namespace\", job=\"$job\"})",
                   "format": "table",
                   "instant": true,
                   "intervalFactor": 2,
@@ -1786,50 +2065,50 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_memstats_alloc_bytes{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}",
+                  "expr": "go_memstats_alloc_bytes{namespace=\"$namespace\", job=\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "alloc all {{pod}}",
+                  "legendFormat": "alloc all {{instance}}",
                   "legendLink": null,
                   "step": 10
                 },
                 {
-                  "expr": "go_memstats_heap_alloc_bytes{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}",
+                  "expr": "go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "alloc heap {{pod}}",
+                  "legendFormat": "alloc heap {{instance}}",
                   "legendLink": null,
                   "step": 10
                 },
                 {
-                  "expr": "rate(go_memstats_alloc_bytes_total{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}[30s])",
+                  "expr": "rate(go_memstats_alloc_bytes_total{namespace=\"$namespace\", job=\"$job\"})[30s]",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "alloc rate all {{pod}}",
+                  "legendFormat": "alloc rate all {{instance}}",
                   "legendLink": null,
                   "step": 10
                 },
                 {
-                  "expr": "rate(go_memstats_heap_alloc_bytes{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}[30s])",
+                  "expr": "rate(go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=\"$job\"})[30s]",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "alloc rate heap {{pod}}",
+                  "legendFormat": "alloc rate heap {{instance}}",
                   "legendLink": null,
                   "step": 10
                 },
                 {
-                  "expr": "go_memstats_stack_inuse_bytes{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}",
+                  "expr": "go_memstats_stack_inuse_bytes{namespace=\"$namespace\", job=\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "inuse stack {{pod}}",
+                  "legendFormat": "inuse heap {{instance}}",
                   "legendLink": null,
                   "step": 10
                 },
                 {
-                  "expr": "go_memstats_heap_inuse_bytes{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}",
+                  "expr": "go_memstats_heap_inuse_bytes{namespace=\"$namespace\", job=\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "inuse heap {{pod}}",
+                  "legendFormat": "inuse stack {{instance}}",
                   "legendLink": null,
                   "step": 10
                 }
@@ -1912,10 +2191,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_goroutines{namespace=\"$namespace\",job=~\"$job\"}",
+                  "expr": "go_goroutines{namespace=\"$namespace\", job=\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{pod}}",
+                  "legendFormat": "{{instance}}",
                   "legendLink": null,
                   "step": 10
                 }
@@ -1998,10 +2277,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_gc_duration_seconds{namespace=\"$namespace\",job=~\"$job\",kubernetes_pod_name=~\"$pod\"}",
+                  "expr": "go_gc_duration_seconds{namespace=\"$namespace\", job=\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{quantile}} {{pod}}",
+                  "legendFormat": "{{quantile}} {{instance}}",
                   "legendLink": null,
                   "step": 10
                 }
@@ -2058,7 +2337,7 @@ data:
       "schemaVersion": 14,
       "style": "dark",
       "tags": [
-        "thanos-receive-controller-mixin",
+        "thanos-mixin",
         "observatorium"
       ],
       "templating": {
@@ -2080,86 +2359,6 @@ data:
             "type": "datasource"
           },
           {
-            "allValue": null,
-            "current": {
-
-            },
-            "datasource": "$datasource",
-            "hide": 0,
-            "includeAll": false,
-            "label": "namespace",
-            "multi": false,
-            "name": "namespace",
-            "options": [
-
-            ],
-            "query": "label_values(kube_pod_info{}, namespace)",
-            "refresh": 1,
-            "regex": "",
-            "sort": 2,
-            "tagValuesQuery": "",
-            "tags": [
-
-            ],
-            "tagsQuery": "",
-            "type": "query",
-            "useTags": false
-          },
-          {
-            "allValue": "observatorium-thanos-receive-default.*",
-            "current": {
-              "text": "all",
-              "value": "$__all"
-            },
-            "datasource": "$datasource",
-            "hide": 0,
-            "includeAll": true,
-            "label": "job",
-            "multi": false,
-            "name": "job",
-            "options": [
-
-            ],
-            "query": "label_values(up{namespace=\"$namespace\",job=~\"observatorium-thanos-receive-default.*\"}, job)",
-            "refresh": 1,
-            "regex": "",
-            "sort": 2,
-            "tagValuesQuery": "",
-            "tags": [
-
-            ],
-            "tagsQuery": "",
-            "type": "query",
-            "useTags": false
-          },
-          {
-            "allValue": ".*",
-            "current": {
-              "text": "all",
-              "value": "$__all"
-            },
-            "datasource": "$datasource",
-            "hide": 0,
-            "includeAll": true,
-            "label": "pod",
-            "multi": false,
-            "name": "pod",
-            "options": [
-
-            ],
-            "query": "label_values(kube_pod_info{namespace=\"$namespace\",created_by_name=~\"observatorium-thanos-receive-default.*\"}, pod)",
-            "refresh": 1,
-            "regex": "",
-            "sort": 2,
-            "tagValuesQuery": "",
-            "tags": [
-
-            ],
-            "tagsQuery": "",
-            "type": "query",
-            "useTags": false
-          },
-          {
             "auto": true,
             "auto_count": 300,
             "auto_min": "10s",
@@ -2173,6 +2372,59 @@ data:
             "query": "5m,10m,30m,1h,6h,12h",
             "refresh": 2,
             "type": "interval"
+          },
+          {
+            "allValue": null,
+            "current": {
+
+            },
+            "datasource": "$datasource",
+            "hide": 0,
+            "includeAll": false,
+            "label": "namespace",
+            "multi": false,
+            "name": "namespace",
+            "options": [
+
+            ],
+            "query": "label_values(thanos_status, namespace)",
+            "refresh": 1,
+            "regex": "",
+            "sort": 2,
+            "tagValuesQuery": "",
+            "tags": [
+
+            ],
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
+          },
+          {
+            "allValue": null,
+            "current": {
+              "text": "all",
+              "value": "$__all"
+            },
+            "datasource": "$datasource",
+            "hide": 0,
+            "includeAll": true,
+            "label": "job",
+            "multi": false,
+            "name": "job",
+            "options": [
+
+            ],
+            "query": "label_values(up{namespace=\"$namespace\", job=~\"observatorium-thanos-receive-default.*\"}, job)",
+            "refresh": 1,
+            "regex": "",
+            "sort": 2,
+            "tagValuesQuery": "",
+            "tags": [
+
+            ],
+            "tagsQuery": "",
+            "type": "query",
+            "useTags": false
           },
           {
             "auto": true,

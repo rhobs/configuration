@@ -2,52 +2,34 @@ local utils = (import 'github.com/grafana/jsonnet-libs/mixin-utils/utils.libsonn
 local thanos = (import '../services/observatorium.libsonnet').thanos;
 
 {
-  thanos: {
+  thanos: (import 'github.com/thanos-io/thanos/mixin/config.libsonnet') {
     local t = self,
-    _config+:: {
-      local cfg = self,
-      // TODO: Move this to the new style of selectors that kube-thanos uses
-      thanosReceiveSelector: t.receive.selector,
-      thanosReceiveControllerJobPrefix: thanos.receiveController.service.metadata.name,
-      thanosReceiveControllerSelector: 'job="%s"' % cfg.thanosReceiveControllerJobPrefix,
-    },
 
-    dashboard+:: {
-      tags: ['thanos-mixin'],
-      namespaceQuery: 'kube_pod_info',
+    targetGroups+:: {
+      namespace: 'thanos_status',
     },
     overview+:: {
       title: '%(prefix)sOverview' % t.dashboard.prefix,
     },
-    compact+:: {
-      local compact = self,
-      jobPrefix: thanos.compact.service.metadata.name,
-      selector: 'job="%s"' % compact.jobPrefix,
-      title: '%(prefix)sCompact' % t.dashboard.prefix,
-    },
     query+:: {
-      local query = self,
-      jobPrefix: thanos.query.service.metadata.name,
-      selector: 'job="%s"' % query.jobPrefix,
-      title: '%(prefix)sQuery' % t.dashboard.prefix,
-    },
-    receive+:: {
-      local receive = self,
-      jobPrefix: thanos.receivers.default.service.metadata.name,
-      selector: 'job=~"%s.*"' % receive.jobPrefix,
-      title: '%(prefix)sReceive' % t.dashboard.prefix,
+      selector: 'job="%s"' % thanos.query.config.name,
     },
     store+:: {
-      local store = self,
-      jobPrefix: 'observatorium-thanos-store',
-      selector: 'job=~"%s.*"' % store.jobPrefix,
-      title: '%(prefix)sStore' % t.dashboard.prefix,
+      selector: 'job=~"%s.*"' % thanos.stores.config.name,
+    },
+    receive+:: {
+      local hashrings = ['%s.*' % thanos.receivers[hashring].config.name for hashring in std.objectFields(thanos.receivers)],
+      selector: 'job=~"%s"' % std.join('|', hashrings),
+    },
+    receiveController+:: {
+      selector: 'job="%s"' % thanos.receiveController.config.name,
+      receiveSelector: t.receive.selector,
     },
     rule+:: {
-      local rule = self,
-      jobPrefix: thanos.rule.service.metadata.name,
-      selector: 'job="%s"' % rule.jobPrefix,
-      title: '%(prefix)sRule' % t.dashboard.prefix,
+      selector: 'job=~"%s.*"' % thanos.rule.config.name,
+    },
+    compact+:: {
+      selector: 'job="%s"' % thanos.compact.config.name,
     },
   },
 

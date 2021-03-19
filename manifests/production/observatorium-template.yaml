@@ -1834,7 +1834,7 @@ objects:
     observatorium.yaml: |-
       "groups":
       - "interval": "3m"
-        "name": "observatorium.rules"
+        "name": "observatorium"
         "rules":
         - "expr": |
             count by (name,reason) (cluster_operator_conditions{condition="Degraded"} == 1)

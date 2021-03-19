@@ -1,4 +1,4 @@
-local selectors = (import 'selectors.libsonnet');
+local config = (import 'config.libsonnet');
 
 local thanos =
   (import 'github.com/thanos-io/thanos/mixin/dashboards/query.libsonnet') +
@@ -9,7 +9,7 @@ local thanos =
   (import 'github.com/thanos-io/thanos/mixin/dashboards/overview.libsonnet') +
   (import 'github.com/thanos-io/thanos/mixin/dashboards/defaults.libsonnet') +
   (import 'github.com/observatorium/thanos-receive-controller/jsonnet/thanos-receive-controller-mixin/mixin.libsonnet') +
-  selectors.thanos;
+  config.thanos;
 
 local jaeger = (import 'github.com/jaegertracing/jaeger/monitoring/jaeger-mixin/mixin.libsonnet');
 local memcached = (import 'github.com/grafana/jsonnet-libs/memcached-mixin/mixin.libsonnet');

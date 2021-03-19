@@ -118,7 +118,7 @@
           "subdir": "mixin"
         }
       },
-      "version": "master",
+      "version": "main",
       "name": "thanos-mixin"
     }
   ],

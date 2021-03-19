@@ -123,7 +123,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         data: {
           [observatoriumRulesKey]: std.manifestYamlDoc({
             groups: [{
-              name: 'observatorium.rules',  // TODO(kakkoyun): Drop .rules suffix.
+              name: 'observatorium',
               interval: '3m',
               rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
             }],
@@ -398,13 +398,15 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
     // For now, just use an in-memory cache.
     queryFrontendCache:: {},
 
-    local hashrings = [{
-      hashring: 'default',
-      tenants: [],
-    }],
+    local hashrings = [
+      {
+        hashring: 'default',
+        tenants: [],
+      },
+    ],
 
     receivers:: t.receiveHashrings(thanosSharedConfig {
-      hashrings: thanos.config.hashrings,
+      hashrings: hashrings,
       name: 'observatorium-thanos-receive',
       namespace: '${NAMESPACE}',
       commonLabels+:: {
@@ -437,7 +439,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           },
         },
       },
-      // hashringConfigMapName: 'observatorium-thanos-receive-controller-tenants-generated',
       hashringConfigMapName: '%s-generated' % thanos.receiveController.configmap.metadata.name,
       logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
     }),

@@ -82,7 +82,7 @@ data:
               "timeShift": null,
               "title": "span creation rate",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -168,7 +168,7 @@ data:
               "timeShift": null,
               "title": "% spans dropped",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -275,7 +275,7 @@ data:
               "timeShift": null,
               "title": "batch ingest rate",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -361,7 +361,7 @@ data:
               "timeShift": null,
               "title": "% batches dropped",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -468,7 +468,7 @@ data:
               "timeShift": null,
               "title": "span ingest rate",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -554,7 +554,7 @@ data:
               "timeShift": null,
               "title": "% spans dropped",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -652,7 +652,7 @@ data:
               "timeShift": null,
               "title": "span queue length",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -738,7 +738,7 @@ data:
               "timeShift": null,
               "title": "span queue time - 95 percentile",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -845,7 +845,7 @@ data:
               "timeShift": null,
               "title": "qps",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },
@@ -931,7 +931,7 @@ data:
               "timeShift": null,
               "title": "latency - 99 percentile",
               "tooltip": {
-                "shared": true,
+                "shared": false,
                 "sort": 0,
                 "value_type": "individual"
               },

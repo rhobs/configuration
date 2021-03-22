@@ -31,12 +31,20 @@ validate:
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
 	$(MAKE) clean
+	yes | cp -r observability/prometheus_rule_tests/* resources/observability/prometheusrules/
 
 resources/observability/prometheusrules: format observability/prometheusrules.jsonnet $(JSONNET) $(GOJSONTOYAML)
 	@echo ">>>>> Running prometheusrules"
 	rm -f resources/observability/prometheusrules/*.yaml
 	$(JSONNET) -J vendor -m resources/observability/prometheusrules observability/prometheusrules.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/prometheusrules/*.yaml | $(XARGS) -I{} sh -c '$(SED) -i "1s;^;---\n\$$schema: /openshift/prometheus-rule-1.yml\n;" {}'
+
+.PHONY: test-rules
+test-rules: prometheusrules $(PROMTOOL) $(YQ) $(wildcard observability/prometheus_rule_tests/*.prometheusrulestests.yaml) $(wildcard resources/observability/prometheusrules/*.prometheusrules.yaml)
+	find resources/observability/prometheusrules/ -type f -name *.prometheusrules.yaml | $(XARGS) -I{} sh -c 'cat {} | $(YQ) e ".spec" - > {}.test' -- {}
+	$(PROMTOOL) check rules `find resources/observability/prometheusrules/ -type f -name *.test`
+	$(PROMTOOL) test rules `find resources/observability/prometheusrules/ -type f -name *.prometheusrulestests.yaml`
+	find resources/observability/prometheusrules -type f -name '*.test' -delete
 
 .PHONY: grafana
 grafana: manifests/production/grafana/observatorium manifests/production/grafana/observatorium-logs/grafana-dashboards-template.yaml

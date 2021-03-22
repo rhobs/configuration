@@ -1,0 +1,59 @@
+---
+$schema: /app-interface/prometheus-rule-test-1.yml
+
+rule_files:
+# For upstream:
+- /observability/prometheusrules/observatorium-custom-metrics-stage.prometheusrules.yaml
+# - /observability/prometheusrules/observatorium-custom-metrics-production.prometheusrules.yaml
+# For local testing:
+# - observatorium-custom-metrics-production.prometheusrules.yaml.test
+
+evaluation_interval: 1m
+
+tests:
+- interval: 1m
+  input_series:
+  - series: thanos_rule_loaded_rules{namespace="observatorium-metrics", job="observatorium-thanos-rule"}
+    values: '12 12 0 0 0 0 0 0 0 0 0'
+  promql_expr_test:
+    - expr: thanos_rule_loaded_rules{job="observatorium-thanos-rule"}
+      eval_time: 1m
+      exp_samples:
+        - labels: '{__name__="thanos_rule_loaded_rules", namespace="observatorium-metrics", job="observatorium-thanos-rule"}'
+          value: 12
+    - expr: thanos_rule_loaded_rules{job="observatorium-thanos-rule"}
+      eval_time: 5m
+      exp_samples:
+        - labels: '{__name__="thanos_rule_loaded_rules", namespace="observatorium-metrics", job="observatorium-thanos-rule"}'
+          value: 0
+    - expr: sum(thanos_rule_loaded_rules{job="observatorium-thanos-rule"})
+      eval_time: 1m
+      exp_samples:
+        - labels: '{}'
+          value: 12
+    - expr: sum(thanos_rule_loaded_rules{job="observatorium-thanos-rule"})
+      eval_time: 5m
+      exp_samples:
+        - labels: '{}'
+          value: 0
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: ObservatoriumNoRulesLoaded
+  - eval_time: 4m
+    alertname: ObservatoriumNoRulesLoaded
+  - eval_time: 5m
+    alertname: ObservatoriumNoRulesLoaded
+  - eval_time: 10m
+    alertname: ObservatoriumNoRulesLoaded
+    exp_alerts:
+    - exp_labels:
+        service: telemeter
+        severity: critical
+        job: observatorium-thanos-rule
+        namespace: observatorium-metrics
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-metrics?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-metrics&var-job=All&var-pod=All&var-interval=5m
+        description: Observatorium Thanos Ruler observatorium-metrics/observatorium-thanos-rule has not any rules loaded.
+        message: Observatorium Thanos Ruler observatorium-metrics/observatorium-thanos-rule has not any rules loaded.
+        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumnorulesloaded
+        summary: Observatorium Thanos Ruler has not any rule to evaluate. This should not have happened. Check out the configuration.

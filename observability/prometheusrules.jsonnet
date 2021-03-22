@@ -478,7 +478,6 @@ local renderAlerts(name, environment, mixin) = {
           name: 'observatorium-metrics',
           rules: [
             {
-
               alert: 'ObservatoriumNoRulesLoaded',
               annotations: {
                 description: 'Observatorium Thanos Ruler {{$labels.namespace}}/{{$labels.job}} has not any rules loaded.',

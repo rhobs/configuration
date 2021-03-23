@@ -603,15 +603,15 @@ spec:
     - alert: ThanosNoRuleEvaluations
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        description: Thanos Rule {{$labels.instance}} in {{$labels.namespace}}did not perform any rule evaluations in the past 2 minutes.
-        message: Thanos Rule {{$labels.instance}} in {{$labels.namespace}}did not perform any rule evaluations in the past 2 minutes.
+        description: Thanos Rule {{$labels.instance}} in {{$labels.namespace}}did not perform any rule evaluations in the past 10 minutes.
+        message: Thanos Rule {{$labels.instance}} in {{$labels.namespace}}did not perform any rule evaluations in the past 10 minutes.
         runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#thanosnoruleevaluations
         summary: Thanos Rule did not perform any rule evaluations.
       expr: |
-        sum by (namespace, job, instance) (rate(prometheus_rule_evaluations_total{job=~"observatorium-thanos-rule.*"}[2m])) <= 0
+        sum by (namespace, job, instance) (rate(prometheus_rule_evaluations_total{job=~"observatorium-thanos-rule.*"}[5m])) <= 0
           and
         sum by (namespace, job, instance) (thanos_rule_loaded_rules{job=~"observatorium-thanos-rule.*"}) > 0
-      for: 3m
+      for: 5m
       labels:
         service: telemeter
         severity: high

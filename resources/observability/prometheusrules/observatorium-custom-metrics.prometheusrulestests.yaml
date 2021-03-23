@@ -1,12 +1,12 @@
 ---
-# $schema: /app-interface/prometheus-rule-test-1.yml
+$schema: /app-interface/prometheus-rule-test-1.yml
 
 rule_files:
 # For upstream:
-# - /observability/prometheusrules/observatorium-custom-metrics-stage.prometheusrules.yaml
+- /observability/prometheusrules/observatorium-custom-metrics-stage.prometheusrules.yaml
 # - /observability/prometheusrules/observatorium-custom-metrics-production.prometheusrules.yaml
 # For local testing:
-- observatorium-custom-metrics-production.prometheusrules.yaml.test
+# - observatorium-custom-metrics-production.prometheusrules.yaml.test
 
 evaluation_interval: 1m
 

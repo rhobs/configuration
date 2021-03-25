@@ -1845,7 +1845,7 @@ function(datasource, namespace) {
               ],
               query: 'label_values(kube_pod_info, namespace)',
               refresh: 1,
-              regex: '^telemeter.*',
+              regex: '^telemeter.*|observatorium-.*',
               skipUrlSync: false,
               sort: 2,
               tagValuesQuery: '',

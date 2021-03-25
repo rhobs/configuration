@@ -203,7 +203,7 @@ objects:
             "tableColumn": "",
             "targets": [
               {
-                "expr": "sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\",group=\"logsv1\",handler=\"query\",le=\"3\",code!~\"5..\"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-api\",group=\"logsv1\",handler=\"query\"}[28d]))",
+                "expr": "sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\",group=\"logsv1\",handler=\"query\",le=\"5\",code!~\"5..\"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-api\",group=\"logsv1\",handler=\"query\"}[28d]))",
                 "instant": true,
                 "refId": "A"
               }
@@ -211,7 +211,7 @@ objects:
             "thresholds": "0.99,0.992",
             "timeFrom": null,
             "timeShift": null,
-            "title": "Availability 3s [28d] > 99%",
+            "title": "Availability 5s [28d] > 99%",
             "type": "singlestat",
             "valueFontSize": "120%",
             "valueMaps": [

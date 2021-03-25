@@ -167,7 +167,9 @@ local appSREOverwrites(environment) = {
           std.objectHas(r, 'alert') && (
             r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh' ||
             r.alert == 'ThanosQueryRangeLatencyHigh' ||
-            r.alert == 'ThanosStoreSeriesGateLatencyHigh'
+            r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
+            r.alert == 'ThanosSidecarIsDown' ||
+            r.alert == 'ThanosBucketReplicateIsDown'
           )
         ),
         super.rules,

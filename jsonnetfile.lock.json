@@ -172,8 +172,8 @@
           "subdir": "mixin"
         }
       },
-      "version": "797ec32c4fb02113247c3b20e057fd4ab2a0c38f",
-      "sum": "q7dPq3HaJxtmZ/9Rp1x1gKmQdc2sV6K1EHnS+uuTOvk=",
+      "version": "05cda87a5a372b93a13d2b6451d3f408f4157499",
+      "sum": "+u4Hz6NxReYhqNvYevcq97Vvb6MIWPzL5r6yfyz984M=",
       "name": "thanos-mixin"
     }
   ],

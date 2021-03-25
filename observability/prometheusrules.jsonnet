@@ -165,9 +165,11 @@ local appSREOverwrites(environment) = {
       rules: std.filter(
         function(r) !(
           std.objectHas(r, 'alert') && (
+            // Using multi-burnrate SLO alerts for these.
             r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh' ||
             r.alert == 'ThanosQueryRangeLatencyHigh' ||
             r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
+            // These components arent' deployed.
             r.alert == 'ThanosSidecarIsDown' ||
             r.alert == 'ThanosBucketReplicateIsDown'
           )

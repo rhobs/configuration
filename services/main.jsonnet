@@ -478,7 +478,7 @@ local observatorium =
         { name: 'GUBERNATOR_MEMORY_REQUEST', value: '100Mi' },
         { name: 'GUBERNATOR_MEMORY_LIMIT', value: '200Mi' },
         { name: 'OBSERVATORIUM_API_IMAGE', value: 'quay.io/observatorium/observatorium' },
-        { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'master-2020-11-02-v0.1.1-192-ge324057' },
+        { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'master-2021-03-26-v0.1.1-200-gea0242a' },
         { name: 'OBSERVATORIUM_API_REPLICAS', value: '3' },
         { name: 'OBSERVATORIUM_API_CPU_REQUEST', value: '100m' },
         { name: 'OBSERVATORIUM_API_CPU_LIMIT', value: '1' },

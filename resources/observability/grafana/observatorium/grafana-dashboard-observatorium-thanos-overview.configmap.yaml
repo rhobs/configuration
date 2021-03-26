@@ -88,7 +88,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -181,7 +180,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -413,7 +411,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -506,7 +503,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -790,7 +786,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -883,7 +878,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1115,7 +1109,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1208,7 +1201,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1514,7 +1506,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
-                  "refId": "A",
                   "step": 10
                 }
               ],
@@ -1820,7 +1811,6 @@ data:
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
-                  "refId": "A",
                   "step": 10
                 }
               ],

@@ -47,24 +47,14 @@ test-rules: prometheusrules $(PROMTOOL) $(YQ) $(wildcard observability/prometheu
 	find resources/observability/prometheusrules -type f -name '*.test' -delete
 
 .PHONY: grafana
-grafana: manifests/production/grafana/observatorium manifests/production/grafana/observatorium-logs/grafana-dashboards-template.yaml
 grafana: resources/observability/grafana/observatorium resources/observability/grafana/observatorium-logs/grafana-dashboards-template.yaml $(VENDOR_DIR)
 	$(MAKE) clean
 
-manifests/production/grafana/observatorium: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running grafana"
-	rm -f manifests/production/grafana/observatorium/*.yaml
-	$(JSONNET) -J vendor -m manifests/production/grafana/observatorium observability/grafana.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 resources/observability/grafana/observatorium: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
 	rm -f resources/observability/grafana/observatorium/*.yaml
 	$(JSONNET) -J vendor -m resources/observability/grafana/observatorium observability/grafana.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-
-manifests/production/grafana/observatorium-logs/grafana-dashboards-template.yaml: format observability/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running grafana observatorium-logs"
-	rm -f manifests/production/grafana/observatorium-logs/*.yaml
-	$(JSONNET) -J vendor observability/grafana-obs-logs.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/observability/grafana/observatorium-logs/grafana-dashboards-template.yaml: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running grafana"
@@ -88,16 +78,9 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 
 .PHONY: manifests
 manifests: format $(VENDOR_DIR)
-manifests: manifests/production/conprof-template.yaml manifests/production/jaeger-template.yaml manifests/production/observatorium-template.yaml
 manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/conprof-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml
 	$(MAKE) clean
-
-manifests/production/conprof-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-manifests/production/conprof-template.yaml: $(wildcard services/conprof-*)
-	@echo ">>>>> Running conprof-template"
-	$(JSONNET) -J vendor -m manifests/production services/conprof-template.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
-	$(JSONNET) -J vendor -m resources/services services/conprof-template.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 resources/services/conprof-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 resources/services/conprof-template.yaml: $(wildcard services/conprof-*)
@@ -107,15 +90,6 @@ resources/services/conprof-template.yaml: $(wildcard services/conprof-*)
 resources/services/jaeger-template.yaml: $(wildcard services/jaeger-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"
 	$(JSONNET) -J vendor services/jaeger-template.jsonnet | $(GOJSONTOYAML) > $@
-
-manifests/production/jaeger-template.yaml: $(wildcard services/jaeger-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running jaeger-template"
-	$(JSONNET) -J vendor services/jaeger-template.jsonnet | $(GOJSONTOYAML) > $@
-
-# TODO(kakkoyun): Remove after CI/CD job migration.
-manifests/production/observatorium-template.yaml: $(wildcard services/*.libsonnet services/*.jsonnet) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running observatorium templates"
-	$(JSONNET) -J vendor -m manifests/production services/main.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 resources/services/telemeter-template.yaml: $(wildcard services/telemeter-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running telemeter templates"
@@ -135,7 +109,6 @@ resources/services/observatorium-logs-template.yaml: $(wildcard services/observa
 
 .PHONY: clean
 clean:
-	find manifests/production -type f ! -name '*.yaml' -delete
 	find resources/services -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete

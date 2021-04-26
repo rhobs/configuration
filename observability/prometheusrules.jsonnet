@@ -124,7 +124,7 @@ local appSREOverwrites(environment) = {
               } +
               if std.length(std.findSubstr('Logs', r.alert)) > 0 then
                 {
-                  runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+                  runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s' % [
                     dashboardID('loki').id,
                     dashboardDatasource(environment).datasource,
@@ -132,7 +132,7 @@ local appSREOverwrites(environment) = {
                 }
               else if std.startsWith(g.name, 'telemeter') then
                 {
-                  runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
+                  runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [
                     dashboardID(g.name).id,
                     dashboardDatasource(environment).datasource,
@@ -140,7 +140,7 @@ local appSREOverwrites(environment) = {
                 }
               else
                 {
-                  runbook: 'https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+                  runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
                     dashboardID(g.name).id,
                     g.name,

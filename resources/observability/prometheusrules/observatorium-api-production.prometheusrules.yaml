@@ -71,7 +71,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (14.40 * (1-0.99000))
         and
@@ -86,7 +86,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (6.00 * (1-0.99000))
         and
@@ -101,7 +101,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (3.00 * (1-0.99000))
         and
@@ -116,7 +116,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}) > (1.00 * (1-0.99000))
         and
@@ -189,7 +189,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (14.40 * (1-0.95000))
         and
@@ -204,7 +204,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (6.00 * (1-0.95000))
         and
@@ -219,7 +219,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (3.00 * (1-0.95000))
         and
@@ -234,7 +234,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=~query|query_legacy,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="metricsv1",handler=~"query|query_legacy",job="observatorium-observatorium-api"}) > (1.00 * (1-0.95000))
         and
@@ -307,7 +307,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
         and
@@ -322,7 +322,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
         and
@@ -337,7 +337,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
         and
@@ -352,7 +352,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-query-range-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High error budget burn for group=metricsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
         and
@@ -425,7 +425,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
         and
@@ -440,7 +440,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
         and
@@ -455,7 +455,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
         and
@@ -470,7 +470,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=push,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="logsv1",handler="push",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
         and
@@ -543,7 +543,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=~query|label|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
         and
@@ -558,7 +558,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=~query|label|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
         and
@@ -573,7 +573,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=~query|label|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
         and
@@ -588,7 +588,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=~query|label|labels|label_values,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
         and
@@ -661,7 +661,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
         and
@@ -676,7 +676,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
         and
@@ -691,7 +691,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
         and
@@ -706,7 +706,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=query_range,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="logsv1",handler="query_range",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
         and
@@ -779,7 +779,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate5m{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (14.40 * (1-0.90000))
         and
@@ -794,7 +794,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate30m{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (6.00 * (1-0.90000))
         and
@@ -809,7 +809,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate2h{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (3.00 * (1-0.90000))
         and
@@ -824,7 +824,7 @@ spec:
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/api-logs?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
         message: 'High error budget burn for group=logsv1,handler=tail|prom_tail,job=observatorium-observatorium-api (current value: {{ $value }})'
-        runbook: https://gitlab.cee.redhat.com/observatorium/configuration/blob/master/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapilogserrorsslobudgetburn
       expr: |
         sum(http_requests_total:burnrate6h{group="logsv1",handler="tail|prom_tail",job="observatorium-observatorium-api"}) > (1.00 * (1-0.90000))
         and

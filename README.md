@@ -1,24 +1,25 @@
-# observatorium/configuration
+# Red Hat Observability Service
 
-This projects holds all the configuration files for our internal Observatorium deployments.
+This project holds the configuration files for our internal Red Hat Observability Service based using [Observatorium](https://github.com/observatorium/observatorium).
 
 ## Installing jsonnet dependencies
 
 To install all dependencies:
 
 ```console
+# Installs pinned versions from `jsonnetfile.lock.json` file.
+
 jb install
-#installs pinned versions from `jsonnetfile.lock.json` file.
 ```
 
 To update a dependency:
 
 ```console
+# Updates `kube-thanos` to master and sets the new hash in `jsonnetfile.lock.json`.
 jb update https://github.com/thanos-io/kube-thanos
-#updates `kube-thanos` to master and sets the new hash in `jsonnetfile.lock.json`.
 
+# Update all dependancies to master and sets the new hashes in `jsonnetfile.lock.json`.
 jb update
-#updates all dependancies to master and sets the new hashes in `jsonnetfile.lock.json`.
 ```
 
 ## Grafana dashboards
@@ -29,9 +30,9 @@ All dashboards are generated in `resources/observability/grafana` (legacy: `mani
 make grafana
 ```
 
-**Staging**: deploys on every commit master.
+**Staging**: Update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
 
-**Production**: update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
+**Production**: Update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
 
 ## Prometheus Rules
 
@@ -45,7 +46,7 @@ All components manifests are generated in `resources/services` (legacy: `manifes
 make manifests
 ```
 
-**Staging**: deploys on every commit master.
+**Staging**: update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml)
 
 **Production**: update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/telemeter/cicd/saas.yaml)
 
@@ -61,7 +62,5 @@ and
 
 ## Troubleshooting
 
-1. Enable port forwarding for a user - [example](
-https://gitlab.cee.redhat.com/service/app-interface/-/blob/ee91aac666ee39a273332c59ad4bdf7e0f50eeba/data/teams/telemeter/users/fbranczy.yml#L14)
-2. Add a pod name to the allowed list for port forwarding - [example](
-https://gitlab.cee.redhat.com/service/app-interface/-/blob/ee91aac666ee39a273332c59ad4bdf7e0f50eeba/resources/app-sre/telemeter-production/observatorium-allow-port-forward.role.yaml#L10)
+1. Enable port forwarding for a user - [example](https://gitlab.cee.redhat.com/service/app-interface/-/blob/ee91aac666ee39a273332c59ad4bdf7e0f50eeba/data/teams/telemeter/users/fbranczy.yml#L14)
+2. Add a pod name to the allowed list for port forwarding - [example](https://gitlab.cee.redhat.com/service/app-interface/-/blob/ee91aac666ee39a273332c59ad4bdf7e0f50eeba/resources/app-sre/telemeter-production/observatorium-allow-port-forward.role.yaml#L10)

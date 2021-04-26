@@ -1,6 +1,6 @@
 # Red Hat Observability Service
 
-This project holds the configuration files for our internal Red Hat Observability Service based using [Observatorium](https://github.com/observatorium/observatorium).
+This project holds the configuration files for our internal Red Hat Observability Service based on [Observatorium](https://github.com/observatorium/observatorium).
 
 ## Installing jsonnet dependencies
 

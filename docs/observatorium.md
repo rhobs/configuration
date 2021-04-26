@@ -25,7 +25,7 @@ Observatorium logs implements a logging solution to allow multiple instances of 
 
 | Resource | Location |
 |---|---|
-| API | https://github.com/observatorium/observatorium |
+| API | https://github.com/observatorium/api |
 | API OPA-AMS | https://github.com/observatorium/opa-ams |
 | Config | https://github.com/observatorium/configuration |
 | Upstream config | https://github.com/observatorium/deployments |

@@ -1,5 +1,5 @@
 // TODO(kakkoyun): Remove after CI/CD job migration.
-local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
+local api = (import 'github.com/observatorium/api/jsonnet/lib/observatorium-api.libsonnet');
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
 
@@ -477,7 +477,7 @@ local observatorium =
         { name: 'GUBERNATOR_CPU_LIMIT', value: '200m' },
         { name: 'GUBERNATOR_MEMORY_REQUEST', value: '100Mi' },
         { name: 'GUBERNATOR_MEMORY_LIMIT', value: '200Mi' },
-        { name: 'OBSERVATORIUM_API_IMAGE', value: 'quay.io/observatorium/observatorium' },
+        { name: 'OBSERVATORIUM_API_IMAGE', value: 'quay.io/observatorium/api' },
         { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'master-2021-03-26-v0.1.1-200-gea0242a' },
         { name: 'OBSERVATORIUM_API_REPLICAS', value: '3' },
         { name: 'OBSERVATORIUM_API_CPU_REQUEST', value: '100m' },

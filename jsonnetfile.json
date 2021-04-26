@@ -67,12 +67,12 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/observatorium.git",
+          "remote": "https://github.com/observatorium/api.git",
           "subdir": "jsonnet/lib"
         }
       },
       "version": "master",
-      "name": "observatorium"
+      "name": "observatorium-api"
     },
     {
       "source": {

@@ -1,4 +1,4 @@
-local api = (import 'github.com/observatorium/observatorium/jsonnet/lib/observatorium-api.libsonnet');
+local api = (import 'github.com/observatorium/api/jsonnet/lib/observatorium-api.libsonnet');
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
 local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');

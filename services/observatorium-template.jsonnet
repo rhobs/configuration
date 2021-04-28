@@ -59,7 +59,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OBSERVATORIUM_API_MEMORY_LIMIT', value: '1Gi' },
     { name: 'OBSERVATORIUM_API_MEMORY_REQUEST', value: '256Mi' },
     { name: 'OBSERVATORIUM_API_REPLICAS', value: '3' },
-    { name: 'OBSERVATORIUM_API_PER_POD_CONCURRENT_REQUETST_LIMIT', value: '50' },
     { name: 'OPA_AMS_CPU_LIMIT', value: '200m' },
     { name: 'OPA_AMS_CPU_REQUEST', value: '100m' },
     { name: 'OPA_AMS_IMAGE_TAG', value: 'master-2021-02-17-ed50046' },

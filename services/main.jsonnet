@@ -484,8 +484,6 @@ local observatorium =
         { name: 'OBSERVATORIUM_API_CPU_LIMIT', value: '1' },
         { name: 'OBSERVATORIUM_API_MEMORY_REQUEST', value: '256Mi' },
         { name: 'OBSERVATORIUM_API_MEMORY_LIMIT', value: '1Gi' },
-        { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'master-2021-03-29-v0.1.1-201-gd40a037' },
-        { name: 'OBSERVATORIUM_API_PER_POD_CONCURRENT_REQUETST_LIMIT', value: '50' },
         { name: 'AMS_URL', value: '' },
         { name: 'OPA_AMS_IMAGE', value: 'quay.io/observatorium/opa-ams' },
         { name: 'OPA_AMS_IMAGE_TAG', value: 'master-2021-02-17-ed50046' },

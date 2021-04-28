@@ -1,4 +1,4 @@
-local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
+local memcached = (import 'github.com/observatorium/observatorium/deployments/components/memcached.libsonnet');
 
 // These are the defaults for this components configuration.
 // When calling the function to generate the component's manifest,

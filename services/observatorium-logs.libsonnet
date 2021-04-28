@@ -1,4 +1,4 @@
-local loki = (import 'github.com/observatorium/deployments/components/loki.libsonnet');
+local loki = (import 'github.com/observatorium/observatorium/deployments/components/loki.libsonnet');
 local lokiCaches = (import 'components/loki-caches.libsonnet');
 
 {

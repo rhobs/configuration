@@ -110,6 +110,7 @@ objects:
           - --tenants.config=/etc/observatorium/tenants.yaml
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
           - --internal.tracing.endpoint=localhost:6831
+          - --middleware.concurrent-request-limit=${OBSERVATORIUM_API_PER_POD_CONCURRENT_REQUETST_LIMIT}
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -853,6 +854,8 @@ parameters:
   value: 256Mi
 - name: OBSERVATORIUM_API_REPLICAS
   value: "3"
+- name: OBSERVATORIUM_API_PER_POD_CONCURRENT_REQUETST_LIMIT
+  value: "50"
 - name: OPA_AMS_CPU_LIMIT
   value: 200m
 - name: OPA_AMS_CPU_REQUEST

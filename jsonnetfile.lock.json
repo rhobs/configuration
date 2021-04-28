@@ -106,23 +106,12 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/deployments.git",
-          "subdir": ""
-        }
-      },
-      "version": "d60a4ab46b795cabe99d3ea88df5e3ba68911551",
-      "sum": "zS8CdDvM/JZ7u6IMaLIZnQN3CcdrZqfiZECSPyFe5ho="
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/observatorium/observatorium.git",
-          "subdir": "jsonnet/lib"
+          "subdir": "deployments"
         }
       },
-      "version": "0164651421f2d1b77db703bbeea501cb5b7a10cc",
-      "sum": "Z86CgnoTybhpdQKWc2ptURmps1d9Qxhec0/IK6v71kY=",
-      "name": "observatorium"
+      "version": "a66067042c0ba6e4c1e22d2ca41ee99db03dbd99",
+      "sum": "55nGPXNJbMftYxC69VlWiRpvDTtvMJMI/xGx3iaQCCQ="
     },
     {
       "source": {

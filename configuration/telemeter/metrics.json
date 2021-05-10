@@ -1,6 +1,7 @@
 [
   "{__name__=\":apiserver_v1_image_imports:sum\"}",
   "{__name__=\"ALERTS\",alertstate=\"firing\"}",
+  "{__name__=\"acm_managed_cluster_info\"}",
   "{__name__=\"cam_app_workload_migrations\"}",
   "{__name__=\"cco_credentials_mode\"}",
   "{__name__=\"ceph_cluster_total_bytes\"}",

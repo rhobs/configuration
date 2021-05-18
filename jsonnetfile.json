@@ -58,11 +58,11 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/deployments.git",
-          "subdir": ""
+          "remote": "https://github.com/observatorium/observatorium.git",
+          "subdir": "configuration"
         }
       },
-      "version": "master"
+      "version": "main"
     },
     {
       "source": {

@@ -1,9 +1,9 @@
 local api = (import 'github.com/observatorium/api/jsonnet/lib/observatorium-api.libsonnet');
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
-local gubernator = (import 'github.com/observatorium/deployments/components/gubernator.libsonnet');
-local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
+local gubernator = (import 'github.com/observatorium/observatorium/configuration/components/gubernator.libsonnet');
+local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 
-(import 'github.com/observatorium/deployments/components/observatorium.libsonnet') +
+(import 'github.com/observatorium/observatorium/configuration/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
 (import 'observatorium-metrics-template-overwrites.libsonnet') +
 (import 'observatorium-logs.libsonnet') +

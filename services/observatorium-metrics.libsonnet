@@ -1,6 +1,6 @@
 local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet');
 local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
-local memcached = (import 'github.com/observatorium/deployments/components/memcached.libsonnet');
+local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 
 {
@@ -416,7 +416,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       replicationFactor: 3,
       retention: '4d',
-      replicaLabels: thanos.config.replicaLabels,
+      replicaLabels: thanosSharedConfig.replicaLabels,
       debug: '${THANOS_RECEIVE_DEBUG_ENV}',
       resources: {
         requests: {

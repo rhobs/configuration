@@ -8,6 +8,7 @@
     - [LokiRequestErrors](#lokirequesterrors)
     - [LokiRequestPanics](#lokirequestpanics)
     - [LokiRequestLatency](#lokirequestlatency)
+    - [LokiTenantRateLimitWarning](#lokitenantratelimitwarning)
     - [ObservatoriumAPILogsErrorsSLOBudgetBurn](#observatoriumapilogserrorsslobudgetburn)
 - Observatorium Metrics
     - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
@@ -165,6 +166,25 @@ Loki components are slower than expected to conduct queries or process ingested 
 - Inspect the metrics for the api [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m)
 - Inspect the metrics for the Loki query-frontend/querier
 - Inspect the metrics for the Loki distributor/ingester
+
+## LokiTenantRateLimitWarning
+
+### Impact
+
+For users this means the service as applying back-pressure on the log ingestion clients by returning 429 status codes.
+
+### Summary
+
+Loki components are behaving normal and as expected.
+
+### Severity
+
+`medium`
+
+### Steps
+
+- Inspect the tenant ID for the ingester [limits](https://grafana.app-sre.devshift.net/d/f6fe30815b172c9da7e813c15ddfe607/loki-operational?orgId=1&refresh=30s&var-logs=&var-metrics=telemeter-prod-01-prometheus&var-namespace=observatorium-logs-production&from=now-1h&to=now) panel.
+- Contact the tenant administrator to adapt the client configuration.
 
 ## ObservatoriumAPILogsErrorsSLOBudgetBurn
 

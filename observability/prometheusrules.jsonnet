@@ -1,5 +1,6 @@
 local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet');
 local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
+local lokiTenants = import './observatorium-logs/loki-tenant-alerts.libsonnet';
 local obs = import '../services/observatorium.libsonnet';
 
 local config = (import 'config.libsonnet') {
@@ -462,8 +463,13 @@ local renderAlerts(name, environment, mixin) = {
 {
   'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', loki),
 
-  'observatorium-logs-stage.prometheusrules': renderAlerts('observatorium-logs-stage', 'stage', loki),
-  'observatorium-logs-production.prometheusrules': renderAlerts('observatorium-logs-production', 'production', loki),
+  local obsLogsStageEnv = 'observatorium-logs-stage',
+  local obsLogsStage = loki + lokiTenants(obsLogsStageEnv),
+  'observatorium-logs-stage.prometheusrules': renderAlerts(obsLogsStageEnv, 'stage', obsLogsStage),
+
+  local obsLogsProdEnv = 'observatorium-logs-production',
+  local obsLogsProd = loki + lokiTenants(obsLogsStageEnv),
+  'observatorium-logs-production.prometheusrules': renderAlerts(obsLogsProdEnv, 'production', obsLogsProd),
 }
 
 {

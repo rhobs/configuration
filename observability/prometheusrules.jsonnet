@@ -76,6 +76,8 @@ local appSREOverwrites(environment) = {
       else if
         std.startsWith(name, 'telemeter') then 'Tg-mH0rizaSJDKSADJ'
       else if
+        std.startsWith(name, 'loki_tenant') then 'f6fe30815b172c9da7e813c15ddfe607'
+      else if
         std.startsWith(name, 'loki') then 'Lg-mH0rizaSJDKSADX'
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
@@ -102,7 +104,7 @@ local appSREOverwrites(environment) = {
   local setServiceLabel = function(alertName) {
     label:
       if std.length(std.findSubstr('Logs', alertName)) > 0 || std.length(std.findSubstr('Loki', alertName)) > 0
-      then 'obervatorium-logs'
+      then 'observatorium-logs'
       else 'telemeter',
   },
 
@@ -126,7 +128,7 @@ local appSREOverwrites(environment) = {
               if std.length(std.findSubstr('Logs', r.alert)) > 0 then
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s' % [
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s&var-namespace={{$labels.namespace}}' % [
                     dashboardID('loki').id,
                     dashboardDatasource(environment).datasource,
                   ],
@@ -136,6 +138,15 @@ local appSREOverwrites(environment) = {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [
                     dashboardID(g.name).id,
+                    dashboardDatasource(environment).datasource,
+                  ],
+                }
+              else if std.startsWith(g.name, 'loki_tenant') then
+                {
+                  runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-metrics=%s&var-namespace={{$labels.namespace}}' % [
+                    dashboardID(g.name).id,
+                    g.name,
                     dashboardDatasource(environment).datasource,
                   ],
                 }
@@ -468,7 +479,7 @@ local renderAlerts(name, environment, mixin) = {
   'observatorium-logs-stage.prometheusrules': renderAlerts(obsLogsStageEnv, 'stage', obsLogsStage),
 
   local obsLogsProdEnv = 'observatorium-logs-production',
-  local obsLogsProd = loki + lokiTenants(obsLogsStageEnv),
+  local obsLogsProd = loki + lokiTenants(obsLogsProdEnv),
   'observatorium-logs-production.prometheusrules': renderAlerts(obsLogsProdEnv, 'production', obsLogsProd),
 }
 

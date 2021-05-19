@@ -7,7 +7,7 @@ function(namespace) {
           {
             alert: 'LokiTenantRateLimitWarning',
             expr: |||
-              sum by (tenant, reason) (sum_over_time(rate(loki_discarded_samples_total{namespace="%s"}[1m])[30m:1m]))
+              sum by (namespace, tenant, reason) (sum_over_time(rate(loki_discarded_samples_total{namespace="%s"}[1m])[30m:1m]))
               > 100
             ||| % namespace,
             'for': '15m',
@@ -16,7 +16,7 @@ function(namespace) {
             },
             annotations: {
               message: |||
-                {{ $labels.tenant }} is experiencing rate limiting for reason '{{ $labels.reason }}': {{ printf "%.2f" $value }}%.
+                {{ $labels.tenant }} is experiencing rate limiting for reason '{{ $labels.reason }}': {{ printf "%.0f" $value }}
               |||,
             },
           },

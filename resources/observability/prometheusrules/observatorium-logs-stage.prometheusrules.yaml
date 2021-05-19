@@ -24,7 +24,7 @@ spec:
           > 10
       for: 15m
       labels:
-        service: obervatorium-logs
+        service: observatorium-logs
         severity: info
     - alert: LokiRequestPanics
       annotations:
@@ -35,7 +35,7 @@ spec:
       expr: |
         sum(increase(loki_panic_total[10m])) by (namespace, job) > 0
       labels:
-        service: obervatorium-logs
+        service: observatorium-logs
         severity: info
     - alert: LokiRequestLatency
       annotations:
@@ -47,20 +47,20 @@ spec:
         namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*"} > 1
       for: 15m
       labels:
-        service: obervatorium-logs
+        service: observatorium-logs
         severity: info
   - name: loki_tenant_alerts
     rules:
     - alert: LokiTenantRateLimitWarning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_tenant_alerts?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/f6fe30815b172c9da7e813c15ddfe607/loki_tenant_alerts?orgId=1&refresh=10s&var-metrics=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}
         message: |
-          {{ $labels.tenant }} is experiencing rate limiting for reason '{{ $labels.reason }}': {{ printf "%.2f" $value }}%.
+          {{ $labels.tenant }} is experiencing rate limiting for reason '{{ $labels.reason }}': {{ printf "%.0f" $value }}
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokitenantratelimitwarning
       expr: |
-        sum by (tenant, reason) (sum_over_time(rate(loki_discarded_samples_total{namespace="observatorium-logs-stage"}[1m])[30m:1m]))
+        sum by (namespace, tenant, reason) (sum_over_time(rate(loki_discarded_samples_total{namespace="observatorium-logs-stage"}[1m])[30m:1m]))
         > 100
       for: 15m
       labels:
-        service: obervatorium-logs
+        service: observatorium-logs
         severity: info

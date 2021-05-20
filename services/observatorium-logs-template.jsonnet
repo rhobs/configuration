@@ -80,7 +80,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'LOKI_PVC_REQUEST', value: '50Gi' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: 'observatorium' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
-    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.14.0' },
+    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.22.0' },
     { name: 'JAEGER_PROXY_CPU_REQUEST', value: '100m' },
     { name: 'JAEGER_PROXY_MEMORY_REQUEST', value: '100Mi' },
     { name: 'JAEGER_PROXY_CPU_LIMITS', value: '200m' },
@@ -97,5 +97,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'MEMCACHED_EXPORTER_CPU_LIMIT', value: '200m' },
     { name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST', value: '50Mi' },
     { name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT', value: '200Mi' },
+    { name: 'SERVICE_ACCOUNT_NAME', value: 'default' },
   ],
 }

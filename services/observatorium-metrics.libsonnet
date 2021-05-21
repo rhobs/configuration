@@ -35,8 +35,8 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
       serviceMonitor: true,
       retentionResolutionRaw: '${THANOS_COMPACTOR_RETENTION_RESOULTION_RAW}',
-      retentionResolution5m: '${THANOS_COMPACTOR_RETENTION_RESOULTION_5_MINUTES}',
-      retentionResolution1h: '${THANOS_COMPACTOR_RETENTION_RESOULTION_1_HOUR}',
+      retentionResolution5m: '${THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES}',
+      retentionResolution1h: '${THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR}',
       disableDownsampling: ${THANOS_COMPACTOR_DISABLE_DOWNSAMPLING},
       deduplicationReplicaLabels: ['replica'],
       resources: {

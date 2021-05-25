@@ -418,7 +418,6 @@ local observatorium =
         { name: 'THANOS_COMPACTOR_RETENTION_RESOULTION_RAW', value: '14d' },
         { name: 'THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES', value: '1s' },
         { name: 'THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR', value: '1s' },
-        { name: 'THANOS_COMPACTOR_DISABLE_DOWNSAMPLING', value: 'true' },
         { name: 'THANOS_COMPACTOR_REPLICAS', value: '1' },
         { name: 'THANOS_RECEIVE_REPLICAS', value: '5' },
         { name: 'THANOS_CONFIG_SECRET', value: 'thanos-objectstorage' },

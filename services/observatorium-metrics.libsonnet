@@ -34,10 +34,10 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
       serviceMonitor: true,
-      retentionResolutionRaw: '14d',
-      retentionResolution5m: '1s',
-      retentionResolution1h: '1s',
-      disableDownsampling: true,
+      retentionResolutionRaw: '${THANOS_COMPACTOR_RETENTION_RESOULTION_RAW}',
+      retentionResolution5m: '${THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES}',
+      retentionResolution1h: '${THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR}',
+      disableDownsampling: ${THANOS_COMPACTOR_DISABLE_DOWNSAMPLING},
       deduplicationReplicaLabels: ['replica'],
       resources: {
         limits: {

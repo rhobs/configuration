@@ -77,6 +77,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       queriers: [
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
+      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
       rulesConfig: [
         {
           name: observatoriumRules,
@@ -340,8 +341,8 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
           [thanos.rule.service] +
-          [thanos.stores[shard].service for shard in std.objectFields(thanos.stores)] +
-          [thanos.receivers[hashring].service for hashring in std.objectFields(thanos.receivers)]
+          [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
+          [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)]
       ],
       serviceMonitor: true,
       resources: {

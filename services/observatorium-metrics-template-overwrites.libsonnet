@@ -106,24 +106,26 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
-    stores+::
-      std.mapWithKey(function(shard, obj) obj {  // loops over each [shard-n]:obj
-        statefulSet+: jaegerAgentSidecar.statefulSet {
-          spec+: {
-            replicas: '${{THANOS_STORE_REPLICAS}}',
-            template+: {
-              spec+: {
-                containers: [
-                  if c.name == 'thanos-store' then c {
-                    env+: s3EnvVars,
-                  } else c
-                  for c in super.containers
-                ],
+    stores+:: {
+      shards:
+        std.mapWithKey(function(shard, obj) obj {  // loops over each [shard-n]:obj
+          statefulSet+: jaegerAgentSidecar.statefulSet {
+            spec+: {
+              replicas: '${{THANOS_STORE_REPLICAS}}',
+              template+: {
+                spec+: {
+                  containers: [
+                    if c.name == 'thanos-store' then c {
+                      env+: s3EnvVars,
+                    } else c
+                    for c in super.containers
+                  ],
+                },
               },
             },
           },
-        },
-      }, super.stores),
+        }, super.shards),
+    },
 
     storeIndexCache+:: {
       statefulSet+: {
@@ -246,36 +248,38 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       } + oauth.deployment + jaegerAgentSidecar.deployment,
     },
 
-    receivers+::
-      std.mapWithKey(function(hashring, obj) obj {  // loops over each [hashring]:obj
-        statefulSet+: jaegerAgentSidecar.statefulSet {
-          spec+: {
-            replicas: '${{THANOS_RECEIVE_REPLICAS}}',
-            template+: {
-              spec+: {
-                containers: [
-                  if c.name == 'thanos-receive' then c {
-                    args+: [
-                      '--receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
-                    ],
-                    env+: s3EnvVars + [{
-                      name: 'DEBUG',
-                      value: '${THANOS_RECEIVE_DEBUG_ENV}',
-                    }],
-                  } + {
-                    args: [
-                      if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}'
-                      else if std.startsWith(a, '--tsdb.retention') then '--tsdb.retention=4d' else a
-                      for a in super.args
-                    ],
-                  } else c
-                  for c in super.containers
-                ],
+    receivers+:: {
+      hashrings:
+        std.mapWithKey(function(hashring, obj) obj {  // loops over each [hashring]:obj
+          statefulSet+: jaegerAgentSidecar.statefulSet {
+            spec+: {
+              replicas: '${{THANOS_RECEIVE_REPLICAS}}',
+              template+: {
+                spec+: {
+                  containers: [
+                    if c.name == 'thanos-receive' then c {
+                      args+: [
+                        '--receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
+                      ],
+                      env+: s3EnvVars + [{
+                        name: 'DEBUG',
+                        value: '${THANOS_RECEIVE_DEBUG_ENV}',
+                      }],
+                    } + {
+                      args: [
+                        if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}'
+                        else if std.startsWith(a, '--tsdb.retention') then '--tsdb.retention=4d' else a
+                        for a in super.args
+                      ],
+                    } else c
+                    for c in super.containers
+                  ],
+                },
               },
             },
           },
-        },
-      }, super.receivers),
+        }, super.hashrings),
+    },
   },
 } + {
   thanos+:: {

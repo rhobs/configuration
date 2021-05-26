@@ -18,7 +18,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
       selector: 'job=~"%s.*"' % thanos.stores.config.name,
     },
     receive+:: {
-      local hashrings = ['%s.*' % thanos.receivers[hashring].config.name for hashring in std.objectFields(thanos.receivers)],
+      local hashrings = ['%s.*' % thanos.receivers.hashrings[hashring].config.name for hashring in std.objectFields(thanos.receivers.hashrings)],
       selector: 'job=~"%s"' % std.join('|', hashrings),
     },
     receiveController+:: {

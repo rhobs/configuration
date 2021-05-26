@@ -22,8 +22,9 @@ jobs:
       run: make grafana manifests prometheusrules
     - name: Format
       run: make format
-    - name: Lint
-      run: make lint
+    # Disable until https://github.com/google/go-jsonnet/pull/537 is merged.
+    #- name: Lint
+      #run: make lint
     - name: Validate
       run: make validate
     - name: Diff

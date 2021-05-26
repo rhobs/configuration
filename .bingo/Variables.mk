@@ -1,4 +1,4 @@
-# Auto generated binary variables helper managed by https://github.com/bwplotka/bingo v0.4.0. DO NOT EDIT.
+# Auto generated binary variables helper managed by https://github.com/bwplotka/bingo v0.4.3. DO NOT EDIT.
 # All tools are designed to be build inside $GOBIN.
 BINGO_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 GOPATH ?= $(shell go env GOPATH)
@@ -47,11 +47,11 @@ $(JSONNET_DEPS): $(BINGO_DIR)/jsonnet-deps.mod
 	@echo "(re)installing $(GOBIN)/jsonnet-deps-v0.17.0"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-deps.mod -o=$(GOBIN)/jsonnet-deps-v0.17.0 "github.com/google/go-jsonnet/cmd/jsonnet-deps"
 
-JSONNET_LINT := $(GOBIN)/jsonnet-lint-v0.17.1-0.20210113194615-cd59751527e0
+JSONNET_LINT := $(GOBIN)/jsonnet-lint-v0.17.1-0.20210520121623-e6a958171333
 $(JSONNET_LINT): $(BINGO_DIR)/jsonnet-lint.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/jsonnet-lint-v0.17.1-0.20210113194615-cd59751527e0"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-lint.mod -o=$(GOBIN)/jsonnet-lint-v0.17.1-0.20210113194615-cd59751527e0 "github.com/google/go-jsonnet/cmd/jsonnet-lint"
+	@echo "(re)installing $(GOBIN)/jsonnet-lint-v0.17.1-0.20210520121623-e6a958171333"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-lint.mod -o=$(GOBIN)/jsonnet-lint-v0.17.1-0.20210520121623-e6a958171333 "github.com/google/go-jsonnet/cmd/jsonnet-lint"
 
 JSONNET := $(GOBIN)/jsonnet-v0.17.0
 $(JSONNET): $(BINGO_DIR)/jsonnet.mod

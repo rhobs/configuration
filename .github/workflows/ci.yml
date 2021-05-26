@@ -23,7 +23,7 @@ jobs:
     - name: Format
       run: make format
     - name: Lint
-      run: make Lint
+      run: make lint
     - name: Validate
       run: make validate
     - name: Diff

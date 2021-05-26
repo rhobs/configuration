@@ -110,7 +110,6 @@ objects:
           - --tenants.config=/etc/observatorium/tenants.yaml
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
           - --internal.tracing.endpoint=localhost:6831
-          - --middleware.concurrent-request-limit=${OBSERVATORIUM_API_PER_POD_CONCURRENT_REQUETST_LIMIT}
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 10
@@ -534,6 +533,16 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-api-cache-memcached
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -609,6 +618,10 @@ objects:
             requests:
               cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
+        securityContext:
+          fsGroup: 65534
+          runAsUser: 65534
+        serviceAccountName: observatorium-api-cache-memcached
 - apiVersion: v1
   data:
     queries.yaml: |-

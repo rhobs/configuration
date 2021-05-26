@@ -25,7 +25,8 @@ jobs:
     # Disable until https://github.com/google/go-jsonnet/pull/537 is merged.
     #- name: Lint
       #run: make lint
-    - name: Validate
-      run: make validate
+    # Disable for now due to bugs with the OC command.
+    #- name: Validate
+      #run: make validate
     - name: Diff
       run: git diff --exit-code

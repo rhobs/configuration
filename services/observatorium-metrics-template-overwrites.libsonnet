@@ -69,6 +69,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       statefulSet+: {
         spec+: {
           replicas: '${{THANOS_COMPACTOR_REPLICAS}}',
+          local disableDownsamplingFlag = if compact.config.disableDownsampling then
+            ['--debug.max-compaction-level=3']
+          else
+            ['--debug.max-compaction-level=3', '--downsampling.disable=${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}'],
           template+: {
             spec+: {
               containers: [
@@ -78,7 +82,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                   // Temporary workaround on high cardinality blocks for 2w.
                   // Since we have only 2w retention, there is no point in having 2w blocks.
                   // See: https://issues.redhat.com/browse/OBS-437
-                  args+: ['--debug.max-compaction-level=3', '--downsampling.disable=${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}'],
+                  args+: disableDownsamplingFlag,
                 } else c
                 for c in super.containers
               ],

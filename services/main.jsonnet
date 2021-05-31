@@ -535,8 +535,6 @@ local observatorium =
         { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET', value: 'observatorium-thanos-receive' },
         { name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS', value: '3600' },
         { name: 'TELEMETER_LOG_LEVEL', value: 'warn' },
-        { name: 'CONFIGMAP_RELOADER_IMAGE', value: 'quay.io/openshift/origin-configmap-reloader' },
-        { name: 'CONFIGMAP_RELOADER_IMAGE_TAG', value: '4.5.0' },
       ],
     },
 

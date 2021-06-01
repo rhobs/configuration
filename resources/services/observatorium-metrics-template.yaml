@@ -121,9 +121,9 @@ objects:
           - --retention.resolution-5m=${THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES}
           - --retention.resolution-1h=${THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR}
           - --delete-delay=48h
-          - --downsampling.disable
           - --deduplication.replica-label=replica
           - --debug.max-compaction-level=3
+          - --downsampling.disable=${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -2620,6 +2620,8 @@ parameters:
   value: 1s
 - name: THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR
   value: 1s
+- name: THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING
+  value: false
 - name: THANOS_COMPACTOR_MEMORY_LIMIT
   value: 5Gi
 - name: THANOS_COMPACTOR_MEMORY_REQUEST

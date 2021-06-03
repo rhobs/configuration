@@ -209,9 +209,7 @@ objects:
           - mountPath: /etc/proxy/secrets
             name: compact-proxy
             readOnly: false
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:
@@ -248,6 +246,7 @@ objects:
     name: observatorium-thanos-query
   spec:
     replicas: ${{THANOS_QUERIER_REPLICAS}}
+    securityContext: {}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-layer
@@ -407,9 +406,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:
@@ -595,9 +592,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:
@@ -834,10 +829,8 @@ objects:
             requests:
               cpu: 10m
               memory: 24Mi
-          securityContext:
-            runAsUser: 65534
-        securityContext:
-          fsGroup: 65534
+          securityContext: {}
+        securityContext: {}
         serviceAccount: observatorium-thanos-receive-controller
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
@@ -1170,9 +1163,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 900
         volumes:
@@ -1519,9 +1510,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - configMap:
@@ -1657,9 +1646,7 @@ objects:
             requests:
               cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-store-bucket-cache-memcached
 - apiVersion: v1
   kind: Service
@@ -1776,9 +1763,7 @@ objects:
             requests:
               cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-store-index-cache-memcached
 - apiVersion: v1
   kind: ServiceAccount
@@ -2014,9 +1999,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes: []
@@ -2260,9 +2243,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes: []
@@ -2506,9 +2487,7 @@ objects:
             requests:
               cpu: 32m
               memory: 64Mi
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes: []

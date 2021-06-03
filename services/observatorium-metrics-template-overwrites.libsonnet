@@ -75,6 +75,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
             else [],
           template+: {
             spec+: {
+              securityContext: {},
               containers: [
                 // Overwrite and extend the thanos-compact container only
                 if c.name == 'thanos-compact' then c {
@@ -98,6 +99,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           replicas: '${{THANOS_RULER_REPLICAS}}',
           template+: {
             spec+: {
+              securityContext: {},
               containers: [
                 if c.name == 'thanos-rule' then c {
                   env+: s3EnvVars,
@@ -118,6 +120,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
               replicas: '${{THANOS_STORE_REPLICAS}}',
               template+: {
                 spec+: {
+                  securityContext: {},
                   containers: [
                     if c.name == 'thanos-store' then c {
                       env+: s3EnvVars,
@@ -131,9 +134,32 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         }, super.shards),
     },
 
+    receiveController+:: {
+      deployment+: {
+        spec+: {
+          template+: {
+            spec+: {
+              securityContext: {},
+              containers: [
+                if c.name == 'thanos-receive-controller' then c {
+                  securityContext: {},
+                } else c
+                for c in super.containers
+              ],
+            },
+          },
+        },
+      },
+    },
+
     storeIndexCache+:: {
       statefulSet+: {
         spec+: {
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
           replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
           volumeClaimTemplates:: null,
         },
@@ -143,6 +169,11 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     storeBucketCache+:: {
       statefulSet+: {
         spec+: {
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
           replicas: '${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}',
           volumeClaimTemplates:: null,
         },
@@ -179,9 +210,16 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       deployment+: oauth.deployment + jaegerAgentSidecar.deployment {
         spec+: {
           replicas: '${{THANOS_QUERIER_REPLICAS}}',
+          securityContext: {},
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
         },
       },
     },
+
 
     queryFrontend+:: {
       local queryFrontend = self,
@@ -215,6 +253,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           replicas: '${{THANOS_QUERY_FRONTEND_REPLICAS}}',
           template+: {
             spec+: {
+              securityContext: {},
               containers: [
                 if c.name == 'thanos-query-frontend' then c {
                   args: std.filter(function(arg)
@@ -260,6 +299,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
               replicas: '${{THANOS_RECEIVE_REPLICAS}}',
               template+: {
                 spec+: {
+                  securityContext: {},
                   containers: [
                     if c.name == 'thanos-receive' then c {
                       args+: [

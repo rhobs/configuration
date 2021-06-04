@@ -618,9 +618,7 @@ objects:
             requests:
               cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-api-cache-memcached
 - apiVersion: v1
   data:

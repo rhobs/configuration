@@ -101,9 +101,7 @@ objects:
           - containerPort: 9150
             name: metrics
           resources: {}
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-loki-chunk-cache
 - apiVersion: v1
   kind: Service
@@ -203,9 +201,7 @@ objects:
           - containerPort: 9150
             name: metrics
           resources: {}
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-loki-index-query-cache
 - apiVersion: v1
   kind: Service
@@ -305,9 +301,7 @@ objects:
           - containerPort: 9150
             name: metrics
           resources: {}
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-loki-results-cache
 - apiVersion: v1
   kind: Service

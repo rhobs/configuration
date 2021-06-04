@@ -96,6 +96,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     memoryLimitMb: '${MEMCACHED_MEMORY_LIMIT_MB}',
     maxItemSize: '5m',
     replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+    securityContext: {},
     resources: {
       memcached: {
         requests: {

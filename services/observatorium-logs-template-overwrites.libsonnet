@@ -30,6 +30,11 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
       [name]+: {
         spec+: {
           replicas: replicas[name],
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
         },
       }
       for name in std.objectFields(super.manifests)

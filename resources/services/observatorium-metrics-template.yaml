@@ -123,7 +123,7 @@ objects:
           - --delete-delay=48h
           - --deduplication.replica-label=replica
           - --debug.max-compaction-level=3
-          - --downsampling.disable=${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}
+          - ${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:

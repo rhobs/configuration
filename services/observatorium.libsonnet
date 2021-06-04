@@ -120,7 +120,18 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
         },
       },
     },
-  }),
+  }) {
+    serviceMonitor+: {
+      spec+: {
+        namespaceSelector+: {
+          matchNames+: [
+            '${NAMESPACE}',
+            '${MST_NAMESPACE}',  // TODO(kakkoyun): Remove when we find more permenant solution.
+          ],
+        },
+      },
+    },
+  },
 
   api:: api({
     local cfg = self,

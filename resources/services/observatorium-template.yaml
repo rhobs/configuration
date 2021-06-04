@@ -550,6 +550,10 @@ objects:
   spec:
     endpoints:
     - port: metrics
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+      - ${MST_NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: api-cache

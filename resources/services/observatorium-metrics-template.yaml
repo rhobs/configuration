@@ -2600,7 +2600,7 @@ parameters:
 - name: THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR
   value: 1s
 - name: THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING
-  value: "--downsampling.disable"
+  value: --downsampling.disable
 - name: THANOS_COMPACTOR_MEMORY_LIMIT
   value: 5Gi
 - name: THANOS_COMPACTOR_MEMORY_REQUEST

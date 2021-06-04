@@ -71,7 +71,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           replicas: '${{THANOS_COMPACTOR_REPLICAS}}',
           local disableDownsamplingFlag =
             if !compact.config.disableDownsampling then
-              ['--downsampling.disable=${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}']
+              ['${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}']
             else [],
           template+: {
             spec+: {

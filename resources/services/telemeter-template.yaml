@@ -158,6 +158,7 @@ objects:
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
+          - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}
@@ -331,6 +332,7 @@ objects:
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
+          - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}

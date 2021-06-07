@@ -336,6 +336,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
       logLevel: '${THANOS_QUERIER_LOG_LEVEL}',
       lookbackDelta: '15m',
       queryTimeout: '15m',
+      prefixHeader: 'X-Forwarded-Prefix',
       stores: [
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in

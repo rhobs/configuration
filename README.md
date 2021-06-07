@@ -16,7 +16,7 @@ To update a dependency:
 
 ```console
 # Updates `kube-thanos` to master and sets the new hash in `jsonnetfile.lock.json`.
-jb update https://github.com/thanos-io/kube-thanos
+jb update https://github.com/thanos-io/kube-thanos/jsonnet/kube-thanos@main
 
 # Update all dependancies to master and sets the new hashes in `jsonnetfile.lock.json`.
 jb update

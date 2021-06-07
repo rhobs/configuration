@@ -783,6 +783,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium
+- name: MST_NAMESPACE
+  value: observatorium-mst-production
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
 - name: OBSERVATORIUM_LOGS_NAMESPACE

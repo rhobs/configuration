@@ -13,7 +13,6 @@ local obs = import 'observatorium.libsonnet';
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },
     { name: 'MST_NAMESPACE', value: 'observatorium-mst-production' },
-
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.15.0' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'quay.io/app-sre/jaegertracing-jaeger-agent' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },

@@ -15,9 +15,9 @@ local obs = import 'observatorium.libsonnet';
     ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },
+    { name: 'MST_NAMESPACE', value: 'observatorium-mst-production' },
     { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
-
     { name: 'AMS_URL', value: 'https://api.openshift.com' },
     { name: 'DPTP_ORGANIZATION_ID', value: '' },
     { name: 'GUBERNATOR_CPU_LIMIT', value: '200m' },

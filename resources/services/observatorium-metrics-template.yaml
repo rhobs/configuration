@@ -1293,8 +1293,23 @@ objects:
             0 * (max by (_id,cloudpak_type) (topk by (_id) (1, count by (_id,cloudpak_type) (label_replace(subscription_sync_total{installed=~"ibm-((licensing|common-service)-operator).*"}, "cloudpak_type", "unknown", "", ".*")))))
           "record": "id_cloudpak_type"
         - "expr": |
+            topk by(_id) (1,
+              (label_replace(7+0*count by (_id) (cluster:usage:resources:sum{resource="netnamespaces.network.openshift.io"}), "network_type", "OpenshiftSDN", "", "") > 0) or
+              (label_replace(6+0*count by (_id) (cluster:usage:resources:sum{resource="clusterinformations.crd.projectcalico.org"}), "network_type", "Calico", "", "") > 0) or
+              (label_replace(5+0*count by (_id) (cluster:usage:resources:sum{resource="acicontainersoperators.aci.ctrl"}), "network_type", "ACI", "", "") > 0) or
+              (label_replace(4+0*count by (_id) (cluster:usage:resources:sum{resource="kuryrnetworks.openstack.org"}), "network_type", "Kuryr", "", "") > 0) or
+              (label_replace(3+0*count by (_id) (cluster:usage:resources:sum{resource="ciliumendpoints.cilium.io"}), "network_type", "Cilium", "", "") > 0) or
+              (label_replace(2+0*count by (_id) (cluster:usage:resources:sum{resource="ncpconfigs.nsx.vmware.com"}), "network_type", "VMWareNSX", "", "") > 0) or
+              (label_replace(1+0*count by (_id) (cluster:usage:resources:sum{resource="egressips.k8s.ovn.org"}), "network_type", "OVNKube", "", "")) or
+              (label_replace(0+0*max by (_id) (cluster:node_instance_type_count:sum*0), "network_type", "unknown", "", ""))
+            )
+          "record": "id_network_type"
+        - "expr": |
             0 * topk by (ebs_account) (1, max by (ebs_account,account_type,internal,email_domain) (label_replace(label_replace(label_replace(subscription_labels{email_domain="redhat.com"}*0+5, "class", "Internal", "class", ".*") or label_replace(subscription_labels{class!="Customer",email_domain=~"(.*\\.|^)ibm.com"}*0+4, "class", "Internal", "class", ".*") or (subscription_labels{class="Customer"}*0+3) or (subscription_labels{class="Partner"}*0+2) or (subscription_labels{class="Evaluation"}*0+1) or label_replace(subscription_labels{class!~"Evaluation|Customer|Partner"}*0+0, "class", "", "class", ".*"), "account_type", "$1", "class", "(.+)"), "internal", "true", "email_domain", "redhat.com|(.*\\.|^)ibm.com") ))
           "record": "ebs_account_account_type_email_domain_internal"
+        - "expr": |
+            topk(500, sum (acm_managed_cluster_info) by (managed_cluster_id, cloud, created_via, endpoint, instance, job, namespace, pod, service, vendor, version))
+          "record": "acm_top500_mcs:acm_managed_cluster_info"
   kind: ConfigMap
   metadata:
     annotations:

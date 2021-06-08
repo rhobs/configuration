@@ -100,7 +100,7 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
     },
   },
 
-  // TODO(kakkoyun): Check if this actually works!
+  // TODO(kakkoyun): Validate if PrometheusRule defintions actually work!
   prometheusRule: {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
@@ -130,7 +130,7 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
     for name in std.objectFields(jaeger)
   ],
   parameters: [
-    { name: 'NAMESPACE', value: 'telemeter' },  // TODO(kakkoyun): observatorium
+    { name: 'NAMESPACE', value: 'observatorium' },
     { name: 'IMAGE', value: 'jaegertracing/all-in-one' },
     { name: 'IMAGE_TAG', value: '1.14.0' },
     { name: 'REPLICAS', value: '1' },

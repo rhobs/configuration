@@ -15,7 +15,10 @@ local obs = import 'observatorium.libsonnet';
     ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },
-    { name: 'MST_NAMESPACE', value: 'observatorium-mst-production' },
+    // Used for ServiceMonitors to discover workloads in given namespaces.
+    // This variable is applied using ${{}} syntax, so make sure to provide valid YAML array.
+    // See https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html#templates-writing-parameters_using-templates
+    { name: 'NAMESPACES', value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]' },
     { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
     { name: 'AMS_URL', value: 'https://api.openshift.com' },

@@ -324,7 +324,7 @@ objects:
     storageClassName: gp2
 parameters:
 - name: NAMESPACE
-  value: telemeter
+  value: observatorium
 - name: IMAGE
   value: jaegertracing/all-in-one
 - name: IMAGE_TAG

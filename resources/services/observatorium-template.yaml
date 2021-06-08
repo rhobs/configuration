@@ -335,9 +335,7 @@ objects:
     - port: internal
     - port: opa-ams-metrics
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: api
@@ -500,9 +498,7 @@ objects:
     endpoints:
     - port: http
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: rate-limiter
@@ -551,9 +547,7 @@ objects:
     endpoints:
     - port: metrics
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: api-cache
@@ -771,9 +765,7 @@ objects:
     endpoints:
     - port: http
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: blackbox-prober
@@ -783,8 +775,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium
-- name: MST_NAMESPACE
-  value: observatorium-mst-production
+- name: NAMESPACES
+  value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]'
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
 - name: OBSERVATORIUM_LOGS_NAMESPACE

@@ -123,7 +123,7 @@ clean:
 $(TMP_DIR):
 	mkdir -p $(TMP_DIR)
 
-$(BIN_DIR):
+$(BIN_DIR): $(TMP_DIR)
 	mkdir -p $(BIN_DIR)
 
 $(OC): $(BIN_DIR)

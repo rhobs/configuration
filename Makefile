@@ -2,7 +2,12 @@ include .bingo/Variables.mk
 
 SED ?= sed
 XARGS ?= xargs
-OC ?= oc
+
+TMP_DIR := $(shell pwd)/tmp
+BIN_DIR ?= $(TMP_DIR)/bin
+OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
+OC_VERSION ?= 4.7.14
+OC ?= $(BIN_DIR)/oc
 
 .PHONY: all
 all: $(VENDOR_DIR) prometheusrules grafana manifests whitelisted_metrics
@@ -24,7 +29,7 @@ lint: $(JSONNET_LINT) vendor
 	echo ${JSONNET_SRC} | $(XARGS) -n 1 -- $(JSONNET_LINT) -J vendor
 
 .PHONY: validate
-validate:
+validate: $(OC)
 	@echo ">>>>> Validating OpenShift Templates"
 	find . -type f \( -name '*template.yaml' \) | $(XARGS) -I{} $(OC) process -f {} --local -o yaml > /dev/null
 
@@ -113,3 +118,14 @@ clean:
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium-logs -type f ! -name '*.yaml' -delete
+
+# Tools
+$(TMP_DIR):
+	mkdir -p $(TMP_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(OC): $(BIN_DIR)
+	@echo "Downloading OpenShift CLI"
+	curl -sNL "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$(OC_VERSION)/openshift-client-$(OS).tar.gz" | tar -xzf - -C $(BIN_DIR)

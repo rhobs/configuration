@@ -17,11 +17,11 @@ GO     ?= $(shell which go)
 #	@echo "Running bingo"
 #	@$(BINGO) <flags/args..>
 #
-BINGO := $(GOBIN)/bingo-v0.4.0
+BINGO := $(GOBIN)/bingo-v0.4.3
 $(BINGO): $(BINGO_DIR)/bingo.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/bingo-v0.4.0"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=bingo.mod -o=$(GOBIN)/bingo-v0.4.0 "github.com/bwplotka/bingo"
+	@echo "(re)installing $(GOBIN)/bingo-v0.4.3"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=bingo.mod -o=$(GOBIN)/bingo-v0.4.3 "github.com/bwplotka/bingo"
 
 GOJQ := $(GOBIN)/gojq-v0.10.2
 $(GOJQ): $(BINGO_DIR)/gojq.mod
@@ -47,11 +47,11 @@ $(JSONNET_DEPS): $(BINGO_DIR)/jsonnet-deps.mod
 	@echo "(re)installing $(GOBIN)/jsonnet-deps-v0.17.0"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-deps.mod -o=$(GOBIN)/jsonnet-deps-v0.17.0 "github.com/google/go-jsonnet/cmd/jsonnet-deps"
 
-JSONNET_LINT := $(GOBIN)/jsonnet-lint-v0.17.1-0.20210520121623-e6a958171333
+JSONNET_LINT := $(GOBIN)/jsonnet-lint-v0.17.1-0.20210606191319-46d1fceb9c77
 $(JSONNET_LINT): $(BINGO_DIR)/jsonnet-lint.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/jsonnet-lint-v0.17.1-0.20210520121623-e6a958171333"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-lint.mod -o=$(GOBIN)/jsonnet-lint-v0.17.1-0.20210520121623-e6a958171333 "github.com/google/go-jsonnet/cmd/jsonnet-lint"
+	@echo "(re)installing $(GOBIN)/jsonnet-lint-v0.17.1-0.20210606191319-46d1fceb9c77"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-lint.mod -o=$(GOBIN)/jsonnet-lint-v0.17.1-0.20210606191319-46d1fceb9c77 "github.com/google/go-jsonnet/cmd/jsonnet-lint"
 
 JSONNET := $(GOBIN)/jsonnet-v0.17.0
 $(JSONNET): $(BINGO_DIR)/jsonnet.mod

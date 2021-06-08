@@ -312,7 +312,6 @@ local conprof = c + c.withConfigMap {
       { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },
-  // TODO(kakkoyun): Find a more scalable way.
   'conprof-observatorium-logs-rbac-template': {
     apiVersion: 'v1',
     kind: 'Template',
@@ -330,7 +329,6 @@ local conprof = c + c.withConfigMap {
       { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },
-  // TODO(kakkoyun): Find a more scalable way.
   'conprof-observatorium-mst-rbac-template': {
     apiVersion: 'v1',
     kind: 'Template',

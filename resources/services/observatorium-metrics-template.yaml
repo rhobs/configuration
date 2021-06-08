@@ -71,9 +71,7 @@ objects:
         - pod
         targetLabel: instance
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
@@ -677,9 +675,7 @@ objects:
         - pod
         targetLabel: instance
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-cache
@@ -757,9 +753,7 @@ objects:
         - pod
         targetLabel: instance
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-layer
@@ -926,9 +920,7 @@ objects:
     endpoints:
     - port: http
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: kubernetes-controller
@@ -1246,9 +1238,7 @@ objects:
         - pod
         targetLabel: instance
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring
@@ -1372,9 +1362,7 @@ objects:
         - pod
         targetLabel: instance
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: rule-evaluation-engine
@@ -1601,9 +1589,7 @@ objects:
     endpoints:
     - port: metrics
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: store-bucket-cache
@@ -1718,9 +1704,7 @@ objects:
     endpoints:
     - port: metrics
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: store-index-cache
@@ -2559,9 +2543,7 @@ objects:
         - pod
         targetLabel: instance
     namespaceSelector:
-      matchNames:
-      - ${NAMESPACE}
-      - ${MST_NAMESPACE}
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway
@@ -2571,8 +2553,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium-metrics
-- name: MST_NAMESPACE
-  value: observatorium-mst-production
+- name: NAMESPACES
+  value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]'
 - name: JAEGER_AGENT_IMAGE_TAG
   value: 1.15.0
 - name: JAEGER_AGENT_IMAGE

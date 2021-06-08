@@ -12,7 +12,10 @@ local obs = import 'observatorium.libsonnet';
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },
-    { name: 'MST_NAMESPACE', value: 'observatorium-mst-production' },
+    // Used for ServiceMonitors to discover workloads in given namespaces.
+    // This variable is applied using ${{}} syntax, so make sure to provice valid YAML array.
+    // See https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html#templates-writing-parameters_using-templates
+    { name: 'NAMESPACES', value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]' },
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.15.0' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'quay.io/app-sre/jaegertracing-jaeger-agent' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },

@@ -15,7 +15,7 @@ local defaults = {
     target: 19291,
   },
 
-  // TODO(kakkoyun): Not in sync with other components.
+  // TODO(kakkoyun): Not in sync with other components. Find out why and fix it.
   commonLabels:: {
     'app.kubernetes.io/part-of': defaults.name,
     'app.kubernetes.io/name': 'nginx',

@@ -78,7 +78,7 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 
 .PHONY: manifests
 manifests: format $(VENDOR_DIR)
-manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/conprof-template.yaml
+manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/conprof-template.yaml resources/services/token-refresher-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml
 	$(MAKE) clean
 
@@ -94,6 +94,10 @@ resources/services/jaeger-template.yaml: $(wildcard services/jaeger-*) $(JSONNET
 resources/services/telemeter-template.yaml: $(wildcard services/telemeter-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running telemeter templates"
 	$(JSONNET) -J vendor services/telemeter-template.jsonnet | $(GOJSONTOYAML) > $@
+
+resources/services/token-refresher-template.yaml: $(wildcard services/token-refresher-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running token-refresher-template"
+	$(JSONNET) -J vendor services/token-refresher-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/observatorium-template.yaml: services/observatorium.libsonnet services/observatorium-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"

@@ -16,7 +16,6 @@ objects:
       matchLabels:
         app.kubernetes.io/instance: telemeter-token-refresher
         app.kubernetes.io/name: token-refresher
-        app.kubernetes.io/version: ${TOKEN_REFRESHER_IMAGE_TAG}
     template:
       metadata:
         labels:
@@ -142,8 +141,25 @@ objects:
     selector:
       app.kubernetes.io/instance: telemeter-token-refresher
       app.kubernetes.io/name: token-refresher
-      app.kubernetes.io/version: ${TOKEN_REFRESHER_IMAGE_TAG}
     type: ClusterIP
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/instance: telemeter-token-refresher
+      app.kubernetes.io/name: token-refresher
+      app.kubernetes.io/version: ${TOKEN_REFRESHER_IMAGE_TAG}
+    name: telemeter-token-refresher
+  spec:
+    endpoints:
+    - port: internal
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: telemeter-token-refresher
+        app.kubernetes.io/name: token-refresher
 parameters:
 - name: NAMESPACE
   value: telemeter

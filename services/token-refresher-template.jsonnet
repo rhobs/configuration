@@ -6,6 +6,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
   version: '${TOKEN_REFRESHER_IMAGE_TAG}',
   url: 'http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080',
   secretName: '${TOKEN_REFRESHER_SECRET_NAME}',
+  serviceMonitor: true,
 }) + {
   local tr = self,
   config+:: {
@@ -37,6 +38,14 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
   service+: oauth.service,
 
   deployment+: oauth.deployment,
+
+  serviceMonitor+: {
+    spec+: {
+      namespaceSelector: {
+        matchNames: ['${NAMESPACE}'],
+      },
+    },
+  },
 };
 
 {

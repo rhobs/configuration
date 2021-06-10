@@ -34,7 +34,7 @@ objects:
           - --oidc.client-id=$(OIDC_CLIENT_ID)
           - --oidc.client-secret=$(OIDC_CLIENT_SECRET)
           - --oidc.issuer-url=$(OIDC_ISSUER_URL)
-          - --url=http://observatorium-observatorium-api.${NAMESPACE}.svc:8080
+          - --url=http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080
           env:
           - name: OIDC_AUDIENCE
             valueFrom:
@@ -159,6 +159,8 @@ parameters:
   value: 200m
 - name: OAUTH_PROXY_MEMORY_LIMITS
   value: 200Mi
+- name: OBSERVATORIUM_NAMESPACE
+  value: observatorium
 - name: SERVICE_ACCOUNT_NAME
   value: prometheus-telemeter
 - name: TOKEN_REFRESHER_IMAGE_TAG

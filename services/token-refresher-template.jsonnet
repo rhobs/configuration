@@ -4,7 +4,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
   name: 'telemeter-token-refresher',
   namespace: '${NAMESPACE}',
   version: '${TOKEN_REFRESHER_IMAGE_TAG}',
-  url: 'http://observatorium-observatorium-api.${NAMESPACE}.svc:8080',
+  url: 'http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080',
   secretName: '${TOKEN_REFRESHER_SECRET_NAME}',
 }) + {
   local tr = self,
@@ -54,13 +54,14 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
     for name in std.objectFields(tr)
   ],
   parameters: [
-    { name: 'NAMESPACE', value: 'telemeter' },  // TODO(kakkoyun): observatorium
+    { name: 'NAMESPACE', value: 'telemeter' },
     { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
     { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
     { name: 'OAUTH_PROXY_CPU_REQUEST', value: '100m' },
     { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
+    { name: 'OBSERVATORIUM_NAMESPACE', value: 'observatorium' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     { name: 'TOKEN_REFRESHER_IMAGE_TAG', value: 'master-2021-03-05-b34376b' },
     { name: 'TOKEN_REFRESHER_SECRET_NAME', value: 'token-refrsher-oidc' },

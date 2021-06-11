@@ -58,21 +58,21 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/observatorium/observatorium.git",
-          "subdir": "configuration"
-        }
-      },
-      "version": "main"
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/observatorium/api.git",
           "subdir": "jsonnet/lib"
         }
       },
       "version": "master",
       "name": "observatorium-api"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/observatorium.git",
+          "subdir": "configuration"
+        }
+      },
+      "version": "main"
     },
     {
       "source": {
@@ -89,6 +89,15 @@
         "git": {
           "remote": "https://github.com/observatorium/thanos-receive-controller.git",
           "subdir": "jsonnet/thanos-receive-controller-mixin"
+        }
+      },
+      "version": "master"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/token-refresher.git",
+          "subdir": "jsonnet/lib"
         }
       },
       "version": "master"

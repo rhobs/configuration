@@ -137,6 +137,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/observatorium/token-refresher.git",
+          "subdir": "jsonnet/lib"
+        }
+      },
+      "version": "fb2d4139e10a4baaf4f7250fcc9b1ceb0aa01b0a",
+      "sum": "c+ywXdmRYJpWnCzAh85n4AWMcxj+sqx5rNHb3lzYuEY="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/observatorium/up.git",
           "subdir": "jsonnet"
         }

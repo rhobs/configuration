@@ -847,4 +847,4 @@ parameters:
 - name: TOKEN_REFRESHER_IMAGE_TAG
   value: master-2021-03-05-b34376b
 - name: TOKEN_REFRESHER_SECRET_NAME
-  value: token-refrsher-oidc
+  value: token-refresher-oidc

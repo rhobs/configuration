@@ -628,7 +628,7 @@ objects:
       spec:
         containers:
         - args:
-          - --log.level=info
+          - --log.level=${TOKEN_REFRESHER_LOG_LEVEL}
           - --log.format=logfmt
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
@@ -846,5 +846,7 @@ parameters:
   value: "3600"
 - name: TOKEN_REFRESHER_IMAGE_TAG
   value: master-2021-03-05-b34376b
+- name: TOKEN_REFRESHER_LOG_LEVEL
+  value: info
 - name: TOKEN_REFRESHER_SECRET_NAME
   value: token-refresher-oidc

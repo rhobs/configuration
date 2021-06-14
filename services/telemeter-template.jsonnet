@@ -183,6 +183,6 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
     { name: 'TELEMETER_SERVER_MEMORY_REQUEST', value: '500Mi' },
     { name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS', value: '3600' },
     { name: 'TOKEN_REFRESHER_IMAGE_TAG', value: 'master-2021-03-05-b34376b' },
-    { name: 'TOKEN_REFRESHER_SECRET_NAME', value: 'token-refrsher-oidc' },
+    { name: 'TOKEN_REFRESHER_SECRET_NAME', value: 'token-refresher-oidc' },
   ],
 }

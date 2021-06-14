@@ -73,6 +73,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
   version: '${TOKEN_REFRESHER_IMAGE_TAG}',
   url: 'http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080',
   secretName: '${TOKEN_REFRESHER_SECRET_NAME}',
+  logLevel: '${TOKEN_REFRESHER_LOG_LEVEL}',
   serviceMonitor: true,
 }) + {
   local tr = self,
@@ -183,6 +184,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
     { name: 'TELEMETER_SERVER_MEMORY_REQUEST', value: '500Mi' },
     { name: 'TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS', value: '3600' },
     { name: 'TOKEN_REFRESHER_IMAGE_TAG', value: 'master-2021-03-05-b34376b' },
+    { name: 'TOKEN_REFRESHER_LOG_LEVEL', value: 'info' },
     { name: 'TOKEN_REFRESHER_SECRET_NAME', value: 'token-refresher-oidc' },
   ],
 }

@@ -16,6 +16,7 @@ objects:
       - "name": "telemeter-server"
         "roles":
         - "telemeter-write"
+        - "telemeter-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-telemeter-service-staging"

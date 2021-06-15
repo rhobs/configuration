@@ -56,6 +56,7 @@
       name: 'telemeter-server',
       roles: [
         'telemeter-write',
+        'telemeter-read',
       ],
       subjects: [
         {

@@ -71,7 +71,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
   name: 'telemeter-token-refresher',
   namespace: '${NAMESPACE}',
   version: '${TOKEN_REFRESHER_IMAGE_TAG}',
-  url: 'http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080',
+  url: 'http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080/api/metrics/v1/telemeter',
   secretName: '${TOKEN_REFRESHER_SECRET_NAME}',
   logLevel: '${TOKEN_REFRESHER_LOG_LEVEL}',
   serviceMonitor: true,

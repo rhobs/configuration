@@ -636,7 +636,7 @@ objects:
           - --oidc.client-id=$(OIDC_CLIENT_ID)
           - --oidc.client-secret=$(OIDC_CLIENT_SECRET)
           - --oidc.issuer-url=$(OIDC_ISSUER_URL)
-          - --url=http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080
+          - --url=http://observatorium-observatorium-api.${OBSERVATORIUM_NAMESPACE}.svc:8080/api/metrics/v1/telemeter
           env:
           - name: OIDC_AUDIENCE
             valueFrom:

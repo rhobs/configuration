@@ -70,6 +70,8 @@
   "{__name__=\"openshift:prometheus_tsdb_head_samples_appended_total:sum\"}",
   "{__name__=\"openshift:prometheus_tsdb_head_series:sum\"}",
   "{__name__=\"rhmi_status\"}",
+  "{__name__=\"rhods_aggregate_availability\"}",
+  "{__name__=\"rhods_total_users\"}",
   "{__name__=\"subscription_sync_total\"}",
   "{__name__=\"up\"}",
   "{__name__=\"visual_web_terminal_sessions_total\"}",

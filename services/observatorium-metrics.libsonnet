@@ -166,7 +166,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeIndexCache.service.metadata.name, thanos.storeIndexCache.service.metadata.namespace]],
           // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
           max_idle_connections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '400ms',  // default: 500ms
+          timeout: '2s',  // default: 500ms
           max_async_buffer_size: 200000,  // default: 10_000
           max_async_concurrency: 200,  // default: 20
           max_get_multi_batch_size: 100,  // default: 0 - No batching.
@@ -180,7 +180,7 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
           addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeBucketCache.service.metadata.name, thanos.storeBucketCache.service.metadata.namespace]],
           // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
           max_idle_connections: 1100,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '400ms',  // default: 500ms
+          timeout: '2s',  // default: 500ms
           max_async_buffer_size: 25000,  // default: 10_000
           max_async_concurrency: 50,  // default: 20
           max_get_multi_batch_size: 100,  // default: 0 - No batching.

@@ -1882,7 +1882,7 @@ objects:
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
-              "timeout": "400ms"
+              "timeout": "2s"
             "type": "memcached"
           - |-
             --store.caching-bucket.config="blocks_iter_ttl": "5m"
@@ -1899,7 +1899,7 @@ objects:
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1100
               "max_item_size": "1MiB"
-              "timeout": "400ms"
+              "timeout": "2s"
             "max_chunks_get_range_requests": 3
             "metafile_content_ttl": "24h"
             "metafile_doesnt_exist_ttl": "15m"
@@ -2128,7 +2128,7 @@ objects:
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
-              "timeout": "400ms"
+              "timeout": "2s"
             "type": "memcached"
           - |-
             --store.caching-bucket.config="blocks_iter_ttl": "5m"
@@ -2145,7 +2145,7 @@ objects:
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1100
               "max_item_size": "1MiB"
-              "timeout": "400ms"
+              "timeout": "2s"
             "max_chunks_get_range_requests": 3
             "metafile_content_ttl": "24h"
             "metafile_doesnt_exist_ttl": "15m"
@@ -2374,7 +2374,7 @@ objects:
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
-              "timeout": "400ms"
+              "timeout": "2s"
             "type": "memcached"
           - |-
             --store.caching-bucket.config="blocks_iter_ttl": "5m"
@@ -2391,7 +2391,7 @@ objects:
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1100
               "max_item_size": "1MiB"
-              "timeout": "400ms"
+              "timeout": "2s"
             "max_chunks_get_range_requests": 3
             "metafile_content_ttl": "24h"
             "metafile_doesnt_exist_ttl": "15m"

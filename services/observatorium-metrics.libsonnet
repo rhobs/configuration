@@ -2,6 +2,7 @@ local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.l
 local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
+local tenants = (import '../configuration/observatorium/tenants.libsonnet');
 
 {
   thanos+:: {
@@ -81,7 +82,6 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         {
           name: observatoriumRules,
           key: observatoriumRulesKey,
-          rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
         },
       ],
       resources: {
@@ -122,11 +122,15 @@ local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter
         },
         data: {
           [observatoriumRulesKey]: std.manifestYamlDoc({
-            groups: [{
-              name: 'observatorium',
-              interval: '3m',
-              rules: telemeterRules.prometheus.recordingrules.groups[0].rules,
-            }],
+            groups: std.map(function(group) {
+              name: 'telemeter-' + group.name,
+              interval: group.interval,
+              rules: std.map(function(rule) rule {
+                labels+: {
+                  tenant_id: tenants.map.telemeter.id,
+                },
+              }, group.rules),
+            }, telemeterRules.prometheus.recordingrules.groups),
           }),
         },
       },

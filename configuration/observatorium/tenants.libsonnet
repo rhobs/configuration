@@ -32,4 +32,9 @@
       },
     },
   ],
+  // Collect all tenants in a map for convenient access.
+  map:: {
+    [tenant.name]: tenant
+    for tenant in self.tenants
+  },
 }

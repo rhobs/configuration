@@ -62,7 +62,7 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "master",
+      "version": "main",
       "name": "observatorium-api"
     },
     {

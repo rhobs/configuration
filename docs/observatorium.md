@@ -4,7 +4,7 @@ Observatorium is a collection of services unified behind a single API to provide
 
 # Observatorium Metrics
 
-Observatorium Metrics, which is a general-purpose, scalable, multi-tenant, observability platform for ingesting and querying metrics. Its [documentation can be found on github](https://github.com/observatorium/docs/blob/master/design/metrics.md)
+Observatorium Metrics, which is a general-purpose, scalable, multi-tenant, observability platform for ingesting and querying metrics. Its [documentation can be found on github](https://github.com/observatorium/observatorium/blob/main/docs/design/metrics.md)
 
 # Observatorium Logs
 

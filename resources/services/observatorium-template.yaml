@@ -164,7 +164,6 @@ objects:
           - --ams.mappings=dptp=${DPTP_ORGANIZATION_ID}
           - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
-          - --internal.tracing.endpoint=localhost:6831
           env:
           - name: ISSUER_URL
             valueFrom:

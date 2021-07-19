@@ -262,11 +262,6 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
           memory: '${OPA_AMS_MEMORY_LIMIT}',
         },
       },
-      internal: {
-        tracing: {
-          endpoint: 'localhost:6831',
-        },
-      },
     }),
 
     // proxySecret: oauth.proxySecret,

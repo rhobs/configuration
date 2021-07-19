@@ -77,34 +77,6 @@ function(params) {
                 for tenant in std.objectFields(opa.config.mappings)
               ]
             else []
-          ) + (
-            if std.objectHas(opa.config.internal, 'tracing') then
-              [] + (
-                if std.objectHas(opa.config.internal.tracing, 'endpoint') then
-                  [
-                    '--internal.tracing.endpoint=' + opa.config.internal.tracing.endpoint,
-                  ]
-                else []
-              ) + (
-                if std.objectHas(opa.config.internal.tracing, 'endpointType') then
-                  [
-                    '--internal.tracing.endpoint-type=' + opa.config.internal.tracing.endpointType,
-                  ]
-                else []
-              ) + (
-                if std.objectHas(opa.config.internal.tracing, 'samplingFraction') then
-                  [
-                    '--internal.tracing.sampling-fraction=' + opa.config.internal.tracing.samplingFraction,
-                  ]
-                else []
-              ) + (
-                if std.objectHas(opa.config.internal.tracing, 'serviceName') then
-                  [
-                    '--internal.tracing.service-name=' + opa.config.internal.tracing.serviceName,
-                  ]
-                else []
-              )
-            else []
           ),
           env: [
             {

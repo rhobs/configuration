@@ -125,6 +125,12 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     },
   }) {
     serviceMonitor+: {
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
       spec+: {
         namespaceSelector: {
           // NOTICE:

@@ -62,6 +62,7 @@ local prometheusAms = (import 'prometheus/remote-write-proxy.libsonnet')({
   version: '${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION}',
   image: '${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE}:${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION}',
   target: '${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET}',
+  targetNamespace: '${OBSERVATORIUM_METRICS_NAMESPACE}',
   tenantID: 'FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
 });
 
@@ -167,6 +168,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
     { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
     { name: 'OBSERVATORIUM_NAMESPACE', value: 'observatorium' },
+    { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
     { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_IMAGE', value: 'quay.io/app-sre/observatorium-receive-proxy' },
     { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET', value: 'observatorium-thanos-receive' },
     { name: 'PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION', value: '14e844d' },

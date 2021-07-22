@@ -9,6 +9,7 @@ local defaults = {
   version: error 'must provide version',
   image: error 'must set image for proxy',
   target: error 'must provide target',
+  targetNamespace: error 'must provide target namespace',
   tenantID: error 'must provide tenant ID',
   ports: {
     proxy: 8080,
@@ -110,7 +111,7 @@ function(params) {
         listen_port: rwp.config.ports.proxy,
         forward_host: 'http://%s.%s.svc.cluster.local:%d' % [
           rwp.config.target,
-          rwp.config.namespace,
+          rwp.config.targetNamespace,
           rwp.config.ports.target,
         ],
         thanos_tenant: rwp.config.tenantID,

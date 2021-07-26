@@ -141,6 +141,11 @@ objects:
           - --whitelist={__name__="csv_abnormal"}
           - --whitelist={__name__="csv_succeeded"}
           - --whitelist={__name__="insightsclient_request_send_total"}
+          - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
+          - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
+          - --whitelist={__name__="instance:etcd_mvcc_db_total_size_in_bytes:sum"}
+          - --whitelist={__name__="instance:etcd_mvcc_db_total_size_in_use_in_bytes:sum"}
+          - --whitelist={__name__="instance:etcd_network_peer_round_trip_time_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_object_counts:sum"}
           - --whitelist={__name__="job:ceph_osd_metadata:count"}
           - --whitelist={__name__="job:ceph_pools_iops:total"}
@@ -317,6 +322,11 @@ objects:
           - --whitelist={__name__="csv_abnormal"}
           - --whitelist={__name__="csv_succeeded"}
           - --whitelist={__name__="insightsclient_request_send_total"}
+          - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
+          - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
+          - --whitelist={__name__="instance:etcd_mvcc_db_total_size_in_bytes:sum"}
+          - --whitelist={__name__="instance:etcd_mvcc_db_total_size_in_use_in_bytes:sum"}
+          - --whitelist={__name__="instance:etcd_network_peer_round_trip_time_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_object_counts:sum"}
           - --whitelist={__name__="job:ceph_osd_metadata:count"}
           - --whitelist={__name__="job:ceph_pools_iops:total"}

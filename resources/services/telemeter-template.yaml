@@ -106,6 +106,7 @@ objects:
           - --whitelist={__name__="che_workspace_start_time_seconds_sum"}
           - --whitelist={__name__="che_workspace_started_total"}
           - --whitelist={__name__="che_workspace_status"}
+          - --whitelist={__name__="cluster:alertmanager_integrations:max"}
           - --whitelist={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
@@ -287,6 +288,7 @@ objects:
           - --whitelist={__name__="che_workspace_start_time_seconds_sum"}
           - --whitelist={__name__="che_workspace_started_total"}
           - --whitelist={__name__="che_workspace_status"}
+          - --whitelist={__name__="cluster:alertmanager_integrations:max"}
           - --whitelist={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}

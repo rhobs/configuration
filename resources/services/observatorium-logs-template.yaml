@@ -102,7 +102,7 @@ objects:
             name: metrics
           resources: {}
         securityContext: {}
-        serviceAccountName: observatorium-loki-chunk-cache
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -202,7 +202,7 @@ objects:
             name: metrics
           resources: {}
         securityContext: {}
-        serviceAccountName: observatorium-loki-index-query-cache
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -302,7 +302,7 @@ objects:
             name: metrics
           resources: {}
         securityContext: {}
-        serviceAccountName: observatorium-loki-results-cache
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
 - apiVersion: v1
   kind: Service
   metadata:

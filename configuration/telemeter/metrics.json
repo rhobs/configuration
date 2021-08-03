@@ -12,6 +12,7 @@
   "{__name__=\"che_workspace_start_time_seconds_sum\"}",
   "{__name__=\"che_workspace_started_total\"}",
   "{__name__=\"che_workspace_status\"}",
+  "{__name__=\"cluster:alertmanager_integrations:max\"}",
   "{__name__=\"cluster:apiserver_current_inflight_requests:sum:max_over_time:2m\"}",
   "{__name__=\"cluster:capacity_cpu_cores:sum\"}",
   "{__name__=\"cluster:capacity_memory_bytes:sum\"}",

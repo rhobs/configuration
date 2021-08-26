@@ -148,6 +148,9 @@ objects:
           - --whitelist={__name__="instance:etcd_mvcc_db_total_size_in_use_in_bytes:sum"}
           - --whitelist={__name__="instance:etcd_network_peer_round_trip_time_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_object_counts:sum"}
+          - --whitelist={__name__="jaeger_operator_instances_agent_strategies"}
+          - --whitelist={__name__="jaeger_operator_instances_storage_types"}
+          - --whitelist={__name__="jaeger_operator_instances_strategies"}
           - --whitelist={__name__="job:ceph_osd_metadata:count"}
           - --whitelist={__name__="job:ceph_pools_iops:total"}
           - --whitelist={__name__="job:ceph_pools_iops_bytes:total"}
@@ -330,6 +333,9 @@ objects:
           - --whitelist={__name__="instance:etcd_mvcc_db_total_size_in_use_in_bytes:sum"}
           - --whitelist={__name__="instance:etcd_network_peer_round_trip_time_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_object_counts:sum"}
+          - --whitelist={__name__="jaeger_operator_instances_agent_strategies"}
+          - --whitelist={__name__="jaeger_operator_instances_storage_types"}
+          - --whitelist={__name__="jaeger_operator_instances_strategies"}
           - --whitelist={__name__="job:ceph_osd_metadata:count"}
           - --whitelist={__name__="job:ceph_pools_iops:total"}
           - --whitelist={__name__="job:ceph_pools_iops_bytes:total"}

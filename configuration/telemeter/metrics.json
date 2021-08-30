@@ -67,6 +67,8 @@
   "{__name__=\"job:noobaa_total_unhealthy_buckets:sum\"}",
   "{__name__=\"monitoring:container_memory_working_set_bytes:sum\"}",
   "{__name__=\"monitoring:haproxy_server_http_responses_total:sum\"}",
+  "{__name__=\"namespace_job:scrape_samples_post_metric_relabeling:topk3\"}",
+  "{__name__=\"namespace_job:scrape_series_added:topk3_sum1h\"}",
   "{__name__=\"node_role_os_version_machine:cpu_capacity_cores:sum\"}",
   "{__name__=\"node_role_os_version_machine:cpu_capacity_sockets:sum\"}",
   "{__name__=\"node_uname_info\"}",

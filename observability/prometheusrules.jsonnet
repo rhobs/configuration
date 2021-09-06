@@ -71,6 +71,8 @@ local appSREOverwrites(environment) = {
       else if
         name == 'observatorium-metrics' then 'no-dashboard'
       else if
+        name == 'observatorium-tenants' then 'no-dashboard'
+      else if
         std.startsWith(name, 'observatorium-api') then 'Tg-mH0rizaSJDKSADX'
       else if
         std.startsWith(name, 'telemeter') then 'Tg-mH0rizaSJDKSADJ'
@@ -519,4 +521,36 @@ local renderAlerts(name, environment, mixin) = {
 
   'observatorium-custom-metrics-stage.prometheusrules': renderAlerts('observatorium-metrics-stage', 'stage', customAlerts),
   'observatorium-custom-metrics-production.prometheusrules': renderAlerts('observatorium-metrics-production', 'production', customAlerts),
+}
+
+{
+  local tenantsAlerts = {
+    // Alerts for failures related to tenants (instantiation etc.).
+    prometheusAlerts+:: {
+      groups: [
+        {
+          name: 'observatorium-tenants',
+          rules: [
+            {
+              alert: 'ObservatoriumTenantsFailedOIDCRegistrations',
+              annotations: {
+                message: 'Increase in failed attempts to register with OIDC provider for {{ $labels.tenant }}',
+              },
+              // TODO(@matej-g): The exclusion of 'rhobs' tenant should be removed
+              // after https://issues.redhat.com/browse/MON-1849 is resolved.
+              expr: |||
+                sum(increase(observatorium_api_tenants_failed_registrations{tenant!="rhobs"}[5m])) by (tenant) > 0
+              |||,
+              labels: {
+                severity: 'high',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  'observatorium-tenants-stage.prometheusrules': renderAlerts('observatorium-tenants-stage', 'stage', tenantsAlerts),
+  'observatorium-tenants-production.prometheusrules': renderAlerts('observatorium-tenants-production', 'production', tenantsAlerts),
 }

@@ -4,6 +4,8 @@
 
 - Observatorium
     - [Verify components are running](#verify-components-are-running)
+- Observatorium Tenants
+    - [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
 - Observatorium Logs
     - [LokiRequestErrors](#lokirequesterrors)
     - [LokiRequestPanics](#lokirequestpanics)
@@ -80,6 +82,32 @@ Check targets are UP in app-sre Prometheus:
 - `thanos-receive-controller`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-controller-production%2f0
 
 - `thanos-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0
+
+---
+## ObservatoriumTenantsFailedOIDCRegistrations
+
+### Impact
+
+A tenant using OIDC provider for authentication failed to instantiate. Such tenant cannot write / read metrics or logs.
+
+### Summary
+
+There is either outage on the side of the OIDC provider or the tenant authorization is misconfigured.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-logs-production))
+- Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
+
+### Steps
+
+- Check the logs of Observatorium API deployment's [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-observatorium-api) to see the exact cause of failed OIDC registration.
+- Check whether the particular OIDC provider is up and available and / or check external channels for any information about outages (e.g. emails about ongoing incident, provider's status page).
+- If entries in `tenants.yaml` have been edited recently, ensure the tenants' configuration is valid. If not, correct the misconfigured entries and ask App-SRE to re-deploy the Observatorium API pods.
 
 ---
 

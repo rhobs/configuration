@@ -20,4 +20,4 @@ spec:
         sum(increase(observatorium_api_tenants_failed_registrations{tenant!="rhobs"}[5m])) by (tenant) > 0
       labels:
         service: telemeter
-        severity: high
+        severity: medium

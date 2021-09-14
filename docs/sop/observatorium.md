@@ -96,7 +96,7 @@ There is either outage on the side of the OIDC provider or the tenant authorizat
 
 ### Severity
 
-`high`
+`medium`
 
 ### Access Required
 

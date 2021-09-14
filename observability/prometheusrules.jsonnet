@@ -542,7 +542,7 @@ local renderAlerts(name, environment, mixin) = {
                 sum(increase(observatorium_api_tenants_failed_registrations{tenant!="rhobs"}[5m])) by (tenant) > 0
               |||,
               labels: {
-                severity: 'high',
+                severity: 'warning',
               },
             },
           ],

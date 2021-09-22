@@ -2,6 +2,10 @@
 
 This project holds the configuration files for our internal Red Hat Observability Service based on [Observatorium](https://github.com/observatorium/observatorium).
 
+## Requirements
+
+* [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler)
+
 ## Installing jsonnet dependencies
 
 To install all dependencies:

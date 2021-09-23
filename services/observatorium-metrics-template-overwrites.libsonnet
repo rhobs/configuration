@@ -112,6 +112,25 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
+    metricFederationRule+:: {
+      statefulSet+: jaegerAgentSidecar.statefulSet {
+        spec+: {
+          replicas: '${{THANOS_RULER_REPLICAS}}',
+          template+: {
+            spec+: {
+              securityContext: {},
+              containers: [
+                if c.name == 'thanos-rule' then c {
+                  env+: s3EnvVars,
+                } else c
+                for c in super.containers
+              ],
+            },
+          },
+        },
+      },
+    },
+
     stores+:: {
       shards:
         std.mapWithKey(function(shard, obj) obj {  // loops over each [shard-n]:obj

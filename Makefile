@@ -85,6 +85,7 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 manifests: format $(VENDOR_DIR)
 manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/conprof-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml
+manifests: resources/services/metric-federation-rule-template.yaml
 	$(MAKE) clean
 
 resources/services/conprof-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
@@ -111,6 +112,10 @@ resources/services/observatorium-metrics-template.yaml: $(wildcard services/obse
 resources/services/observatorium-logs-template.yaml: $(wildcard services/observatorium-logs-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium-logs templates"
 	$(JSONNET) -J vendor services/observatorium-logs-template.jsonnet | $(GOJSONTOYAML) > $@
+
+resources/services/metric-federation-rule-template.yaml: $(wildcard services/metric-federation-rule*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running metric-federation-rule templates"
+	$(JSONNET) -J vendor services/metric-federation-rule-template.jsonnet | $(GOJSONTOYAML) > $@
 
 .PHONY: clean
 clean:

@@ -2,6 +2,7 @@ local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.l
 local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
+local metricFederationRules = (import '../configuration/observatorium/metric-federation-rules.libsonnet');
 local tenants = (import '../configuration/observatorium/tenants.libsonnet');
 
 {
@@ -131,6 +132,78 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                 },
               }, group.rules),
             }, telemeterRules.prometheus.recordingrules.groups),
+          }),
+        },
+      },
+    },
+
+    local metricFederationRulesName = 'metric-federation-rules',
+    metricFederationRule:: t.rule(thanosSharedConfig {
+      name: 'observatorium-thanos-metric-federation-rule',
+      commonLabels+:: {
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/instance': 'metric-federation',
+      },
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      logLevel: '${THANOS_RULER_LOG_LEVEL}',
+      serviceMonitor: true,
+      queriers: [
+        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
+      ],
+      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
+      rulesConfig: [
+        {
+          name: metricFederationRulesName,
+          key: observatoriumRulesKey,
+        },
+      ],
+      resources: {
+        limits: {
+          cpu: '${THANOS_RULER_CPU_LIMIT}',
+          memory: '${THANOS_RULER_MEMORY_LIMIT}',
+        },
+        requests: {
+          cpu: '${THANOS_RULER_CPU_REQUEST}',
+          memory: '${THANOS_RULER_MEMORY_REQUEST}',
+        },
+      },
+      volumeClaimTemplate: {
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          storageClassName: '${STORAGE_CLASS}',
+          resources: {
+            requests: {
+              storage: '${THANOS_RULER_PVC_REQUEST}',
+            },
+          },
+        },
+      },
+    }) + {
+      // TODO: Move configmap either to upstream (best) or as overwrite.
+      configmap: {
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: {
+          name: metricFederationRulesName,
+          annotations: {
+            'qontract.recycle': 'true',
+          },
+          labels: {
+            'app.kubernetes.io/instance': 'observatorium',
+            'app.kubernetes.io/part-of': 'observatorium',
+          },
+        },
+        data: {
+          [observatoriumRulesKey]: std.manifestYamlDoc({
+            groups: std.map(function(group) {
+              name: 'telemeter-' + group.name,
+              interval: group.interval,
+              rules: std.map(function(rule) rule {
+                labels+: {
+                  tenant_id: tenants.map.telemeter.id,
+                },
+              }, group.rules),
+            }, metricFederationRules.prometheus.recordingrules.groups),
           }),
         },
       },
@@ -347,7 +420,11 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         for service in
           [thanos.rule.service] +
           [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
-          [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)]
+          [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)] +
+          // This service will not exist in a namespace where the metric-federation Ruler is not
+          // deployed (the MST namespace). This will cause the Querier to spam a warning saying
+          // it was not able to resolve the address.
+          [thanos.metricFederationRule.service]
       ],
       serviceMonitor: true,
       resources: {
@@ -516,6 +593,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
     } + {
       ['store-bucket-cache-' + name]: thanos.storeBucketCache[name]
       for name in std.objectFields(thanos.storeBucketCache)
+    } + {
+      ['metric-federation-rule-' + name]: thanos.metricFederationRule[name]
+      for name in std.objectFields(thanos.metricFederationRule)
     },
   },
 }

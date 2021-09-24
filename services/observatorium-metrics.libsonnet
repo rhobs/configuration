@@ -421,6 +421,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           [thanos.rule.service] +
           [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
           [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)] +
+          // This service will not exist in a namespace where the metric-federation Ruler is not
+          // deployed (the MST namespace). This will cause the Querier to spam a warning saying
+          // it was not able to resolve the address.
           [thanos.metricFederationRule.service]
       ],
       serviceMonitor: true,

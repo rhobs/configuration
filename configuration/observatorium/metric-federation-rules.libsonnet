@@ -7,33 +7,33 @@
           interval: '1m',
           rules: [
             {
-              record: 'rhosak:haproxy_server_bytes_out_total:kube_namespace_labels:sum_rate',
+              record: 'kafka_id:strimzi_resource_state:group',
               expr: |||
-                haproxy_server_bytes_out_total:kube_namespace_labels:sum_rate
+                kafka_id:strimzi_resource_state:group
               |||,
             },
             {
-              record: 'rhosak:haproxy_server_bytes_in_total:kube_namespace_labels:sum_rate',
+              record: 'kafka_id:haproxy_server_bytes_in_total:rate1h',
               expr: |||
-                haproxy_server_bytes_in_total:kube_namespace_labels:sum_rate
+                kafka_id:haproxy_server_bytes_in_total:rate1h
               |||,
             },
             {
-              record: 'rhosak:haproxy_server_bytes_in_total:kube_namespace_labels:sum_rate:haproxy_server_bytes_out_total:kube_namespace_labels:sum_rate',
+              record: 'kafka_id:haproxy_server_bytes_out_total:rate1h',
               expr: |||
-                haproxy_server_bytes_in_total:kube_namespace_labels:sum_rate:haproxy_server_bytes_out_total:kube_namespace_labels:sum_rate
+                kafka_id:haproxy_server_bytes_out_total:rate1h
               |||,
             },
             {
-              record: 'rhosak:kafka_broker_quota_totalstorageusedbytes:kube_namespace_labels:sum_max_over_time',
+              record: 'kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h',
               expr: |||
-                kafka_broker_quota_totalstorageusedbytes:kube_namespace_labels:sum_max_over_time
+                kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h
               |||,
             },
             {
-              record: 'rhosak:strimzi_resource_state:kube_namespace_labels:group',
+              record: 'kafka_id:haproxy_server_bytes_in_out_total:rate1h',
               expr: |||
-                strimzi_resource_state:kube_namespace_labels:group
+                kafka_id:haproxy_server_bytes_in_out_total:rate1h
               |||,
             },
           ],

@@ -552,7 +552,7 @@ local renderAlerts(name, environment, mixin) = {
       ],
     },
   },
-  
+
   'observatorium-tenants-stage.prometheusrules': renderAlerts('observatorium-tenants-stage', 'stage', tenantsAlerts),
   'observatorium-tenants-production.prometheusrules': renderAlerts('observatorium-tenants-production', 'production', tenantsAlerts),
 }
@@ -583,6 +583,6 @@ local renderAlerts(name, environment, mixin) = {
     },
   },
 
-  'observatorium-proactive-monitoring-stage.prometheusrules': renderAlerts('observatorium-proactive-monitoring-stage', 'stage', proactiveMonitoringAlerts),  
+  'observatorium-proactive-monitoring-stage.prometheusrules': renderAlerts('observatorium-proactive-monitoring-stage', 'stage', proactiveMonitoringAlerts),
   'observatorium-proactive-monitoring-production.prometheusrules': renderAlerts('observatorium-proactive-monitoring-production', 'production', proactiveMonitoringAlerts),
 }

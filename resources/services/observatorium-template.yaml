@@ -11,8 +11,10 @@ objects:
         "roles":
         - "rhobs"
         "subjects":
-        - "kind": "group"
-          "name": "rhobs"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhobs-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhobs"
       - "name": "telemeter-server"
         "roles":
         - "telemeter-write"

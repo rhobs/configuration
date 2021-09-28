@@ -47,8 +47,12 @@
       ],
       subjects: [
         {
-          name: 'rhobs',
-          kind: 'group',
+          name: 'service-account-observatorium-rhobs-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-rhobs',
+          kind: 'user',
         },
       ],
     },

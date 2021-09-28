@@ -571,7 +571,7 @@ local renderAlerts(name, environment, mixin) = {
                 message: 'Observatorium metric queries {{$labels.job}} in {{$labels.namespace}} are failing to handle {{$value | humanize}}% of requests.',
               },
               expr: |||
-                ( sum by (namespace, job) (rate(up_custom_query_errors_total[5m])) / sum by (namespace, job) (rate(up_custom_query_executed_total[5m]))) * 100 > 25
+                ( sum by (namespace, job, query) (rate(up_custom_query_errors_total[5m])) / sum by (namespace, job, query) (rate(up_custom_query_executed_total[5m]))) * 100 > 25
               |||,
               labels: {
                 severity: 'warning',

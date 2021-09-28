@@ -12,6 +12,7 @@ local obs = import 'observatorium.libsonnet';
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },
+    { name: 'NAMESPACES', value: '["observatorium-metrics"]' },
     { name: 'CONFIGMAP_RELOADER_IMAGE', value: 'quay.io/openshift/origin-configmap-reloader' },
     { name: 'CONFIGMAP_RELOADER_IMAGE_TAG', value: '4.5.0' },
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.15.0' },

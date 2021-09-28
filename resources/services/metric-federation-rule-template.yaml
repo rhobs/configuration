@@ -283,6 +283,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium-metrics
+- name: NAMESPACES
+  value: '["observatorium-metrics"]'
 - name: CONFIGMAP_RELOADER_IMAGE
   value: quay.io/openshift/origin-configmap-reloader
 - name: CONFIGMAP_RELOADER_IMAGE_TAG

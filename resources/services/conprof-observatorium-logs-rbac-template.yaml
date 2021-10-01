@@ -44,7 +44,7 @@ parameters:
 - name: IMAGE_TAG
   value: master-2020-04-29-73bf4f0
 - name: NAMESPACE
-  value: telemeter
+  value: observatorium
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs
 - name: SERVICE_ACCOUNT_NAME

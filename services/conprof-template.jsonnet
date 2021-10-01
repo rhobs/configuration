@@ -324,7 +324,7 @@ local conprof = c + c.withConfigMap {
     ],
     parameters: [
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
-      { name: 'NAMESPACE', value: 'telemeter' },
+      { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
@@ -343,7 +343,7 @@ local conprof = c + c.withConfigMap {
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
-      { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     ],
   },
 }

@@ -685,7 +685,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2020-06-15-d763595
+      app.kubernetes.io/version: master-2021-09-28-247fa45
     name: observatorium-observatorium-up
 - apiVersion: apps/v1
   kind: Deployment
@@ -695,7 +695,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2020-06-15-d763595
+      app.kubernetes.io/version: master-2021-09-28-247fa45
     name: observatorium-observatorium-up
   spec:
     replicas: 1
@@ -712,7 +712,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: observatorium-up
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: master-2020-06-15-d763595
+          app.kubernetes.io/version: master-2021-09-28-247fa45
       spec:
         containers:
         - args:
@@ -721,7 +721,7 @@ objects:
           - --endpoint-type=metrics
           - --queries-file=/etc/up/queries.yaml
           - --endpoint-read=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090/api/v1/query
-          image: quay.io/observatorium/up:master-2020-06-15-d763595
+          image: quay.io/observatorium/up:master-2021-09-28-247fa45
           name: observatorium-up
           ports:
           - containerPort: 8080
@@ -749,7 +749,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2020-06-15-d763595
+      app.kubernetes.io/version: master-2021-09-28-247fa45
     name: observatorium-observatorium-up
   spec:
     ports:

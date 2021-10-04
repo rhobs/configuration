@@ -48,4 +48,4 @@ parameters:
 - name: OBSERVATORIUM_MST_NAMESPACE
   value: observatorium-mst
 - name: SERVICE_ACCOUNT_NAME
-  value: prometheus-telemeter
+  value: observatorium

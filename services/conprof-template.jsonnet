@@ -309,7 +309,7 @@ local conprof = c + c.withConfigMap {
       { name: 'CONPROF_PROXY_MEMORY_REQUEST', value: '100Mi' },
       { name: 'CONPROF_PROXY_CPU_LIMITS', value: '200m' },
       { name: 'CONPROF_PROXY_MEMORY_LIMITS', value: '200Mi' },
-      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
     ],
   },
   'conprof-observatorium-logs-rbac-template': {
@@ -326,7 +326,7 @@ local conprof = c + c.withConfigMap {
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
-      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
     ],
   },
   'conprof-observatorium-mst-rbac-template': {
@@ -343,7 +343,7 @@ local conprof = c + c.withConfigMap {
       { name: 'IMAGE_TAG', value: 'master-2020-04-29-73bf4f0' },
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
-      { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
+      { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
     ],
   },
 }

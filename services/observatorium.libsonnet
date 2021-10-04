@@ -393,8 +393,8 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
               name: config.name,
               image: config.image,
               args: [
-                '--metric-count=8333',  // this is set so that we write 1M samples per hour to our test tenant
-                '--series-count=1',
+                '--metric-count=1',  // we only get one metric __name__
+                '--series-count=8333',  // this is set so that we write 1M samples per hour to our test tenant
                 '--remote-url="http://%s.%s.svc.cluster.local:%d"' % [
                   obs.thanos.receiversService.metadata.name,
                   obs.config.namespaces.metrics,

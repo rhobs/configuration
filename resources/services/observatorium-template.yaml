@@ -533,8 +533,8 @@ objects:
       spec:
         containers:
           args:
-          - --metric-count=8333
-          - --series-count=1
+          - --metric-count=1
+          - --series-count=8333
           - --remote-url="http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291"
           - --remote-write-interval=30s
           - --remote-requests-count=1000000

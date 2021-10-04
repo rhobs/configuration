@@ -361,6 +361,59 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     },
   },
 
+
+  avalanche:: {
+
+    local config = {
+      name: 'avalanache-remote-writer',
+      image: 'quay.io/freshtracks.io/avalanche:master-2020-12-28-0c1c64c',
+      commonLabels: {
+        'app.kubernetes.io/component': 'avalanche',
+        'app.kubernetes.io/name': 'avalanche-remote-writer',
+        'app.kubernetes.io/part-of': 'observatorium',
+      },
+    },
+    deployment: {
+      apiVersion: 'apps/v1',
+      kind: 'Deployment',
+      metadata: {
+        name: config.name,
+        labels: config.commonLabels,
+        namespace: obs.config.namespaces.metrics,
+      },
+      spec: {
+        replicas: 1,
+        selector: { matchLabels: config.commonLabels },
+        template: {
+          metadata: {
+            labels: config.commonLabels,
+          },
+          spec: {
+            containers: {
+              name: config.name,
+              image: config.image,
+              args: [
+                '--metric-count=8333',  // this is set so that we write 1M samples per hour to our test tenant
+                '--series-count=1',
+                '--remote-url="http://%s.%s.svc.cluster.local:%d"' % [
+                  obs.thanos.receiversService.metadata.name,
+                  obs.config.namespaces.metrics,
+                  obs.thanos.receiversService.spec.ports[2].port,
+                ],  // this is the internal cluster url of the thanos receive service
+                '--remote-write-interval=30s',  // how frequenetly to remote_write data
+                '--remote-requests-count=1000000',  // how many requests we make before exiting - make it a big number
+                '--value-interval=60',  // how often to update the metric values
+                '--series-interval=86400',  // how often to create new series names
+                '--metric-interval=86400',  // how often to create new metric names
+                '--const-label=tenant_id="770c1124-6ae8-4324-a9d4-9ce08590094b"',  // this is the id of our testing tenant
+              ],
+            },
+          },
+        },
+      },
+    },
+  },
+
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
@@ -369,5 +422,9 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     ['observatorium-cache-' + name]: obs.memcached[name]
     for name in std.objectFields(obs.memcached)
     if obs.memcached[name] != null
+  } + {
+    ['observatorium-avalanche-' + name]: obs.avalanche[name]
+    for name in std.objectFields(obs.avalanche)
+    if obs.avalanche[name] != null
   },
 }

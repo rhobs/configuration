@@ -509,6 +509,41 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: gubernator
         app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/name: avalanche-remote-writer
+      app.kubernetes.io/part-of: observatorium
+    name: avalanache-remote-writer
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: avalanche
+        app.kubernetes.io/name: avalanche-remote-writer
+        app.kubernetes.io/part-of: observatorium
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: avalanche
+          app.kubernetes.io/name: avalanche-remote-writer
+          app.kubernetes.io/part-of: observatorium
+      spec:
+        containers:
+          args:
+          - --metric-count=8333
+          - --series-count=1
+          - --remote-url="http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291"
+          - --remote-write-interval=30s
+          - --remote-requests-count=1000000
+          - --value-interval=60
+          - --series-interval=86400
+          - --metric-interval=86400
+          - --const-label=tenant_id="770c1124-6ae8-4324-a9d4-9ce08590094b"
+          image: quay.io/freshtracks.io/avalanche:master-2020-12-28-0c1c64c
+          name: avalanache-remote-writer
 - apiVersion: v1
   kind: Service
   metadata:

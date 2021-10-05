@@ -629,11 +629,11 @@ objects:
     queries.yaml: |-
       "queries":
       - "name": "query-path-sli-1M-samples"
-        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"1610b0c3-c509-4592-a256-a1871353dbfa\"}[1h])"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[1h])"
       - "name": "query-path-sli-10M-samples"
-        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"1610b0c3-c509-4592-a256-a1871353dbfa\"}[10h])"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[10h])"
       - "name": "query-path-sli-100M-samples"
-        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"1610b0c3-c509-4592-a256-a1871353dbfa\"}[100h])"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
   kind: ConfigMap
   metadata:
     labels:

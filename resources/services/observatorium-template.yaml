@@ -542,7 +542,7 @@ objects:
           - --series-interval=86400
           - --metric-interval=86400
           - --const-label=tenant_id="0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"
-          image: quay.io/freshtracks.io/avalanche:master-2020-12-28-0c1c64c
+          image: quay.io/observatorium/avalanche:master-2020-12-28-0c1c64c
           name: avalanache-remote-writer
 - apiVersion: v1
   kind: Service

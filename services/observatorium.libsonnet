@@ -405,7 +405,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
                 '--value-interval=60',  // how often to update the metric values
                 '--series-interval=86400',  // how often to create new series names
                 '--metric-interval=86400',  // how often to create new metric names
-                '--const-label=tenant_id="770c1124-6ae8-4324-a9d4-9ce08590094b"',  // this is the id of our testing tenant
+                '--const-label=tenant_id="0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"',  // this is the id of our testing tenant
               ],
             },
           },

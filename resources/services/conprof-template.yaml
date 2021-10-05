@@ -292,4 +292,4 @@ parameters:
 - name: CONPROF_PROXY_MEMORY_LIMITS
   value: 200Mi
 - name: SERVICE_ACCOUNT_NAME
-  value: prometheus-telemeter
+  value: observatorium

@@ -535,7 +535,7 @@ objects:
         - args:
           - --metric-count=1
           - --series-count=8333
-          - --remote-url="http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+          - --remote-url=http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291/api/v1/receive
           - --remote-write-interval=30s
           - --remote-requests-count=1000000
           - --value-interval=60

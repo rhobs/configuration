@@ -366,7 +366,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
 
     local config = {
       name: 'avalanache-remote-writer',
-      image: 'quay.io/freshtracks.io/avalanche:master-2020-12-28-0c1c64c',
+      image: 'quay.io/observatorium/avalanche:master-2020-12-28-0c1c64c',
       commonLabels: {
         'app.kubernetes.io/component': 'avalanche',
         'app.kubernetes.io/name': 'avalanche-remote-writer',

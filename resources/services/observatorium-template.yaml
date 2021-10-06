@@ -671,6 +671,8 @@ objects:
         "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
   kind: ConfigMap
   metadata:
+    annotations:
+      qontract.recycle: "true"
     labels:
       app.kubernetes.io/component: blackbox-prober
       app.kubernetes.io/instance: observatorium

@@ -1,0 +1,23 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: observatorium-proactive-monitoring-production
+spec:
+  groups:
+  - name: observatorium-proactive-monitoring
+    rules:
+    - alert: ObservatoriumProActiveMetricsQueryErrorRateHigh
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-proactive-monitoring?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Observatorium metric queries {{$labels.job}} in {{$labels.namespace}} are failing to handle {{$value | humanize}}% of requests.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumproactivemetricsqueryerrorratehigh
+      expr: |
+        ( sum by (namespace, job, query) (rate(up_custom_query_errors_total[5m])) / sum by (namespace, job, query) (rate(up_custom_query_executed_total[5m]))) * 100 > 25
+      labels:
+        service: telemeter
+        severity: medium

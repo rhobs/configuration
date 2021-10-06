@@ -359,6 +359,11 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
         },
       },
     },
+    configmap+: {
+      metadata+: {
+        annotations+: { 'qontract.recycle': 'true' },
+      },
+    },
   },
 
 

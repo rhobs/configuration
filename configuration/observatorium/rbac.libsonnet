@@ -55,7 +55,8 @@
     {
       name: 'rhobs',
       roles: [
-        'rhobs',
+        'rhobs-write',
+        'rhobs-read',
       ],
       subjects: [
         {

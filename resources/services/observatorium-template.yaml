@@ -15,6 +15,13 @@ objects:
           "name": "service-account-observatorium-rhobs-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhobs"
+      - "name": "rhobs-admin"
+        "roles":
+        - "telemeter-read"
+        - "rhobs-read"
+        "subjects":
+        - "kind": "group"
+          "name": "team-observability-platform@redhat.com"
       - "name": "telemeter-server"
         "roles":
         - "telemeter-write"
@@ -33,9 +40,16 @@ objects:
         - "kind": "user"
           "name": "service-account-observatorium-subwatch"
       "roles":
-      - "name": "rhobs"
+      - "name": "rhobs-read"
         "permissions":
         - "read"
+        "resources":
+        - "metrics"
+        - "logs"
+        "tenants":
+        - "rhobs"
+      - "name": "rhobs-write"
+        "permissions":
         - "write"
         "resources":
         - "metrics"

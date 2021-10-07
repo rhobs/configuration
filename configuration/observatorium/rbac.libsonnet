@@ -1,7 +1,7 @@
 {
   roles: [
     {
-      name: 'rhobs',
+      name: 'rhobs-read',
       resources: [
         'metrics',
         'logs',
@@ -11,6 +11,18 @@
       ],
       permissions: [
         'read',
+      ],
+    },
+    {
+      name: 'rhobs-write',
+      resources: [
+        'metrics',
+        'logs',
+      ],
+      tenants: [
+        'rhobs',
+      ],
+      permissions: [
         'write',
       ],
     },
@@ -53,6 +65,19 @@
         {
           name: 'service-account-observatorium-rhobs',
           kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'rhobs-admin',
+      roles: [
+        'telemeter-read',
+        'rhobs-read',
+      ],
+      subjects: [
+        {
+          name: 'team-observability-platform@redhat.com',
+          kind: 'group',
         },
       ],
     },

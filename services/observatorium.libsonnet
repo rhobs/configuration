@@ -371,7 +371,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
 
     local config = {
       name: 'avalanche-remote-writer',
-      image: 'quay.io/observatorium/avalanche:master-2020-12-28-0c1c64c',
+      image: 'quay.io/observatorium/avalanche:make-tenant-header-configurable-2021-10-07-0a2cbf5',
       commonLabels: {
         'app.kubernetes.io/component': 'avalanche',
         'app.kubernetes.io/name': 'avalanche-remote-writer',
@@ -407,10 +407,11 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
                 ],  // this is the internal cluster url of the thanos receive service
                 '--remote-write-interval=30s',  // how frequenetly to remote_write data
                 '--remote-requests-count=1000000',  // how many requests we make before exiting - make it a big number
-                '--value-interval=60',  // how often to update the metric values
+                '--value-interval=3600',  // how often to update the metric values
                 '--series-interval=86400',  // how often to create new series names
                 '--metric-interval=86400',  // how often to create new metric names
-                '--const-label=tenant_id="0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"',  // this is the id of our testing tenant
+                '--remote-tenant-header=THANOS-TENANT',  // this is tenant header to set in remote write requests
+                '--remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2',  // this is tenant we will write data to
               ],
             }],
           },

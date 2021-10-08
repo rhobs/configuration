@@ -232,6 +232,7 @@ local proxyContainer = {
               serviceAccountName: config.serviceAccountName,
               containers: [
                 super.containers[0] {
+                  args+: ['--storage-tsdb-retention-time=12h'],
                   resources: {
                     requests: {
                       cpu: '${PARCA_CPU_REQUEST}',
@@ -261,8 +262,8 @@ local proxyContainer = {
         },
         spec+: {
           ports: [
-            { name: 'http', port: 10902, targetPort: config.portTLS },
-            { name: 'https', port: 8443, targetPort: config.port },
+            { name: 'https', port: 10902, targetPort: config.portTLS },
+            { name: 'http', port: 8443, targetPort: config.port },
           ],
         },
       },

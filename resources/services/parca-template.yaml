@@ -137,6 +137,7 @@ objects:
           - /parca
           - --config-path=/var/parca/parca.yaml
           - --log-level=info
+          - --storage-tsdb-retention-time=12h
           image: ${IMAGE}:${IMAGE_TAG}
           livenessProbe:
             exec:
@@ -229,10 +230,10 @@ objects:
     name: parca
   spec:
     ports:
-    - name: http
+    - name: https
       port: 10902
       targetPort: 10902
-    - name: https
+    - name: http
       port: 8443
       targetPort: 7070
     selector:

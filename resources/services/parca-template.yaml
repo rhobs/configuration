@@ -213,12 +213,12 @@ objects:
         - configMap:
             name: parca-config
           name: parca-config
-        - name: secret-conprof-tls
+        - name: secret-parca-tls
           secret:
-            secretName: parca-tls
-        - name: secret-conprof-proxy
+            secretName: conprof-tls
+        - name: secret-parca-proxy
           secret:
-            secretName: parca-proxy
+            secretName: conprof-proxy
 - apiVersion: v1
   kind: Service
   metadata:
@@ -279,6 +279,30 @@ objects:
   - kind: ServiceAccount
     name: ${SERVICE_ACCOUNT_NAME}
     namespace: ${NAMESPACE}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${NAMESPACE}
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
 parameters:
 - name: NAMESPACE
   value: observatorium

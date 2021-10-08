@@ -737,11 +737,11 @@ objects:
             name: http
           resources:
             limits:
-              cpu: ${UP_MEMORY_LIMIT}
-              memory: ${UP_MEMORY_REQUEST}
+              cpu: ${UP_CPU_LIMIT}
+              memory: ${UP_MEMORY_LIMIT}
             requests:
               cpu: ${UP_CPU_REQUEST}
-              memory: ${UP_CPU_LIMIT}
+              memory: ${UP_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /etc/up/
             name: query-config

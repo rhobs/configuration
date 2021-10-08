@@ -131,7 +131,6 @@ objects:
           app.kubernetes.io/instance: parca
           app.kubernetes.io/name: parca
           app.kubernetes.io/version: ${IMAGE_TAG}
-      seviceAccountName: ${SERVICE_ACCOUNT_NAME}
       spec:
         containers:
         - args:
@@ -207,7 +206,7 @@ objects:
         securityContext:
           fsGroup: 65534
           runAsUser: 65534
-        serviceAccountName: parca
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:
         - configMap:

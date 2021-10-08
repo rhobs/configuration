@@ -227,8 +227,8 @@ local proxyContainer = {
         metadata+: { namespace:: 'hidden' },
         spec+: {
           template+: {
-            seviceAccountName: config.serviceAccountName,
             spec+: {
+              serviceAccountName: config.serviceAccountName,
               containers: [
                 super.containers[0] {
                   resources: {

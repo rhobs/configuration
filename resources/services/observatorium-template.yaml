@@ -736,11 +736,11 @@ objects:
             name: http
           resources:
             limits:
-              cpu: 20m
-              memory: 50Mi
+              cpu: 200m
+              memory: 500Mi
             requests:
-              cpu: 5m
-              memory: 10Mi
+              cpu: 50m
+              memory: 100Mi
           volumeMounts:
           - mountPath: /etc/up/
             name: query-config

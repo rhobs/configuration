@@ -244,8 +244,8 @@ local proxyContainer = {
                 },
               ] + [proxyContainer],
               volumes+: [
-                { name: 'secret-conprof-tls', secret: { secretName: 'parca-tls' } },
-                { name: 'secret-conprof-proxy', secret: { secretName: 'parca-proxy' } },
+                { name: 'secret-parca-tls', secret: { secretName: 'conprof-tls' } },
+                { name: 'secret-parca-proxy', secret: { secretName: 'conprof-proxy' } },
               ],
             },
           },
@@ -265,13 +265,13 @@ local proxyContainer = {
           ],
         },
       },
-    ] + [
       ourRole {
         metadata+: { namespace:: 'hidden' },
       },
       ourRoleBinding {
         metadata+: { namespace:: 'hidden' },
       },
+      parca.serviceMonitor,
     ],
     parameters: [
       { name: 'NAMESPACE', value: 'observatorium' },

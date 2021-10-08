@@ -203,9 +203,7 @@ objects:
             readOnly: false
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: null
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:

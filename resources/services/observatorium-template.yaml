@@ -736,11 +736,11 @@ objects:
             name: http
           resources:
             limits:
-              cpu: 200m
-              memory: 500Mi
+              cpu: ${UP_MEMORY_LIMIT}
+              memory: ${UP_MEMORY_REQUEST}
             requests:
-              cpu: 50m
-              memory: 100Mi
+              cpu: ${UP_CPU_REQUEST}
+              memory: ${UP_CPU_LIMIT}
           volumeMounts:
           - mountPath: /etc/up/
             name: query-config
@@ -897,3 +897,11 @@ parameters:
   value: ""
 - name: SERVICE_ACCOUNT_NAME
   value: prometheus-telemeter
+- name: UP_CPU_REQUEST
+  value: 100m
+- name: UP_CPU_LIMIT
+  value: 500m
+- name: UP_MEMORY_LIMIT
+  value: 1Gi
+- name: UP_MEMORY_REQUEST
+  value: 2Gi

@@ -332,12 +332,12 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     serviceMonitor: true,
     resources: {
       requests: {
-        cpu: '50m',
-        memory: '100Mi',
+        cpu: '${UP_CPU_REQUEST}',
+        memory: '${UP_CPU_LIMIT}',
       },
       limits: {
-        cpu: '200m',
-        memory: '500Mi',
+        cpu: '${UP_MEMORY_LIMIT}',
+        memory: '${UP_MEMORY_REQUEST}',
       },
     },
   }) {

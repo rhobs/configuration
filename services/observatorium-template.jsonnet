@@ -72,5 +72,9 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OSD_ORGANIZATION_ID', value: '' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
+    { name: 'UP_CPU_REQUEST', value: '100m' },
+    { name: 'UP_CPU_LIMIT', value: '500m' },
+    { name: 'UP_MEMORY_LIMIT', value: '1Gi' },
+    { name: 'UP_MEMORY_REQUEST', value: '2Gi' },
   ],
 }

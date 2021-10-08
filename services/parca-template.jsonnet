@@ -228,6 +228,7 @@ local proxyContainer = {
         spec+: {
           template+: {
             spec+: {
+              securityContext: null,
               serviceAccountName: config.serviceAccountName,
               containers: [
                 super.containers[0] {

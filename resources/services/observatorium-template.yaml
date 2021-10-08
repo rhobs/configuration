@@ -902,7 +902,7 @@ parameters:
   value: 100m
 - name: UP_CPU_LIMIT
   value: 500m
-- name: UP_MEMORY_LIMIT
-  value: 1Gi
 - name: UP_MEMORY_REQUEST
+  value: 1Gi
+- name: UP_MEMORY_LIMIT
   value: 2Gi

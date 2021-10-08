@@ -1,11 +1,20 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: conprof
+  name: parca
 objects:
 - apiVersion: v1
   data:
-    conprof.yaml: |-
+    parca.yaml: |-
+      "debug_info":
+        "bucket":
+          "config":
+            "directory": "/parca"
+          "type": "FILESYSTEM"
+        "cache":
+          "config":
+            "directory": "/parca"
+          "type": "FILESYSTEM"
       "scrape_configs":
       - "job_name": "thanos"
         "kubernetes_sd_configs":
@@ -98,64 +107,73 @@ objects:
   metadata:
     annotations:
       qontract.recycle: "true"
-    labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
-      app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-config
+    name: parca-config
 - apiVersion: apps/v1
-  kind: StatefulSet
+  kind: Deployment
   metadata:
     labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof
+    name: parca
   spec:
-    podManagementPolicy: Parallel
-    replicas: ${{CONPROF_REPLICAS}}
+    replicas: 1
     selector:
       matchLabels:
-        app.kubernetes.io/instance: conprof
-        app.kubernetes.io/name: conprof
-    serviceName: conprof
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
     template:
       metadata:
         labels:
-          app.kubernetes.io/instance: conprof
-          app.kubernetes.io/name: conprof
+          app.kubernetes.io/component: observability
+          app.kubernetes.io/instance: parca
+          app.kubernetes.io/name: parca
           app.kubernetes.io/version: ${IMAGE_TAG}
+      seviceAccountName: ${SERVICE_ACCOUNT_NAME}
       spec:
         containers:
         - args:
-          - all
-          - --storage.tsdb.path=/conprof
-          - --config.file=/etc/conprof/conprof.yaml
+          - /parca
+          - --config-path=/var/parca/parca.yaml
+          - --log-level=info
           image: ${IMAGE}:${IMAGE_TAG}
-          name: conprof
+          livenessProbe:
+            exec:
+              command:
+              - /grpc-health-probe
+              - -v
+              - -addr=:7070
+            initialDelaySeconds: 5
+          name: parca
           ports:
-          - containerPort: 8080
-            name: http
+          - containerPort: 7070
+            name: all
+          readinessProbe:
+            exec:
+              command:
+              - /grpc-health-probe
+              - -v
+              - -addr=:7070
+            initialDelaySeconds: 10
           resources:
             limits:
-              cpu: ${CONPROF_CPU_LIMITS}
-              memory: ${CONPROF_MEMORY_LIMITS}
+              cpu: ${PARCA_CPU_LIMITS}
+              memory: ${PARCA_MEMORY_LIMITS}
             requests:
-              cpu: ${CONPROF_CPU_REQUEST}
-              memory: ${CONPROF_MEMORY_REQUEST}
+              cpu: ${PARCA_CPU_REQUEST}
+              memory: ${PARCA_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
-          - mountPath: /conprof
-            name: storage
-            readOnly: false
-          - mountPath: /etc/conprof
-            name: config
-            readOnly: false
+          - mountPath: /var/parca
+            name: parca-config
         - args:
           - -provider=openshift
-          - -https-address=:8443
+          - -https-address=:10902
           - -http-address=
           - -email-domain=*
-          - -upstream=http://localhost:10902
+          - -upstream=http://localhost:7070
           - -openshift-service-account=${SERVICE_ACCOUNT_NAME}
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
@@ -168,67 +186,71 @@ objects:
           image: ${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}
           name: proxy
           ports:
-          - containerPort: 8443
+          - containerPort: 10902
             name: https
           resources:
             limits:
-              cpu: ${CONPROF_PROXY_CPU_LIMITS}
-              memory: ${CONPROF_PROXY_MEMORY_LIMITS}
+              cpu: ${PARCA_PROXY_CPU_LIMITS}
+              memory: ${PARCA_PROXY_MEMORY_LIMITS}
             requests:
-              cpu: ${CONPROF_PROXY_CPU_REQUEST}
-              memory: ${CONPROF_PROXY_MEMORY_REQUEST}
+              cpu: ${PARCA_PROXY_CPU_REQUEST}
+              memory: ${PARCA_PROXY_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /etc/tls/private
-            name: secret-conprof-tls
+            name: secret-parca-tls
             readOnly: false
           - mountPath: /etc/proxy/secrets
-            name: secret-conprof-proxy
+            name: secret-parca-proxy
             readOnly: false
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
+        securityContext:
+          fsGroup: 65534
+          runAsUser: 65534
+        serviceAccountName: parca
+        terminationGracePeriodSeconds: 120
         volumes:
-        - emptyDir: {}
-          name: storage
         - configMap:
-            name: conprof-config
-          name: config
+            name: parca-config
+          name: parca-config
         - name: secret-conprof-tls
           secret:
-            secretName: conprof-tls
+            secretName: parca-tls
         - name: secret-conprof-proxy
           secret:
-            secretName: conprof-proxy
+            secretName: parca-proxy
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
       service.alpha.openshift.io/serving-cert-secret-name: conprof-tls
     labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof
+    name: parca
   spec:
-    clusterIP: None
     ports:
     - name: http
       port: 10902
       targetPort: 10902
     - name: https
       port: 8443
-      targetPort: 8443
+      targetPort: 7070
     selector:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
     labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-${NAMESPACE}
+    name: parca
   rules:
   - apiGroups:
     - ""
@@ -244,14 +266,15 @@ objects:
   kind: RoleBinding
   metadata:
     labels:
-      app.kubernetes.io/instance: conprof
-      app.kubernetes.io/name: conprof
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
       app.kubernetes.io/version: ${IMAGE_TAG}
-    name: conprof-${NAMESPACE}
+    name: parca
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: conprof-${NAMESPACE}
+    name: parca
   subjects:
   - kind: ServiceAccount
     name: ${SERVICE_ACCOUNT_NAME}
@@ -266,30 +289,30 @@ parameters:
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs
 - name: IMAGE
-  value: quay.io/conprof/conprof
+  value: ghcr.io/parca-dev/parca
 - name: IMAGE_TAG
-  value: master-2020-04-29-73bf4f0
-- name: CONPROF_REPLICAS
+  value: v0.1.0
+- name: PARCA_REPLICAS
   value: "1"
-- name: CONPROF_CPU_REQUEST
+- name: PARCA_CPU_REQUEST
   value: "1"
-- name: CONPROF_MEMORY_REQUEST
+- name: PARCA_MEMORY_REQUEST
   value: 4Gi
-- name: CONPROF_CPU_LIMITS
+- name: PARCA_CPU_LIMITS
   value: "4"
-- name: CONPROF_MEMORY_LIMITS
+- name: PARCA_MEMORY_LIMITS
   value: 8Gi
 - name: OAUTH_PROXY_IMAGE
   value: quay.io/openshift/origin-oauth-proxy
 - name: OAUTH_PROXY_IMAGE_TAG
   value: 4.7.0
-- name: CONPROF_PROXY_CPU_REQUEST
+- name: PARCA_PROXY_CPU_REQUEST
   value: 100m
-- name: CONPROF_PROXY_MEMORY_REQUEST
+- name: PARCA_PROXY_MEMORY_REQUEST
   value: 100Mi
-- name: CONPROF_PROXY_CPU_LIMITS
+- name: PARCA_PROXY_CPU_LIMITS
   value: 200m
-- name: CONPROF_PROXY_MEMORY_LIMITS
+- name: PARCA_PROXY_MEMORY_LIMITS
   value: 200Mi
 - name: SERVICE_ACCOUNT_NAME
   value: observatorium

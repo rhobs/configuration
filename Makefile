@@ -83,15 +83,15 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 
 .PHONY: manifests
 manifests: format $(VENDOR_DIR)
-manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/conprof-template.yaml
+manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml
 	$(MAKE) clean
 
-resources/services/conprof-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-resources/services/conprof-template.yaml: $(wildcard services/conprof-*)
-	@echo ">>>>> Running conprof-template"
-	$(JSONNET) -J vendor -m resources/services services/conprof-template.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
+resources/services/parca-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/services/parca-template.yaml: $(wildcard services/parca-*)
+	@echo ">>>>> Running parca-template"
+	$(JSONNET) -J vendor -m resources/services services/parca-template.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 resources/services/jaeger-template.yaml: $(wildcard services/jaeger-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"

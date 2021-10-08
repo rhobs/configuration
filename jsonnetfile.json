@@ -4,11 +4,11 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/conprof/conprof.git",
-          "subdir": "deployments/jsonnet/conprof"
+          "remote": "https://github.com/parca-dev/parca.git",
+          "subdir": "deploy/lib/parca"
         }
       },
-      "version": "master"
+      "version": "main"
     },
     {
       "source": {

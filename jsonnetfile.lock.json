@@ -4,16 +4,6 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/conprof/conprof.git",
-          "subdir": "deployments/jsonnet/conprof"
-        }
-      },
-      "version": "95f0da80e66d3481d3637e9bdc8779d1c2268888",
-      "sum": "iW7bS0aep/8NNPUrzzDtB8YIHZbP6z1H/U9jhM6QF/A="
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/grafana/grafonnet-lib.git",
           "subdir": "grafonnet"
         }
@@ -164,6 +154,16 @@
       },
       "version": "0bea9a2c9711b8877f9c7b4b7aa5c0a55793d19d",
       "sum": "ekAubr/SuvsRaZxctnTtmpSuWIHohYgYkfwdXE5qW2g="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/parca-dev/parca.git",
+          "subdir": "deploy/lib/parca"
+        }
+      },
+      "version": "b61ef19c15a33c58f33112c31bd6ca3ad1db97e4",
+      "sum": "SNDoI0Z7zNrbFs5a27cDx3amw6Kh4KIDHVRopyvyMso="
     },
     {
       "source": {

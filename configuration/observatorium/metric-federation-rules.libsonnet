@@ -7,9 +7,9 @@
           interval: '1m',
           rules: [
             {
-              record: 'kafka_id:strimzi_resource_state:group',
+              record: 'kafka_id:strimzi_resource_state:max_over_time1h',
               expr: |||
-                kafka_id:strimzi_resource_state:group
+                kafka_id:strimzi_resource_state:max_over_time1h
               |||,
             },
             {

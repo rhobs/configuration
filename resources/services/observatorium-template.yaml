@@ -555,7 +555,7 @@ objects:
           - --remote-requests-count=1000000
           - --value-interval=3600
           - --series-interval=86400
-          - --metric-interval=86400
+          - --metric-interval=315360000
           - --remote-tenant-header=THANOS-TENANT
           - --remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
           image: quay.io/observatorium/avalanche:make-tenant-header-configurable-2021-10-07-0a2cbf5

@@ -408,8 +408,8 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
                 '--remote-write-interval=30s',  // how frequenetly to remote_write data
                 '--remote-requests-count=1000000',  // how many requests we make before exiting - make it a big number
                 '--value-interval=3600',  // how often to update the metric values
-                '--series-interval=86400',  // how often to create new series names
-                '--metric-interval=86400',  // how often to create new metric names
+                '--series-interval=86400',  // 24h - how often to create new series names
+                '--metric-interval=315360000',  // 10y - how often to create new metric names
                 '--remote-tenant-header=THANOS-TENANT',  // this is tenant header to set in remote write requests
                 '--remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2',  // this is tenant we will write data to
               ],

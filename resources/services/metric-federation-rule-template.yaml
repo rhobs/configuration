@@ -11,10 +11,10 @@ objects:
         "name": "telemeter-kafka.rules"
         "rules":
         - "expr": |
-            kafka_id:strimzi_resource_state:group
+            kafka_id:strimzi_resource_state:max_over_time1h
           "labels":
             "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "kafka_id:strimzi_resource_state:group"
+          "record": "kafka_id:strimzi_resource_state:max_over_time1h"
         - "expr": |
             kafka_id:haproxy_server_bytes_in_total:rate1h_gibibytes
           "labels":

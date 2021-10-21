@@ -323,7 +323,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
     namespace: obs.config.namespaces.default,
     commonLabels+:: obs.config.commonLabels,
-    version: 'master-2021-09-28-247fa45',
+    version: 'master-2021-10-18-8943d73',
     image: 'quay.io/observatorium/up:' + cfg.version,
     replicas: 1,
     endpointType: 'metrics',

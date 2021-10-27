@@ -5,6 +5,7 @@
 - Observatorium
     - [Verify components are running](#verify-components-are-running)
 - Observatorium Proactive Monitoring
+    - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)    
     - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)    
 - Observatorium Tenants
     - [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
@@ -87,6 +88,33 @@ Check targets are UP in app-sre Prometheus:
 
 
 ---
+
+## ObservatoriumHttpTrafficErrorRateHigh
+
+### Impact
+
+Issues either with the hosted cluster, Red Hat SSO and incorrect auth information can result in Observatorium API endpoints fail to serve the traffic.
+
+### Summary
+
+Observatorium API endpoints for metrics are not serving the traffic.
+
+### Severity
+
+`medium`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-logs-production))
+- Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
+
+### Steps
+- Check the Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) for valid Yaml content, valid tenant name, auth information under 'oidc' and 'opa' sections and rate limting information under 'rateLimits' section.
+- Check the logs of Observatorium UP deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-up)
+- Check the logs of Observatorium API deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-api)
+- Check the logs of Observatorium UP deployment's for MST tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-mst-production/deployments/observatorium-observatorium-up)
+- Check the logs of Observatorium API deployment's for MST tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-mst-production/deployments/observatorium-observatorium-mst-api)
+
 
 ## ObservatoriumProActiveMetricsQueryErrorRateHigh
 

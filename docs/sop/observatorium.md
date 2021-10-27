@@ -93,11 +93,11 @@ Check targets are UP in app-sre Prometheus:
 
 ### Impact
 
-Issues either with the hosted cluster, Red Hat SSO and incorrect auth information can result in Observatorium API endpoints fail to serve the traffic.
+Issues either with the hosted cluster, Red Hat SSO and incorrect auth information can result in Observatorium API endpoints are either inaccessible to users or fail to serve the traffic.
 
 ### Summary
 
-Observatorium API endpoints for metrics are not serving the traffic.
+Users of Observatorium service for metrics are not able to access API endpoints or not able to receive valid (HTTP 200 code) responses.
 
 ### Severity
 

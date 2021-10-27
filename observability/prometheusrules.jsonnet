@@ -603,7 +603,7 @@ local renderAlerts(name, environment, mixin) = {
                 message: 'Observatorium metric queries {{$labels.job}} in {{$labels.namespace}} are failing to handle {{$value | humanize}}% of requests.',
               },
               expr: |||
-                ( sum by (namespace, code) (rate(haproxy_backend_http_responses_total{namespace=~"observatorium|telemeter", code!="2xx"} [5m])) / sum by (namespace, code) (rate(haproxy_backend_http_responses_total{namespace=~"observatorium|telemeter", code="2xx"}[5m]))) * 100 > 25
+                ( sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code!="2xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="2xx"}[5m]))) * 100 > 25
               |||,
               labels: {
                 severity: 'warning',

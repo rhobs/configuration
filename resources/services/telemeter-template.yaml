@@ -457,6 +457,9 @@ objects:
       app.kubernetes.io/instance: telemeter
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: telemeter
+- imagePullSecrets:
+  - name: quay.io
+  metadata: {}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:

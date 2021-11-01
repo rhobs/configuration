@@ -327,7 +327,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     image: 'quay.io/observatorium/up:' + cfg.version,
     replicas: 1,
     endpointType: 'metrics',
-    readEndpoint: 'http://%s.%s.svc:9090/api/v1/query' % [obs.thanos.queryFrontend.service.metadata.name, obs.config.namespaces.metrics],
+    readEndpoint: 'http://%s.%s.svc:9090' % [obs.thanos.queryFrontend.service.metadata.name, obs.config.namespaces.metrics],
     queryConfig: (import '../configuration/observatorium/queries.libsonnet'),
     serviceMonitor: true,
     resources: {

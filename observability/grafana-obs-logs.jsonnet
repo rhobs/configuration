@@ -42,7 +42,7 @@ local dashboards = {
   ],
   parameters: [
     { name: 'OBSERVATORIUM_API_DATASOURCE', value: 'telemeter-prod-01-prometheus' },
-    { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'telemeter-production' },
+    { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'observatorium-production' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs-production' },
   ],
 }

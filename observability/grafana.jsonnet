@@ -59,8 +59,8 @@ local dashboards =
   } +
   { 'grafana-dashboard-observatorium-api.configmap': (import 'dashboards/observatorium-api.libsonnet')(obsDatasource, obsNamespace) } +
   { 'grafana-dashboard-telemeter-canary.configmap': (import 'dashboards/telemeter-canary.libsonnet')(obsDatasource, obsNamespace) } +
-  { 'grafana-dashboard-telemeter.configmap': (import 'dashboards/telemeter.libsonnet')(obsDatasource, obsNamespace) };
-
+  { 'grafana-dashboard-telemeter.configmap': (import 'dashboards/telemeter.libsonnet')(obsDatasource, obsNamespace) } +
+  { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo-mst-production.libsonnet')() };
 {
   [name]: dashboards[name] {
     metadata+: {

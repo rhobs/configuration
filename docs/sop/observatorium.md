@@ -97,7 +97,7 @@ RHOBS API endpoints are either inaccessible to users or fail to serve the traffi
 
 ### Summary
 
-Users of RHOBS are not able to access API endpoints for either reading, writing metrics. The ha-proxy router at OpenShift Dedicated cluster where the RHOBS is deployed is not returning OK responses.
+Users of RHOBS are not able to access API endpoints for either reading, writing metrics and logs. The ha-proxy router at OpenShift Dedicated cluster where the RHOBS is deployed is not returning OK responses.
 
 ### Severity
 
@@ -105,7 +105,7 @@ Users of RHOBS are not able to access API endpoints for either reading, writing 
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-logs-production))
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects))
 - Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
 
 ### Steps

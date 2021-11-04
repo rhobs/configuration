@@ -25,7 +25,7 @@ data:
       "fiscalYearStartMonth": 0,
       "gnetId": null,
       "graphTooltip": 1,
-      "id": 209,
+      "id": 211,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -476,7 +476,7 @@ data:
           "targets": [
             {
               "exemplar": true,
-              "expr": "1 -\n(\n  sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code=~\"5.+\"}[28d]))\n  /\n  sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code!~\"4.+\"}[28d]))\n)",
+              "expr": "1 -\n(\n  sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code=~\"5.+\"}[28d])) or vector(0)\n  /\n  sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code!~\"4.+\"}[28d]))\n)",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -543,7 +543,7 @@ data:
           "targets": [
             {
               "exemplar": true,
-              "expr": "clamp_min(\n(\n  (\n    1 -\n     sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code=~\"5.+\"}[28d]))\n    /\n    sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code!~\"4.+\"}[28d]))\n  ) - 0.95\n)\n/ \n(1 - 0.95), 0)",
+              "expr": "clamp_min(\n( 1 - \n  (\n     sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code=~\"5.+\"}[28d])) or vector(0)\n    /\n    sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code!~\"4.+\"}[28d]))\n  ) - 0.95\n)\n/ \n(1 - 0.95), 0)",
               "hide": false,
               "interval": "",
               "legendFormat": "",
@@ -1539,7 +1539,7 @@ data:
       "timezone": "",
       "title": "SLOs - Telemeter - Staging",
       "uid": "h-0roLFnz",
-      "version": 7
+      "version": 2
     }
 kind: ConfigMap
 metadata:

@@ -600,13 +600,13 @@ local renderAlerts(name, environment, mixin) = {
             {
               alert: 'ObservatoriumHttpTrafficErrorRateHigh',
               annotations: {
-                message: 'Observatorium metric queries {{$labels.job}} in {{$labels.namespace}} are failing to handle {{$value | humanize}}% of requests.',
+                message: 'Observatorium route  {{$labels.route}}  are failing to handle {{$value | humanize}}% of requests.',
               },
               expr: |||
-                ( sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code!="2xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="2xx"}[5m]))) * 100 > 25
+                ( sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="4xx|5xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*"}[5m]))) * 100 > 25
               |||,
               labels: {
-                severity: 'warning',
+                severity: 'high',
               },
             },
           ],

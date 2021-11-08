@@ -457,9 +457,12 @@ objects:
       app.kubernetes.io/instance: telemeter
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: telemeter
-- imagePullSecrets:
+- apiVersion: v1
+  imagePullSecrets:
   - name: quay.io
-  metadata: {}
+  kind: ServiceAccount
+  metadata:
+    name: telemeter-memcached
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -536,6 +539,7 @@ objects:
             requests:
               cpu: 50m
               memory: 50Mi
+        serviceAccountName: telemeter-memcached
 - apiVersion: v1
   data:
     nginx.conf: |

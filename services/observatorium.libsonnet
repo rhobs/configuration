@@ -141,6 +141,9 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
         },
       },
     },
+    serviceAccount+: {
+      imagePullSecrets+: [{ name: 'quay.io' }],
+    },
   },
 
   api:: api({

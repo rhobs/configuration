@@ -130,7 +130,9 @@
         },
       },
     },
-
+    serviceAccount+: {
+      imagePullSecrets+: [{ name: 'quay.io' }],
+    },
     serviceMonitor+: {
       spec+: {
         jobLabel: 'app.kubernetes.io/component',

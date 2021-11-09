@@ -729,7 +729,7 @@ objects:
           - --log.level=debug
           - --endpoint-type=metrics
           - --queries-file=/etc/up/queries.yaml
-          - --endpoint-read=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090/api/v1/query
+          - --endpoint-read=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090
           image: quay.io/observatorium/up:master-2021-10-18-8943d73
           name: observatorium-up
           ports:

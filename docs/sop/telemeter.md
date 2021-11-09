@@ -4,35 +4,40 @@
 
 - [SOP : OpenShift Telemeter](#sop--openshift-telemeter)
   - [Verify it's working](#verify-its-working)
+  - [InfoGW Probe Failing](#infogw-probe-failing)
+    - [Impact](#impact)
+    - [Summary](#summary)
+    - [Access required](#access-required)
+    - [Steps](#steps)
   - [AuthorizeClientErrorsHigh](#authorizeclienterrorshigh)
-    - [Impact:](#impact)
-    - [Summary:](#summary)
-    - [Access required:](#access-required)
-    - [Steps:](#steps)
-  - [TelemeterAuthorizeErrorBudgetBurning](#telemeterauthorizeerrorbudgetburning)
-  - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
     - [Impact:](#impact-1)
     - [Summary:](#summary-1)
     - [Access required:](#access-required-1)
-    - [Relevant secrets:](#relevant-secrets)
     - [Steps:](#steps-1)
-  - [TelemeterDown](#telemeterdown)
+  - [TelemeterAuthorizeErrorBudgetBurning](#telemeterauthorizeerrorbudgetburning)
+  - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
     - [Impact:](#impact-2)
     - [Summary:](#summary-2)
     - [Access required:](#access-required-2)
+    - [Relevant secrets:](#relevant-secrets)
     - [Steps:](#steps-2)
-  - [TelemeterUploadErrorBudgetBurning](#telemeteruploaderrorbudgetburning)
-  - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
+  - [TelemeterDown](#telemeterdown)
     - [Impact:](#impact-3)
     - [Summary:](#summary-3)
     - [Access required:](#access-required-3)
-    - [Relevant secrets:](#relevant-secrets-1)
     - [Steps:](#steps-3)
-  - [TelemeterCapacity[Medium | High | Critical]](#telemetercapacitymedium--high--critical)
+  - [TelemeterUploadErrorBudgetBurning](#telemeteruploaderrorbudgetburning)
+  - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
     - [Impact:](#impact-4)
     - [Summary:](#summary-4)
     - [Access required:](#access-required-4)
+    - [Relevant secrets:](#relevant-secrets-1)
     - [Steps:](#steps-4)
+  - [TelemeterCapacity[Medium | High | Critical]](#telemetercapacitymedium--high--critical)
+    - [Impact:](#impact-5)
+    - [Summary:](#summary-5)
+    - [Access required:](#access-required-5)
+    - [Steps:](#steps-5)
   - [Escalations](#escalations)
 
 <!-- /TOC -->
@@ -44,6 +49,40 @@
 - `telemeter-server` targets are UP in info-gw: https://infogw-data.api.openshift.com/targets#job-telemeter-server
 - `telemeter-server` targets are UP in `telemeter-prod-01` prom: https://prometheus.telemeter-prod-01.devshift.net/targets#job-telemeter-server
 - `Upload Handler` is returning 200s: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&from=now-6h&to=now
+
+## InfoGW Probe Failing
+
+### Impact
+
+Atleast a subset of end users may be unable to access either of the Info Gateway endpoints/URLs.
+
+### Summary
+
+Prometheus blackbox exporter probes the target (also providing a bearer token to be able to authorize itself) and subsequently checking for string `Prometheus` in the response.
+
+### Access required
+
+- Must be in Github app-sre team `app-sre-observability` to login to application prometheus instances.
+- Config: `resources/observability/blackbox-exporter/blackbox-exporter-config.secret.yaml`
+- Bearer token secret in Vault:
+  - For staging: `app-sre/integrations-output/openshift-serviceaccount-tokens/app-sre-stage-01/telemeter-stage/app-sre-stage-01-telemeter-stage-telemeter-prometheus-access`
+  - For production: `app-sre/integrations-output/openshift-serviceaccount-tokens/telemeter-prod-01/telemeter-production/telemeter-prod-01-telemeter-production-telemeter-prometheus-access`
+- Console access to the cluster that runs telemeter ([`telemeter-prod-01`](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects) for production; [`app-sre-stage-01`](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/k8s/cluster/projects) for staging)
+- Access to the Telemeter and Observatorium namespaces:
+  - `telemeter-stage`, `observatorium-metrics-stage`, `observatorium-stage`  for staging
+  - `telemeter-production`, `observatorium-metrics-production`, `observatorium-production` for production
+
+### Steps
+1. Check the generic SOP for failing `2xx` black-box probes in [AppSRE Interface repository](https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/app-sre/sop/blackbox-exporter-2xxProbeFailing.md).
+2. If probe is failing due to the authentication (e.g. you are seeing `403` or similar response in the probe log), make sure the bearer token secrets in Vault listed above are configured and valid.
+3. Log into the console for the relevant cluster (links above in `Access required`):
+   1. If it looks like the route does not exist, check `Routes` in `telemeter-<env>` namespace. Can you see routes with location `https://infogw-data.api.*` and `https://infogw-proxy.api.*`? Double check our route configuration for [production](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/resources/app-sre/telemeter-production) and [staging](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/resources/app-sre-stage/telemeter-stage). **Relevant routes are in `infogw-data.route.yaml` and `observatorium-thanos-querier-cache-<env>.route.yaml`**.
+   2. If it looks like the service is unavailable, make sure the following components are running:
+      1. `telemeter-token-refresher` service and underlying pods in `telemeter-<env>`
+      2. `observatorium-observatorium-api` service and underlying pods in `observatorium-<env>`
+      3. `observatorium-thanos-query` and `observatorium-thanos-query-frontend` service and underlying pods in `observatorium-metrics-<env>`
+   3. If any of the services / pods does not seem to work properly, check their logs for more information and act accordingly.
+4. If the problem persists then escalate to RHOBS team via [Slack channel #observatorium-forum](https://coreos.slack.com/archives/C010A637DGB) by pinging *@observatorium-oncall* (additionally also ping *@observatorium-support*). Alternatively, escalate via [PagerDuty](https://redhat.pagerduty.com/teams/PQL1RZA/subteams) to the RHOBS team to help in the investigation.
 
 ## AuthorizeClientErrorsHigh
 
@@ -65,10 +104,10 @@ Telemeter is recieving errors at a high rate from Keycloak.
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage
-    - telemeter-production
+    - telemeter-stage on `app-sre-stage-01`
+    - telemeter-production on `telemeter-prod-01`
 
 ### Steps:
 
@@ -105,10 +144,10 @@ at a high rate from Keycloak.
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage
-    - telemeter-production
+    - telemeter-stage on `app-sre-stage-01`
+    - telemeter-production on `telemeter-prod-01`
 
 ### Relevant secrets:
 
@@ -136,10 +175,10 @@ Telemeter Server might be down and not serving any requests.
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage
-    - telemeter-production### Severity: Critical
+    - telemeter-stage on `app-sre-stage-01`
+    - telemeter-production on `telemeter-prod-01`### Severity: Critical
 
 ### Steps:
 
@@ -176,10 +215,10 @@ Most likely the metrics payload is broken and thus possibly the telemeter metric
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage
-    - telemeter-production
+    - telemeter-stage on `app-sre-stage-01`
+    - telemeter-production on `telemeter-prod-01`
 
 
 ### Relevant secrets:
@@ -209,10 +248,10 @@ Telemeter Prometheus is reaching to its limit of active timeseries and will be u
 
 ### Access required:
 
-- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` OSD)
+- Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage
-    - telemeter-production### Severity: Critical
+    - telemeter-stage on `app-sre-stage-01`
+    - telemeter-production on `telemeter-prod-01`### Severity: Critical
 
 ### Steps:
 

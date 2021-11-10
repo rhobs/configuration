@@ -26,8 +26,6 @@ data:
     gridPos:
       h: 3
       w: 15
-      x: 0
-      "y": 0
     id: 44
     options:
       content: This dashboard displays the SLOs as defined in the [RHOBS Service Level Objectives](https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit) document.

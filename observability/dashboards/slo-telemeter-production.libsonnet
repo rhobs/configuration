@@ -37,8 +37,6 @@ function() {
         gridPos: {
           h: 3,
           w: 15,
-          x: 0,
-          y: 0,
         },
         id: 44,
         options: {

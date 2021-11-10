@@ -63,7 +63,8 @@ local dashboards =
   { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo-mst-production.libsonnet')() } +
   { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo-mst-stage.libsonnet')() } +
   { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo-telemeter-production.libsonnet')() } +
-  { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo-telemeter-stage.libsonnet')() };
+  { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo-telemeter-stage.libsonnet')() } +
+  { 'grafana-dashboard-slo-refactor-test.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'production') };
 {
   [name]: dashboards[name] {
     metadata+: {

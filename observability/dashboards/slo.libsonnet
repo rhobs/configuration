@@ -1,4 +1,4 @@
-function(instance, environment) {
+function(instance, environment, dashboardName) {
   //TODO input validation
   local titleRow = [
     {
@@ -18,7 +18,7 @@ function(instance, environment) {
       type: 'text',
     },
   ],
-  local availabilityRow(title, specifiction, errorQuery, totalQuery, target) = [
+  local availabilityRow(title, specifiction, target, errorQuery, totalQuery) = [
     {
       collapsed: false,
       panels: [],
@@ -380,9 +380,9 @@ function(instance, environment) {
         availabilityRow(
           'Telemeter Server > Metrics Write > Availability',
           '95% of valid requests return successfully',
+          0.95,
           'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[28d]))',
-          'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive", code!="4xx"}[28d]))',
-          0.95
+          'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive", code!="4xx"}[28d]))'
         ) +
         latencyRow(
           'Telemeter Server > Metrics Write > Latency',
@@ -395,335 +395,19 @@ function(instance, environment) {
         availabilityRow(
           'API > Metrics Write > Availability',
           '95% of valid requests return successfully',
+          0.95,
           'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code=~"5.+"}[28d]))',
-          'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code!~"4.+"}[28d]))',
-          0.95
+          'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code!~"4.+"}[28d]))'
+        ) +
+        latencyRow(
+          'API > Metrics Write > Latency',
+          '90% of valid requests return < 5s',
+          0.9,
+          'sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive", le="5"}[28d]))',
+          'rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"}[28d])))',
+          'sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"}[28d]))'
         ) +
         [
-          {
-            collapsed: false,
-
-            gridPos: {
-              h: 1,
-              w: 24,
-            },
-            id: 6,
-            panels: [],
-            title: 'API > Metrics Write > Availability',
-            type: 'row',
-          },
-          {
-
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 16,
-            options: {
-              content: '<center style="font-size: 25px;">\n\n95% of valid requests return successfully\n\n</center>\n\n',
-              mode: 'markdown',
-            },
-            pluginVersion: '8.2.1',
-            title: 'SLO',
-            type: 'text',
-          },
-          {
-            datasource: 'app-sre-stage-01-prometheus',
-            fieldConfig: {
-              defaults: {
-                color: {
-                  mode: 'thresholds',
-                },
-                decimals: 2,
-                mappings: [],
-                max: 1,
-                min: 0,
-                thresholds: {
-                  mode: 'percentage',
-                  steps: [
-                    {
-                      color: 'red',
-                      value: null,
-                    },
-                    {
-                      color: 'orange',
-                      value: 95,
-                    },
-                    {
-                      color: 'green',
-                      value: 97.5,
-                    },
-                  ],
-                },
-                unit: 'percentunit',
-              },
-              overrides: [],
-            },
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 24,
-            options: {
-              colorMode: 'value',
-              graphMode: 'area',
-              justifyMode: 'auto',
-              orientation: 'auto',
-              reduceOptions: {
-                calcs: [
-                  'lastNotNull',
-                ],
-                fields: '',
-                values: false,
-              },
-              text: {},
-              textMode: 'auto',
-            },
-            pluginVersion: '8.2.1',
-            targets: [
-              {
-                exemplar: true,
-                expr: '1 -\n(\n  sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code=~"5.+"}[28d])) or vector(0)\n  /\n  sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code!~"4.+"}[28d]))\n)',
-                interval: '',
-                legendFormat: '',
-                refId: 'A',
-              },
-            ],
-            title: 'Availability (28d)',
-            type: 'stat',
-          },
-          {
-            datasource: 'app-sre-stage-01-prometheus',
-            fieldConfig: {
-              defaults: {
-                color: {
-                  mode: 'thresholds',
-                },
-                decimals: 2,
-                mappings: [],
-                max: 1,
-                min: 0,
-                thresholds: {
-                  mode: 'percentage',
-                  steps: [
-                    {
-                      color: 'red',
-                      value: null,
-                    },
-                    {
-                      color: 'orange',
-                      value: 95,
-                    },
-                    {
-                      color: 'green',
-                      value: 97.5,
-                    },
-                  ],
-                },
-                unit: 'percentunit',
-              },
-              overrides: [],
-            },
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 36,
-            options: {
-              colorMode: 'value',
-              graphMode: 'area',
-              justifyMode: 'auto',
-              orientation: 'auto',
-              reduceOptions: {
-                calcs: [
-                  'lastNotNull',
-                ],
-                fields: '',
-                values: false,
-              },
-              text: {},
-              textMode: 'auto',
-            },
-            pluginVersion: '8.2.1',
-            targets: [
-              {
-                exemplar: true,
-                expr: 'clamp_min(\n( 1 - \n  (\n     sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code=~"5.+"}[28d])) or vector(0)\n    /\n    sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code!~"4.+"}[28d]))\n  ) - 0.95\n)\n/ \n(1 - 0.95), 0)',
-                hide: false,
-                interval: '',
-                legendFormat: '',
-                refId: 'B',
-              },
-            ],
-            title: 'Error Budget (28d)',
-            type: 'stat',
-          },
-          {
-            collapsed: false,
-
-            gridPos: {
-              h: 1,
-              w: 24,
-            },
-            id: 8,
-            panels: [],
-            title: 'API > Metrics Write > Latency',
-            type: 'row',
-          },
-          {
-
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 18,
-            options: {
-              content: '<center style="font-size: 25px;">\n\n90% of valid requests return < 5s\n\n</center>\n\n',
-              mode: 'markdown',
-            },
-            pluginVersion: '8.2.1',
-            title: 'SLO',
-            type: 'text',
-          },
-          {
-            datasource: 'app-sre-stage-01-prometheus',
-            fieldConfig: {
-              defaults: {
-                color: {
-                  mode: 'thresholds',
-                },
-                mappings: [],
-                max: 5,
-                min: 0,
-                thresholds: {
-                  mode: 'percentage',
-                  steps: [
-                    {
-                      color: 'green',
-                      value: null,
-                    },
-                    {
-                      color: 'orange',
-                      value: 50,
-                    },
-                    {
-                      color: 'red',
-                      value: 100,
-                    },
-                  ],
-                },
-                unit: 's',
-              },
-              overrides: [],
-            },
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 30,
-            options: {
-              colorMode: 'value',
-              graphMode: 'area',
-              justifyMode: 'auto',
-              orientation: 'auto',
-              reduceOptions: {
-                calcs: [
-                  'lastNotNull',
-                ],
-                fields: '',
-                values: false,
-              },
-              text: {},
-              textMode: 'auto',
-            },
-            pluginVersion: '8.2.1',
-            targets: [
-              {
-                exemplar: true,
-                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"}[28d])))',
-                hide: false,
-                interval: '',
-                legendFormat: '',
-                refId: 'A',
-              },
-            ],
-            title: '90th Percentile Request Latency (28d)',
-            type: 'stat',
-          },
-          {
-            datasource: 'app-sre-stage-01-prometheus',
-            fieldConfig: {
-              defaults: {
-                color: {
-                  mode: 'thresholds',
-                },
-                decimals: 2,
-                mappings: [],
-                max: 1,
-                min: 0,
-                thresholds: {
-                  mode: 'percentage',
-                  steps: [
-                    {
-                      color: 'red',
-                      value: null,
-                    },
-                    {
-                      color: 'orange',
-                      value: 33,
-                    },
-                    {
-                      color: 'green',
-                      value: 66,
-                    },
-                  ],
-                },
-                unit: 'percentunit',
-              },
-              overrides: [],
-            },
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 37,
-            options: {
-              colorMode: 'value',
-              graphMode: 'area',
-              justifyMode: 'auto',
-              orientation: 'auto',
-              reduceOptions: {
-                calcs: [
-                  'lastNotNull',
-                ],
-                fields: '',
-                values: false,
-              },
-              text: {},
-              textMode: 'auto',
-            },
-            pluginVersion: '8.2.1',
-            targets: [
-              {
-                exemplar: true,
-                expr: 'clamp_min(\n(\n  (\n    sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive", le="5"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"}[28d]))\n  ) - 0.9\n)\n/ \n(1 - 0.9), 0)',
-                hide: false,
-                interval: '',
-                legendFormat: '',
-                refId: 'B',
-              },
-              {
-                exemplar: true,
-                expr: 'http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"',
-                hide: true,
-                interval: '',
-                legendFormat: '',
-                refId: 'A',
-              },
-            ],
-            title: 'Error Budget (28d)',
-            type: 'stat',
-          },
           {
             collapsed: false,
 
@@ -1500,8 +1184,8 @@ function(instance, environment) {
       },
       timepicker: {},
       timezone: '',
-      title: 'SLOs - Telemeter - Staging',
-      uid: 'h-0roLFnz',
+      title: dashboardName,
+      uid: std.md5(dashboardName),
       version: 2,
     }),
   },

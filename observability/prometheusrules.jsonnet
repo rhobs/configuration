@@ -603,7 +603,7 @@ local renderAlerts(name, environment, mixin) = {
                 message: 'Observatorium route  {{$labels.route}}  are failing to handle {{$value | humanize}}% of requests.',
               },
               expr: |||
-                ( sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="5xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*"}[5m]))) * 100 > 25
+                (sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="5xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*"}[5m]))) * 100 > 25
               |||,
               labels: {
                 severity: 'critical',

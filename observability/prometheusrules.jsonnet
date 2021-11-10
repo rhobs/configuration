@@ -606,7 +606,7 @@ local renderAlerts(name, environment, mixin) = {
                 ( sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="5xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*"}[5m]))) * 100 > 25
               |||,
               labels: {
-                severity: 'high',
+                severity: 'critical',
               },
             },
           ],

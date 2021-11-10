@@ -1,11 +1,28 @@
 function(instance, environment) {
   //TODO input validation
+  local titleRow = [
+    {
 
-  local telemeterServerAvailabilityRow = [
+      gridPos: {
+        h: 3,
+        w: 15,
+      },
+      id: 44,
+      options: {
+        content: 'This dashboard displays the SLOs as defined in the [RHOBS Service Level Objectives](https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit) document.',
+        mode: 'markdown',
+      },
+      pluginVersion: '8.2.1',
+      title: 'Description',
+      transparent: true,
+      type: 'text',
+    },
+  ],
+  local availabilityRow(title, specifiction, errorQuery, totalQuery, target) = [
     {
       collapsed: false,
       panels: [],
-      title: 'Telemeter Server > Metrics Write > Availability',
+      title: title,
       type: 'row',
     },
     {
@@ -16,7 +33,7 @@ function(instance, environment) {
       },
       id: 14,
       options: {
-        content: '<center style="font-size: 25px;">\n\n95% of valid requests return successfully\n\n</center>\n\n',
+        content: '<center style="font-size: 25px;">' + specifiction + '</center>',
         mode: 'markdown',
       },
       pluginVersion: '8.2.1',
@@ -80,7 +97,12 @@ function(instance, environment) {
       targets: [
         {
           exemplar: true,
-          expr: '1- sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[28d]))\n/\nsum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive", code!="4xx"}[28d]))\n\n',
+          expr: |||
+            1-
+            %(errorCase)s
+            /
+            %(totalCase)s
+          ||| % { errorCase: errorQuery, totalCase: totalQuery },
           interval: '',
           legendFormat: '',
           refId: 'A',
@@ -146,7 +168,18 @@ function(instance, environment) {
       targets: [
         {
           exemplar: true,
-          expr: 'clamp_min(\n(\n  (\n    1 -\n    sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[28d]))\n    /\n    sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive", code!="4xx"}[28d]))\n  ) - 0.95\n)\n/ \n(1 - 0.95), 0)',
+          expr: |||
+            clamp_min(
+            ( 1 -
+                (
+                    %(errorCase)s or vector(0)
+                    /
+                    %(totalCase)s
+                ) - %(target)s
+            )
+            /
+            (1 - %(target)s), 0)
+          ||| % { errorCase: errorQuery, totalCase: totalQuery, target: target },
           hide: false,
           interval: '',
           legendFormat: '',
@@ -157,6 +190,183 @@ function(instance, environment) {
       type: 'stat',
     },
   ],
+  local latencyRow(title, specification, targetPercentile, targetQuery, bucketQuery, totalQuery) = [
+    {
+      collapsed: false,
+
+      gridPos: {
+        h: 1,
+        w: 24,
+      },
+      id: 4,
+      panels: [],
+      title: title,
+      type: 'row',
+    },
+    {
+      gridPos: {
+        h: 5,
+        w: 5,
+        x: 0,
+      },
+      id: 15,
+      options: {
+        content: '<center style="font-size: 25px;">' + specification + '</center>',
+        mode: 'markdown',
+      },
+      pluginVersion: '8.2.1',
+      title: 'SLO',
+      type: 'text',
+    },
+    {
+      datasource: 'app-sre-stage-01-prometheus',
+      fieldConfig: {
+        defaults: {
+          color: {
+            mode: 'thresholds',
+          },
+          mappings: [],
+          max: 5,
+          min: 0,
+          thresholds: {
+            mode: 'percentage',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'orange',
+                value: 50,
+              },
+              {
+                color: 'red',
+                value: 100,
+              },
+            ],
+          },
+          unit: 's',
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 5,
+        w: 5,
+        x: 5,
+      },
+      id: 29,
+      options: {
+        colorMode: 'value',
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'auto',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
+        text: {},
+        textMode: 'auto',
+      },
+      pluginVersion: '8.2.1',
+      targets: [
+        {
+          exemplar: true,
+          expr: |||
+            histogram_quantile( %(targetPercentile)s, sum by (le) ( %(bucketQuery)s ))
+          ||| % { targetPercentile: targetPercentile, bucketQuery: bucketQuery },
+          hide: false,
+          interval: '',
+          legendFormat: '',
+          refId: 'A',
+        },
+      ],
+      title: '90th Percentile Request Latency (28d)',
+      type: 'stat',
+    },
+    {
+      datasource: 'app-sre-stage-01-prometheus',
+      fieldConfig: {
+        defaults: {
+          color: {
+            mode: 'thresholds',
+          },
+          decimals: 2,
+          mappings: [],
+          max: 1,
+          min: 0,
+          thresholds: {
+            mode: 'percentage',
+            steps: [
+              {
+                color: 'red',
+                value: null,
+              },
+              {
+                color: 'orange',
+                value: 33,
+              },
+              {
+                color: 'green',
+                value: 66,
+              },
+            ],
+          },
+          unit: 'percentunit',
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 5,
+        w: 5,
+        x: 10,
+      },
+      id: 35,
+      options: {
+        colorMode: 'value',
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'auto',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
+        text: {},
+        textMode: 'auto',
+      },
+      pluginVersion: '8.2.1',
+      targets: [
+        {
+          exemplar: true,
+          expr: |||
+            clamp_min(
+                (
+                    (
+                        %(targetQuery)s
+                        /
+                        %(totalQuery)s
+                    ) - %(targetPercentile)s
+                )
+                /
+                (1 - %(targetPercentile)s), 0)
+          ||| % { targetQuery: targetQuery, totalQuery: totalQuery, targetPercentile: targetPercentile },
+          hide: false,
+          interval: '',
+          legendFormat: '',
+          refId: 'B',
+        },
+      ],
+      title: 'Error Budget (28d)',
+      type: 'stat',
+    },
+
+
+  ],
 
   apiVersion: 'v1',
   kind: 'ConfigMap',
@@ -166,190 +376,30 @@ function(instance, environment) {
   data: {
     'slo.json': std.manifestJson({
       panels:
-        [{
-
-          gridPos: {
-            h: 3,
-            w: 15,
-          },
-          id: 44,
-          options: {
-            content: 'This dashboard displays the SLOs as defined in the [RHOBS Service Level Objectives](https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit) document.',
-            mode: 'markdown',
-          },
-          pluginVersion: '8.2.1',
-          title: 'Description',
-          transparent: true,
-          type: 'text',
-        }]
-        + telemeterServerAvailabilityRow +
+        titleRow +
+        availabilityRow(
+          'Telemeter Server > Metrics Write > Availability',
+          '95% of valid requests return successfully',
+          'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[28d]))',
+          'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive", code!="4xx"}[28d]))',
+          0.95
+        ) +
+        latencyRow(
+          'Telemeter Server > Metrics Write > Latency',
+          '90% of valid requests return < 5s',
+          0.9,
+          'sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive", code!~"4..", le="5"}[28d]))',
+          'rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[28d])',
+          'sum(rate(http_request_duration_seconds_count{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[28d]))'
+        ) +
+        availabilityRow(
+          'API > Metrics Write > Availability',
+          '95% of valid requests return successfully',
+          'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code=~"5.+"}[28d]))',
+          'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code!~"4.+"}[28d]))',
+          0.95
+        ) +
         [
-          {
-            collapsed: false,
-
-            gridPos: {
-              h: 1,
-              w: 24,
-            },
-            id: 4,
-            panels: [],
-            title: 'Telemeter Server > Metrics Write > Latency',
-            type: 'row',
-          },
-          {
-
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 15,
-            options: {
-              content: '<center style="font-size: 25px;">\n\n90% of valid requests return < 5s\n\n</center>\n\n',
-              mode: 'markdown',
-            },
-            pluginVersion: '8.2.1',
-            title: 'SLO',
-            type: 'text',
-          },
-          {
-            datasource: 'app-sre-stage-01-prometheus',
-            fieldConfig: {
-              defaults: {
-                color: {
-                  mode: 'thresholds',
-                },
-                mappings: [],
-                max: 5,
-                min: 0,
-                thresholds: {
-                  mode: 'percentage',
-                  steps: [
-                    {
-                      color: 'green',
-                      value: null,
-                    },
-                    {
-                      color: 'orange',
-                      value: 50,
-                    },
-                    {
-                      color: 'red',
-                      value: 100,
-                    },
-                  ],
-                },
-                unit: 's',
-              },
-              overrides: [],
-            },
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 29,
-            options: {
-              colorMode: 'value',
-              graphMode: 'area',
-              justifyMode: 'auto',
-              orientation: 'auto',
-              reduceOptions: {
-                calcs: [
-                  'lastNotNull',
-                ],
-                fields: '',
-                values: false,
-              },
-              text: {},
-              textMode: 'auto',
-            },
-            pluginVersion: '8.2.1',
-            targets: [
-              {
-                exemplar: true,
-                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[28d])))',
-                hide: false,
-                interval: '',
-                legendFormat: '',
-                refId: 'A',
-              },
-            ],
-            title: '90th Percentile Request Latency (28d)',
-            type: 'stat',
-          },
-          {
-            datasource: 'app-sre-stage-01-prometheus',
-            fieldConfig: {
-              defaults: {
-                color: {
-                  mode: 'thresholds',
-                },
-                decimals: 2,
-                mappings: [],
-                max: 1,
-                min: 0,
-                thresholds: {
-                  mode: 'percentage',
-                  steps: [
-                    {
-                      color: 'red',
-                      value: null,
-                    },
-                    {
-                      color: 'orange',
-                      value: 33,
-                    },
-                    {
-                      color: 'green',
-                      value: 66,
-                    },
-                  ],
-                },
-                unit: 'percentunit',
-              },
-              overrides: [],
-            },
-            gridPos: {
-              h: 5,
-              w: 5,
-            },
-            id: 35,
-            options: {
-              colorMode: 'value',
-              graphMode: 'area',
-              justifyMode: 'auto',
-              orientation: 'auto',
-              reduceOptions: {
-                calcs: [
-                  'lastNotNull',
-                ],
-                fields: '',
-                values: false,
-              },
-              text: {},
-              textMode: 'auto',
-            },
-            pluginVersion: '8.2.1',
-            targets: [
-              {
-                exemplar: true,
-                expr: 'clamp_min(\n(\n  (\n    sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",le="5"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive"}[28d]))\n  ) - 0.9\n)\n/ \n(1 - 0.9), 0)',
-                hide: false,
-                interval: '',
-                legendFormat: '',
-                refId: 'B',
-              },
-              {
-                exemplar: true,
-                expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[28d])))',
-                hide: true,
-                interval: '',
-                legendFormat: '',
-                refId: 'A',
-              },
-            ],
-            title: 'Error Budget (28d)',
-            type: 'stat',
-          },
           {
             collapsed: false,
 

@@ -73,6 +73,8 @@ local appSREOverwrites(environment) = {
       else if
         name == 'observatorium-tenants' then 'no-dashboard'
       else if
+        name == 'observatorium-http-traffic' then 'no-dashboard'
+      else if
         name == 'observatorium-proactive-monitoring' then 'no-dashboard'
       else if
         std.startsWith(name, 'observatorium-api') then 'Tg-mH0rizaSJDKSADX'
@@ -585,4 +587,34 @@ local renderAlerts(name, environment, mixin) = {
 
   'observatorium-proactive-monitoring-stage.prometheusrules': renderAlerts('observatorium-proactive-monitoring-stage', 'stage', proactiveMonitoringAlerts),
   'observatorium-proactive-monitoring-production.prometheusrules': renderAlerts('observatorium-proactive-monitoring-production', 'production', proactiveMonitoringAlerts),
+}
+
+{
+  local httpTrafficMonitoringAlerts = {
+    // Alerts for HTTP traffic.
+    prometheusAlerts+:: {
+      groups: [
+        {
+          name: 'observatorium-http-traffic',
+          rules: [
+            {
+              alert: 'ObservatoriumHttpTrafficErrorRateHigh',
+              annotations: {
+                message: 'Observatorium route  {{$labels.route}}  are failing to handle {{$value | humanize}}% of requests.',
+              },
+              expr: |||
+                (sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*", code="5xx"} [5m])) / sum by (route) (rate(haproxy_backend_http_responses_total{route=~"observatorium.*|telemeter.*|infogw.*"}[5m]))) * 100 > 25
+              |||,
+              labels: {
+                severity: 'critical',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  'observatorium-http-traffic-stage.prometheusrules': renderAlerts('observatorium-http-traffic-stage', 'stage', httpTrafficMonitoringAlerts),
+  'observatorium-http-traffic-production.prometheusrules': renderAlerts('observatorium-http-traffic-production', 'production', httpTrafficMonitoringAlerts),
 }

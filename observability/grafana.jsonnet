@@ -60,10 +60,6 @@ local dashboards =
   { 'grafana-dashboard-observatorium-api.configmap': (import 'dashboards/observatorium-api.libsonnet')(obsDatasource, obsNamespace) } +
   { 'grafana-dashboard-telemeter-canary.configmap': (import 'dashboards/telemeter-canary.libsonnet')(obsDatasource, obsNamespace) } +
   { 'grafana-dashboard-telemeter.configmap': (import 'dashboards/telemeter.libsonnet')(obsDatasource, obsNamespace) } +
-  { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo-mst-production.libsonnet')() } +
-  { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo-mst-stage.libsonnet')() } +
-  { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo-telemeter-production.libsonnet')() } +
-  { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo-telemeter-stage.libsonnet')() } +
   { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'production', 'Telemeter Production SLOs') } +
   { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'stage', 'Telemeter Staging SLOs') } +
   { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo.libsonnet')('mst', 'production', 'MST Production SLOs') } +

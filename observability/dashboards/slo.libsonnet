@@ -1,8 +1,35 @@
-function(instance, environment, dashboardName, datasource, apiNamespace) {
+function(instance, environment, dashboardName) {
   //Validate our inputs
   assert std.member(['telemeter', 'mst'], instance),
   assert std.member(['production', 'stage'], environment),
 
+  local config = {
+    telemeter: {
+      production: {
+        datasource: 'telemeter-prod-01-prometheus',
+        upNamespace: 'observatorium-production',
+        apiJob: 'observatorium-observatorium-api',
+      },
+      stage: {
+        datasource: 'app-sre-stage-01-prometheus',
+        upNamespace: 'observatorium-stage',
+        apiJob: 'observatorium-observatorium-api',
+      },
+    },
+    mst: {
+      production: {
+        datasource: 'telemeter-prod-01-prometheus',
+        upNamespace: 'observatorium-mst-production',
+        apiJob: 'observatorium-observatorium-mst-api',
+      },
+      stage: {
+        datasource: 'app-sre-stage-01-prometheus',
+        upNamespace: 'observatorium-stage',
+        apiJob: 'observatorium-observatorium-mst-api',
+      },
+    },
+  },
+  local instanceConfig = config[instance][environment],
   local panelsPerRow = 2,
   local titlePanel = [
     {
@@ -44,7 +71,7 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
       type: 'text',
     },
     {
-      datasource: datasource,
+      datasource: instanceConfig.datasource,
       fieldConfig: {
         defaults: {
           color: {
@@ -115,7 +142,7 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
       id: (rowIndex * panelsPerRow),
     },
     {
-      datasource: datasource,
+      datasource: instanceConfig.datasource,
       fieldConfig: {
         defaults: {
           color: {
@@ -209,7 +236,7 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
       type: 'text',
     },
     {
-      datasource: datasource,
+      datasource: instanceConfig.datasource,
       fieldConfig: {
         defaults: {
           color: {
@@ -277,7 +304,7 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
       id: (rowIndex * panelsPerRow),
     },
     {
-      datasource: datasource,
+      datasource: instanceConfig.datasource,
       fieldConfig: {
         defaults: {
           color: {
@@ -380,8 +407,8 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
     availabilityRow(
       '95% of valid requests return successfully',
       0.95,
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code=~"5.+"}[28d]))',
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive", code!~"4.+"}[28d]))',
+      'sum(rate(http_requests_total{job="%s",handler=~"receive", code=~"5.+"}[28d]))' % instanceConfig.apiJob,
+      'sum(rate(http_requests_total{job="%s",handler=~"receive", code!~"4.+"}[28d]))' % instanceConfig.apiJob,
       2
     ) +
     titleRow('API > Metrics Write > Latency') +
@@ -389,24 +416,24 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
       '90% of valid requests return < 5s',
       0.9,
       5,
-      'sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive", le="5"}[28d]))',
-      'rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"}[28d])',
-      'sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",code!~"4..",handler=~"receive"}[28d]))',
+      'sum(rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",handler=~"receive", le="5"}[28d]))' % instanceConfig.apiJob,
+      'rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",handler=~"receive"}[28d])' % instanceConfig.apiJob,
+      'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",handler=~"receive"}[28d]))' % instanceConfig.apiJob,
       3
     ) +
     titleRow('API > Metrics Read > Availability') +
     availabilityRow(
       '95% of valid /query requests return successfully',
       0.95,
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query", code=~"5.+"}[28d]))',
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query", code!~"4.+"}[28d]))',
+      'sum(rate(http_requests_total{job="%s",handler="query", code=~"5.+"}[28d]))' % instanceConfig.apiJob,
+      'sum(rate(http_requests_total{job="%s",handler="query", code!~"4.+"}[28d]))' % instanceConfig.apiJob,
       4
     ) +
     availabilityRow(
       '95% of valid /query_range requests return successfully',
       0.95,
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query_range", code=~"5.+"}[28d]))',
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query_range", code!~"4.+"}[28d]))',
+      'sum(rate(http_requests_total{job="%s",handler=~"query_range", code=~"5.+"}[28d]))' % instanceConfig.apiJob,
+      'sum(rate(http_requests_total{job="%s",handler=~"query_range", code!~"4.+"}[28d]))' % instanceConfig.apiJob,
       5
     ) +
     titleRow('API > Metrics Read > Latency') +
@@ -414,27 +441,27 @@ function(instance, environment, dashboardName, datasource, apiNamespace) {
       '90% of valid requests that process 1M samples return < 2s',
       0.9,
       2,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%(apiNamespace)s",query="query-path-sli-1M-samples",le="2.0113571874999994"}[28d]))' % { apiNamespace: apiNamespace },
-      'rate(up_custom_query_duration_seconds_bucket{namespace="%(apiNamespace)s",query="query-path-sli-1M-samples"}[1d])' % { apiNamespace: apiNamespace },
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%(apiNamespace)s",query="query-path-sli-1M-samples"}[28d]))' % { apiNamespace: apiNamespace },
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples",le="2.0113571874999994"}[28d]))' % instanceConfig.upNamespace,
+      'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples"}[1d])' % instanceConfig.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-1M-samples"}[28d]))' % instanceConfig.upNamespace,
       6
     ) +
     latencyRow(
       '90% of valid requests that process 10M samples return < 10s',
       0.9,
       10,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%(apiNamespace)s",query="query-path-sli-10M-samples",le="10.761264004567169"}[28d]))' % { apiNamespace: apiNamespace },
-      'rate(up_custom_query_duration_seconds_bucket{namespace="%(apiNamespace)s",query="query-path-sli-10M-samples"}[1d])' % { apiNamespace: apiNamespace },
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%(apiNamespace)s",query="query-path-sli-10M-samples"}[28d]))' % { apiNamespace: apiNamespace },
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples",le="10.761264004567169"}[28d]))' % instanceConfig.upNamespace,
+      'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples"}[1d])' % instanceConfig.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-10M-samples"}[28d]))' % instanceConfig.upNamespace,
       7
     ) +
     latencyRow(
       '90% of valid requests that process 100M samples return < 20s',
       0.9,
       20,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%(apiNamespace)s",query="query-path-sli-100M-samples",le="21.6447457021712"}[28d]))' % { apiNamespace: apiNamespace },
-      'rate(up_custom_query_duration_seconds_bucket{namespace="%(apiNamespace)s",query="query-path-sli-100M-samples"}[1d])' % { apiNamespace: apiNamespace },
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%(apiNamespace)s",query="query-path-sli-100M-samples"}[28d]))' % { apiNamespace: apiNamespace },
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples",le="21.6447457021712"}[28d]))' % instanceConfig.upNamespace,
+      'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples"}[1d])' % instanceConfig.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instanceConfig.upNamespace,
       8
     ),
 

@@ -64,10 +64,10 @@ local dashboards =
   { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo-mst-stage.libsonnet')() } +
   { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo-telemeter-production.libsonnet')() } +
   { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo-telemeter-stage.libsonnet')() } +
-  { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'production', 'Telemeter Production SLOs', 'telemeter-prod-01-prometheus', 'observatorium-production') } +
-  { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'stage', 'Telemeter Staging SLOs', 'app-sre-stage-01-prometheus', 'observatorium-stage') } +
-  { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo.libsonnet')('mst', 'production', 'MST Production SLOs', 'telemeter-prod-01-prometheus', 'observatorium-mst-production') } +
-  { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo.libsonnet')('mst', 'stage', 'MST Stage SLOs', 'app-sre-stage-01-prometheus', 'observatorium-mst-stage') };
+  { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'production', 'Telemeter Production SLOs') } +
+  { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'stage', 'Telemeter Staging SLOs') } +
+  { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo.libsonnet')('mst', 'production', 'MST Production SLOs') } +
+  { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo.libsonnet')('mst', 'stage', 'MST Stage SLOs') };
 {
   [name]: dashboards[name] {
     metadata+: {

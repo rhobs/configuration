@@ -471,7 +471,7 @@ function(instanceName, environment, dashboardName) {
   apiVersion: 'v1',
   kind: 'ConfigMap',
   metadata: {
-    name: 'grafana-dashboard-slo' + instanceName + '-' + environment,
+    name: 'grafana-dashboard-slo-' + instanceName + '-' + environment,
   },
   data: {
     'slo.json': std.manifestJson({

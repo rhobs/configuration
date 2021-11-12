@@ -1192,4 +1192,4 @@ metadata:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
   labels:
     grafana_dashboard: "true"
-  name: grafana-dashboard-slomst-stage
+  name: grafana-dashboard-slo-mst-stage

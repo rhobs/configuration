@@ -1,5 +1,5 @@
 function(instanceName, environment, dashboardName) {
-  //Validate our inputs
+  // Validate our inputs.
   assert std.member(['telemeter', 'mst'], instanceName),
   assert std.member(['production', 'stage'], environment),
 
@@ -476,7 +476,7 @@ function(instanceName, environment, dashboardName) {
   data: {
     'slo.json': std.manifestJson({
       // Only add telemeter-server panels if we're generating SLOs for the telemeter instance.
-      panels: titlePanel + (if instance == 'telemeter' then telemeterPanels else []) + apiPanels,
+      panels: titlePanel + (if instanceName == 'telemeter' then telemeterPanels else []) + apiPanels,
       refresh: false,
       schemaVersion: 31,
       style: 'dark',

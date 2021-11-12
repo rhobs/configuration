@@ -22,6 +22,340 @@ data:
                 "panels": [
 
                 ],
+                "title": "Telemeter Server > Metrics Write > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of valid requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 0,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code=\"5xx\"}[28d])) or vector(0))\n/\nsum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\", code!=\"4xx\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 1,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code=\"5xx\"}[28d])) or vector(0)\n        /\n        sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\", code!=\"4xx\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "Telemeter Server > Metrics Write > Latency",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests return < 5s</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [
+
+                        ],
+                        "max": 5,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 80
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        },
+                        "unit": "s"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 2,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"4..\",handler=~\"upload|receive\"}[28d]) ))\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "90th Percentile Request Latency (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 3,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",handler=~\"upload|receive\", code!~\"4..\", le=\"5\"}[28d]))\n            /\n            sum(rate(http_request_duration_seconds_count{job=\"telemeter-server\",code!~\"4..\",handler=~\"upload|receive\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
                 "title": "API > Metrics Write > Availability",
                 "type": "row"
             },

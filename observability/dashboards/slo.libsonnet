@@ -1,5 +1,5 @@
 function(instanceName, environment, dashboardName) {
-  //Validate our inputs
+  // Validate our inputs.
   assert std.member(['telemeter', 'mst'], instanceName),
   assert std.member(['production', 'stage'], environment),
 

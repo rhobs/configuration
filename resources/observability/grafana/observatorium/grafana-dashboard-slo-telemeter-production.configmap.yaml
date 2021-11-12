@@ -1192,4 +1192,4 @@ metadata:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
   labels:
     grafana_dashboard: "true"
-  name: 'grafana-dashboard-slo{"apiJob": "observatorium-observatorium-api", "datasource": "telemeter-prod-01-prometheus", "upNamespace": "observatorium-production"}-production'
+  name: grafana-dashboard-slotelemeter-production

@@ -1,0 +1,1195 @@
+apiVersion: v1
+data:
+  slo.json: |-
+    {
+        "panels": [
+            {
+                "gridPos": {
+                    "h": 3,
+                    "w": 15
+                },
+                "options": {
+                    "content": "This dashboard displays the SLOs as defined in the [RHOBS Service Level Objectives](https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit) document.",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "Description",
+                "transparent": true,
+                "type": "text"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Metrics Write > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of valid requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 4,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code!~\"4.+\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 5,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code=~\"5.+\"}[28d])) or vector(0)\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"receive\", code!~\"4.+\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Metrics Write > Latency",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests return < 5s</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [
+
+                        ],
+                        "max": 5,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 80
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        },
+                        "unit": "s"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 6,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\",code!~\"4..\",handler=~\"receive\"}[28d]) ))\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "90th Percentile Request Latency (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 7,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\",code!~\"4..\",handler=~\"receive\", le=\"5\"}[28d]))\n            /\n            sum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-api\",code!~\"4..\",handler=~\"receive\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Metrics Read > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of valid /query requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 8,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=\"query\", code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=\"query\", code!~\"4.+\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 9,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=\"query\", code=~\"5.+\"}[28d])) or vector(0)\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=\"query\", code!~\"4.+\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of valid /query_range requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 10,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query_range\", code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query_range\", code!~\"4.+\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 11,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query_range\", code=~\"5.+\"}[28d])) or vector(0)\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query_range\", code!~\"4.+\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Metrics Read > Latency",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 1M samples return < 2s</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [
+
+                        ],
+                        "max": 2,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 80
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        },
+                        "unit": "s"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 12,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-production\",query=\"query-path-sli-1M-samples\"}[1d]) ))\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "90th Percentile Request Latency (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 13,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-production\",query=\"query-path-sli-1M-samples\",le=\"2.0113571874999994\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-production\",query=\"query-path-sli-1M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 10M samples return < 10s</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [
+
+                        ],
+                        "max": 10,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 80
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        },
+                        "unit": "s"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 14,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-production\",query=\"query-path-sli-10M-samples\"}[1d]) ))\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "90th Percentile Request Latency (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 15,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-production\",query=\"query-path-sli-10M-samples\",le=\"10.761264004567169\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-production\",query=\"query-path-sli-10M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 100M samples return < 20s</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [
+
+                        ],
+                        "max": 20,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 80
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 100
+                                }
+                            ]
+                        },
+                        "unit": "s"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 16,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-production\",query=\"query-path-sli-100M-samples\"}[1d]) ))\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "90th Percentile Request Latency (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "telemeter-prod-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 17,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-production\",query=\"query-path-sli-100M-samples\",le=\"21.6447457021712\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-production\",query=\"query-path-sli-100M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            }
+        ],
+        "refresh": false,
+        "schemaVersion": 31,
+        "style": "dark",
+        "tags": [
+
+        ],
+        "templating": {
+            "list": [
+
+            ]
+        },
+        "time": {
+            "from": "now-6h",
+            "to": "now"
+        },
+        "timepicker": {
+
+        },
+        "timezone": "",
+        "title": "Telemeter Production SLOs",
+        "uid": "f9fa7677fb4a2669f123f9a0f2234b47",
+        "version": 2
+    }
+kind: ConfigMap
+metadata:
+  annotations:
+    grafana-folder: /grafana-dashboard-definitions/Observatorium
+  labels:
+    grafana_dashboard: "true"
+  name: 'grafana-dashboard-slo{"apiJob": "observatorium-observatorium-api", "datasource": "telemeter-prod-01-prometheus", "upNamespace": "observatorium-production"}-production'

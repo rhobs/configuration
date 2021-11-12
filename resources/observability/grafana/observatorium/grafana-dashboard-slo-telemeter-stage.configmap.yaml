@@ -1192,4 +1192,4 @@ metadata:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
   labels:
     grafana_dashboard: "true"
-  name: 'grafana-dashboard-slo{"apiJob": "observatorium-observatorium-api", "datasource": "app-sre-stage-01-prometheus", "upNamespace": "observatorium-stage"}-stage'
+  name: grafana-dashboard-slo-telemeter-stage

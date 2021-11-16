@@ -101,7 +101,7 @@ Users of RHOBS are not able to access API endpoints for either reading, writing 
 
 ### Severity
 
-`critical`
+`medium`
 
 ### Access Required
 

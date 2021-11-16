@@ -17,7 +17,19 @@ spec:
         message: Increase in failed attempts to register with OIDC provider for {{ $labels.tenant }}
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumtenantsfailedoidcregistrations
       expr: |
-        sum(increase(observatorium_api_tenants_failed_registrations{tenant!="rhobs"}[5m])) by (tenant) > 0
+        sum(increase(observatorium_api_tenants_failed_registrations[5m])) by (tenant) > 0
+      labels:
+        service: telemeter
+        severity: medium
+  - name: observatorium-tenants
+    rules:
+    - alert: ObservatoriumTenantsSkippedDuringConfiguration
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-tenants?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Tenant {{ $labels.tenant }} was skipped due to misconfiguration
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumtenantsskippedduringconfiguration
+      expr: |
+        sum(increase(observatorium_api_tenants_skipped_invalid_configuration[5m])) by (tenant) > 0
       labels:
         service: telemeter
         severity: medium

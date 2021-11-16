@@ -540,10 +540,25 @@ local renderAlerts(name, environment, mixin) = {
               annotations: {
                 message: 'Increase in failed attempts to register with OIDC provider for {{ $labels.tenant }}',
               },
-              // TODO(@matej-g): The exclusion of 'rhobs' tenant should be removed
-              // after https://issues.redhat.com/browse/MON-1849 is resolved.
               expr: |||
-                sum(increase(observatorium_api_tenants_failed_registrations{tenant!="rhobs"}[5m])) by (tenant) > 0
+                sum(increase(observatorium_api_tenants_failed_registrations[5m])) by (tenant) > 0
+              |||,
+              labels: {
+                severity: 'warning',
+              },
+            },
+          ],
+        },
+        {
+          name: 'observatorium-tenants',
+          rules: [
+            {
+              alert: 'ObservatoriumTenantsSkippedDuringConfiguration',
+              annotations: {
+                message: 'Tenant {{ $labels.tenant }} was skipped due to misconfiguration',
+              },
+              expr: |||
+                sum(increase(observatorium_api_tenants_skipped_invalid_configuration[5m])) by (tenant) > 0
               |||,
               labels: {
                 severity: 'warning',

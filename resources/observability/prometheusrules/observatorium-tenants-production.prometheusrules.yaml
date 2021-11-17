@@ -21,8 +21,6 @@ spec:
       labels:
         service: telemeter
         severity: medium
-  - name: observatorium-tenants
-    rules:
     - alert: ObservatoriumTenantsSkippedDuringConfiguration
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-tenants?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m

@@ -547,11 +547,6 @@ local renderAlerts(name, environment, mixin) = {
                 severity: 'warning',
               },
             },
-          ],
-        },
-        {
-          name: 'observatorium-tenants',
-          rules: [
             {
               alert: 'ObservatoriumTenantsSkippedDuringConfiguration',
               annotations: {

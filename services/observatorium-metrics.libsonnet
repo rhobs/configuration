@@ -357,7 +357,11 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           },
         },
       },
-    }),
+    }) {
+      serviceAccount+: {
+        imagePullSecrets+: [{ name: 'quay.io' }],
+      },
+    },
 
     storeBucketCache:: memcached({
       local cfg = self,
@@ -402,7 +406,11 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           },
         },
       },
-    }),
+    }) {
+      serviceAccount+: {
+        imagePullSecrets+: [{ name: 'quay.io' }],
+      },
+    },
 
     query:: t.query(thanosSharedConfig {
       name: 'observatorium-thanos-query',

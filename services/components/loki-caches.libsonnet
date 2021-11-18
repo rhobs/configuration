@@ -104,7 +104,11 @@ function(params) {
         },
       },
     },
-  }),
+  }) {
+    serviceAccount+: {
+      imagePullSecrets+: [{ name: 'quay.io' }],
+    },
+  },
 
   indexQueryCache:: memcached({
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-index-query-cache',
@@ -131,7 +135,11 @@ function(params) {
         },
       },
     },
-  }),
+  }) {
+    serviceAccount+: {
+      imagePullSecrets+: [{ name: 'quay.io' }],
+    },
+  },
 
   resultsCache:: memcached({
     name: lc.config.name + '-' + lc.config.commonLabels['app.kubernetes.io/name'] + '-results-cache',
@@ -158,7 +166,11 @@ function(params) {
       },
     },
 
-  }),
+  }) {
+    serviceAccount+: {
+      imagePullSecrets+: [{ name: 'quay.io' }],
+    },
+  },
 
   manifests::
     {} +
@@ -166,15 +178,18 @@ function(params) {
        'chunk-cache-service': lc.chunkCache.service,
        'chunk-cache-statefulset': lc.chunkCache.statefulSet,
        'chunk-cache-service-monitor': lc.chunkCache.serviceMonitor,
+       'chunk-cache-service-account': lc.chunkCache.serviceAccount,
      } else {}) +
     (if std.objectHas(lc.config.components, 'indexQueryCache') && lc.config.components.indexQueryCache.replicas > 0 then {
        'index-query-cache-service': lc.indexQueryCache.service,
        'index-query-cache-statefulset': lc.indexQueryCache.statefulSet,
        'index-query-cache-service-monitor': lc.indexQueryCache.serviceMonitor,
+       'index-query-cache-service-account': lc.indexQueryCache.serviceAccount,
      } else {}) +
     (if std.objectHas(lc.config.components, 'resultsCache') && lc.config.components.resultsCache.replicas > 0 then {
        'results-cache-service': lc.resultsCache.service,
        'results-cache-statefulset': lc.resultsCache.statefulSet,
        'results-cache-service-monitor': lc.resultsCache.serviceMonitor,
+       'results-cache-service-account': lc.resultsCache.serviceAccount,
      } else {}),
 }

@@ -1617,6 +1617,8 @@ objects:
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     labels:
@@ -1732,6 +1734,8 @@ objects:
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     labels:

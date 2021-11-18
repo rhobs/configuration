@@ -27,6 +27,18 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: loki
       app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: chunk-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-loki-chunk-cache
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -127,6 +139,18 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: loki
       app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: index-query-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-loki-index-query-cache
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -227,6 +251,18 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: loki
       app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: results-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-loki-results-cache
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:

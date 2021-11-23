@@ -170,6 +170,7 @@ objects:
           - --whitelist={__name__="node_uname_info"}
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
+          - --whitelist={__name__="nto_custom_profiles:count"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
@@ -359,6 +360,7 @@ objects:
           - --whitelist={__name__="node_uname_info"}
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
+          - --whitelist={__name__="nto_custom_profiles:count"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}

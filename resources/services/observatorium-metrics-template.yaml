@@ -234,6 +234,17 @@ objects:
           requests:
             storage: ${THANOS_COMPACTOR_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
+- apiVersion: v1
+  data:
+    file_sd.yaml: '- targets: ${THANOS_QUERIER_FILE_SD_TARGETS}'
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/part-of: observatorium
+    name: thanos-query-file-sd
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -292,7 +303,6 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-metric-federation-rule.${NAMESPACE}.svc.cluster.local
           - --web.prefix-header=X-Forwarded-Prefix
           - --query.timeout=15m
           - --query.lookback-delta=15m
@@ -303,6 +313,7 @@ objects:
               "service_name": "thanos-query"
             "type": "JAEGER"
           - --query.auto-downsampling
+          - --store.sd-files=/etc/thanos/sd/file_sd.yaml
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
@@ -339,6 +350,9 @@ objects:
               cpu: ${THANOS_QUERIER_CPU_REQUEST}
               memory: ${THANOS_QUERIER_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/thanos/sd
+            name: file-sd
         - args:
           - -provider=openshift
           - -https-address=:9091
@@ -414,6 +428,9 @@ objects:
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:
+        - configMap:
+            name: thanos-query-file-sd
+          name: file-sd
         - name: query-tls
           secret:
             secretName: query-tls
@@ -2694,6 +2711,8 @@ parameters:
   value: "3"
 - name: THANOS_QUERIER_SVC_URL
   value: http://thanos-querier.observatorium.svc:9090
+- name: THANOS_QUERIER_FILE_SD_TARGETS
+  value: '[]'
 - name: THANOS_QUERY_FRONTEND_CPU_LIMIT
   value: "1"
 - name: THANOS_QUERY_FRONTEND_CPU_REQUEST

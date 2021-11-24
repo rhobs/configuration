@@ -428,11 +428,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         for service in
           [thanos.rule.service] +
           [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
-          [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)] +
-          // This service will not exist in a namespace where the metric-federation Ruler is not
-          // deployed (the MST namespace). This will cause the Querier to spam a warning saying
-          // it was not able to resolve the address.
-          [thanos.metricFederationRule.service]
+          [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)]
       ],
       serviceMonitor: true,
       resources: {
@@ -445,7 +441,56 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           memory: '${THANOS_QUERIER_MEMORY_LIMIT}',
         },
       },
-    }),
+    }) + {
+      // This is a workaround for adding extra store for the metric federation
+      // ruler service, which does not exist in the MST instance, so we cannot simply pass it
+      // with the --store flag. Instead, we use the file service discovery. The extra store(s)
+      // should be passed as an array string in THANOS_QUERIER_FILE_SD_TARGETS parameter.
+      deployment+: {
+        spec+: {
+          template+: {
+            spec+: {
+              volumes+: [{
+                configMap: {
+                  name: 'thanos-query-file-sd',
+                },
+                name: 'file-sd',
+              }],
+              containers: [
+                if x.name == 'thanos-query'
+                then x {
+                  args+: ['--store.sd-files=/etc/thanos/sd/file_sd.yaml'],
+                  volumeMounts+: [{
+                    mountPath: '/etc/thanos/sd',
+                    name: 'file-sd',
+                  }],
+                }
+                else x
+                for x in super.containers
+              ],
+            },
+          },
+        },
+      },
+    } + {
+      configmap: {
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: {
+          name: 'thanos-query-file-sd',
+          annotations: {
+            'qontract.recycle': 'true',
+          },
+          labels: {
+            'app.kubernetes.io/instance': 'observatorium',
+            'app.kubernetes.io/part-of': 'observatorium',
+          },
+        },
+        data: {
+          'file_sd.yaml': '- targets: ${THANOS_QUERIER_FILE_SD_TARGETS}',
+        },
+      },
+    },
 
     queryFrontend:: t.queryFrontend(thanosSharedConfig {
       name: 'observatorium-thanos-query-frontend',

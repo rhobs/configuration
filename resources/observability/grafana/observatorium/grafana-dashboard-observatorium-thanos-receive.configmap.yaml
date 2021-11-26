@@ -78,7 +78,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))",
+                  "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
@@ -164,7 +164,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=\"$job\", handler=\"receive\",code=~\"5..\"}[$interval])) / sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\",code=~\"5..\"}[$interval])) / sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -267,7 +267,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p50 {{namespace}} {{job}}",
@@ -277,7 +277,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p90 {{namespace}} {{job}}",
@@ -287,7 +287,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=\"$job\", handler=\"receive\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p99 {{namespace}} {{job}}",
@@ -388,7 +388,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all {{job}}",
@@ -475,7 +475,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=\"$job\", result=\"error\"}[$interval])) / sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=~\"$job\", result=\"error\"}[$interval])) / sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -573,7 +573,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all {{job}}",
@@ -660,7 +660,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=\"$job\", result=\"error\"}[$interval])) / sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=~\"$job\", result=\"error\"}[$interval])) / sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -829,7 +829,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
@@ -915,7 +915,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1018,7 +1018,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p50 {{namespace}} {{job}}",
@@ -1028,7 +1028,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p90 {{namespace}} {{job}}",
@@ -1038,7 +1038,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p99 {{namespace}} {{job}}",
@@ -1210,7 +1210,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
@@ -1296,7 +1296,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1399,7 +1399,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p50 {{namespace}} {{job}}",
@@ -1409,7 +1409,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p90 {{namespace}} {{job}}",
@@ -1419,7 +1419,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p99 {{namespace}} {{job}}",
@@ -1591,7 +1591,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))",
+                  "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
@@ -1677,7 +1677,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "error",
@@ -1780,7 +1780,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p50 {{namespace}} {{job}}",
@@ -1790,7 +1790,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p90 {{namespace}} {{job}}",
@@ -1800,7 +1800,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
+                  "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "p99 {{namespace}} {{job}}",
@@ -1943,7 +1943,7 @@ data:
               ],
               "targets": [
                 {
-                  "expr": "time() - max by (namespace, job, bucket) (thanos_objstore_bucket_last_successful_upload_time{namespace=\"$namespace\", job=\"$job\"})",
+                  "expr": "time() - max by (namespace, job, bucket) (thanos_objstore_bucket_last_successful_upload_time{namespace=\"$namespace\", job=~\"$job\"})",
                   "format": "table",
                   "instant": true,
                   "intervalFactor": 2,
@@ -2043,7 +2043,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_memstats_alloc_bytes{namespace=\"$namespace\", job=\"$job\"}",
+                  "expr": "go_memstats_alloc_bytes{namespace=\"$namespace\", job=~\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "alloc all {{instance}}",
@@ -2051,7 +2051,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=\"$job\"}",
+                  "expr": "go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=~\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "alloc heap {{instance}}",
@@ -2059,7 +2059,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "rate(go_memstats_alloc_bytes_total{namespace=\"$namespace\", job=\"$job\"}[30s])",
+                  "expr": "rate(go_memstats_alloc_bytes_total{namespace=\"$namespace\", job=~\"$job\"}[30s])",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "alloc rate all {{instance}}",
@@ -2067,7 +2067,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "rate(go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=\"$job\"}[30s])",
+                  "expr": "rate(go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=~\"$job\"}[30s])",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "alloc rate heap {{instance}}",
@@ -2075,7 +2075,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "go_memstats_stack_inuse_bytes{namespace=\"$namespace\", job=\"$job\"}",
+                  "expr": "go_memstats_stack_inuse_bytes{namespace=\"$namespace\", job=~\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "inuse heap {{instance}}",
@@ -2083,7 +2083,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "go_memstats_heap_inuse_bytes{namespace=\"$namespace\", job=\"$job\"}",
+                  "expr": "go_memstats_heap_inuse_bytes{namespace=\"$namespace\", job=~\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "inuse stack {{instance}}",
@@ -2169,7 +2169,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_goroutines{namespace=\"$namespace\", job=\"$job\"}",
+                  "expr": "go_goroutines{namespace=\"$namespace\", job=~\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -2255,7 +2255,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_gc_duration_seconds{namespace=\"$namespace\", job=\"$job\"}",
+                  "expr": "go_gc_duration_seconds{namespace=\"$namespace\", job=~\"$job\"}",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{quantile}} {{instance}}",

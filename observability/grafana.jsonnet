@@ -18,9 +18,11 @@ local memcached = (import 'github.com/grafana/jsonnet-libs/memcached-mixin/mixin
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'telemeter-production';
 
+local sanitizeDashboardName(name) = std.strReplace(std.split(name, '.')[0], '_', '-');
+
 local dashboards =
   {
-    ['grafana-dashboard-observatorium-thanos-%s.configmap' % std.split(name, '.')[0]]: {
+    ['grafana-dashboard-observatorium-thanos-%s.configmap' % sanitizeDashboardName(name)]: {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {

@@ -26,7 +26,7 @@ local dashboards =
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
-        name: 'grafana-dashboard-observatorium-thanos-%s' % std.split(name, '.')[0],
+        name: 'grafana-dashboard-observatorium-thanos-%s' % sanitizeDashboardName(name),
       },
       data: {
         [name]: std.manifestJsonEx(thanos.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
@@ -35,11 +35,11 @@ local dashboards =
     for name in std.objectFields(thanos.grafanaDashboards)
   } +
   {
-    ['grafana-dashboard-observatorium-jaeger-%s.configmap' % std.split(name, '.')[0]]: {
+    ['grafana-dashboard-observatorium-jaeger-%s.configmap' % sanitizeDashboardName(name)]: {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
-        name: 'grafana-dashboard-observatorium-jaeger-%s' % std.split(name, '.')[0],
+        name: 'grafana-dashboard-observatorium-jaeger-%s' % sanitizeDashboardName(name),
       },
       data: {
         [name]: std.manifestJsonEx(jaeger.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
@@ -48,11 +48,11 @@ local dashboards =
     for name in std.objectFields(jaeger.grafanaDashboards)
   } +
   {
-    ['grafana-dashboard-observatorium-memcached-%s.configmap' % std.split(name, '.')[0]]: {
+    ['grafana-dashboard-observatorium-memcached-%s.configmap' % sanitizeDashboardName(name)]: {
       apiVersion: 'v1',
       kind: 'ConfigMap',
       metadata: {
-        name: 'grafana-dashboard-observatorium-memcached-%s' % std.split(name, '.')[0],
+        name: 'grafana-dashboard-observatorium-memcached-%s' % sanitizeDashboardName(name),
       },
       data: {
         [name]: std.manifestJsonEx(memcached.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),

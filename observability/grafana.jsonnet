@@ -1,6 +1,7 @@
 local config = (import 'config.libsonnet');
 
 local thanos =
+  (import 'github.com/thanos-io/thanos/mixin/dashboards/query_frontend.libsonnet') +
   (import 'github.com/thanos-io/thanos/mixin/dashboards/query.libsonnet') +
   (import 'github.com/thanos-io/thanos/mixin/dashboards/store.libsonnet') +
   (import 'github.com/thanos-io/thanos/mixin/dashboards/receive.libsonnet') +

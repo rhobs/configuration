@@ -16,7 +16,7 @@ To install all dependencies:
 jb install
 ```
 
-To update a dependency:
+To update a dependency, normally the process would be:
 
 ```console
 # Updates `kube-thanos` to master and sets the new hash in `jsonnetfile.lock.json`.
@@ -25,6 +25,9 @@ jb update https://github.com/thanos-io/kube-thanos/jsonnet/kube-thanos@main
 # Update all dependancies to master and sets the new hashes in `jsonnetfile.lock.json`.
 jb update
 ```
+
+Currently `jb update` does not seem to work properly - see https://github.com/jsonnet-bundler/jsonnet-bundler/issues/142.
+As a workaround, try following this workflow: https://github.com/openshift/cluster-monitoring-operator/blob/master/Documentation/development.md#updating-individual-vendored-jsonnet-code
 
 ## Grafana dashboards
 

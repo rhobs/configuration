@@ -1278,4 +1278,4 @@ metadata:
     grafana-folder: /grafana-dashboard-definitions/Observatorium
   labels:
     grafana_dashboard: "true"
-  name: grafana-dashboard-observatorium-thanos-query_frontend
+  name: grafana-dashboard-observatorium-thanos-query-frontend

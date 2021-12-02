@@ -553,7 +553,7 @@ local renderAlerts(name, environment, mixin) = {
                 message: 'Tenant {{ $labels.tenant }} was skipped due to misconfiguration',
               },
               expr: |||
-                sum(increase(observatorium_api_tenants_skipped_invalid_configuration[5m])) by (tenant) > 0
+                sum(increase(observatorium_api_tenants_skipped_invalid_configuration[5m])) by (tenant, namespace) > 0
               |||,
               labels: {
                 severity: 'warning',

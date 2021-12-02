@@ -84,7 +84,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_RULER_LOG_LEVEL', value: 'info' },
     { name: 'THANOS_RULER_MEMORY_LIMIT', value: '2Gi' },
     { name: 'THANOS_RULER_MEMORY_REQUEST', value: '2Gi' },
-    { name: 'THANOS_RULER_PVC_REQUEST', value: '50Gi' },
+    { name: 'THANOS_RULER_PVC_REQUEST', value: '100Gi' },
     { name: 'THANOS_RULER_REPLICAS', value: '2' },
     { name: 'THANOS_S3_SECRET', value: 'telemeter-thanos-stage-s3' },
     { name: 'THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT', value: '3072' },

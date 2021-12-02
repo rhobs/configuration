@@ -1203,7 +1203,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: 100Gi
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service

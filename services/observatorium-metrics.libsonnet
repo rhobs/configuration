@@ -223,7 +223,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           storageClassName: '${STORAGE_CLASS}',
           resources: {
             requests: {
-              storage: '50Gi',
+              storage: '100Gi',
             },
           },
         },
@@ -570,7 +570,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           storageClassName: '${STORAGE_CLASS}',
           resources: {
             requests: {
-              storage: '50Gi',
+              storage: '100Gi',
             },
           },
         },

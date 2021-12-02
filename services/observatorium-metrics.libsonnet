@@ -570,7 +570,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           storageClassName: '${STORAGE_CLASS}',
           resources: {
             requests: {
-              storage: '50Gi',
+              storage: '${THANOS_RECEIVE_PVC_STORAGE}',
             },
           },
         },

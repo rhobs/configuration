@@ -77,6 +77,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_RECEIVE_LOG_LEVEL', value: 'info' },
     { name: 'THANOS_RECEIVE_MEMORY_LIMIT', value: '1Gi' },
     { name: 'THANOS_RECEIVE_MEMORY_REQUEST', value: '1Gi' },
+    { name: 'THANOS_RECEIVE_PVC_STORAGE', value: '100Gi' },
     { name: 'THANOS_RECEIVE_REPLICAS', value: '5' },
     { name: 'THANOS_RECEIVE_TSDB_PATH', value: '/var/thanos/receive' },
     { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },

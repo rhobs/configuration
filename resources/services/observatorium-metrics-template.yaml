@@ -1203,7 +1203,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_RECEIVE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -2745,6 +2745,8 @@ parameters:
   value: 1Gi
 - name: THANOS_RECEIVE_MEMORY_REQUEST
   value: 1Gi
+- name: THANOS_RECEIVE_PVC_STORAGE
+  value: 100Gi
 - name: THANOS_RECEIVE_REPLICAS
   value: "5"
 - name: THANOS_RECEIVE_TSDB_PATH

@@ -36,9 +36,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_COMPACTOR_LOG_LEVEL}',
       serviceMonitor: true,
-      retentionResolutionRaw: '${THANOS_COMPACTOR_RETENTION_RESOULTION_RAW}',
-      retentionResolution5m: '${THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES}',
-      retentionResolution1h: '${THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR}',
+      retentionResolutionRaw: '${THANOS_COMPACTOR_RETENTION_RESOLUTION_RAW}',
+      retentionResolution5m: '${THANOS_COMPACTOR_RETENTION_RESOLUTION_FIVE_MINUTES}',
+      retentionResolution1h: '${THANOS_COMPACTOR_RETENTION_RESOLUTION_ONE_HOUR}',
       deduplicationReplicaLabels: ['replica'],
       resources: {
         limits: {

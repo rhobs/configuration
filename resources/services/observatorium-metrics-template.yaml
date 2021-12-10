@@ -115,9 +115,9 @@ objects:
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --data-dir=/var/thanos/compact
           - --debug.accept-malformed-index
-          - --retention.resolution-raw=${THANOS_COMPACTOR_RETENTION_RESOULTION_RAW}
-          - --retention.resolution-5m=${THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES}
-          - --retention.resolution-1h=${THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR}
+          - --retention.resolution-raw=${THANOS_COMPACTOR_RETENTION_RESOLUTION_RAW}
+          - --retention.resolution-5m=${THANOS_COMPACTOR_RETENTION_RESOLUTION_FIVE_MINUTES}
+          - --retention.resolution-1h=${THANOS_COMPACTOR_RETENTION_RESOLUTION_ONE_HOUR}
           - --delete-delay=48h
           - --deduplication.replica-label=replica
           - --debug.max-compaction-level=3
@@ -2675,11 +2675,11 @@ parameters:
   value: 100m
 - name: THANOS_COMPACTOR_LOG_LEVEL
   value: info
-- name: THANOS_COMPACTOR_RETENTION_RESOULTION_RAW
+- name: THANOS_COMPACTOR_RETENTION_RESOLUTION_RAW
   value: 14d
-- name: THANOS_COMPACTOR_RETENTION_RESOULTION_FIVE_MINUTES
+- name: THANOS_COMPACTOR_RETENTION_RESOLUTION_FIVE_MINUTES
   value: 1s
-- name: THANOS_COMPACTOR_RETENTION_RESOULTION_ONE_HOUR
+- name: THANOS_COMPACTOR_RETENTION_RESOLUTION_ONE_HOUR
   value: 1s
 - name: THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING
   value: --downsampling.disable

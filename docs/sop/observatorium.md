@@ -1136,6 +1136,65 @@ For the set availability guarantees the observatorium api or the thanos receiver
 
 ---
 
+## ObservatoriumPersistentVolumeUsageHigh
+
+### Impact
+
+A PVC belonging to an RHOBS service is filled beyond a comfortable level. If the volume is not increased, it might soon become critically filled.
+
+### Summary
+
+One or more PVCs are filled to more than 90%. The remaining free space might not suffice to handle the system's load for longer time.
+
+### Severity
+
+`warning`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the alert and establish which component is the one affected by the filled PVC
+- Assess how much free space on the PVC is there left and how long will it last
+- If extending the PVC is necessary, locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
+- Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
+
+## ObservatoriumPersistentVolumeUsageCritical
+
+### Impact
+
+A PVC belonging to an RHOBS service is critically filled - if the PVC fills beyoned this level, the functionality of the system will be impacted.
+
+### Summary
+
+One or more PVCs are filled to more than 95%. The remaining free space does not suffice to sustain the normal system load.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the alert and establish which component is the one affected by the filled PVC
+- Check the pods belonging to the component and establish what object do they belong to
+- Locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
+- Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
 ## GubernatorIsDown
 
 ### Impact

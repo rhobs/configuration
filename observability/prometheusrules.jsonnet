@@ -517,6 +517,38 @@ local renderAlerts(name, environment, mixin) = {
                 severity: 'critical',
               },
             },
+            {
+              alert: 'ObservatoriumPersistentVolumeUsageHigh',
+              annotations: {
+                description: 'The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} has {{ printf "%0.2f" $value }}% of free space',
+                summary: 'One or more of the PersistentVolumes in Observatorium is over 90% full. They might need to be extended.',
+              },
+              expr: |||
+                100 * kubelet_volume_stats_available_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"}
+                /
+                kubelet_volume_stats_capacity_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"} < 10
+              |||,
+              'for': '10m',
+              labels: {
+                severity: 'warning',
+              },
+            },
+            {
+              alert: 'ObservatoriumPersistentVolumeUsageCritical',
+              annotations: {
+                description: 'The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is only {{ printf "%0.2f" $value }}% free',
+                summary: 'One or more of the PersistentVolumes in Observatorium is critically filled. They need to be extended.',
+              },
+              expr: |||
+                100 * kubelet_volume_stats_available_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"}
+                /
+                kubelet_volume_stats_capacity_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"} < 5
+              |||,
+              'for': '10m',
+              labels: {
+                severity: 'critical',
+              },
+            },
           ],
         },
       ],

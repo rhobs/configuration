@@ -24,3 +24,33 @@ spec:
       labels:
         service: telemeter
         severity: critical
+    - alert: ObservatoriumPersistentVolumeUsageHigh
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-metrics?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} has {{ printf "%0.2f" $value }}% of free space
+        message: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} has {{ printf "%0.2f" $value }}% of free space
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumpersistentvolumeusagehigh
+        summary: One or more of the PersistentVolumes in Observatorium is over 90% full. They might need to be extended.
+      expr: |
+        100 * kubelet_volume_stats_available_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"}
+        /
+        kubelet_volume_stats_capacity_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"} < 10
+      for: 10m
+      labels:
+        service: telemeter
+        severity: medium
+    - alert: ObservatoriumPersistentVolumeUsageCritical
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-metrics?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is only {{ printf "%0.2f" $value }}% free
+        message: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} is only {{ printf "%0.2f" $value }}% free
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumpersistentvolumeusagecritical
+        summary: One or more of the PersistentVolumes in Observatorium is critically filled. They need to be extended.
+      expr: |
+        100 * kubelet_volume_stats_available_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"}
+        /
+        kubelet_volume_stats_capacity_bytes{job="kubelet",namespace!~"^openshift-.*$",persistentvolumeclaim=~"data-observatorium-thanos-.*"} < 5
+      for: 10m
+      labels:
+        service: telemeter
+        severity: critical

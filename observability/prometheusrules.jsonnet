@@ -504,6 +504,20 @@ local renderAlerts(name, environment, mixin) = {
           name: 'observatorium-metrics',
           rules: [
             {
+              alert: 'ObservatoriumNoStoreBlocksLoaded',
+              annotations: {
+                description: 'Observatorium Thanos Store {{$labels.namespace}}/{{$labels.job}} has not loaded even a single block.',
+                summary: 'Observatorium Thanos Ruler has not loaded even a sigle block. This should not have happened, indicates data loss. Check out the configuration.',
+              },
+              expr: |||
+                absent(thanos_bucket_store_blocks_last_loaded_timestamp_seconds) != 1 and (time() - thanos_bucket_store_blocks_last_loaded_timestamp_seconds) > 6 * 60 * 60
+              ||| % config.thanos.store,
+              'for': '6h',
+              labels: {
+                severity: 'critical',
+              },
+            },
+            {
               alert: 'ObservatoriumNoRulesLoaded',
               annotations: {
                 description: 'Observatorium Thanos Ruler {{$labels.namespace}}/{{$labels.job}} has not any rules loaded.',

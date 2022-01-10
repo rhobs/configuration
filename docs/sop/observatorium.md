@@ -1166,6 +1166,40 @@ One or more PVCs are filled to more than 90%. The remaining free space might not
 - If extending the PVC is necessary, locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
 - Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
 
+---
+
+## ObservatoriumNoStoreBlocksLoaded
+
+### Impact
+
+Thanos Store blocks are not being loaded. This can indicate possible data loss.
+
+### Summary
+
+During the last 6 hours, not even a single Thanos Store block has been loaded. This can indicate possible data loss.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
+- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the namespace of RHOBS causing this alert to fire.
+- Locate Thanos Compact Statefulset in the affected namespace.
+- Check these downsampling command line args for Thanos Compact if they are defined as per these guidelines: https://thanos.io/tip/components/compact.md/
+        - --retention.resolution-raw
+        - --retention.resolution-5m
+        - --retention.resolution-1h
+
 ## ObservatoriumPersistentVolumeUsageCritical
 
 ### Impact

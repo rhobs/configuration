@@ -5,10 +5,10 @@ metadata:
 objects:
 - apiVersion: v1
   data:
-    authorize_url: ""
-    client_id: ""
-    client_secret: ""
-    oidc_issuer: ""
+    authorize_url: aHR0cHM6Ly9hcGkuc3RhZ2Uub3BlbnNoaWZ0LmNvbS9hcGkvYWNjb3VudHNfbWdtdC92MS9jbHVzdGVyX3JlZ2lzdHJhdGlvbnM=
+    client_id: dGVzdA==
+    client_secret: WlhoaGJYQnNaUzFoY0hBdGMyVmpjbVYw
+    oidc_issuer: aHR0cDovL2RleC5kZXguc3ZjLmNsdXN0ZXIubG9jYWw6NTU1Ni9kZXg=
   kind: Secret
   metadata:
     labels:
@@ -748,7 +748,7 @@ objects:
             secretName: token-refresher-proxy
 - apiVersion: v1
   data:
-    session_secret: ""
+    session_secret: c2VjcmV0
   kind: Secret
   metadata:
     labels:
@@ -806,13 +806,13 @@ parameters:
 - name: NAMESPACE
   value: telemeter
 - name: IMAGE_CANARY_TAG
-  value: v4.0
+  value: 2c9c76e
 - name: IMAGE_CANARY
-  value: quay.io/openshift/origin-telemeter
+  value: quay.io/app-sre/telemeter
 - name: IMAGE_TAG
-  value: v4.0
+  value: 2c9c76e
 - name: IMAGE
-  value: quay.io/openshift/origin-telemeter
+  value: quay.io/app-sre/telemeter
 - name: MEMCACHED_CPU_LIMIT
   value: "3"
 - name: MEMCACHED_CPU_REQUEST

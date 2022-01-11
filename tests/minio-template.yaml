@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: minio
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: minio
+  spec:
+    replicas: ${{REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: minio
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/name: minio
+      spec:
+        containers:
+        - command:
+          - /bin/sh
+          - -c
+          - |
+            mkdir -p /storage/thanos && \
+            /usr/bin/docker-entrypoint.sh minio server /storage
+          env:
+          - name: MINIO_ACCESS_KEY
+            value: ${MINIO_ACCESS_KEY}
+          - name: MINIO_SECRET_KEY
+            value: ${MINIO_SECRET_KEY}
+          image: minio/minio
+          name: minio
+          ports:
+          - containerPort: 9000
+          resources:
+            limits:
+              cpu: ${MINIO_CPU_LIMITS}
+              memory: ${MINIO_MEMORY_LIMITS}
+            requests:
+              cpu: ${MINIO_CPU_REQUEST}
+              memory: ${MINIO_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /storage
+            name: storage
+        volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: minio
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app.kubernetes.io/name: minio
+    name: minio
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: minio
+  spec:
+    ports:
+    - port: 9000
+      protocol: TCP
+      targetPort: 9000
+    selector:
+      app.kubernetes.io/name: minio
+    type: ClusterIP
+parameters:
+- name: NAMESPACE
+  value: minio
+- name: IMAGE
+  value: minio/minio
+- name: IMAGE_TAG
+  value: RELEASE.2021-09-09T21-37-07Z
+- name: REPLICAS
+  value: "1"
+- name: MINIO_CPU_REQUEST
+  value: 100m
+- name: MINIO_MEMORY_REQUEST
+  value: 200Mi
+- name: MINIO_CPU_LIMITS
+  value: 100m
+- name: MINIO_MEMORY_LIMITS
+  value: 200Mi
+- name: MINIO_ACCESS_KEY
+  value: minio
+- name: MINIO_SECRET_KEY
+  value: minio123

@@ -145,10 +145,10 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
   parameters: [
     { name: 'NAMESPACE', value: 'telemeter' },
 
-    { name: 'IMAGE_CANARY_TAG', value: 'v4.0' },
-    { name: 'IMAGE_CANARY', value: 'quay.io/openshift/origin-telemeter' },
-    { name: 'IMAGE_TAG', value: 'v4.0' },
-    { name: 'IMAGE', value: 'quay.io/openshift/origin-telemeter' },
+    { name: 'IMAGE_CANARY_TAG', value: '2c9c76e' },
+    { name: 'IMAGE_CANARY', value: 'quay.io/app-sre/telemeter' },
+    { name: 'IMAGE_TAG', value: '2c9c76e' },
+    { name: 'IMAGE', value: 'quay.io/app-sre/telemeter' },
     { name: 'MEMCACHED_CPU_LIMIT', value: '3' },
     { name: 'MEMCACHED_CPU_REQUEST', value: '500m' },
     { name: 'MEMCACHED_EXPORTER_CPU_LIMIT', value: '200m' },

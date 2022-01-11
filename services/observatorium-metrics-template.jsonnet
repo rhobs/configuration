@@ -16,7 +16,7 @@ local obs = import 'observatorium.libsonnet';
     // This variable is applied using ${{}} syntax, so make sure to provide valid YAML array.
     // See https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html#templates-writing-parameters_using-templates
     { name: 'NAMESPACES', value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]' },
-    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.15.0' },
+    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.29.0' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'quay.io/app-sre/jaegertracing-jaeger-agent' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
     { name: 'MEMCACHED_CPU_LIMIT', value: '3' },
@@ -51,7 +51,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_COMPACTOR_PVC_REQUEST', value: '50Gi' },
     { name: 'THANOS_COMPACTOR_REPLICAS', value: '1' },
     { name: 'THANOS_CONFIG_SECRET', value: 'thanos-objectstorage' },
-    { name: 'THANOS_IMAGE_TAG', value: 'master-2020-08-12-70f89d83' },
+    { name: 'THANOS_IMAGE_TAG', value: 'v0.23.1' },
     { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },
     { name: 'THANOS_QUERIER_CPU_LIMIT', value: '1' },
     { name: 'THANOS_QUERIER_CPU_REQUEST', value: '100m' },

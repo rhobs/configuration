@@ -24,6 +24,15 @@
   },
 
   telemeterServer+:: {
+    secret+: {
+      data+: {
+        client_id: std.base64('test'),
+        client_secret: std.base64('ZXhhbXBsZS1hcHAtc2VjcmV0'),
+        oidc_issuer: std.base64('http://dex.dex.svc.cluster.local:5556/dex'),
+        authorize_url: std.base64('https://api.stage.openshift.com/api/accounts_mgmt/v1/cluster_registrations'),
+      },
+    },
+
     statefulSet+: {
       spec+: {
         template+: {

@@ -36,8 +36,6 @@ local dex = (import 'github.com/observatorium/observatorium/configuration/compon
   },
   replicas: 1,
 }) + {
-  local j = self,
-
   deployment+: {
     spec+: {
       replicas: '${{REPLICAS}}',  // additional parenthesis does matter, they convert argument to an int.

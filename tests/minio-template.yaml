@@ -27,11 +27,11 @@ objects:
             mkdir -p /storage/thanos && \
             /usr/bin/docker-entrypoint.sh minio server /storage
           env:
-          - name: MINIO_ACCESS_KEY
+          - name: MINIO_ROOT_USER
             value: ${MINIO_ACCESS_KEY}
-          - name: MINIO_SECRET_KEY
+          - name: MINIO_ROOT_PASSWORD
             value: ${MINIO_SECRET_KEY}
-          image: minio/minio
+          image: minio/minio:RELEASE.2021-09-09T21-37-07Z
           name: minio
           ports:
           - containerPort: 9000

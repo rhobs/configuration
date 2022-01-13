@@ -278,6 +278,70 @@ local renderAlerts(name, environment, mixin) = {
 //  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'production', telemeter),
 //}
 
+
+{
+  local telemeterSLOs = [
+    // Telemeter	Telemeter Server	Metrics Write	/upload	Availability	95% valid requests return successfully
+    {
+      name: 'telemeter-server-metrics-write-availability.slo',
+      slos: [
+        slo.errorburn({
+          alertName: 'TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs',
+          metric: 'haproxy_server_http_responses_total',
+          selectors: ['route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive"', 'code!="4xx"'],
+          errorSelectors: ['code="5xx"'],
+          target: 0.95,
+        }),
+      ],
+    },
+    //     Telemeter	Telemeter Server	Metrics Write	/upload	Latency	90th percentile of valid write requests return in under 5s.
+    {
+      name: 'telemeter-server-metrics-write-latency.slo',
+      slos: [
+        slo.latencyburn({
+          alertName: 'TelemeterServerMetricsWriteLatencyErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee latency SLOs',
+          metric: 'http_request_duration_seconds_bucket',
+          selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code!~"4.."'],
+          latencyTarget: 5,
+          latencyBudget: 0.9,
+        }),
+      ],
+    },
+    // Telemeter	Telemeter Server	Metrics Write	/receive	Availability	95% valid requests return successfully
+    // Telemeter	Telemeter Server	Metrics Write	/receive	Latency	90th percentile of valid write requests return in under 5s.
+    // Telemeter	API	Metrics Write	/receive	Availability	95% valid requests return successfully
+    // Telemeter	API	Metrics Write	/receive	Latency	90th percentile of valid write requests return in under 5s.
+    // Telemeter	API	Metrics Read	/query	Availability	95% valid requests return successfully
+    // Telemeter	API	Metrics Read	/query_range	Availability	95% valid requests return successfully
+    // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 1M samples return < 2s
+    // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 10M samples return < 10s
+    // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 100M samples return < 20s
+    // Telemeter	API	Metrics Retention	N/A	Retention	Metrics written to RHOBS are retrained for 14 days.
+  ],
+
+  local telemeter = {
+    prometheusAlerts+:: {
+      groups: [
+        {
+          local slos = [
+            slo.alerts + slo.recordingrules
+            for slo in group.slos
+          ],
+
+          name: group.name,
+          rules: std.flattenArrays(slos),
+        }
+        for group in telemeterSLOs
+      ],
+    },
+  },
+
+  'rhobs-slos-telemeter-stage.prometheusrules': renderAlerts('rhobs-slos-telemeter-stage', 'stage', telemeter),
+  'rhobs-slos-telemeter-production.prometheusrules': renderAlerts('rhobs-slos-telemeter-production', 'production', telemeter),
+}
+
 {
   local thanosAlerts =
     (import 'github.com/thanos-io/thanos/mixin/alerts/absent.libsonnet') +

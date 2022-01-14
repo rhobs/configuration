@@ -310,16 +310,93 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    // Telemeter	Telemeter Server	Metrics Write	/receive	Availability	95% valid requests return successfully
-    // Telemeter	Telemeter Server	Metrics Write	/receive	Latency	90th percentile of valid write requests return in under 5s.
     // Telemeter	API	Metrics Write	/receive	Availability	95% valid requests return successfully
+    {
+      name: 'telemeter-api-metrics-write-availability.slo',
+      slos: [
+        slo.errorburn({
+          alertName: 'TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning',
+          alertMessage: 'API /receive handler is burning too much error budget to gurantee availability SLOs',
+          metric: 'http_requests_total',
+          selectors: ['job="observatorium-observatorium-api"', 'handler=~"receive"', 'code=~"^(2..|3..|5..)$"'],
+          errorSelectors: ['code=~"5.+"'],
+          target: 0.95,
+        }),
+      ],
+    },
     // Telemeter	API	Metrics Write	/receive	Latency	90th percentile of valid write requests return in under 5s.
+    {
+      name: 'telemeter-api-metrics-write-latency.slo',
+      slos: [
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsWriteLatencyErrorBudgetBurning',
+          alertMessage: 'API /receive endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'http_request_duration_seconds',
+          // We can't use !~ operator in these selectors
+          selectors: ['job="observatorium-observatorium-api"', 'handler="receive"', 'code=~"^(2..|3..|5..)$"'],
+          latencyTarget: 5,
+          latencyBudget: 0.9,
+        }),
+      ],
+    },
     // Telemeter	API	Metrics Read	/query	Availability	95% valid requests return successfully
     // Telemeter	API	Metrics Read	/query_range	Availability	95% valid requests return successfully
+    {
+      name: 'telemeter-api-metrics-read-availability.slo',
+      slos: [
+        slo.errorburn({
+          alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
+          alertMessage: 'API /query handler is burning too much error budget to gurantee availability SLOs',
+          metric: 'http_requests_total',
+          selectors: ['job="observatorium-observatorium-api"', 'handler="query"', 'code=~"^(2..|3..|5..)$"'],
+          errorSelectors: ['code=~"5.+"'],
+          target: 0.95,
+        }),
+        slo.errorburn({
+          alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
+          alertMessage: 'API /query_range handler is burning too much error budget to gurantee availability SLOs',
+          metric: 'http_requests_total',
+          selectors: ['job="observatorium-observatorium-api"', 'handler="query_range"', 'code=~"^(2..|3..|5..)$"'],
+          errorSelectors: ['code=~"5.+"'],
+          target: 0.95,
+        }),
+      ],
+    },
     // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 1M samples return < 2s
     // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 10M samples return < 10s
     // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 100M samples return < 20s
-    // Telemeter	API	Metrics Retention	N/A	Retention	Metrics written to RHOBS are retrained for 14 days.
+    {
+      name: 'telemeter-api-metrics-read-latency.slo',
+      slos: [
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
+          alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'up_custom_query_duration_seconds_bucket',
+          // We can't use !~ operator in these selectors
+          selectors: ['query="query-path-sli-1M-samples"'],
+          latencyTarget: 2.0113571874999994,
+          latencyBudget: 0.9,
+        }),
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
+          alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'up_custom_query_duration_seconds_bucket',
+          // We can't use !~ operator in these selectors
+          selectors: ['query="query-path-sli-10M-samples"'],
+          latencyTarget: 10.761264004567169,
+          latencyBudget: 0.9,
+        }),
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
+          alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'up_custom_query_duration_seconds_bucket',
+          // We can't use !~ operator in these selectors
+          selectors: ['query="query-path-sli-100M-samples"'],
+          latencyTarget: 21.6447457021712,
+          latencyBudget: 0.9,
+        }),
+      ],
+    },
   ],
 
   local telemeter = {

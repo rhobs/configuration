@@ -244,7 +244,7 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-     {
+    {
       name: 'telemeter-server-metrics-write-latency.slo',
       slos: [
         slo.latencyburn({
@@ -258,7 +258,7 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-     {
+    {
       name: 'telemeter-api-metrics-write-availability.slo',
       slos: [
         slo.errorburn({

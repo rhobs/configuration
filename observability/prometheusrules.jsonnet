@@ -228,8 +228,9 @@ local renderAlerts(name, environment, mixin) = {
 };
 
 {
+  // This set of SLOs are driven by the RHOBS Service Level Objectives document
+  // https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
   local telemeterSLOs = [
-    // Telemeter	Telemeter Server	Metrics Write	/upload	Availability	95% valid requests return successfully
     {
       name: 'telemeter-server-metrics-write-availability.slo',
       slos: [
@@ -243,8 +244,7 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    // Telemeter	Telemeter Server	Metrics Write	/upload	Latency	90th percentile of valid write requests return in under 5s.
-    {
+     {
       name: 'telemeter-server-metrics-write-latency.slo',
       slos: [
         slo.latencyburn({
@@ -258,8 +258,7 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    // Telemeter	API	Metrics Write	/receive	Availability	95% valid requests return successfully
-    {
+     {
       name: 'telemeter-api-metrics-write-availability.slo',
       slos: [
         slo.errorburn({
@@ -272,7 +271,6 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    // Telemeter	API	Metrics Write	/receive	Latency	90th percentile of valid write requests return in under 5s.
     {
       name: 'telemeter-api-metrics-write-latency.slo',
       slos: [
@@ -287,8 +285,6 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    // Telemeter	API	Metrics Read	/query	Availability	95% valid requests return successfully
-    // Telemeter	API	Metrics Read	/query_range	Availability	95% valid requests return successfully
     {
       name: 'telemeter-api-metrics-read-availability.slo',
       slos: [
@@ -310,9 +306,6 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 1M samples return < 2s
-    // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 10M samples return < 10s
-    // Telemeter	API	Metrics Read	/query	Latency	90% of valid requests that process 100M samples return < 20s
     {
       name: 'telemeter-api-metrics-read-latency.slo',
       slos: [

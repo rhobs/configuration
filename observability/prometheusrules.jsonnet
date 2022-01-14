@@ -227,58 +227,6 @@ local renderAlerts(name, environment, mixin) = {
   }.prometheusAlerts,
 };
 
-//{
-//  local telemeterSLOs = [
-//    {
-//      name: 'telemeter-upload.slo',
-//      slos: [
-//        slo.errorburn({
-//          alertName: 'TelemeterUploadErrorBudgetBurning',
-//          alertMessage: 'Telemeter /upload is burning too much error budget to gurantee overall availability',
-//          metric: 'haproxy_server_http_responses_total',
-//          selectors: ['route="telemeter-server-upload"'],
-//          errorSelectors: ['code="5xx"'],
-//          target: 0.98,
-//        }),
-//      ],
-//    },
-//    {
-//      name: 'telemeter-authorize.slo',
-//      slos: [
-//        slo.errorburn({
-//          alertName: 'TelemeterAuthorizeErrorBudgetBurning',
-//          alertMessage: 'Telemeter /authorize is burning too much error budget to gurantee overall availability',
-//          metric: 'haproxy_server_http_responses_total',
-//          selectors: ['route="telemeter-server-authorize"'],
-//          errorSelectors: ['code="5xx"'],
-//          target: 0.98,
-//        }),
-//      ],
-//    },
-//  ],
-//
-//  local telemeter = {
-//    prometheusAlerts+:: {
-//      groups: [
-//        {
-//          local slos = [
-//            slo.alerts + slo.recordingrules
-//            for slo in group.slos
-//          ],
-//
-//          name: group.name,
-//          rules: std.flattenArrays(slos),
-//        }
-//        for group in telemeterSLOs
-//      ],
-//    },
-//  },
-//
-//  'telemeter-slos-stage.prometheusrules': renderAlerts('telemeter-slos-stage', 'stage', telemeter),
-//  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'production', telemeter),
-//}
-
-
 {
   local telemeterSLOs = [
     // Telemeter	Telemeter Server	Metrics Write	/upload	Availability	95% valid requests return successfully
@@ -435,188 +383,188 @@ local renderAlerts(name, environment, mixin) = {
   'observatorium-thanos-production.prometheusrules': renderAlerts('observatorium-thanos-production', 'production', thanosAlerts),
 }
 
-//{
-//  local obsSLOs(name) = {
-//    local logsGroup = 'logsv1',
-//    local metricsGroup = 'metricsv1',
-//    // local metricLatency = 'http_request_duration_seconds',
-//    local metricError = 'http_requests_total',
-//    local writeMetricsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
-//    },
-//    local queryMetricsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler=~"query|query_legacy"', 'job="%s"' % name],
-//    },
-//    local queryRangeMetricsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
-//    },
-//    local pushLogsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % name],
-//    },
-//    local queryLogsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler=~"query|label|labels|label_values"', 'job="%s"' % name],
-//    },
-//    local queryRangeLogsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
-//    },
-//    local tailLogsSelector(group) = {
-//      selectors: ['group="%s"' % group, 'handler="tail|prom_tail"', 'job="%s"' % name],
-//    },
-//
-//    local alertNameLogsErrors = 'ObservatoriumAPILogsErrorsSLOBudgetBurn',
-//    local alertNameMetricsErrors = 'ObservatoriumAPIMetricsErrorsSLOBudgetBurn',
-//    // local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
-//
-//    errorBurn:: [
-//      {
-//        name: 'observatorium-api-write-metrics-errors.slo',
-//        config: writeMetricsSelector(metricsGroup) {
-//          alertName: alertNameMetricsErrors,
-//          metric: metricError,
-//          target: 0.99,
-//        },
-//      },
-//      {
-//        name: 'observatorium-api-query-metrics-errors.slo',
-//        config: queryMetricsSelector(metricsGroup) {
-//          alertName: alertNameMetricsErrors,
-//          metric: metricError,
-//          target: 0.95,
-//        },
-//      },
-//      {
-//        name: 'observatorium-api-query-range-metrics-errors.slo',
-//        config: queryRangeMetricsSelector(metricsGroup) {
-//          alertName: alertNameMetricsErrors,
-//          metric: metricError,
-//          target: 0.90,
-//        },
-//      },
-//      {
-//        name: 'observatorium-api-push-logs-errors.slo',
-//        config: pushLogsSelector(logsGroup) {
-//          alertName: alertNameLogsErrors,
-//          metric: metricError,
-//          target: 0.90,
-//        },
-//      },
-//      {
-//        name: 'observatorium-api-query-logs-errors.slo',
-//        config: queryLogsSelector(logsGroup) {
-//          alertName: alertNameLogsErrors,
-//          metric: metricError,
-//          target: 0.90,
-//        },
-//      },
-//      {
-//        name: 'observatorium-api-query-range-logs-errors.slo',
-//        config: queryRangeLogsSelector(logsGroup) {
-//          alertName: alertNameLogsErrors,
-//          metric: metricError,
-//          target: 0.90,
-//        },
-//      },
-//      {
-//        name: 'observatorium-api-tail-logs-errors.slo',
-//        config: tailLogsSelector(logsGroup) {
-//          alertName: alertNameLogsErrors,
-//          metric: metricError,
-//          target: 0.90,
-//        },
-//      },
-//    ],
-//
-//    // TODO: add these only when we have enough metrics to have an SLO
-//    //   latencyBurn:: [
-//    //     {
-//    //       name: 'observatorium-api-write-latency-low.slo',
-//    //       config: writeMetricsSelector {
-//    //         alertName: alertNameLatency,
-//    //         metric: metricLatency,
-//    //         latencyTarget: '0.2',
-//    //         latencyBudget: 1 - 0.95,
-//    //       },
-//    //     },
-//    //     {
-//    //       name: 'observatorium-api-write-latency-high.slo',
-//    //       config: writeMetricsSelector {
-//    //         alertName: alertNameLatency,
-//    //         metric: metricLatency,
-//    //         latencyTarget: '1',
-//    //         latencyBudget: 1 - 0.99,
-//    //       },
-//    //     },
-//    //     {
-//    //       name: 'observatorium-api-query-latency-low.slo',
-//    //       config: queryMetricsSelector {
-//    //         alertName: alertNameLatency,
-//    //         metric: metricLatency,
-//    //         latencyTarget: '1',
-//    //         latencyBudget: 1 - 0.95,
-//    //       },
-//    //     },
-//    //     {
-//    //       name: 'observatorium-api-query-latency-high.slo',
-//    //       config: queryMetricsSelector {
-//    //         alertName: alertNameLatency,
-//    //         metric: metricLatency,
-//    //         latencyTarget: '2.5',
-//    //         latencyBudget: 1 - 0.99,
-//    //       },
-//    //     },
-//    //     {
-//    //       name: 'observatorium-api-query-range-latency-low.slo',
-//    //       config: queryRangeMetricsSelector {
-//    //         alertName: alertNameLatency,
-//    //         metric: metricLatency,
-//    //         latencyTarget: '60',
-//    //         latencyBudget: 1 - 0.90,
-//    //       },
-//    //     },
-//    //     {
-//    //       name: 'observatorium-api-query-range-latency-high.slo',
-//    //       config: queryRangeMetricsSelector {
-//    //         alertName: alertNameLatency,
-//    //         metric: metricLatency,
-//    //         latencyTarget: '120',
-//    //         latencyBudget: 1 - 0.95,
-//    //       },
-//    //     },
-//    //   ],
-//  },
-//
-//  local api = {
-//    prometheusAlerts+:: {
-//      groups: [
-//        // TODO: add these only when we have enough metrics to have an SLO
-//        //   {
-//        //     name: s.name,
-//        //     local d = slo.latencyburn(s.config),
-//        //     rules:
-//        //       d.recordingrules +
-//        //       d.alerts,
-//        //   }
-//        //   for s in obsSLOs.latencyBurn
-//        // ] + [
-//        {
-//          local d = slo.errorburn(s.config),
-//          name: s.name,
-//          rules:
-//            d.recordingrules +
-//            d.alerts,
-//        }
-//        // NOTICE: Templating systems conflicting here.
-//        // The value of obs.manifests['api-service'].metadata.name was used.
-//        // That value is no OBSERVATORIUM_API_IDENTIFIER
-//        // So passing it here manually.
-//        for s in obsSLOs('observatorium-observatorium-api').errorBurn
-//      ],
-//    },
-//  },
-//
-//  'observatorium-api-stage.prometheusrules': renderAlerts('observatorium-api-stage', 'stage', api),
-//  'observatorium-api-production.prometheusrules': renderAlerts('observatorium-api-production', 'production', api),
-//}
+{
+  local obsSLOs(name) = {
+    local logsGroup = 'logsv1',
+    local metricsGroup = 'metricsv1',
+    // local metricLatency = 'http_request_duration_seconds',
+    local metricError = 'http_requests_total',
+    local writeMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
+    },
+    local queryMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler=~"query|query_legacy"', 'job="%s"' % name],
+    },
+    local queryRangeMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
+    },
+    local pushLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % name],
+    },
+    local queryLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler=~"query|label|labels|label_values"', 'job="%s"' % name],
+    },
+    local queryRangeLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
+    },
+    local tailLogsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="tail|prom_tail"', 'job="%s"' % name],
+    },
+
+    local alertNameLogsErrors = 'ObservatoriumAPILogsErrorsSLOBudgetBurn',
+    local alertNameMetricsErrors = 'ObservatoriumAPIMetricsErrorsSLOBudgetBurn',
+    // local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
+
+    errorBurn:: [
+      {
+        name: 'observatorium-api-write-metrics-errors.slo',
+        config: writeMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
+          metric: metricError,
+          target: 0.99,
+        },
+      },
+      {
+        name: 'observatorium-api-query-metrics-errors.slo',
+        config: queryMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
+          metric: metricError,
+          target: 0.95,
+        },
+      },
+      {
+        name: 'observatorium-api-query-range-metrics-errors.slo',
+        config: queryRangeMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-push-logs-errors.slo',
+        config: pushLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-query-logs-errors.slo',
+        config: queryLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-query-range-logs-errors.slo',
+        config: queryRangeLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+      {
+        name: 'observatorium-api-tail-logs-errors.slo',
+        config: tailLogsSelector(logsGroup) {
+          alertName: alertNameLogsErrors,
+          metric: metricError,
+          target: 0.90,
+        },
+      },
+    ],
+
+    // TODO: add these only when we have enough metrics to have an SLO
+    //   latencyBurn:: [
+    //     {
+    //       name: 'observatorium-api-write-latency-low.slo',
+    //       config: writeMetricsSelector {
+    //         alertName: alertNameLatency,
+    //         metric: metricLatency,
+    //         latencyTarget: '0.2',
+    //         latencyBudget: 1 - 0.95,
+    //       },
+    //     },
+    //     {
+    //       name: 'observatorium-api-write-latency-high.slo',
+    //       config: writeMetricsSelector {
+    //         alertName: alertNameLatency,
+    //         metric: metricLatency,
+    //         latencyTarget: '1',
+    //         latencyBudget: 1 - 0.99,
+    //       },
+    //     },
+    //     {
+    //       name: 'observatorium-api-query-latency-low.slo',
+    //       config: queryMetricsSelector {
+    //         alertName: alertNameLatency,
+    //         metric: metricLatency,
+    //         latencyTarget: '1',
+    //         latencyBudget: 1 - 0.95,
+    //       },
+    //     },
+    //     {
+    //       name: 'observatorium-api-query-latency-high.slo',
+    //       config: queryMetricsSelector {
+    //         alertName: alertNameLatency,
+    //         metric: metricLatency,
+    //         latencyTarget: '2.5',
+    //         latencyBudget: 1 - 0.99,
+    //       },
+    //     },
+    //     {
+    //       name: 'observatorium-api-query-range-latency-low.slo',
+    //       config: queryRangeMetricsSelector {
+    //         alertName: alertNameLatency,
+    //         metric: metricLatency,
+    //         latencyTarget: '60',
+    //         latencyBudget: 1 - 0.90,
+    //       },
+    //     },
+    //     {
+    //       name: 'observatorium-api-query-range-latency-high.slo',
+    //       config: queryRangeMetricsSelector {
+    //         alertName: alertNameLatency,
+    //         metric: metricLatency,
+    //         latencyTarget: '120',
+    //         latencyBudget: 1 - 0.95,
+    //       },
+    //     },
+    //   ],
+  },
+
+  local api = {
+    prometheusAlerts+:: {
+      groups: [
+        // TODO: add these only when we have enough metrics to have an SLO
+        //   {
+        //     name: s.name,
+        //     local d = slo.latencyburn(s.config),
+        //     rules:
+        //       d.recordingrules +
+        //       d.alerts,
+        //   }
+        //   for s in obsSLOs.latencyBurn
+        // ] + [
+        {
+          local d = slo.errorburn(s.config),
+          name: s.name,
+          rules:
+            d.recordingrules +
+            d.alerts,
+        }
+        // NOTICE: Templating systems conflicting here.
+        // The value of obs.manifests['api-service'].metadata.name was used.
+        // That value is no OBSERVATORIUM_API_IDENTIFIER
+        // So passing it here manually.
+        for s in obsSLOs('observatorium-observatorium-api').errorBurn
+      ],
+    },
+  },
+
+  'observatorium-api-stage.prometheusrules': renderAlerts('observatorium-api-stage', 'stage', api),
+  'observatorium-api-production.prometheusrules': renderAlerts('observatorium-api-production', 'production', api),
+}
 
 {
   'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', loki),

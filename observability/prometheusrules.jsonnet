@@ -295,15 +295,16 @@ local renderAlerts(name, environment, mixin) = {
         }),
       ],
     },
-    //     Telemeter	Telemeter Server	Metrics Write	/upload	Latency	90th percentile of valid write requests return in under 5s.
+    // Telemeter	Telemeter Server	Metrics Write	/upload	Latency	90th percentile of valid write requests return in under 5s.
     {
       name: 'telemeter-server-metrics-write-latency.slo',
       slos: [
         slo.latencyburn({
           alertName: 'TelemeterServerMetricsWriteLatencyErrorBudgetBurning',
           alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee latency SLOs',
-          metric: 'http_request_duration_seconds_bucket',
-          selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code!~"4.."'],
+          metric: 'http_request_duration_seconds',
+          // We can't use !~ operator in these selectors
+          selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code=~"^(2..|3..|5..)$"'],
           latencyTarget: 5,
           latencyBudget: 0.9,
         }),

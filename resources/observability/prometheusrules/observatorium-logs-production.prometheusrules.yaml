@@ -1,0 +1,66 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: observatorium-logs-production
+spec:
+  groups:
+  - name: loki_alerts
+    rules:
+    - alert: LokiRequestErrors
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: |
+          {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}% errors.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequesterrors
+      expr: |
+        100 * sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[1m])) by (namespace, job, route)
+          /
+        sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)
+          > 10
+      for: 15m
+      labels:
+        service: observatorium-logs
+        severity: info
+    - alert: LokiRequestPanics
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: |
+          {{ $labels.job }} is experiencing {{ printf "%.2f" $value }}% increase of panics.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequestpanics
+      expr: |
+        sum(increase(loki_panic_total[10m])) by (namespace, job) > 0
+      labels:
+        service: observatorium-logs
+        severity: info
+    - alert: LokiRequestLatency
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: |
+          {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequestlatency
+      expr: |
+        namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*"} > 1
+      for: 15m
+      labels:
+        service: observatorium-logs
+        severity: info
+  - name: loki_tenant_alerts
+    rules:
+    - alert: LokiTenantRateLimitWarning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f6fe30815b172c9da7e813c15ddfe607/loki_tenant_alerts?orgId=1&refresh=10s&var-metrics=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}
+        message: |
+          {{ $labels.tenant }} is experiencing rate limiting for reason '{{ $labels.reason }}': {{ printf "%.0f" $value }}
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokitenantratelimitwarning
+      expr: |
+        sum by (namespace, tenant, reason) (sum_over_time(rate(loki_discarded_samples_total{namespace="observatorium-logs-production"}[1m])[30m:1m]))
+        > 100
+      for: 15m
+      labels:
+        service: observatorium-logs
+        severity: info

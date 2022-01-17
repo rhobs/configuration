@@ -52,7 +52,7 @@ local appSREOverwrites(environment) = {
       else error 'no datasource for environment %s' % environment,
   },
 
-  local dashboardID = function(name) {
+  local dashboardID = function(name, environment) {
     id:
       if
         name == 'thanos-query' then '98fde97ddeaf2981041745f1f2ba68c2'
@@ -84,6 +84,10 @@ local appSREOverwrites(environment) = {
         std.startsWith(name, 'loki_tenant') then 'f6fe30815b172c9da7e813c15ddfe607'
       else if
         std.startsWith(name, 'loki') then 'Lg-mH0rizaSJDKSADX'
+      else if
+        std.startsWith(name, 'rhobs-telemeter') && environment == 'production' then 'f9fa7677fb4a2669f123f9a0f2234b47'
+      else if
+        std.startsWith(name, 'rhobs-telemeter') && environment == 'stage' then '080e53f245a15445bdf777ae0e66945d'
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
       else error 'no dashboard id for group %s' % name,
@@ -134,7 +138,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s&var-namespace={{$labels.namespace}}' % [
-                    dashboardID('loki').id,
+                    dashboardID('loki', environment).id,
                     dashboardDatasource(environment).datasource,
                   ],
                 }
@@ -142,7 +146,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [
-                    dashboardID(g.name).id,
+                    dashboardID(g.name, environment).id,
                     dashboardDatasource(environment).datasource,
                   ],
                 }
@@ -150,7 +154,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-metrics=%s&var-namespace={{$labels.namespace}}' % [
-                    dashboardID(g.name).id,
+                    dashboardID(g.name, environment).id,
                     g.name,
                     dashboardDatasource(environment).datasource,
                   ],
@@ -159,7 +163,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
-                    dashboardID(g.name).id,
+                    dashboardID(g.name, environment).id,
                     g.name,
                     dashboardDatasource(environment).datasource,
                   ],
@@ -228,30 +232,111 @@ local renderAlerts(name, environment, mixin) = {
 };
 
 {
+  // This set of SLOs are driven by the RHOBS Service Level Objectives document
+  // https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
   local telemeterSLOs = [
     {
-      name: 'telemeter-upload.slo',
+      name: 'rhobs-telemeter-telemeter-server-metrics-write-availability.slo',
       slos: [
         slo.errorburn({
-          alertName: 'TelemeterUploadErrorBudgetBurning',
-          alertMessage: 'Telemeter /upload is burning too much error budget to gurantee overall availability',
+          alertName: 'TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs',
           metric: 'haproxy_server_http_responses_total',
-          selectors: ['route="telemeter-server-upload"'],
+          selectors: ['route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive"', 'code!="4xx"'],
           errorSelectors: ['code="5xx"'],
-          target: 0.98,
+          target: 0.95,
         }),
       ],
     },
     {
-      name: 'telemeter-authorize.slo',
+      name: 'rhobs-telemeter-telemeter-server-metrics-write-latency.slo',
+      slos: [
+        slo.latencyburn({
+          alertName: 'TelemeterServerMetricsWriteLatencyErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee latency SLOs',
+          metric: 'http_request_duration_seconds',
+          // We can't use !~ operator in these selectors
+          selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code=~"^(2..|3..|5..)$"'],
+          latencyTarget: 5,
+          latencyBudget: 0.9,
+        }),
+      ],
+    },
+    {
+      name: 'rhobs-telemeter-api-metrics-write-availability.slo',
       slos: [
         slo.errorburn({
-          alertName: 'TelemeterAuthorizeErrorBudgetBurning',
-          alertMessage: 'Telemeter /authorize is burning too much error budget to gurantee overall availability',
-          metric: 'haproxy_server_http_responses_total',
-          selectors: ['route="telemeter-server-authorize"'],
-          errorSelectors: ['code="5xx"'],
-          target: 0.98,
+          alertName: 'TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning',
+          alertMessage: 'API /receive handler is burning too much error budget to gurantee availability SLOs',
+          metric: 'http_requests_total',
+          selectors: ['job="observatorium-observatorium-api"', 'handler=~"receive"', 'code=~"^(2..|3..|5..)$"'],
+          errorSelectors: ['code=~"5.+"'],
+          target: 0.95,
+        }),
+      ],
+    },
+    {
+      name: 'rhobs-telemeter-api-metrics-write-latency.slo',
+      slos: [
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsWriteLatencyErrorBudgetBurning',
+          alertMessage: 'API /receive handler is burning too much error budget to gurantee latency SLOs',
+          metric: 'http_request_duration_seconds',
+          // We can't use !~ operator in these selectors
+          selectors: ['job="observatorium-observatorium-api"', 'handler="receive"', 'code=~"^(2..|3..|5..)$"'],
+          latencyTarget: 5,
+          latencyBudget: 0.9,
+        }),
+      ],
+    },
+    {
+      name: 'rhobs-telemeter-api-metrics-read-availability.slo',
+      slos: [
+        slo.errorburn({
+          alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
+          alertMessage: 'API /query handler is burning too much error budget to gurantee availability SLOs',
+          metric: 'http_requests_total',
+          selectors: ['job="observatorium-observatorium-api"', 'handler="query"', 'code=~"^(2..|3..|5..)$"'],
+          errorSelectors: ['code=~"5.+"'],
+          target: 0.95,
+        }),
+        slo.errorburn({
+          alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
+          alertMessage: 'API /query_range handler is burning too much error budget to gurantee availability SLOs',
+          metric: 'http_requests_total',
+          selectors: ['job="observatorium-observatorium-api"', 'handler="query_range"', 'code=~"^(2..|3..|5..)$"'],
+          errorSelectors: ['code=~"5.+"'],
+          target: 0.95,
+        }),
+      ],
+    },
+    {
+      name: 'rhobs-telemeter-api-metrics-read-latency.slo',
+      slos: [
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
+          alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'up_custom_query_duration_seconds_bucket',
+          selectors: ['query="query-path-sli-1M-samples"'],
+          latencyTarget: 2.0113571874999994,
+          latencyBudget: 0.9,
+        }),
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
+          alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'up_custom_query_duration_seconds_bucket',
+          selectors: ['query="query-path-sli-10M-samples"'],
+          latencyTarget: 10.761264004567169,
+          latencyBudget: 0.9,
+        }),
+        slo.latencyburn({
+          alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
+          alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+          metric: 'up_custom_query_duration_seconds_bucket',
+          // We can't use !~ operator in these selectors
+          selectors: ['query="query-path-sli-100M-samples"'],
+          latencyTarget: 21.6447457021712,
+          latencyBudget: 0.9,
         }),
       ],
     },
@@ -274,8 +359,8 @@ local renderAlerts(name, environment, mixin) = {
     },
   },
 
-  'telemeter-slos-stage.prometheusrules': renderAlerts('telemeter-slos-stage', 'stage', telemeter),
-  'telemeter-slos-production.prometheusrules': renderAlerts('telemeter-slos-production', 'production', telemeter),
+  'rhobs-slos-telemeter-stage.prometheusrules': renderAlerts('rhobs-slos-telemeter-stage', 'stage', telemeter),
+  'rhobs-slos-telemeter-production.prometheusrules': renderAlerts('rhobs-slos-telemeter-production', 'production', telemeter),
 }
 
 {

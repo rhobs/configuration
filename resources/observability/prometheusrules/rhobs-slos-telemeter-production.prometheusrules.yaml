@@ -1,0 +1,1126 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: rhobs-slos-telemeter-production
+spec:
+  groups:
+  - name: rhobs-telemeter-telemeter-server-metrics-write-availability.slo
+    rules:
+    - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(haproxy_server_http_responses_total:burnrate5m{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (14.40 * (1-0.95000))
+        and
+        sum(haproxy_server_http_responses_total:burnrate1h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: critical
+    - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(haproxy_server_http_responses_total:burnrate30m{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (6.00 * (1-0.95000))
+        and
+        sum(haproxy_server_http_responses_total:burnrate6h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: critical
+    - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(haproxy_server_http_responses_total:burnrate2h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (3.00 * (1-0.95000))
+        and
+        sum(haproxy_server_http_responses_total:burnrate1d{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: medium
+    - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(haproxy_server_http_responses_total:burnrate6h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (1.00 * (1-0.95000))
+        and
+        sum(haproxy_server_http_responses_total:burnrate3d{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[1d]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[1d]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate1d
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[1h]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[1h]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate1h
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[2h]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[2h]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate2h
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[30m]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[30m]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate30m
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[3d]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[3d]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate3d
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[5m]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[5m]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate5m
+    - expr: |
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx",code="5xx"}[6h]))
+        /
+        sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[6h]))
+      labels:
+        code!: 4xx
+        route: telemeter-server-upload|telemeter-server-metrics-v1-receive
+      record: haproxy_server_http_responses_total:burnrate6h
+  - name: rhobs-telemeter-telemeter-server-metrics-write-latency.slo
+    rules:
+    - alert: TelemeterServerMetricsWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=telemeter-server,handler=~upload|receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswritelatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:http_request_duration_seconds:rate1h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate5m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+        )
+        or
+        (
+          latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate30m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+        service: telemeter
+        severity: critical
+    - alert: TelemeterServerMetricsWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=telemeter-server,handler=~upload|receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswritelatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:http_request_duration_seconds:rate1d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate2h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+        )
+        or
+        (
+          latencytarget:http_request_duration_seconds:rate3d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[5m]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[5m]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate5m
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[30m]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[30m]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate30m
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[1h]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate1h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[2h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[2h]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate2h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[6h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[6h]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate6h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1d]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[1d]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate1d
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[3d]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[3d]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: upload|receive
+        job: telemeter-server
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate3d
+  - name: rhobs-telemeter-api-metrics-write-availability.slo
+    rules:
+    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: medium
+    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1d]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[2h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[30m]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[3d]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[5m]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[6h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+  - name: rhobs-telemeter-api-metrics-write-latency.slo
+    rules:
+    - alert: TelemeterAPIMetricsWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswritelatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+        )
+        or
+        (
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswritelatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate2h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+        )
+        or
+        (
+          latencytarget:http_request_duration_seconds:rate3d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+          and
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[5m]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[5m]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate5m
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[30m]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[30m]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate30m
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[1h]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate1h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[2h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[2h]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate2h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[6h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[6h]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate6h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1d]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[1d]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate1d
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[3d]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[3d]))
+        )
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: receive
+        job: observatorium-observatorium-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate3d
+  - name: rhobs-telemeter-api-metrics-read-availability.slo
+    rules:
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: medium
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[1d]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[1h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[2h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[30m]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[3d]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[5m]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[6h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: medium
+    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1d]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[2h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[30m]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[3d]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[5m]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[6h]))
+      labels:
+        code: ^(2..|3..|5..)$
+        handler: query_range
+        job: observatorium-observatorium-api
+      record: http_requests_total:burnrate6h
+  - name: rhobs-telemeter-api-metrics-read-latency.slo
+    rules:
+    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,latency=2.0113571874999994 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (14.4*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate5m{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (14.4*0.900000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (6*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate30m{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (6*0.900000)
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,latency=2.0113571874999994 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (3*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate2h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (3*0.900000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate3d{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (0.900000)
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[5m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[5m]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[30m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[30m]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[1h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[1h]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[2h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[2h]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[6h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[6h]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[1d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[1d]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[3d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[3d]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
+    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,latency=10.761264004567169 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (14.4*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate5m{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (14.4*0.900000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (6*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate30m{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (6*0.900000)
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,latency=10.761264004567169 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (3*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate2h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (3*0.900000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate3d{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (0.900000)
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[5m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[5m]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[30m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[30m]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[1h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[1h]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[2h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[2h]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[6h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[6h]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[1d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[1d]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[3d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[3d]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
+    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,latency=21.6447457021712 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (14.4*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate5m{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (14.4*0.900000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (6*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate30m{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (6*0.900000)
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+        service: telemeter
+        severity: critical
+    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,latency=21.6447457021712 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (3*0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate2h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (3*0.900000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds_bucket:rate3d{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (0.900000)
+          and
+          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (0.900000)
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[5m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[5m]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[30m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[30m]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[1h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[1h]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[2h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[2h]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[6h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[6h]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[1d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[1d]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[3d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[3d]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d

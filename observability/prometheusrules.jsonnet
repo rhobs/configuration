@@ -232,7 +232,7 @@ local renderAlerts(name, environment, mixin) = {
   // https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
   local telemeterSLOs = [
     {
-      name: 'telemeter-server-metrics-write-availability.slo',
+      name: 'rhobs-telemeter-telemeter-server-metrics-write-availability.slo',
       slos: [
         slo.errorburn({
           alertName: 'TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning',
@@ -245,7 +245,7 @@ local renderAlerts(name, environment, mixin) = {
       ],
     },
     {
-      name: 'telemeter-server-metrics-write-latency.slo',
+      name: 'rhobs-telemeter-telemeter-server-metrics-write-latency.slo',
       slos: [
         slo.latencyburn({
           alertName: 'TelemeterServerMetricsWriteLatencyErrorBudgetBurning',
@@ -259,7 +259,7 @@ local renderAlerts(name, environment, mixin) = {
       ],
     },
     {
-      name: 'telemeter-api-metrics-write-availability.slo',
+      name: 'rhobs-telemeter-api-metrics-write-availability.slo',
       slos: [
         slo.errorburn({
           alertName: 'TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning',
@@ -272,11 +272,11 @@ local renderAlerts(name, environment, mixin) = {
       ],
     },
     {
-      name: 'telemeter-api-metrics-write-latency.slo',
+      name: 'rhobs-telemeter-api-metrics-write-latency.slo',
       slos: [
         slo.latencyburn({
           alertName: 'TelemeterAPIMetricsWriteLatencyErrorBudgetBurning',
-          alertMessage: 'API /receive endpoint is burning too much error budget to gurantee latency SLOs',
+          alertMessage: 'API /receive handler is burning too much error budget to gurantee latency SLOs',
           metric: 'http_request_duration_seconds',
           // We can't use !~ operator in these selectors
           selectors: ['job="observatorium-observatorium-api"', 'handler="receive"', 'code=~"^(2..|3..|5..)$"'],
@@ -286,7 +286,7 @@ local renderAlerts(name, environment, mixin) = {
       ],
     },
     {
-      name: 'telemeter-api-metrics-read-availability.slo',
+      name: 'rhobs-telemeter-api-metrics-read-availability.slo',
       slos: [
         slo.errorburn({
           alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
@@ -307,13 +307,12 @@ local renderAlerts(name, environment, mixin) = {
       ],
     },
     {
-      name: 'telemeter-api-metrics-read-latency.slo',
+      name: 'rhobs-telemeter-api-metrics-read-latency.slo',
       slos: [
         slo.latencyburn({
           alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
           alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
           metric: 'up_custom_query_duration_seconds_bucket',
-          // We can't use !~ operator in these selectors
           selectors: ['query="query-path-sli-1M-samples"'],
           latencyTarget: 2.0113571874999994,
           latencyBudget: 0.9,
@@ -322,7 +321,6 @@ local renderAlerts(name, environment, mixin) = {
           alertName: 'TelemeterAPIMetricsReadLatencyErrorBudgetBurning',
           alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
           metric: 'up_custom_query_duration_seconds_bucket',
-          // We can't use !~ operator in these selectors
           selectors: ['query="query-path-sli-10M-samples"'],
           latencyTarget: 10.761264004567169,
           latencyBudget: 0.9,

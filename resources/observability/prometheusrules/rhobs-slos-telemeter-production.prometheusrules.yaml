@@ -9,13 +9,13 @@ metadata:
   name: rhobs-slos-telemeter-production
 spec:
   groups:
-  - name: telemeter-server-metrics-write-availability.slo
+  - name: rhobs-telemeter-telemeter-server-metrics-write-availability.slo
     rules:
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate5m{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (14.40 * (1-0.95000))
         and
@@ -28,9 +28,9 @@ spec:
         severity: critical
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate30m{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (6.00 * (1-0.95000))
         and
@@ -43,9 +43,9 @@ spec:
         severity: critical
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate2h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (3.00 * (1-0.95000))
         and
@@ -58,9 +58,9 @@ spec:
         severity: medium
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterservermetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate6h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}) > (1.00 * (1-0.95000))
         and
@@ -127,13 +127,13 @@ spec:
         code!: 4xx
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate6h
-  - name: telemeter-server-metrics-write-latency.slo
+  - name: rhobs-telemeter-telemeter-server-metrics-write-latency.slo
     rules:
     - alert: TelemeterServerMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=telemeter-server,handler=~upload|receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterservermetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswritelatencyerrorbudgetburning
       expr: |
         (
           latencytarget:http_request_duration_seconds:rate1h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
@@ -155,9 +155,9 @@ spec:
         severity: critical
     - alert: TelemeterServerMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=telemeter-server,handler=~upload|receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterservermetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswritelatencyerrorbudgetburning
       expr: |
         (
           latencytarget:http_request_duration_seconds:rate1d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
@@ -261,13 +261,13 @@ spec:
         job: telemeter-server
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate3d
-  - name: telemeter-api-metrics-write-availability.slo
+  - name: rhobs-telemeter-api-metrics-write-availability.slo
     rules:
     - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
@@ -281,9 +281,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
@@ -297,9 +297,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
@@ -313,9 +313,9 @@ spec:
         severity: medium
     - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
@@ -390,13 +390,13 @@ spec:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
-  - name: telemeter-api-metrics-write-latency.slo
+  - name: rhobs-telemeter-api-metrics-write-latency.slo
     rules:
     - alert: TelemeterAPIMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswritelatencyerrorbudgetburning
       expr: |
         (
           latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
@@ -418,9 +418,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswritelatencyerrorbudgetburning
       expr: |
         (
           latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
@@ -524,13 +524,13 @@ spec:
         job: observatorium-observatorium-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate3d
-  - name: telemeter-api-metrics-read-availability.slo
+  - name: rhobs-telemeter-api-metrics-read-availability.slo
     rules:
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
@@ -544,9 +544,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
@@ -560,9 +560,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
@@ -576,9 +576,9 @@ spec:
         severity: medium
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
@@ -655,9 +655,9 @@ spec:
       record: http_requests_total:burnrate6h
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
@@ -671,9 +671,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
@@ -687,9 +687,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
@@ -703,9 +703,9 @@ spec:
         severity: medium
     - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
@@ -780,13 +780,13 @@ spec:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
-  - name: telemeter-api-metrics-read-latency.slo
+  - name: rhobs-telemeter-api-metrics-read-latency.slo
     rules:
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-1M-samples,latency=2.0113571874999994 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
       expr: |
         (
           latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (14.4*0.900000)
@@ -806,9 +806,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-1M-samples,latency=2.0113571874999994 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
       expr: |
         (
           latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (3*0.900000)
@@ -898,9 +898,9 @@ spec:
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-10M-samples,latency=10.761264004567169 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
       expr: |
         (
           latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (14.4*0.900000)
@@ -920,9 +920,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-10M-samples,latency=10.761264004567169 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
       expr: |
         (
           latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (3*0.900000)
@@ -1012,9 +1012,9 @@ spec:
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-100M-samples,latency=21.6447457021712 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
       expr: |
         (
           latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (14.4*0.900000)
@@ -1034,9 +1034,9 @@ spec:
         severity: critical
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-100M-samples,latency=21.6447457021712 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
       expr: |
         (
           latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (3*0.900000)

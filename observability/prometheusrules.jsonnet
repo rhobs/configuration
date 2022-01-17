@@ -52,7 +52,7 @@ local appSREOverwrites(environment) = {
       else error 'no datasource for environment %s' % environment,
   },
 
-  local dashboardID = function(name) {
+  local dashboardID = function(name, environment) {
     id:
       if
         name == 'thanos-query' then '98fde97ddeaf2981041745f1f2ba68c2'
@@ -84,6 +84,10 @@ local appSREOverwrites(environment) = {
         std.startsWith(name, 'loki_tenant') then 'f6fe30815b172c9da7e813c15ddfe607'
       else if
         std.startsWith(name, 'loki') then 'Lg-mH0rizaSJDKSADX'
+      else if
+        std.startsWith(name, 'rhobs-telemeter') && environment == 'production' then 'f9fa7677fb4a2669f123f9a0f2234b47'
+      else if
+        std.startsWith(name, 'rhobs-telemeter') && environment == 'stage' then '080e53f245a15445bdf777ae0e66945d'
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
       else error 'no dashboard id for group %s' % name,
@@ -134,7 +138,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s&var-namespace={{$labels.namespace}}' % [
-                    dashboardID('loki').id,
+                    dashboardID('loki', environment).id,
                     dashboardDatasource(environment).datasource,
                   ],
                 }
@@ -142,7 +146,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [
-                    dashboardID(g.name).id,
+                    dashboardID(g.name, environment).id,
                     dashboardDatasource(environment).datasource,
                   ],
                 }
@@ -150,7 +154,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-metrics=%s&var-namespace={{$labels.namespace}}' % [
-                    dashboardID(g.name).id,
+                    dashboardID(g.name, environment).id,
                     g.name,
                     dashboardDatasource(environment).datasource,
                   ],
@@ -159,7 +163,7 @@ local appSREOverwrites(environment) = {
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
-                    dashboardID(g.name).id,
+                    dashboardID(g.name, environment).id,
                     g.name,
                     dashboardDatasource(environment).datasource,
                   ],

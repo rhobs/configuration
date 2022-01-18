@@ -1176,7 +1176,7 @@ Thanos Store blocks are not being loaded. This can indicate possible data loss.
 
 ### Summary
 
-During the last 6 hours, not even a single Thanos Store block has been loaded. This can indicate possible data loss.
+During the last 6 hours, not even a single Thanos Store block has been loaded.
 
 ### Severity
 
@@ -1194,11 +1194,23 @@ During the last 6 hours, not even a single Thanos Store block has been loaded. T
 ### Steps
 
 - Check the namespace of RHOBS causing this alert to fire.
-- Locate Thanos Compact Statefulset in the affected namespace.
-- Check these downsampling command line args for Thanos Compact if they are defined as per these guidelines: https://thanos.io/tip/components/compact.md/
-        - --retention.resolution-raw
-        - --retention.resolution-5m
-        - --retention.resolution-1h
+- Check logs, configuration for Thanos compact, store and receive components for possible cause(s). 
+- Check Thanos compact Statefulset
+    - Check dashboard of Thanos compact
+    - Check the logs of Thanos compact pods for any errors.
+    - Check for valid configuration as per https://thanos.io/tip/components/compact.md/
+      - Object Store configuration (--objstore.config)
+      - Downsampling configuration (--retention.resolution-*)
+          - Currently Thanos compact works as expected if the retention.resolution-raw, retention.resolution-5m and retention.resolution-1h are set for the same duration. 
+    - Also check guidelines for these downsampling Thanos compact command line args at: https://thanos.io/tip/components/compact.md/
+          - --retention.resolution-5m needs more than 40 hours
+          - --retention.resolution-1h needs to be more than 10 days
+- Check Thanos store statefulset
+    - Check the logs of Thanos store pods for any errors related to blocks loading from Object store.
+    - Check for valid Object store configuration (--objstore.config) as per https://thanos.io/tip/components/store.md/
+- Check Thanos receive Statefulset
+    - Check the logs of Thanos receive pods for any errors related to blocks uploaded to Object store.
+    - Check for valid Object store configuration (--objstore.config) as per https://thanos.io/tip/components/receive.md/
 
 ## ObservatoriumPersistentVolumeUsageCritical
 

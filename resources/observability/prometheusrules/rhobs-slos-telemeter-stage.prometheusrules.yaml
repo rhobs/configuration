@@ -739,7 +739,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
         service: telemeter
         severity: high
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
@@ -761,7 +760,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
         service: telemeter
         severity: medium
     - expr: |
@@ -772,7 +770,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
     - expr: |
         1 - (
@@ -782,7 +779,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
     - expr: |
         1 - (
@@ -792,7 +788,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
     - expr: |
         1 - (
@@ -802,7 +797,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
     - expr: |
         1 - (
@@ -812,7 +806,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
     - expr: |
         1 - (
@@ -822,7 +815,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
     - expr: |
         1 - (
@@ -832,7 +824,6 @@ spec:
         )
       labels:
         latency: "2.0113571874999994"
-        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
@@ -853,7 +844,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
         service: telemeter
         severity: high
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
@@ -875,7 +865,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
         service: telemeter
         severity: medium
     - expr: |
@@ -886,7 +875,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
     - expr: |
         1 - (
@@ -896,7 +884,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
     - expr: |
         1 - (
@@ -906,7 +893,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
     - expr: |
         1 - (
@@ -916,7 +902,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
     - expr: |
         1 - (
@@ -926,7 +911,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
     - expr: |
         1 - (
@@ -936,7 +920,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
     - expr: |
         1 - (
@@ -946,7 +929,6 @@ spec:
         )
       labels:
         latency: "10.761264004567169"
-        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
       annotations:
@@ -967,7 +949,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
         service: telemeter
         severity: high
     - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
@@ -989,7 +970,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
         service: telemeter
         severity: medium
     - expr: |
@@ -1000,7 +980,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
     - expr: |
         1 - (
@@ -1010,7 +989,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
     - expr: |
         1 - (
@@ -1020,7 +998,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
     - expr: |
         1 - (
@@ -1030,7 +1007,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
     - expr: |
         1 - (
@@ -1040,7 +1016,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
     - expr: |
         1 - (
@@ -1050,7 +1025,6 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
     - expr: |
         1 - (
@@ -1060,5 +1034,4 @@ spec:
         )
       labels:
         latency: "21.6447457021712"
-        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d

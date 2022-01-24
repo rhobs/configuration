@@ -121,6 +121,7 @@ local appSREOverwrites(environment) = {
     // Prune selector label because not allowed by AppSRE
     labels: std.prune(labels {
       group: null,
+      code: null,
     }),
   },
 
@@ -242,7 +243,7 @@ local renderAlerts(name, environment, mixin) = {
           alertName: 'TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning',
           alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs',
           metric: 'haproxy_server_http_responses_total',
-          selectors: ['route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive"', 'code!="4xx"'],
+          selectors: ['route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive"', 'code=~"^(2..|3..|5..)$"'],
           errorSelectors: ['code="5xx"'],
           target: 0.95,
         }),

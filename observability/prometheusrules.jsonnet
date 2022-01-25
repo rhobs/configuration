@@ -238,6 +238,8 @@ local renderAlerts(name, environment, mixin) = {
 };
 
 {
+  // This function is required to convert the output format of the slo-libsonnet library to the format expected
+  // for the prometheus rules file.
   local flatten(originalSLOs) = {
     prometheusAlerts+:: {
       groups: [

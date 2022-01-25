@@ -1180,7 +1180,7 @@ During the last 6 hours, not even a single Thanos Store block has been loaded.
 
 ### Severity
 
-`high`
+`medium`
 
 ### Access Required
 

@@ -601,7 +601,7 @@ local renderAlerts(name, environment, mixin) = {
               ||| % config.thanos.store,
               'for': '10m',
               labels: {
-                severity: 'high',
+                severity: 'warning',
               },
             },
             {

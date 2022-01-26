@@ -10,34 +10,34 @@
     - [Access required](#access-required)
     - [Steps](#steps)
   - [AuthorizeClientErrorsHigh](#authorizeclienterrorshigh)
-    - [Impact:](#impact-1)
-    - [Summary:](#summary-1)
-    - [Access required:](#access-required-1)
-    - [Steps:](#steps-1)
+    - [Impact](#impact-1)
+    - [Summary](#summary-1)
+    - [Access required](#access-required-1)
+    - [Steps](#steps-1)
   - [TelemeterAuthorizeErrorBudgetBurning](#telemeterauthorizeerrorbudgetburning)
   - [OAuthClientErrorsHigh](#oauthclienterrorshigh)
-    - [Impact:](#impact-2)
-    - [Summary:](#summary-2)
-    - [Access required:](#access-required-2)
-    - [Relevant secrets:](#relevant-secrets)
-    - [Steps:](#steps-2)
+    - [Impact](#impact-2)
+    - [Summary](#summary-2)
+    - [Access required](#access-required-2)
+    - [Relevant secrets](#relevant-secrets)
+    - [Steps](#steps-2)
   - [TelemeterDown](#telemeterdown)
-    - [Impact:](#impact-3)
-    - [Summary:](#summary-3)
-    - [Access required:](#access-required-3)
-    - [Steps:](#steps-3)
+    - [Impact](#impact-3)
+    - [Summary](#summary-3)
+    - [Access required](#access-required-3)
+    - [Steps](#steps-3)
   - [TelemeterUploadErrorBudgetBurning](#telemeteruploaderrorbudgetburning)
   - [UploadHandlerErrorsHigh](#uploadhandlererrorshigh)
-    - [Impact:](#impact-4)
-    - [Summary:](#summary-4)
-    - [Access required:](#access-required-4)
-    - [Relevant secrets:](#relevant-secrets-1)
-    - [Steps:](#steps-4)
+    - [Impact](#impact-4)
+    - [Summary](#summary-4)
+    - [Access required](#access-required-4)
+    - [Relevant secrets](#relevant-secrets-1)
+    - [Steps](#steps-4)
   - [TelemeterCapacity[Medium | High | Critical]](#telemetercapacitymedium--high--critical)
-    - [Impact:](#impact-5)
-    - [Summary:](#summary-5)
-    - [Access required:](#access-required-5)
-    - [Steps:](#steps-5)
+    - [Impact](#impact-5)
+    - [Summary](#summary-5)
+    - [Access required](#access-required-5)
+    - [Steps](#steps-5)
   - [Escalations](#escalations)
 
 <!-- /TOC -->
@@ -46,9 +46,9 @@
 
 ## Verify it's working
 
-- `telemeter-server` targets are UP in info-gw: https://infogw-data.api.openshift.com/targets#job-telemeter-server
-- `telemeter-server` targets are UP in `telemeter-prod-01` prom: https://prometheus.telemeter-prod-01.devshift.net/targets#job-telemeter-server
-- `Upload Handler` is returning 200s: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&from=now-6h&to=now
+- `telemeter-server` targets are UP in info-gw: <https://infogw-data.api.openshift.com/targets#job-telemeter-server>
+- `telemeter-server` targets are UP in `telemeter-prod-01` prom: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-telemeter-server>
+- `Upload Handler` is returning 200s: <https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&from=now-6h&to=now>
 
 ## InfoGW Probe Failing
 
@@ -73,6 +73,7 @@ Prometheus blackbox exporter probes the target (also providing a bearer token to
   - `telemeter-production`, `observatorium-metrics-production`, `observatorium-production` for production
 
 ### Steps
+
 1. Check the generic SOP for failing `2xx` black-box probes in [AppSRE Interface repository](https://gitlab.cee.redhat.com/service/app-interface/blob/master/docs/app-sre/sop/blackbox-exporter-2xxProbeFailing.md).
 2. If probe is failing due to the authentication (e.g. you are seeing `403` or similar response in the probe log), make sure the bearer token secrets in Vault listed above are configured and valid.
 3. Log into the console for the relevant cluster (links above in `Access required`):
@@ -86,7 +87,7 @@ Prometheus blackbox exporter probes the target (also providing a bearer token to
 
 ## AuthorizeClientErrorsHigh
 
-### Impact:
+### Impact
 
 New clusters are not able to fetch an authorization token.
 We are lucky if clusters are already authorized.
@@ -94,22 +95,23 @@ We issue clusters inside telemeter a JWT token for 12 hours.
 All existing clusters will be okay for 12h window since last authorized.
 
 The error is related to clusters which are either:
+
 - New clusters trying to authorize.
 - Existing clusters who already have authorized,
 but the 12h window for the token has expired
 
-### Summary:
+### Summary
 
 Telemeter is recieving errors at a high rate from Keycloak.
 
-### Access required:
+### Access required
 
 - Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage on `app-sre-stage-01`
-    - telemeter-production on `telemeter-prod-01`
+  - telemeter-stage on `app-sre-stage-01`
+  - telemeter-production on `telemeter-prod-01`
 
-### Steps:
+### Steps
 
 1. Go to the [Telemeter dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now) and check the /authorize errors. Are the error rates elevated?
 1. Check if the issues come from us or upstream with this [Prometheus Query](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=3h&g0.expr=sum(rate(client_api_requests_total%7Bclient%3D%22authorize%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%2Cstatus%3D~%225..%22%7D%5B5m%5D))%20or%20vector(0)%0A%2F%0Asum(rate(client_api_requests_total%7Bclient%3D%22authorize%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D))&g0.tab=0)
@@ -131,27 +133,27 @@ _Note: Soon this new alert will replace the inferior one below._
 
 ## OAuthClientErrorsHigh
 
-### Impact:
+### Impact
 
 Clusters are not able to fetch a new authorization token or renew it.
 
-### Summary:
+### Summary
 
 Telemeter server itself uses OAuth to authorize against tollbooth.
 It uses an access token, issued by RedHat's OAuth server (Keycloak).
 Telemeter is receiving error responses when trying to refresh the access token
 at a high rate from Keycloak.
 
-### Access required:
+### Access required
 
 - Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage on `app-sre-stage-01`
-    - telemeter-production on `telemeter-prod-01`
+  - telemeter-stage on `app-sre-stage-01`
+  - telemeter-production on `telemeter-prod-01`
 
-### Relevant secrets:
+### Relevant secrets
 
-### Steps:
+### Steps
 
 1. Go to the [Telemeter dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now) and check the /authorize errors. Are the error rates elevated?
 1. Check if the issues come from us or upstream with this [Prometheus Query](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=3h&g0.expr=sum(rate(client_api_requests_total%7Bclient%3D%22oauth%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%2Cstatus%3D~%225..%22%7D%5B5m%5D))%20or%20vector(0)%0A%2F%0Asum(rate(client_api_requests_total%7Bclient%3D%22oauth%22%2Cjob%3D%22telemeter-server%22%2Cnamespace%3D%22telemeter-production%22%7D%5B5m%5D))&g0.tab=0)
@@ -164,24 +166,23 @@ at a high rate from Keycloak.
 
 ## TelemeterDown
 
-### Impact:
+### Impact
 
 If Telemeter is down for too long, then OpenShift clusters are not able to push metrics anymore and we start losing data.
 This may result in OCM showing erros and overall business metrics missing datapoints.
 
-### Summary:
+### Summary
 
 Telemeter Server might be down and not serving any requests.
 
-### Access required:
+### Access required
 
 - Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage on `app-sre-stage-01`
-    - telemeter-production on `telemeter-prod-01`### Severity: Critical
+  - telemeter-stage on `app-sre-stage-01`
+  - telemeter-production on `telemeter-prod-01`### Severity: Critical
 
-### Steps:
-
+### Steps
 
 1. Check if this problem is visibile to the outside. Can you see elevated error rates on [the Telemeter dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter?orgId=1&refresh=1m&from=now-3h&to=now)?
 1. Are there still Telemeter Pods? Are they crash looping? Are they ready? Check the OpenShift console for the `telemeter-production` namespace.
@@ -204,26 +205,25 @@ _Note: Soon this new alert will replace the inferior one below._
 
 ## UploadHandlerErrorsHigh
 
-### Impact:
+### Impact
 
 Clusters are not able to push metrics.
 
-### Summary:
+### Summary
 
 Upload errors happen, when metrics data is malformed or validation of metrics fails.
 Most likely the metrics payload is broken and thus possibly the telemeter metrics client.
 
-### Access required:
+### Access required
 
 - Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage on `app-sre-stage-01`
-    - telemeter-production on `telemeter-prod-01`
+  - telemeter-stage on `app-sre-stage-01`
+  - telemeter-production on `telemeter-prod-01`
 
+### Relevant secrets
 
-### Relevant secrets:
-
-### Steps:
+### Steps
 
 - Contact monitoring engineering team to help in the investigation.
 - Examine metrics payload by enabling the --verbose setting on telemeter client
@@ -238,22 +238,22 @@ on a cluster that is failing to push metrics.
 
 ## TelemeterCapacity[Medium | High | Critical]
 
-### Impact:
+### Impact
 
 Telemeter Prometheus may not be able to handle the total number of active timeseries and may crash.
 
-### Summary:
+### Summary
 
 Telemeter Prometheus is reaching to its limit of active timeseries and will be unable to handle the load. Soon Telemeter Prometheus may crash.
 
-### Access required:
+### Access required
 
 - Console access to the cluster that runs telemeter (Currently `telemeter-prod-01` for production; `app-sre-stage-01` for staging`)
 - Edit access to the Telemeter namespaces:
-    - telemeter-stage on `app-sre-stage-01`
-    - telemeter-production on `telemeter-prod-01`### Severity: Critical
+  - telemeter-stage on `app-sre-stage-01`
+  - telemeter-production on `telemeter-prod-01`### Severity: Critical
 
-### Steps:
+### Steps
 
 - Contact monitoring engineering team for help.
 - Inspect Telemeter Prometheus logs and metrics.

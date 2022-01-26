@@ -1048,7 +1048,7 @@ NOTE: This must be done with a 4.x version of the oc client.
 
 ### Impact
 
-If there is an unusual drop in traffic/ingestion rate, a *symptom* is that some data loss may happen or that data is not correctly forwarded from Thanos Query -> Thanos Receive. As a consequence, less data is forwarded to Object Storage.
+If there is an unusual drop in traffic/ingestion rate, a *symptom* is that some data loss may happen or that data is not correctly forwarded to Thanos Receive. As a consequence, less data is forwarded to Object Storage.
 
 ### Summary
 

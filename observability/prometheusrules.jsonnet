@@ -311,7 +311,7 @@ local renderAlerts(name, environment, mixin) = {
         name: 'rhobs-' + instance + '-api-metrics-write-latency.slo',
         slos: [
           slo.latencyburn({
-            alertName: 'TelemeterAPIMetricsWriteLatencyErrorBudgetBurning',
+            alertName: 'APIMetricsWriteLatencyErrorBudgetBurning',
             alertMessage: 'API /receive handler is burning too much error budget to guarantee latency SLOs',
             metric: 'http_request_duration_seconds',
             // We can't use !~ operator in these selectors
@@ -333,7 +333,7 @@ local renderAlerts(name, environment, mixin) = {
             target: 0.95,
           }),
           slo.errorburn({
-            alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
+            alertName: 'APIMetricsReadAvailabilityErrorBudgetBurning',
             alertMessage: 'API /query_range handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
             selectors: [apiJobSelector, 'handler="query_range"', 'code=~"^(2..|3..|5..)$"'],

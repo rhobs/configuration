@@ -3,57 +3,58 @@
 <!-- TOC depthTo:2 -->
 
 - Observatorium
-    - [Verify components are running](#verify-components-are-running)
+  - [Verify components are running](#verify-components-are-running)
 - Observatorium Proactive Monitoring
-    - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
-    - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
+  - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
+  - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
 - Observatorium Tenants
-    - [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
-    - [ObservatoriumTenantsSkippedDuringConfiguration](#observatoriumtenantsskippedduringconfiguration)
+  - [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
+  - [ObservatoriumTenantsSkippedDuringConfiguration](#observatoriumtenantsskippedduringconfiguration)
 - Observatorium Logs
-    - [LokiRequestErrors](#lokirequesterrors)
-    - [LokiRequestPanics](#lokirequestpanics)
-    - [LokiRequestLatency](#lokirequestlatency)
-    - [LokiTenantRateLimitWarning](#lokitenantratelimitwarning)
-    - [ObservatoriumAPILogsErrorsSLOBudgetBurn](#observatoriumapilogserrorsslobudgetburn)
+  - [LokiRequestErrors](#lokirequesterrors)
+  - [LokiRequestPanics](#lokirequestpanics)
+  - [LokiRequestLatency](#lokirequestlatency)
+  - [LokiTenantRateLimitWarning](#lokitenantratelimitwarning)
+  - [ObservatoriumAPILogsErrorsSLOBudgetBurn](#observatoriumapilogserrorsslobudgetburn)
 - Observatorium Metrics
-    - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
-    - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
-    - [ThanosCompactHalted](#thanoscompacthalted)
-    - [ThanosCompactHighCompactionFailures](#thanoscompacthighcompactionfailures)
-    - [ThanosCompactBucketHighOperationFailures](#thanoscompactbuckethighoperationfailures)
-    - [ThanosCompactHasNotRun](#thanoscompacthasnotrun)
-    - [ThanosCompactIsDown](#thanoscompactisdown)
-    - [ThanosQuerierGrpcServerErrorRate](#thanosqueriergrpcservererrorrate)
-    - [ThanosQuerierGrpcClientErrorRate](#thanosqueriergrpcclienterrorrate)
-    - [ThanosQuerierHighDNSFailures](#thanosquerierhighdnsfailures)
-    - [ThanosQuerierInstantLatencyHigh](#thanosquerierinstantlatencyhigh)
-    - [ThanosQuerierRangeLatencyHigh](#thanosquerierrangelatencyhigh)
-    - [ThanosQuerierIsDown](#thanosqueryisdown)
-    - [ThanosReceiveHttpRequestLatencyHigh](#thanosreceivehttprequestlatencyhigh)
-    - [ThanosReceiveHighForwardRequestFailures](#thanosreceivehighforwardrequestfailures)
-    - [ThanosReceiveHighHashringFileRefreshFailures](#thanosreceivehighhashringfilerefreshfailures)
-    - [ThanosReceiveConfigReloadFailure](#thanosreceiveconfigreloadfailure)
-    - [ThanosReceiveIsDown](#thanosreceiveisdown)
-    - [ThanosStoreGrpcErrorRate](#thanosstoregrpcerrorrate)
-    - [ThanosStoreSeriesGateLatencyHigh](#thanosstoreseriesgatelatencyhigh)
-    - [ThanosStoreBucketHighOperationFailures](#thanosstorebuckethighoperationfailures)
-    - [ThanosStoreObjstoreOperationLatencyHigh](#thanosstoreobjstoreoperationlatencyhigh)
-    - [ThanosStoreIsDown](#thanosstoreisdown)
-    - [ThanosReceiveControllerReconcileErrorRate](#thanosreceivecontrollerreconcileerrorrate)
-    - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
-    - [ThanosReceiveControllerIsDown](#thanosreceivecontrollerisdown)
-    - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
-    - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
-    - [ThanosReceiveNoUpload](#thanosreceivenoupload)
-    - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
-    - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
-    - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
-    - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
-    - [ThanosRuleIsDown](#thanosruleisdown)
-    - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn](#observatoriumapimetricserrorsslobudgetburn)
-    - [GubernatorIsDown](#gubernatorisdown)
-    - [Escalations](#escalations)
+  - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
+  - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
+  - [ThanosCompactHalted](#thanoscompacthalted)
+  - [ThanosCompactHighCompactionFailures](#thanoscompacthighcompactionfailures)
+  - [ThanosCompactBucketHighOperationFailures](#thanoscompactbuckethighoperationfailures)
+  - [ThanosCompactHasNotRun](#thanoscompacthasnotrun)
+  - [ThanosCompactIsDown](#thanoscompactisdown)
+  - [ThanosQuerierGrpcServerErrorRate](#thanosqueriergrpcservererrorrate)
+  - [ThanosQuerierGrpcClientErrorRate](#thanosqueriergrpcclienterrorrate)
+  - [ThanosQuerierHighDNSFailures](#thanosquerierhighdnsfailures)
+  - [ThanosQuerierInstantLatencyHigh](#thanosquerierinstantlatencyhigh)
+  - [ThanosQuerierRangeLatencyHigh](#thanosquerierrangelatencyhigh)
+  - [ThanosQuerierIsDown](#thanosqueryisdown)
+  - [ThanosReceiveHttpRequestLatencyHigh](#thanosreceivehttprequestlatencyhigh)
+  - [ThanosReceiveHighForwardRequestFailures](#thanosreceivehighforwardrequestfailures)
+  - [ThanosReceiveHighHashringFileRefreshFailures](#thanosreceivehighhashringfilerefreshfailures)
+  - [ThanosReceiveConfigReloadFailure](#thanosreceiveconfigreloadfailure)
+  - [ThanosReceiveIsDown](#thanosreceiveisdown)
+  - [ThanosStoreGrpcErrorRate](#thanosstoregrpcerrorrate)
+  - [ThanosStoreSeriesGateLatencyHigh](#thanosstoreseriesgatelatencyhigh)
+  - [ThanosStoreBucketHighOperationFailures](#thanosstorebuckethighoperationfailures)
+  - [ThanosStoreObjstoreOperationLatencyHigh](#thanosstoreobjstoreoperationlatencyhigh)
+  - [ThanosStoreIsDown](#thanosstoreisdown)
+  - [ThanosReceiveControllerReconcileErrorRate](#thanosreceivecontrollerreconcileerrorrate)
+  - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
+  - [ThanosReceiveControllerIsDown](#thanosreceivecontrollerisdown)
+  - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
+  - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
+  - [ThanosReceiveNoUpload](#thanosreceivenoupload)
+  - [ThanosReceiveTrafficBelowThreshold](#thanosreceivetrafficbelowthreshold)
+  - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
+  - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
+  - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
+  - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
+  - [ThanosRuleIsDown](#thanosruleisdown)
+  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn](#observatoriumapimetricserrorsslobudgetburn)
+  - [GubernatorIsDown](#gubernatorisdown)
+  - [Escalations](#escalations)
 
 <!-- /TOC -->
 
@@ -65,28 +66,27 @@ Check targets are UP in app-sre Prometheus:
 
 ### Logs
 
-- `loki-distributor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-distributor-production%2f0
+- `loki-distributor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-distributor-production%2f0>
 
-- `loki-ingester`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-ingester-production%2f0
+- `loki-ingester`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-ingester-production%2f0>
 
-- `loki-querier`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-querier-production%2f0
+- `loki-querier`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-querier-production%2f0>
 
-- `loki-query-frontend`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-query-frontend-production%2f0
+- `loki-query-frontend`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-query-frontend-production%2f0>
 
-- `loki-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-compactor-production%2f0
+- `loki-compactor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-compactor-production%2f0>
 
 ### Metrics
 
-- `thanos-querier`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-querier-production%2f0
+- `thanos-querier`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-querier-production%2f0>
 
-- `thanos-receive`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-default-production%2f0
+- `thanos-receive`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-default-production%2f0>
 
-- `thanos-store`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-store-production%2f0
+- `thanos-store`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-store-production%2f0>
 
-- `thanos-receive-controller`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-controller-production%2f0
+- `thanos-receive-controller`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-controller-production%2f0>
 
-- `thanos-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0
-
+- `thanos-compactor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0>
 
 ---
 
@@ -110,13 +110,13 @@ Users of RHOBS are not able to access API endpoints for either reading, writing 
 - Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
 
 ### Steps
+
 - Check for any outage at Red Hat SSO.
 - Check the Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) for valid Yaml content, valid tenant name, auth information under 'oidc', 'opa' sections and rate limiting information under 'rateLimits' section.
 - Check the logs of Observatorium API deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-api)
 - Check the logs of Observatorium UP deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-up)
 - Check the logs of Observatorium API deployment's for MST tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-mst-production/deployments/observatorium-observatorium-mst-api)
 - Check the logs of Observatorium UP deployment's for MST tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-mst-production/deployments/observatorium-observatorium-up)
-
 
 ## ObservatoriumProActiveMetricsQueryErrorRateHigh
 
@@ -138,6 +138,7 @@ Metrics queries generated by Proactive monitoring are failing.
 - Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
 
 ### Steps
+
 - Check the Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) for valid Yaml content, valid tenant name, auth information under 'oidc' and 'opa' sections and rate limiting information under 'rateLimits' section.
 - Check the logs of Observatorium UP deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-up)
 - Check the logs of Observatorium API deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-api)
@@ -981,7 +982,9 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 ---
 
 ## ThanosRuleHighRuleEvaluationFailures
+
 ## ThanosNoRuleEvaluations
+
 ## ThanosRuleRuleEvaluationLatencyHigh
 
 ### Impact
@@ -1010,9 +1013,9 @@ Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in tur
 - Check the [Thanos Rule dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) to get a general overview.
 - Check the [Thanos Query dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Most likely you can focus on the Instant Query API RED metrics.
 - Drill down into the [Thanos Store dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) and [Thanos Receiver dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Depending on which one of them has the same elevated error rate, concentrate on that component.
-   - Probably, the Thanos Receiver is the problem, as the Thanos Ruler mostly looks at very recent data (like last 5min).
+  - Probably, the Thanos Receiver is the problem, as the Thanos Ruler mostly looks at very recent data (like last 5min).
 - Now that you, hopefully, know which component is causing the errors, dive into its logs, query it's raw metrics (check the dashboards as examples).
-   - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+  - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -1041,6 +1044,39 @@ NOTE: This must be done with a 4.x version of the oc client.
 
 ---
 
+## ThanosReceiveTrafficBelowThreshold
+
+### Impact
+
+If there is an unusual drop in traffic/ingestion rate, a *symptom* is that some data loss may happen or that data is not correctly forwarded to Thanos Receive. As a consequence, less data is forwarded to Object Storage.
+
+### Summary
+
+Thanos Receive is experiencing low average 1h ingestion rate relative to average 12h ingestion rate. This may indicate an unusual low amount of data being received.
+
+### Severity
+
+`medium`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [telemeter-stage-01 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check on the status of Thanos Receive:
+  1. Check [Thanos Receive dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-mst-production&var-job=All&var-pod=All&var-interval=5m) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)). Check for the `Rate` and `error` panels. The gRPC rows refer to the gRPC Store API.
+  2. Check Thanos Receive logs
+- Check on the status of Observatorium API:
+  1. Check [Observatorium API dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-metrics-production&var-handler=All) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)).
+  2. Check API logs for potential errors
+- Reach out to Observability Team and ping @observatorium-support at [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+
 ## ThanosRuleTSDBNotIngestingSamples
 
 ### Impact
@@ -1064,18 +1100,24 @@ Both Thanos Rule replicas internal TSDB failed to ingest samples.
 
 ### Steps
 
-- Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: https://issues.redhat.com/browse/OBS-210
+- Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: <https://issues.redhat.com/browse/OBS-210>
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
 ## MandatoryThanosComponentIsDown
+
 ## ThanosCompactIsDown
+
 ## ThanosQueryIsDown
+
 ## ThanosReceiveIsDown
+
 ## ThanosStoreIsDown
+
 ## ThanosReceiveControllerIsDown
+
 ## ThanosRuleIsDown
 
 ### Impact
@@ -1194,23 +1236,23 @@ During the last 6 hours, not even a single Thanos Store block has been loaded.
 ### Steps
 
 - Check the namespace of RHOBS causing this alert to fire.
-- Check logs, configuration for Thanos compact, store and receive components for possible cause(s). 
+- Check logs, configuration for Thanos compact, store and receive components for possible cause(s).
 - Check Thanos compact Statefulset
-    - Check dashboard of Thanos compact
-    - Check the logs of Thanos compact pods for any errors.
-    - Check for valid configuration as per https://thanos.io/tip/components/compact.md/
-      - Object Store configuration (--objstore.config)
-      - Downsampling configuration (--retention.resolution-*)
-          - Currently Thanos compact works as expected if the retention.resolution-raw, retention.resolution-5m and retention.resolution-1h are set for the same duration. 
-    - Also check guidelines for these downsampling Thanos compact command line args at: https://thanos.io/tip/components/compact.md/
+  - Check dashboard of Thanos compact
+  - Check the logs of Thanos compact pods for any errors.
+  - Check for valid configuration as per <https://thanos.io/tip/components/compact.md/>
+    - Object Store configuration (--objstore.config)
+    - Downsampling configuration (--retention.resolution-*)
+      - Currently Thanos compact works as expected if the retention.resolution-raw, retention.resolution-5m and retention.resolution-1h are set for the same duration.
+  - Also check guidelines for these downsampling Thanos compact command line args at: <https://thanos.io/tip/components/compact.md/>
           - --retention.resolution-5m needs more than 40 hours
           - --retention.resolution-1h needs to be more than 10 days
 - Check Thanos store statefulset
-    - Check the logs of Thanos store pods for any errors related to blocks loading from Object store.
-    - Check for valid Object store configuration (--objstore.config) as per https://thanos.io/tip/components/store.md/
+  - Check the logs of Thanos store pods for any errors related to blocks loading from Object store.
+  - Check for valid Object store configuration (--objstore.config) as per <https://thanos.io/tip/components/store.md/>
 - Check Thanos receive Statefulset
-    - Check the logs of Thanos receive pods for any errors related to blocks uploaded to Object store.
-    - Check for valid Object store configuration (--objstore.config) as per https://thanos.io/tip/components/receive.md/
+  - Check the logs of Thanos receive pods for any errors related to blocks uploaded to Object store.
+  - Check for valid Object store configuration (--objstore.config) as per <https://thanos.io/tip/components/receive.md/>
 
 ## ObservatoriumPersistentVolumeUsageCritical
 
@@ -1241,6 +1283,7 @@ One or more PVCs are filled to more than 95%. The remaining free space does not 
 - Check the pods belonging to the component and establish what object do they belong to
 - Locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
 - Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
+
 ## GubernatorIsDown
 
 ### Impact

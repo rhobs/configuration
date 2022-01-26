@@ -1069,10 +1069,12 @@ Thanos Receive is experiencing low average 1h ingestion rate relative to average
 
 ### Steps
 
-- Check [Thanos Receive dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-mst-production&var-job=All&var-pod=All&var-interval=5m):
-  1. Select the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)
-  2. Check for the `Rate` and `error` panels. The gRPC rows refer to the gRPC Store API.
-
+- Check on the status of Thanos Receive:
+  1. Check [Thanos Receive dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-mst-production&var-job=All&var-pod=All&var-interval=5m) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)). Check for the `Rate` and `error` panels. The gRPC rows refer to the gRPC Store API.
+  2. Check Thanos Receive logs
+- Check on the status of Observatorium API:
+  1. Check [Observatorium API dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-metrics-production&var-handler=All) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)).
+  2. Check API logs for potential errors
 - Reach out to Observability Team and ping @observatorium-support at [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosRuleTSDBNotIngestingSamples

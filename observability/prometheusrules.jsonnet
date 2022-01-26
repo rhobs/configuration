@@ -266,7 +266,7 @@ local renderAlerts(name, environment, mixin) = {
       slos: [
         slo.errorburn({
           alertName: 'TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning',
-          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs',
+          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to guarantee availability SLOs',
           metric: 'haproxy_server_http_responses_total',
           selectors: ['route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive"', 'code=~"^(2..|3..|5..)$"'],
           errorSelectors: ['code="5xx"'],
@@ -279,7 +279,7 @@ local renderAlerts(name, environment, mixin) = {
       slos: [
         slo.latencyburn({
           alertName: 'TelemeterServerMetricsWriteLatencyErrorBudgetBurning',
-          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to gurantee latency SLOs',
+          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to guarantee latency SLOs',
           metric: 'http_request_duration_seconds',
           // We can't use !~ operator in these selectors
           selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code=~"^(2..|3..|5..)$"'],
@@ -299,7 +299,7 @@ local renderAlerts(name, environment, mixin) = {
         slos: [
           slo.errorburn({
             alertName: 'APIMetricsWriteAvailabilityErrorBudgetBurning',
-            alertMessage: 'API /receive handler is burning too much error budget to gurantee availability SLOs',
+            alertMessage: 'API /receive handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
             selectors: [apiJobSelector, 'handler=~"receive"', 'code=~"^(2..|3..|5..)$"'],
             errorSelectors: ['code=~"5.+"'],
@@ -312,7 +312,7 @@ local renderAlerts(name, environment, mixin) = {
         slos: [
           slo.latencyburn({
             alertName: 'TelemeterAPIMetricsWriteLatencyErrorBudgetBurning',
-            alertMessage: 'API /receive handler is burning too much error budget to gurantee latency SLOs',
+            alertMessage: 'API /receive handler is burning too much error budget to guarantee latency SLOs',
             metric: 'http_request_duration_seconds',
             // We can't use !~ operator in these selectors
             selectors: [apiJobSelector, 'handler="receive"', 'code=~"^(2..|3..|5..)$"'],
@@ -326,7 +326,7 @@ local renderAlerts(name, environment, mixin) = {
         slos: [
           slo.errorburn({
             alertName: 'APIMetricsReadAvailabilityErrorBudgetBurning',
-            alertMessage: 'API /query handler is burning too much error budget to gurantee availability SLOs',
+            alertMessage: 'API /query handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
             selectors: [apiJobSelector, 'handler="query"', 'code=~"^(2..|3..|5..)$"'],
             errorSelectors: ['code=~"5.+"'],
@@ -334,7 +334,7 @@ local renderAlerts(name, environment, mixin) = {
           }),
           slo.errorburn({
             alertName: 'TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning',
-            alertMessage: 'API /query_range handler is burning too much error budget to gurantee availability SLOs',
+            alertMessage: 'API /query_range handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
             selectors: [apiJobSelector, 'handler="query_range"', 'code=~"^(2..|3..|5..)$"'],
             errorSelectors: ['code=~"5.+"'],
@@ -347,7 +347,7 @@ local renderAlerts(name, environment, mixin) = {
         slos: [
           slo.latencyburn({
             alertName: 'APIMetricsReadLatencyErrorBudgetBurning',
-            alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+            alertMessage: 'API /query endpoint is burning too much error budget to guarantee latency SLOs',
             metric: 'up_custom_query_duration_seconds',
             selectors: ['query="query-path-sli-1M-samples"', upNamespaceSelector],
             latencyTarget: 2.0113571874999994,
@@ -355,7 +355,7 @@ local renderAlerts(name, environment, mixin) = {
           }),
           slo.latencyburn({
             alertName: 'APIMetricsReadLatencyErrorBudgetBurning',
-            alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+            alertMessage: 'API /query endpoint is burning too much error budget to guarantee latency SLOs',
             metric: 'up_custom_query_duration_seconds',
             selectors: ['query="query-path-sli-10M-samples"', upNamespaceSelector],
             latencyTarget: 10.761264004567169,
@@ -363,7 +363,7 @@ local renderAlerts(name, environment, mixin) = {
           }),
           slo.latencyburn({
             alertName: 'APIMetricsReadLatencyErrorBudgetBurning',
-            alertMessage: 'API /query endpoint is burning too much error budget to gurantee latency SLOs',
+            alertMessage: 'API /query endpoint is burning too much error budget to guarantee latency SLOs',
             metric: 'up_custom_query_duration_seconds',
             // We can't use !~ operator in these selectors
             selectors: ['query="query-path-sli-100M-samples"', upNamespaceSelector],

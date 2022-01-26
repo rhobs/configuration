@@ -1073,7 +1073,7 @@ Thanos Receive is experiencing low average 1h ingestion rate relative to average
   1. Select the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)
   2. Check for the `Rate` and `error` panels. The gRPC rows refer to the gRPC Store API.
 
-- Reach out to Observability Team and ping @observatorium-support at [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+- Reach out to Observability Team and ping `@observatorium-support` at [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosRuleTSDBNotIngestingSamples
 

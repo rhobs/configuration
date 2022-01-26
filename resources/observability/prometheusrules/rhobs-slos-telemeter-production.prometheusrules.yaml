@@ -14,7 +14,7 @@ spec:
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        message: Telemeter Server /upload or /receive is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate5m{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
@@ -28,7 +28,7 @@ spec:
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        message: Telemeter Server /upload or /receive is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate30m{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
@@ -42,7 +42,7 @@ spec:
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        message: Telemeter Server /upload or /receive is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate2h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
@@ -56,7 +56,7 @@ spec:
     - alert: TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-telemeter-server-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /upload or /receive is burning too much error budget to gurantee availability SLOs
+        message: Telemeter Server /upload or /receive is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(haproxy_server_http_responses_total:burnrate6h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
@@ -243,11 +243,11 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate3d
   - name: rhobs-telemeter-api-metrics-write-availability.slo
     rules:
-    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
@@ -258,11 +258,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
@@ -273,11 +273,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
@@ -288,11 +288,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-    - alert: TelemeterAPIMetricsWriteAvailabilityErrorBudgetBurning
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /receive handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswriteavailabilityerrorbudgetburning
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
@@ -361,11 +361,11 @@ spec:
       record: http_requests_total:burnrate6h
   - name: rhobs-telemeter-api-metrics-write-latency.slo
     rules:
-    - alert: TelemeterAPIMetricsWriteLatencyErrorBudgetBurning
+    - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
           latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
@@ -384,11 +384,11 @@ spec:
         latency: "5"
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsWriteLatencyErrorBudgetBurning
+    - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
           latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
@@ -486,11 +486,11 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate3d
   - name: rhobs-telemeter-api-metrics-read-availability.slo
     rules:
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
@@ -501,11 +501,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
@@ -516,11 +516,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
@@ -531,11 +531,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
@@ -602,11 +602,11 @@ spec:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
@@ -617,11 +617,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate30m{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
@@ -632,11 +632,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate2h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
@@ -647,11 +647,11 @@ spec:
         job: observatorium-observatorium-api
         service: telemeter
         severity: medium
-    - alert: TelemeterAPIMetricsReadAvailabilityErrorBudgetBurning
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query_range handler is burning too much error budget to gurantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadavailabilityerrorbudgetburning
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
@@ -720,318 +720,345 @@ spec:
       record: http_requests_total:burnrate6h
   - name: rhobs-telemeter-api-metrics-read-latency.slo
     rules:
-    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,latency=2.0113571874999994 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-production,latency=2.0113571874999994 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (14.4*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate5m{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (14.4*0.900000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (6*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate30m{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (6*0.900000)
         )
       labels:
         latency: "2.0113571874999994"
+        namespace: observatorium-production
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,latency=2.0113571874999994 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-production,latency=2.0113571874999994 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (3*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate2h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (3*0.900000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate3d{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-1M-samples",latency="2.0113571874999994"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-production",latency="2.0113571874999994"} > (0.900000)
         )
       labels:
         latency: "2.0113571874999994"
+        namespace: observatorium-production
         service: telemeter
         severity: medium
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[5m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[5m]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[5m]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[5m]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[30m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[30m]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[30m]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[30m]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[1h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[1h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[1h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[1h]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[2h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[2h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[2h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[2h]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[6h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[6h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[6h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[6h]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[1d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[1d]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[1d]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[1d]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-1M-samples",le="2.0113571874999994",code!~"5.."}[3d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-production",le="2.0113571874999994",code!~"5.."}[3d]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-1M-samples"}[3d]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-production"}[3d]))
         )
       labels:
         latency: "2.0113571874999994"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
-    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate3d
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,latency=10.761264004567169 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-production,latency=10.761264004567169 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (14.4*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate5m{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (14.4*0.900000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (6*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate30m{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (6*0.900000)
         )
       labels:
         latency: "10.761264004567169"
+        namespace: observatorium-production
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,latency=10.761264004567169 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-production,latency=10.761264004567169 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (3*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate2h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (3*0.900000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate3d{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-10M-samples",latency="10.761264004567169"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-production",latency="10.761264004567169"} > (0.900000)
         )
       labels:
         latency: "10.761264004567169"
+        namespace: observatorium-production
         service: telemeter
         severity: medium
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[5m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[5m]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[5m]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[5m]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[30m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[30m]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[30m]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[30m]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[1h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[1h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[1h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[1h]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[2h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[2h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[2h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[2h]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[6h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[6h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[6h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[6h]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[1d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[1d]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[1d]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[1d]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-10M-samples",le="10.761264004567169",code!~"5.."}[3d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-production",le="10.761264004567169",code!~"5.."}[3d]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-10M-samples"}[3d]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-production"}[3d]))
         )
       labels:
         latency: "10.761264004567169"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
-    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate3d
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,latency=21.6447457021712 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-production,latency=21.6447457021712 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate1h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (14.4*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate5m{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (14.4*0.900000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (6*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate30m{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (6*0.900000)
         )
       labels:
         latency: "21.6447457021712"
+        namespace: observatorium-production
         service: telemeter
         severity: critical
-    - alert: TelemeterAPIMetricsReadLatencyErrorBudgetBurning
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/rhobs-telemeter-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,latency=21.6447457021712 (current value: {{ $value }})'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterapimetricsreadlatencyerrorbudgetburning
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-production,latency=21.6447457021712 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate1d{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (3*0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate2h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (3*0.900000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds_bucket:rate3d{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (0.900000)
           and
-          latencytarget:up_custom_query_duration_seconds_bucket:rate6h{query="query-path-sli-100M-samples",latency="21.6447457021712"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-production",latency="21.6447457021712"} > (0.900000)
         )
       labels:
         latency: "21.6447457021712"
+        namespace: observatorium-production
         service: telemeter
         severity: medium
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[5m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[5m]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[5m]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[5m]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate5m
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[30m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[30m]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[30m]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[30m]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate30m
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[1h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[1h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[1h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[1h]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[2h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[2h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[2h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[2h]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate2h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[6h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[6h]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[6h]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[6h]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate6h
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[1d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[1d]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[1d]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[1d]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate1d
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket_bucket{query="query-path-sli-100M-samples",le="21.6447457021712",code!~"5.."}[3d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-production",le="21.6447457021712",code!~"5.."}[3d]))
           /
-          sum(rate(up_custom_query_duration_seconds_bucket_count{query="query-path-sli-100M-samples"}[3d]))
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-production"}[3d]))
         )
       labels:
         latency: "21.6447457021712"
-      record: latencytarget:up_custom_query_duration_seconds_bucket:rate3d
+        namespace: observatorium-production
+      record: latencytarget:up_custom_query_duration_seconds:rate3d

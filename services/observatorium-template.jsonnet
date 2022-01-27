@@ -43,7 +43,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'MEMCACHED_EXPORTER_IMAGE', value: 'docker.io/prom/memcached-exporter' },
     { name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT', value: '200Mi' },
     { name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST', value: '50Mi' },
-    { name: 'MEMCACHED_IMAGE_TAG', value: '1.5.20-alpine' },
+    { name: 'MEMCACHED_IMAGE_TAG', value: '1.6.13-alpine' },
     { name: 'MEMCACHED_IMAGE', value: 'docker.io/memcached' },
     { name: 'MEMCACHED_MEMORY_LIMIT_MB', value: '2048' },
     { name: 'MEMCACHED_MEMORY_LIMIT', value: '1844Mi' },

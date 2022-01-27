@@ -86,7 +86,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'JAEGER_PROXY_CPU_LIMITS', value: '200m' },
     { name: 'JAEGER_PROXY_MEMORY_LIMITS', value: '200Mi' },
     { name: 'MEMCACHED_IMAGE', value: 'docker.io/memcached' },
-    { name: 'MEMCACHED_IMAGE_TAG', value: '1.5.20-alpine' },
+    { name: 'MEMCACHED_IMAGE_TAG', value: '1.6.13-alpine' },
     { name: 'MEMCACHED_EXPORTER_IMAGE', value: 'docker.io/prom/memcached-exporter' },
     { name: 'MEMCACHED_EXPORTER_IMAGE_TAG', value: 'v0.6.0' },
     { name: 'MEMCACHED_CPU_REQUEST', value: '500m' },

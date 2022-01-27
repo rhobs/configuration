@@ -4,6 +4,13 @@
 
 - Observatorium
   - [Verify components are running](#verify-components-are-running)
+- Observatorium Service Level Objectives
+  - [TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning](#telemeterservermetricswriteavailabilityerrorbudgetburning)
+  - [TelemeterServerMetricsWriteLatencyErrorBudgetBurning](#telemeterservermetricswritelatencyerrorbudgetburning)
+  - [APIMetricsWriteAvailabilityErrorBudgetBurning](#apimetricswriteavailabilityerrorbudgetburning)
+  - [APIMetricsWriteLatencyErrorBudgetBurning](#apimetricswritelatencyerrorbudgetburning)
+  - [APIMetricsReadAvailabilityErrorBudgetBurning](#apimetricsreadavailabilityerrorbudgetburning)
+  - [APIMetricsReadLatencyErrorBudgetBurning](#apimetricsreadlatencyerrorbudgetburning)
 - Observatorium Proactive Monitoring
   - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
   - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
@@ -89,7 +96,193 @@ Check targets are UP in app-sre Prometheus:
 - `thanos-compactor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0>
 
 ---
+## TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
 
+### Impact
+
+Telemeter Server is currently failing to ingest metrics data. 
+
+### Summary
+
+Telemeter Server is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+This alert indicates there is a problem on the metrics write path, so we need to verify the health of each of the involved components.
+
+* Check on the health of Telemeter Server
+  * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
+  * Check the logs of Telemeter Server pods.
+    * Telemeter Server should log any 5XX requests.
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+
+## TelemeterServerMetricsWriteLatencyErrorBudgetBurning
+
+### Impact
+
+Telemeter Server is taking longer than expected to ingest metrics data.
+
+### Summary
+
+Telemeter Server is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of Telemeter Server
+  * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
+  * Check the logs of Telemeter Server pods.
+    * Telemeter Server should log any 5XX requests.
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+
+## APIMetricsWriteAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to ingest metrics data.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+
+## APIMetricsWriteLatencyErrorBudgetBurning
+
+### Impact
+
+API is taking longer than expected to ingest metrics data.
+
+### Summary
+
+API is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+
+## APIMetricsReadAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to respond to metrics read requests.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses that we are depleting our SLO error budget.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Query Frontend.
+  * Check the Thanos Query Frontend [dashboard](https://grafana.app-sre.devshift.net/d/303c4e660a475c4c8cf6aee97da3a24a/thanos-query-frontend)
+  * Check the logs of the Thanos Query Frontend pods.
+* Check on the health of Thanos Query.
+  * Check the Thanos Query [dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query)
+  * Check the logs of the Thanos Query pods.
+* Check on the health of Thanos Store.
+  * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
+  * Check the logs of the Thanos Store pods.
+
+## APIMetricsReadLatencyErrorBudgetBurning
+
+### Impact
+
+API is taking longer than expected to respond to metrics read requests.
+
+### Summary
+
+API is returning a high-enough level of slow responses to read requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces)) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Query Frontend.
+  * Check the Thanos Query Frontend [dashboard](https://grafana.app-sre.devshift.net/d/303c4e660a475c4c8cf6aee97da3a24a/thanos-query-frontend)
+  * Check the logs of the Thanos Query Frontend pods.
+* Check on the health of Thanos Query.
+  * Check the Thanos Query [dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query)
+  * Check the logs of the Thanos Query pods.
+* Check on the health of Thanos Store.
+  * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
+  * Check the logs of the Thanos Store pods.
+* Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+
+---
 ## ObservatoriumHttpTrafficErrorRateHigh
 
 ### Impact

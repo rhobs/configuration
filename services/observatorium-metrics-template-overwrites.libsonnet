@@ -239,6 +239,18 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
+    queryFrontendCache+:: {
+      statefulSet+: {
+        spec+: {
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
+          volumeClaimTemplates:: null,
+        },
+      },
+    },
 
     queryFrontend+:: {
       local queryFrontend = self,
@@ -282,7 +294,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                             '--labels.split-interval',
                             '--labels.max-retries-per-request',
                             '--labels.default-time-range',
-                            '--labels.response-cache-config',
                             '--cache-compression-type',
                           ], std.split(arg, '=')[0]), super.args)
                         + [
@@ -291,14 +302,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                           '--query-range.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
                           '--labels.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
                           '--labels.default-time-range=336h',
-                          '--labels.response-cache-config=' + std.manifestYamlDoc({
-                            config: {
-                              max_size: '0',
-                              max_size_items: 2048,
-                              validity: '6h',
-                            },
-                            type: 'in-memory',
-                          }),
                           '--cache-compression-type=snappy',
                         ],
                 } else c

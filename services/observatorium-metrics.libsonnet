@@ -506,11 +506,17 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
       ],
       serviceMonitor: true,
       queryRangeCache: {
-        type: 'in-memory',
-        config+: {
-          max_size: '0',
-          max_size_items: 2048,
-          validity: '6h',
+        type: 'memcached',
+        config: {
+          addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.queryFrontendCache.service.metadata.name, thanos.queryFrontendCache.service.metadata.namespace]],
+          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
+          max_idle_connections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
+          timeout: '2s',  // default: 500ms
+          max_async_buffer_size: 200000,  // default: 10_000
+          max_async_concurrency: 200,  // default: 20
+          max_get_multi_batch_size: 100,  // default: 0 - No batching.
+          max_get_multi_concurrency: 1000,  // default: 100
+          max_item_size: '5MiB',  // default: 1Mb
         },
       },
       logQueriesLongerThan: '${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}',
@@ -532,7 +538,55 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
     }),
 
     // For now, just use an in-memory cache.
-    queryFrontendCache:: {},
+    queryFrontendCache:: memcached({
+      local cfg = self,
+      serviceMonitor: true,
+      name: 'observatorium-thanos-query-range-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
+      namespace: thanosSharedConfig.namespace,
+      commonLabels:: {
+        'app.kubernetes.io/component': 'query-range-cache',
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/name': 'memcached',
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/version': cfg.version,
+      },
+
+      version: '${MEMCACHED_IMAGE_TAG}',
+      image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
+      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
+      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
+      connectionLimit: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT}',
+      memoryLimitMb: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB}',
+      maxItemSize: '5m',
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      resources: {
+        memcached: {
+          requests: {
+            cpu: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_REQUEST}',
+            memory: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_LIMIT}',
+            memory: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_LIMIT}',
+          },
+        },
+
+        exporter: {
+          requests: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
+            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
+          },
+        },
+      },
+    }) {
+      serviceAccount+: {
+        imagePullSecrets+: [{ name: 'quay.io' }],
+      },
+    },
 
     local hashrings = [
       {
@@ -643,6 +697,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
     } + {
       ['store-index-cache-' + name]: thanos.storeIndexCache[name]
       for name in std.objectFields(thanos.storeIndexCache)
+    } + {
+      ['query-range-cache-' + name]: thanos.queryFrontendCache[name]
+      for name in std.objectFields(thanos.queryFrontendCache)
     } + {
       ['store-bucket-cache-' + name]: thanos.storeBucketCache[name]
       for name in std.objectFields(thanos.storeBucketCache)

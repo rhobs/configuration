@@ -128,6 +128,7 @@ This alert indicates there is a problem on the metrics write path, so we need to
 * Check on the health of Thanos Receive.
   * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
   * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ## TelemeterServerMetricsWriteLatencyErrorBudgetBurning
 
@@ -160,6 +161,7 @@ Telemeter Server is returning a high-enough level of slow responses to write req
   * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
   * Check the logs of the Thanos Receive pods.
 * Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ## APIMetricsWriteAvailabilityErrorBudgetBurning
 
@@ -187,6 +189,7 @@ API is returning a high-enough level of 5XX responses to write requests that we 
 * Check on the health of Thanos Receive.
   * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
   * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ## APIMetricsWriteLatencyErrorBudgetBurning
 
@@ -214,6 +217,7 @@ API is returning a high-enough level of slow responses to write requests that we
 * Check on the health of Thanos Receive.
   * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
   * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ## APIMetricsReadAvailabilityErrorBudgetBurning
 
@@ -247,6 +251,7 @@ API is returning a high-enough level of 5XX responses that we are depleting our 
 * Check on the health of Thanos Store.
   * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
   * Check the logs of the Thanos Store pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ## APIMetricsReadLatencyErrorBudgetBurning
 
@@ -281,6 +286,7 @@ API is returning a high-enough level of slow responses to read requests that we 
   * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
   * Check the logs of the Thanos Store pods.
 * Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ---
 ## ObservatoriumHttpTrafficErrorRateHigh

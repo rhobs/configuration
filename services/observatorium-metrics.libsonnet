@@ -244,9 +244,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
           max_idle_connections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
           timeout: '2s',  // default: 500ms
-          max_async_buffer_size: 200000,  // default: 10_000
+          max_async_buffer_size: 400000,  // default: 10_000
           max_async_concurrency: 200,  // default: 20
-          max_get_multi_batch_size: 0,  // default: 0 - Batch every request into one.
+          max_get_multi_batch_size: 0,  // default: 0 - No batching.
           max_get_multi_concurrency: 0,  // default: 100
           max_item_size: '5MiB',  // default: 1Mb
         },

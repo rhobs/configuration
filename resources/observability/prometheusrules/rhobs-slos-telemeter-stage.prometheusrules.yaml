@@ -740,6 +740,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
         service: telemeter
         severity: high
     - alert: APIMetricsReadLatencyErrorBudgetBurning
@@ -762,6 +763,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
         service: telemeter
         severity: medium
     - expr: |
@@ -773,6 +775,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
@@ -783,6 +786,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
@@ -793,6 +797,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
@@ -803,6 +808,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
@@ -813,6 +819,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
@@ -823,6 +830,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
@@ -833,6 +841,7 @@ spec:
       labels:
         latency: "2.0113571874999994"
         namespace: observatorium-stage
+        query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
@@ -854,6 +863,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
         service: telemeter
         severity: high
     - alert: APIMetricsReadLatencyErrorBudgetBurning
@@ -876,6 +886,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
         service: telemeter
         severity: medium
     - expr: |
@@ -887,6 +898,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
@@ -897,6 +909,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
@@ -907,6 +920,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
@@ -917,6 +931,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
@@ -927,6 +942,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
@@ -937,6 +953,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
@@ -947,6 +964,7 @@ spec:
       labels:
         latency: "10.761264004567169"
         namespace: observatorium-stage
+        query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
@@ -968,6 +986,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
         service: telemeter
         severity: high
     - alert: APIMetricsReadLatencyErrorBudgetBurning
@@ -990,6 +1009,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
         service: telemeter
         severity: medium
     - expr: |
@@ -1001,6 +1021,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
@@ -1011,6 +1032,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
@@ -1021,6 +1043,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
@@ -1031,6 +1054,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
@@ -1041,6 +1065,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
@@ -1051,6 +1076,7 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
@@ -1061,4 +1087,5 @@ spec:
       labels:
         latency: "21.6447457021712"
         namespace: observatorium-stage
+        query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d

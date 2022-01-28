@@ -2061,7 +2061,7 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 200000
+              "max_async_buffer_size": 400000
               "max_async_concurrency": 200
               "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 0
@@ -2307,7 +2307,7 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 200000
+              "max_async_buffer_size": 400000
               "max_async_concurrency": 200
               "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 0
@@ -2553,7 +2553,7 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 200000
+              "max_async_buffer_size": 400000
               "max_async_concurrency": 200
               "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 0

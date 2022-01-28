@@ -126,7 +126,6 @@ local appSREOverwrites(environment) = {
     labels: std.prune(labels {
       group: null,
       code: null,
-      query: null,
     }),
   },
 

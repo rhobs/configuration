@@ -698,9 +698,6 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
       ['store-index-cache-' + name]: thanos.storeIndexCache[name]
       for name in std.objectFields(thanos.storeIndexCache)
     } + {
-      ['query-range-cache-' + name]: thanos.queryFrontendCache[name]
-      for name in std.objectFields(thanos.queryFrontendCache)
-    } + {
       ['store-bucket-cache-' + name]: thanos.storeBucketCache[name]
       for name in std.objectFields(thanos.storeBucketCache)
     } + {

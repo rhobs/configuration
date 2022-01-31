@@ -1593,6 +1593,7 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
+          - --rule-file=/etc/thanos/rules/observatorium-rule-syncer.yaml
           - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":
@@ -1696,6 +1697,20 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+        - args:
+          - -file=/etc/thanos/rules/observatorium-rule-syncer.yaml
+          - -interval=60
+          - -rules-backend-url=http://rules-objstore.${NAMESPACE}.svc:8080
+          - -thanos-rule-url=http://localhost:10902
+          image: quay.io/observatorium/thanos-rule-syncer:main-2022-01-11-1290656
+          name: thanos-rule-syncer
           resources:
             limits:
               cpu: 128m

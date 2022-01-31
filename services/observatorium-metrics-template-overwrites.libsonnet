@@ -3,6 +3,7 @@
 
 local jaegerAgent = import './sidecars/jaeger-agent.libsonnet';
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
+local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
 
 {
   local s3EnvVars = [
@@ -30,6 +31,12 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
   local jaegerAgentSidecar = jaegerAgent({
     image: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
     collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
+  }),
+
+  local ruleSyncerSidecar = thanosRuleSyncer({
+    image: 'quay.io/observatorium/thanos-rule-syncer:main-2022-01-11-1290656',
+    rulesBackendURL: 'http://rules-objstore.${NAMESPACE}.svc:8080',
+    file: '/etc/thanos/rules/observatorium-rule-syncer.yaml',
   }),
 
   thanos+:: {
@@ -94,7 +101,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     },
 
     rule+:: {
-      statefulSet+: jaegerAgentSidecar.statefulSet {
+      statefulSet+: jaegerAgentSidecar.statefulSet + ruleSyncerSidecar.statefulSet {
         spec+: {
           replicas: '${{THANOS_RULER_REPLICAS}}',
           template+: {

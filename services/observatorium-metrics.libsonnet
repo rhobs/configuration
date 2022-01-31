@@ -85,6 +85,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           key: observatoriumRulesKey,
         },
       ],
+      ruleFiles: [
+        '/etc/thanos/rules/observatorium-rule-syncer.yaml',
+      ],
       resources: {
         limits: {
           cpu: '${THANOS_RULER_CPU_LIMIT}',

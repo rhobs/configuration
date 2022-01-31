@@ -790,6 +790,22 @@ objects:
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
     name: rules-objstore
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: rules-objstore
+  spec:
+    endpoints:
+    - port: internal
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: rules-objstore
+        app.kubernetes.io/name: rules-objstore
 - apiVersion: v1
   data:
     queries.yaml: |-

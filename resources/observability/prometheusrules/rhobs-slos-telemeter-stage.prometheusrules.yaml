@@ -125,15 +125,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswritelatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:http_request_duration_seconds:rate1h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+          latencytarget:http_request_duration_seconds:rate1h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate5m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+          latencytarget:http_request_duration_seconds:rate5m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+          latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate30m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+          latencytarget:http_request_duration_seconds:rate30m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
         )
       labels:
         handler: upload|receive
@@ -148,15 +148,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricswritelatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:http_request_duration_seconds:rate1d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+          latencytarget:http_request_duration_seconds:rate1d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate2h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+          latencytarget:http_request_duration_seconds:rate2h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
         )
         or
         (
-          latencytarget:http_request_duration_seconds:rate3d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+          latencytarget:http_request_duration_seconds:rate3d{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+          latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
         )
       labels:
         handler: upload|receive
@@ -368,15 +368,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+          latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.900000)
+          latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.900000)
+          latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
         )
       labels:
         handler: receive
@@ -391,15 +391,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+          latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate2h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.900000)
+          latencytarget:http_request_duration_seconds:rate2h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
         )
         or
         (
-          latencytarget:http_request_duration_seconds:rate3d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+          latencytarget:http_request_duration_seconds:rate3d{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.900000)
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
         )
       labels:
         handler: receive
@@ -727,15 +727,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (14.4*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (6*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (6*0.100000)
         )
       labels:
         latency: "2.0113571874999994"
@@ -750,15 +750,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (3*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (3*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-stage",latency="2.0113571874999994"} > (0.100000)
         )
       labels:
         latency: "2.0113571874999994"
@@ -850,15 +850,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (14.4*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (6*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (6*0.100000)
         )
       labels:
         latency: "10.761264004567169"
@@ -873,15 +873,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (3*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (3*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-stage",latency="10.761264004567169"} > (0.100000)
         )
       labels:
         latency: "10.761264004567169"
@@ -973,15 +973,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (14.4*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (14.4*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (6*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (6*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (6*0.100000)
         )
       labels:
         latency: "21.6447457021712"
@@ -996,15 +996,15 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (3*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (3*0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (3*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (0.900000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-stage",latency="21.6447457021712"} > (0.100000)
         )
       labels:
         latency: "21.6447457021712"

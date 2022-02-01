@@ -1709,7 +1709,7 @@ objects:
           - -interval=60
           - -rules-backend-url=http://rules-objstore.${OBSERVATORIUM_NAMESPACE}.svc:8080
           - -thanos-rule-url=http://localhost:10902
-          image: quay.io/observatorium/thanos-rule-syncer:main-2022-01-11-1290656
+          image: ${THANOS_RULE_SYNCER_IMAGE}:${THANOS_RULE_SYNCER_IMAGE_TAG}
           name: thanos-rule-syncer
           resources:
             limits:
@@ -2897,6 +2897,10 @@ parameters:
   value: "5"
 - name: THANOS_RECEIVE_TSDB_PATH
   value: /var/thanos/receive
+- name: THANOS_RULE_SYNCER_IMAGE
+  value: quay.io/observatorium/thanos-rule-syncer
+- name: THANOS_RULE_SYNCER_IMAGE_TAG
+  value: main-2022-01-11-1290656
 - name: THANOS_RULER_CPU_LIMIT
   value: "1"
 - name: THANOS_RULER_CPU_REQUEST

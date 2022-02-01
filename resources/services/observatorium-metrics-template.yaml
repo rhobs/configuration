@@ -1707,7 +1707,7 @@ objects:
         - args:
           - -file=/etc/thanos/rules/observatorium-rule-syncer.yaml
           - -interval=60
-          - -rules-backend-url=http://rules-objstore.${NAMESPACE}.svc:8080
+          - -rules-backend-url=http://rules-objstore.${OBSERVATORIUM_NAMESPACE}.svc:8080
           - -thanos-rule-url=http://localhost:10902
           image: quay.io/observatorium/thanos-rule-syncer:main-2022-01-11-1290656
           name: thanos-rule-syncer
@@ -2753,6 +2753,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium-metrics
+- name: OBSERVATORIUM_NAMESPACE
+  value: observatorium
 - name: NAMESPACES
   value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]'
 - name: JAEGER_AGENT_IMAGE_TAG

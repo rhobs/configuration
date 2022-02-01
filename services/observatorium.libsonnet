@@ -2,6 +2,7 @@ local api = (import 'github.com/observatorium/api/jsonnet/lib/observatorium-api.
 local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/observatorium/configuration/components/gubernator.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
+local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/lib/rules-objstore.libsonnet');
 
 (import 'github.com/observatorium/observatorium/configuration/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
@@ -146,6 +147,76 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     },
   },
 
+  rulesObjstore:: rulesObjstore({
+    local cfg = self,
+    name: 'rules-objstore',
+    version: '${RULES_OBJSTORE_IMAGE_TAG}',
+    image: '%s:%s' % ['${RULES_OBJSTORE_IMAGE}', cfg.version],
+    replicas: 1,
+    objectStorageConfig: {
+      name: '${RULES_OBJSTORE_SECRET}',
+      key: 'objstore.yaml',
+    },
+    serviceMonitor: true,
+  }) + {
+    deployment+: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              if c.name == 'rules-objstore' then c {
+                env+: [
+                  {
+                    name: 'AWS_ACCESS_KEY_ID',
+                    valueFrom: {
+                      secretKeyRef: {
+                        key: 'aws_access_key_id',
+                        name: '${RULES_OBJSTORE_S3_SECRET}',
+                      },
+                    },
+                  },
+                  {
+                    name: 'AWS_SECRET_ACCESS_KEY',
+                    valueFrom: {
+                      secretKeyRef: {
+                        key: 'aws_secret_access_key',
+                        name: '${RULES_OBJSTORE_S3_SECRET}',
+                      },
+                    },
+                  },
+                ],
+              } else c
+              for c in super.containers
+            ],
+          },
+        },
+      },
+    },
+
+    serviceMonitor+: {
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: {
+        selector+: {
+          matchLabels+: {
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
+        namespaceSelector: {
+          // NOTICE:
+          // When using the ${{PARAMETER_NAME}} syntax only a single parameter reference is allowed and leading/trailing characters are not permitted.
+          // The resulting value will be unquoted unless, after substitution is performed, the result is not a valid json object.
+          // If the result is not a valid json value, the resulting value will be quoted and treated as a standard string.
+          matchNames: '${{NAMESPACES}}',
+        },
+      },
+    },
+  },
+
   api:: api({
     local cfg = self,
     // OBSERVATORIUM_API_IDENTIFIER referes to all the associated resource names (config map, secret, service) required for serving Observatorium API.
@@ -188,6 +259,11 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
         obs.thanos.receiversService.metadata.name,
         obs.config.namespaces.metrics,
         obs.thanos.receiversService.spec.ports[2].port,
+      ],
+      rulesEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.rulesObjstore.service.metadata.name,
+        obs.config.namespaces.default,
+        obs.rulesObjstore.service.spec.ports[1].port,
       ],
     },
     rateLimiter: {
@@ -435,5 +511,9 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
     ['observatorium-avalanche-' + name]: obs.avalanche[name]
     for name in std.objectFields(obs.avalanche)
     if obs.avalanche[name] != null
+  } + {
+    ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
+    for name in std.objectFields(obs.rulesObjstore)
+    if obs.rulesObjstore[name] != null
   },
 }

@@ -77,6 +77,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/observatorium/rules-objstore.git",
+          "subdir": "jsonnet/lib"
+        }
+      },
+      "version": "main",
+      "name": "rules-objstore"
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/observatorium/thanos-receive-controller.git",
           "subdir": "jsonnet/lib"
         }

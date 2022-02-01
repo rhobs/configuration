@@ -35,7 +35,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
 
   local ruleSyncerSidecar = thanosRuleSyncer({
     image: 'quay.io/observatorium/thanos-rule-syncer:main-2022-01-11-1290656',
-    rulesBackendURL: 'http://rules-objstore.${NAMESPACE}.svc:8080',
+    rulesBackendURL: 'http://rules-objstore.${OBSERVATORIUM_NAMESPACE}.svc:8080',
     file: '/etc/thanos/rules/observatorium-rule-syncer.yaml',
   }),
 

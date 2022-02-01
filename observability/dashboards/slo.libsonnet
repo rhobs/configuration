@@ -24,7 +24,7 @@ function(instanceName, environment, dashboardName) {
       },
       stage: {
         datasource: 'app-sre-stage-01-prometheus',
-        upNamespace: 'observatorium-stage',
+        upNamespace: 'observatorium-mst-stage',
         apiJob: 'observatorium-observatorium-mst-api',
       },
     },

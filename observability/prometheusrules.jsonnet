@@ -283,7 +283,7 @@ local renderAlerts(name, environment, mixin) = {
           // We can't use !~ operator in these selectors
           selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code=~"^(2..|3..|5..)$"'],
           latencyTarget: 5,
-          latencyBudget: 0.9,
+          latencyBudget: 0.1,  // The budget is 1 - SLO
         }),
       ],
     },
@@ -316,7 +316,7 @@ local renderAlerts(name, environment, mixin) = {
             // We can't use !~ operator in these selectors
             selectors: [apiJobSelector, 'handler="receive"', 'code=~"^(2..|3..|5..)$"'],
             latencyTarget: 5,
-            latencyBudget: 0.9,
+            latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
         ],
       },
@@ -350,7 +350,7 @@ local renderAlerts(name, environment, mixin) = {
             metric: 'up_custom_query_duration_seconds',
             selectors: ['query="query-path-sli-1M-samples"', upNamespaceSelector],
             latencyTarget: 2.0113571874999994,
-            latencyBudget: 0.9,
+            latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
           slo.latencyburn({
             alertName: 'APIMetricsReadLatencyErrorBudgetBurning',
@@ -358,7 +358,7 @@ local renderAlerts(name, environment, mixin) = {
             metric: 'up_custom_query_duration_seconds',
             selectors: ['query="query-path-sli-10M-samples"', upNamespaceSelector],
             latencyTarget: 10.761264004567169,
-            latencyBudget: 0.9,
+            latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
           slo.latencyburn({
             alertName: 'APIMetricsReadLatencyErrorBudgetBurning',
@@ -367,7 +367,7 @@ local renderAlerts(name, environment, mixin) = {
             // We can't use !~ operator in these selectors
             selectors: ['query="query-path-sli-100M-samples"', upNamespaceSelector],
             latencyTarget: 21.6447457021712,
-            latencyBudget: 0.9,
+            latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
         ],
       },

@@ -499,6 +499,137 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     },
   },
 
+  alertmanager:: {
+      local cfg = {
+        name: "alertmanager",
+        namespace: obs.config.namespaces.default,
+        image: "quay.io/prometheus/alertmanager:main",
+        persistentVolumeClaimName: "alertmanager-data",
+        port: "9093",
+        commonLabels: {
+            'app.kubernetes.io/component': 'alertmanager',
+            'app.kubernetes.io/name': 'alertmanager',
+            'app.kubernetes.io/part-of': 'observatorium',
+          },
+      },
+      service: {
+          apiVersion: 'v1',
+          kind: 'Service',
+          metadata: {
+            name: 'alertmanager',
+            namespace: cfg.namespace,
+            labels: { 'app.kubernetes.io/name': cfg.name },
+          },
+          spec: {
+            ports: [
+              { name: 'ui', targetPort: cfg.port, port: cfg.port },
+            ],
+            selector: cfg.commonLabels,
+          },
+        },
+
+        volumeClaim: {
+          apiVersion: 'v1',
+          kind: 'PersistentVolumeClaim',
+          metadata: {
+            name: cfg.persistentVolumeClaimName,
+            namespace: cfg.namespace,
+            labels: { 'app.kubernetes.io/name': cfg.name },
+          },
+          spec: {
+            accessModes: ['ReadWriteOnce'],
+            storageClassName: "standard",
+            resources: {
+              requests: {
+                storage: "50Gi"
+              },
+            },
+          },
+        },
+
+        statefulSet: {
+            apiVersion: 'apps/v1',
+            kind: 'StatefulSet',
+            metadata: {
+              name: cfg.name,
+              namespace: cfg.namespace,
+              labels: cfg.commonLabels,
+            },
+            spec: {
+              replicas: 1,
+              selector: { matchLabels: cfg.commonLabels },
+              strategy: {
+                rollingUpdate: {
+                  maxSurge: 0,
+                  maxUnavailable: 1,
+                },
+              },
+              template: {
+                metadata: {
+                  labels: cfg.commonLabels,
+                },
+                spec: {
+                  containers: [{
+            name: cfg.name,
+            image: cfg.image,
+            args: [
+              '--config.file="alertmanager.yml"',
+              '--storage.path="data/"',
+              '--web.listen-address=":' + cfg.port,
+            ],
+            ports: [
+              {
+                name: 'ui',
+                containerPort: cfg.port,
+              }
+            ],
+            volumeMounts: [
+              { name: 'alertmanager-data', mountPath: '/data', readOnly: false },
+            ],
+            livenessProbe: { failureThreshold: 4, periodSeconds: 30, httpGet: {
+              scheme: 'HTTP',
+              port: cfg.port,
+              path: '/',
+            } },
+            readinessProbe: { failureThreshold: 3, periodSeconds: 30, initialDelaySeconds: 10, httpGet: {
+              scheme: 'HTTP',
+              port: cfg.port,
+              path: '/',
+            } },
+            resources: {
+              requests: { cpu: '1', memory: '1Gi' },
+              limits: { cpu: '4', memory: '4Gi' },
+            },
+          }],
+                  volumes: [{
+                    name: cfg.persistentVolumeClaimName,
+                    persistentVolumeClaim: {
+                      claimName: cfg.persistentVolumeClaimName,
+                    },
+                  }],
+                },
+              },
+            },
+          },
+
+        serviceMonitor: {
+          apiVersion: 'monitoring.coreos.com/v1',
+          kind: 'ServiceMonitor',
+          metadata+: {
+            name: cfg.name,
+            namespace: cfg.namespace,
+            labels: cfg.commonLabels,
+          },
+          spec: {
+            selector: { matchLabels: cfg.commonLabels },
+            endpoints: [
+              { port: 'ui' },
+            ],
+            namespaceSelector: { matchNames: ['${NAMESPACE}'] },
+          },
+        },
+  },
+
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
@@ -515,5 +646,9 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null
+  } + {
+    ['observatorium-alertmanager-' + name]: obs.alertmanager[name]
+    for name in std.objectFields(obs.alertmanager)
+    if obs.alertmanager[name] != null
   },
 }

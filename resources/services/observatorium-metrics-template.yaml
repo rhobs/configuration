@@ -2079,7 +2079,7 @@ objects:
               "max_async_buffer_size": 10000000
               "max_async_concurrency": 1000
               "max_get_multi_batch_size": 10000
-              "max_get_multi_concurrency": 0
+              "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
               "timeout": "2s"
@@ -2325,7 +2325,7 @@ objects:
               "max_async_buffer_size": 10000000
               "max_async_concurrency": 1000
               "max_get_multi_batch_size": 10000
-              "max_get_multi_concurrency": 0
+              "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
               "timeout": "2s"
@@ -2571,7 +2571,7 @@ objects:
               "max_async_buffer_size": 10000000
               "max_async_concurrency": 1000
               "max_get_multi_batch_size": 10000
-              "max_get_multi_concurrency": 0
+              "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
               "timeout": "2s"

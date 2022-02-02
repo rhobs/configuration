@@ -511,7 +511,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     ['observatorium-avalanche-' + name]: obs.avalanche[name]
     for name in std.objectFields(obs.avalanche)
     if obs.avalanche[name] != null
-  } + {q
+  } + {
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null

@@ -235,6 +235,126 @@ objects:
             storage: ${THANOS_COMPACTOR_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/name: observatorium-alertmanager
+    name: observatorium-alertmanager
+  spec:
+    ports:
+    - name: http
+      port: 9093
+      targetPort: 9093
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-alertmanager
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-alertmanager
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/part-of: observatorium
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: alertmanager
+          app.kubernetes.io/name: alertmanager
+          app.kubernetes.io/part-of: observatorium
+      spec:
+        containers:
+        - args:
+          - --config.file=/etc/config/alertmanager.yaml
+          - --storage.path="data/"
+          - --web.listen-address=:9093
+          - --cluster.listen-address=
+          image: quay.io/prometheus/alertmanager:main
+          livenessProbe:
+            failureThreshold: 4
+            httpGet:
+              path: /
+              port: 9093
+              scheme: HTTP
+            periodSeconds: 30
+          name: observatorium-alertmanager
+          ports:
+          - containerPort: 9093
+            name: http
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9093
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            limits:
+              cpu: "4"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+          - mountPath: /data
+            name: alertmanager-data
+            readOnly: false
+          - mountPath: /etc/config
+            name: alertmanager-config
+            readOnly: true
+        volumes:
+        - name: alertmanager-data
+          persistentVolumeClaim:
+            claimName: alertmanager-data
+        - name: alertmanager-config
+          secret:
+            name: alertmanager-config
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app.kubernetes.io/name: observatorium-alertmanager
+    name: alertmanager-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: standard
+- apiVersion: v1
   data:
     file_sd.yaml: '- targets: ${THANOS_QUERIER_FILE_SD_TARGETS}'
   kind: ConfigMap
@@ -1594,6 +1714,7 @@ objects:
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
           - --rule-file=/etc/thanos/rules/observatorium-rule-syncer.yaml
+          - --alertmanagers.url=dnssrv+_http._tcp.observatorium-alertmanager.${NAMESPACE}.svc.cluster.local
           - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":

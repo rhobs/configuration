@@ -734,7 +734,7 @@ objects:
               "max_get_multi_batch_size": 100
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
-              "max_item_size": "5MiB"
+              "max_item_size": "64MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-
@@ -2209,7 +2209,7 @@ objects:
               "max_get_multi_batch_size": 20000
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
-              "max_item_size": "64MiB"
+              "max_item_size": "5MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-
@@ -2455,7 +2455,7 @@ objects:
               "max_get_multi_batch_size": 20000
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
-              "max_item_size": "64MiB"
+              "max_item_size": "5MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-
@@ -2701,7 +2701,7 @@ objects:
               "max_get_multi_batch_size": 20000
               "max_get_multi_concurrency": 1000
               "max_idle_connections": 1300
-              "max_item_size": "64MiB"
+              "max_item_size": "5MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-

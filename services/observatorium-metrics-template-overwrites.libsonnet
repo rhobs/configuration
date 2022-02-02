@@ -3,6 +3,7 @@
 
 local jaegerAgent = import './sidecars/jaeger-agent.libsonnet';
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
+local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
 
 {
   local s3EnvVars = [
@@ -30,6 +31,12 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
   local jaegerAgentSidecar = jaegerAgent({
     image: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
     collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
+  }),
+
+  local ruleSyncerSidecar = thanosRuleSyncer({
+    image: '${THANOS_RULE_SYNCER_IMAGE}:${THANOS_RULE_SYNCER_IMAGE_TAG}',
+    rulesBackendURL: 'http://rules-objstore.${OBSERVATORIUM_NAMESPACE}.svc:8080',
+    file: '/etc/thanos/rules/observatorium-rule-syncer.yaml',
   }),
 
   thanos+:: {
@@ -94,7 +101,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     },
 
     rule+:: {
-      statefulSet+: jaegerAgentSidecar.statefulSet {
+      statefulSet+: jaegerAgentSidecar.statefulSet + ruleSyncerSidecar.statefulSet {
         spec+: {
           replicas: '${{THANOS_RULER_REPLICAS}}',
           template+: {
@@ -239,6 +246,18 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
+    queryFrontendCache+:: {
+      statefulSet+: {
+        spec+: {
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
+          volumeClaimTemplates:: null,
+        },
+      },
+    },
 
     queryFrontend+:: {
       local queryFrontend = self,
@@ -282,7 +301,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                             '--labels.split-interval',
                             '--labels.max-retries-per-request',
                             '--labels.default-time-range',
-                            '--labels.response-cache-config',
                             '--cache-compression-type',
                           ], std.split(arg, '=')[0]), super.args)
                         + [
@@ -291,14 +309,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                           '--query-range.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
                           '--labels.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
                           '--labels.default-time-range=336h',
-                          '--labels.response-cache-config=' + std.manifestYamlDoc({
-                            config: {
-                              max_size: '0',
-                              max_size_items: 2048,
-                              validity: '6h',
-                            },
-                            type: 'in-memory',
-                          }),
                           '--cache-compression-type=snappy',
                         ],
                 } else c

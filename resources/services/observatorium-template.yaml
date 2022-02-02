@@ -118,9 +118,10 @@ objects:
         - args:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
+          - --log.level=warn
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:9090
           - --metrics.write.endpoint=http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291
-          - --log.level=warn
+          - --metrics.rules.endpoint=http://rules-objstore.${NAMESPACE}.svc.cluster.local:8080
           - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.write.endpoint=http://observatorium-loki-distributor-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
@@ -129,6 +130,7 @@ objects:
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
           - --internal.tracing.endpoint=localhost:6831
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -672,16 +674,155 @@ objects:
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
         securityContext: {}
         serviceAccountName: observatorium-api-cache-memcached
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+    name: rules-objstore
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: rules-objstore
+        app.kubernetes.io/name: rules-objstore
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: rules-storage
+          app.kubernetes.io/instance: rules-objstore
+          app.kubernetes.io/name: rules-objstore
+          app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - --debug.name=rules-objstore
+          - --web.listen=0.0.0.0:8080
+          - --web.internal.listen=0.0.0.0:8081
+          - --web.healthchecks.url=http://localhost:8080
+          - --log.level=info
+          - --log.format=logfmt
+          - --objstore.config-file=/etc/rules-objstore/objstore.yaml
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          image: ${RULES_OBJSTORE_IMAGE}:${RULES_OBJSTORE_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 30
+          name: rules-objstore
+          ports:
+          - containerPort: 8081
+            name: internal
+          - containerPort: 8080
+            name: public
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 5
+          resources: {}
+          volumeMounts:
+          - mountPath: /etc/rules-objstore/objstore.yaml
+            name: objstore
+            readOnly: true
+            subPath: objstore.yaml
+        serviceAccountName: rules-objstore
+        volumes:
+        - name: objstore
+          secret:
+            secretName: ${RULES_OBJSTORE_SECRET}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+    name: rules-objstore
+  spec:
+    ports:
+    - name: internal
+      port: 8081
+      targetPort: 8081
+    - name: public
+      port: 8080
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/name: rules-objstore
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+    name: rules-objstore
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: rules-objstore
+  spec:
+    endpoints:
+    - port: internal
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: rules-objstore
+        app.kubernetes.io/name: rules-objstore
 - apiVersion: v1
   data:
     queries.yaml: |-
       "queries":
       - "name": "query-path-sli-1M-samples"
         "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[1h])"
+      - "duration": "1h"
+        "name": "query-range-path-sli-1M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[1h])"
+        "step": "30s"
       - "name": "query-path-sli-10M-samples"
         "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[10h])"
+      - "duration": "10h"
+        "name": "query-range-path-sli-10M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[10h])"
+        "step": "30s"
       - "name": "query-path-sli-100M-samples"
         "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
+      - "duration": "100h"
+        "name": "query-range-path-sli-100M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
+        "step": "30s"
   kind: ConfigMap
   metadata:
     annotations:
@@ -838,7 +979,7 @@ parameters:
 - name: MEMCACHED_EXPORTER_MEMORY_REQUEST
   value: 50Mi
 - name: MEMCACHED_IMAGE_TAG
-  value: 1.5.20-alpine
+  value: 1.6.13-alpine
 - name: MEMCACHED_IMAGE
   value: docker.io/memcached
 - name: MEMCACHED_MEMORY_LIMIT_MB
@@ -893,6 +1034,14 @@ parameters:
   value: 100Mi
 - name: OSD_ORGANIZATION_ID
   value: ""
+- name: RULES_OBJSTORE_IMAGE
+  value: quay.io/observatorium/rules-objstore
+- name: RULES_OBJSTORE_IMAGE_TAG
+  value: main-2022-01-31-4a4394f
+- name: RULES_OBJSTORE_S3_SECRET
+  value: rules-objstore-stage-s3
+- name: RULES_OBJSTORE_SECRET
+  value: rules-objstore
 - name: SERVICE_ACCOUNT_NAME
   value: prometheus-telemeter
 - name: UP_CPU_REQUEST

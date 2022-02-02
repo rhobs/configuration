@@ -437,6 +437,123 @@ objects:
         - name: query-proxy
           secret:
             secretName: query-proxy
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-range-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-query-range-cache-memcached
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: query-range-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-range-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-query-range-cache-memcached
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-thanos-query-range-cache-memcached
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-range-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-range-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-thanos-query-range-cache-memcached
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-range-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-thanos-query-range-cache-memcached
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: query-range-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - -m ${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB}
+          - -I 5m
+          - -c ${THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT}
+          - -v
+          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+          resources:
+            limits:
+              cpu: ${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_LIMIT}
+              memory: ${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_LIMIT}
+            requests:
+              cpu: ${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_REQUEST}
+              memory: ${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+          resources:
+            limits:
+              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
+            requests:
+              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
+        securityContext: {}
+        serviceAccountName: observatorium-thanos-query-range-cache-memcached
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -490,10 +607,16 @@ objects:
           - --query-frontend.log-queries-longer-than=${THANOS_QUERY_FRONTEND_LOG_QUERIES_LONGER_THAN}
           - |-
             --query-range.response-cache-config="config":
-              "max_size": "0"
-              "max_size_items": 2048
-              "validity": "6h"
-            "type": "in-memory"
+              "addresses":
+              - "dnssrv+_client._tcp.observatorium-thanos-query-range-cache-memcached.${NAMESPACE}.svc"
+              "max_async_buffer_size": 200000
+              "max_async_concurrency": 200
+              "max_get_multi_batch_size": 100
+              "max_get_multi_concurrency": 1000
+              "max_idle_connections": 1300
+              "max_item_size": "5MiB"
+              "timeout": "2s"
+            "type": "memcached"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -505,12 +628,6 @@ objects:
           - --query-range.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --labels.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --labels.default-time-range=336h
-          - |-
-            --labels.response-cache-config="config":
-              "max_size": "0"
-              "max_size_items": 2048
-              "validity": "6h"
-            "type": "in-memory"
           - --cache-compression-type=snappy
           env:
           - name: HOST_IP_ADDRESS
@@ -1476,6 +1593,7 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
+          - --rule-file=/etc/thanos/rules/observatorium-rule-syncer.yaml
           - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":
@@ -1579,6 +1697,20 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+        - args:
+          - -file=/etc/thanos/rules/observatorium-rule-syncer.yaml
+          - -interval=60
+          - -rules-backend-url=http://rules-objstore.${OBSERVATORIUM_NAMESPACE}.svc:8080
+          - -thanos-rule-url=http://localhost:10902
+          image: ${THANOS_RULE_SYNCER_IMAGE}:${THANOS_RULE_SYNCER_IMAGE_TAG}
+          name: thanos-rule-syncer
           resources:
             limits:
               cpu: 128m
@@ -1944,10 +2076,10 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 200000
-              "max_async_concurrency": 200
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
+              "max_async_buffer_size": 10000000
+              "max_async_concurrency": 1000
+              "max_get_multi_batch_size": 10000
+              "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
               "timeout": "2s"
@@ -2190,10 +2322,10 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 200000
-              "max_async_concurrency": 200
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
+              "max_async_buffer_size": 10000000
+              "max_async_concurrency": 1000
+              "max_get_multi_batch_size": 10000
+              "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
               "timeout": "2s"
@@ -2436,10 +2568,10 @@ objects:
               "addresses":
               - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
               "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 200000
-              "max_async_concurrency": 200
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
+              "max_async_buffer_size": 10000000
+              "max_async_concurrency": 1000
+              "max_get_multi_batch_size": 10000
+              "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
               "max_item_size": "5MiB"
               "timeout": "2s"
@@ -2621,6 +2753,8 @@ objects:
 parameters:
 - name: NAMESPACE
   value: observatorium-metrics
+- name: OBSERVATORIUM_NAMESPACE
+  value: observatorium
 - name: NAMESPACES
   value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]'
 - name: JAEGER_AGENT_IMAGE_TAG
@@ -2646,7 +2780,7 @@ parameters:
 - name: MEMCACHED_EXPORTER_MEMORY_REQUEST
   value: 50Mi
 - name: MEMCACHED_IMAGE_TAG
-  value: 1.5.20-alpine
+  value: 1.6.13-alpine
 - name: MEMCACHED_IMAGE
   value: docker.io/memcached
 - name: MEMCACHED_MEMORY_LIMIT
@@ -2729,6 +2863,18 @@ parameters:
   value: "3"
 - name: THANOS_QUERY_FRONTEND_SPLIT_INTERVAL
   value: 24h
+- name: THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT
+  value: "3072"
+- name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_LIMIT
+  value: "3"
+- name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_REQUEST
+  value: 500m
+- name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_LIMIT
+  value: 3Gi
+- name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_REQUEST
+  value: 2558Mi
+- name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB
+  value: "2048"
 - name: THANOS_RECEIVE_CONTROLLER_IMAGE_TAG
   value: master-2019-10-18-d55fee2
 - name: THANOS_RECEIVE_CONTROLLER_IMAGE
@@ -2751,6 +2897,10 @@ parameters:
   value: "5"
 - name: THANOS_RECEIVE_TSDB_PATH
   value: /var/thanos/receive
+- name: THANOS_RULE_SYNCER_IMAGE
+  value: quay.io/observatorium/thanos-rule-syncer
+- name: THANOS_RULE_SYNCER_IMAGE_TAG
+  value: main-2022-01-11-1290656
 - name: THANOS_RULER_CPU_LIMIT
   value: "1"
 - name: THANOS_RULER_CPU_REQUEST

@@ -3,57 +3,65 @@
 <!-- TOC depthTo:2 -->
 
 - Observatorium
-    - [Verify components are running](#verify-components-are-running)
+  - [Verify components are running](#verify-components-are-running)
+- Observatorium Service Level Objectives
+  - [TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning](#telemeterservermetricswriteavailabilityerrorbudgetburning)
+  - [TelemeterServerMetricsWriteLatencyErrorBudgetBurning](#telemeterservermetricswritelatencyerrorbudgetburning)
+  - [APIMetricsWriteAvailabilityErrorBudgetBurning](#apimetricswriteavailabilityerrorbudgetburning)
+  - [APIMetricsWriteLatencyErrorBudgetBurning](#apimetricswritelatencyerrorbudgetburning)
+  - [APIMetricsReadAvailabilityErrorBudgetBurning](#apimetricsreadavailabilityerrorbudgetburning)
+  - [APIMetricsReadLatencyErrorBudgetBurning](#apimetricsreadlatencyerrorbudgetburning)
 - Observatorium Proactive Monitoring
-    - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
-    - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
+  - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
+  - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
 - Observatorium Tenants
-    - [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
-    - [ObservatoriumTenantsSkippedDuringConfiguration](#observatoriumtenantsskippedduringconfiguration)
+  - [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
+  - [ObservatoriumTenantsSkippedDuringConfiguration](#observatoriumtenantsskippedduringconfiguration)
 - Observatorium Logs
-    - [LokiRequestErrors](#lokirequesterrors)
-    - [LokiRequestPanics](#lokirequestpanics)
-    - [LokiRequestLatency](#lokirequestlatency)
-    - [LokiTenantRateLimitWarning](#lokitenantratelimitwarning)
-    - [ObservatoriumAPILogsErrorsSLOBudgetBurn](#observatoriumapilogserrorsslobudgetburn)
+  - [LokiRequestErrors](#lokirequesterrors)
+  - [LokiRequestPanics](#lokirequestpanics)
+  - [LokiRequestLatency](#lokirequestlatency)
+  - [LokiTenantRateLimitWarning](#lokitenantratelimitwarning)
+  - [ObservatoriumAPILogsErrorsSLOBudgetBurn](#observatoriumapilogserrorsslobudgetburn)
 - Observatorium Metrics
-    - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
-    - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
-    - [ThanosCompactHalted](#thanoscompacthalted)
-    - [ThanosCompactHighCompactionFailures](#thanoscompacthighcompactionfailures)
-    - [ThanosCompactBucketHighOperationFailures](#thanoscompactbuckethighoperationfailures)
-    - [ThanosCompactHasNotRun](#thanoscompacthasnotrun)
-    - [ThanosCompactIsDown](#thanoscompactisdown)
-    - [ThanosQuerierGrpcServerErrorRate](#thanosqueriergrpcservererrorrate)
-    - [ThanosQuerierGrpcClientErrorRate](#thanosqueriergrpcclienterrorrate)
-    - [ThanosQuerierHighDNSFailures](#thanosquerierhighdnsfailures)
-    - [ThanosQuerierInstantLatencyHigh](#thanosquerierinstantlatencyhigh)
-    - [ThanosQuerierRangeLatencyHigh](#thanosquerierrangelatencyhigh)
-    - [ThanosQuerierIsDown](#thanosqueryisdown)
-    - [ThanosReceiveHttpRequestLatencyHigh](#thanosreceivehttprequestlatencyhigh)
-    - [ThanosReceiveHighForwardRequestFailures](#thanosreceivehighforwardrequestfailures)
-    - [ThanosReceiveHighHashringFileRefreshFailures](#thanosreceivehighhashringfilerefreshfailures)
-    - [ThanosReceiveConfigReloadFailure](#thanosreceiveconfigreloadfailure)
-    - [ThanosReceiveIsDown](#thanosreceiveisdown)
-    - [ThanosStoreGrpcErrorRate](#thanosstoregrpcerrorrate)
-    - [ThanosStoreSeriesGateLatencyHigh](#thanosstoreseriesgatelatencyhigh)
-    - [ThanosStoreBucketHighOperationFailures](#thanosstorebuckethighoperationfailures)
-    - [ThanosStoreObjstoreOperationLatencyHigh](#thanosstoreobjstoreoperationlatencyhigh)
-    - [ThanosStoreIsDown](#thanosstoreisdown)
-    - [ThanosReceiveControllerReconcileErrorRate](#thanosreceivecontrollerreconcileerrorrate)
-    - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
-    - [ThanosReceiveControllerIsDown](#thanosreceivecontrollerisdown)
-    - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
-    - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
-    - [ThanosReceiveNoUpload](#thanosreceivenoupload)
-    - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
-    - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
-    - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
-    - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
-    - [ThanosRuleIsDown](#thanosruleisdown)
-    - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn](#observatoriumapimetricserrorsslobudgetburn)
-    - [GubernatorIsDown](#gubernatorisdown)
-    - [Escalations](#escalations)
+  - [ThanosCompactMultipleRunning](#thanoscompactmultiplerunning)
+  - [ThanosCompactIsNotRunning](#thanoscompactisnotrunning)
+  - [ThanosCompactHalted](#thanoscompacthalted)
+  - [ThanosCompactHighCompactionFailures](#thanoscompacthighcompactionfailures)
+  - [ThanosCompactBucketHighOperationFailures](#thanoscompactbuckethighoperationfailures)
+  - [ThanosCompactHasNotRun](#thanoscompacthasnotrun)
+  - [ThanosCompactIsDown](#thanoscompactisdown)
+  - [ThanosQuerierGrpcServerErrorRate](#thanosqueriergrpcservererrorrate)
+  - [ThanosQuerierGrpcClientErrorRate](#thanosqueriergrpcclienterrorrate)
+  - [ThanosQuerierHighDNSFailures](#thanosquerierhighdnsfailures)
+  - [ThanosQuerierInstantLatencyHigh](#thanosquerierinstantlatencyhigh)
+  - [ThanosQuerierRangeLatencyHigh](#thanosquerierrangelatencyhigh)
+  - [ThanosQuerierIsDown](#thanosqueryisdown)
+  - [ThanosReceiveHttpRequestLatencyHigh](#thanosreceivehttprequestlatencyhigh)
+  - [ThanosReceiveHighForwardRequestFailures](#thanosreceivehighforwardrequestfailures)
+  - [ThanosReceiveHighHashringFileRefreshFailures](#thanosreceivehighhashringfilerefreshfailures)
+  - [ThanosReceiveConfigReloadFailure](#thanosreceiveconfigreloadfailure)
+  - [ThanosReceiveIsDown](#thanosreceiveisdown)
+  - [ThanosStoreGrpcErrorRate](#thanosstoregrpcerrorrate)
+  - [ThanosStoreSeriesGateLatencyHigh](#thanosstoreseriesgatelatencyhigh)
+  - [ThanosStoreBucketHighOperationFailures](#thanosstorebuckethighoperationfailures)
+  - [ThanosStoreObjstoreOperationLatencyHigh](#thanosstoreobjstoreoperationlatencyhigh)
+  - [ThanosStoreIsDown](#thanosstoreisdown)
+  - [ThanosReceiveControllerReconcileErrorRate](#thanosreceivecontrollerreconcileerrorrate)
+  - [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
+  - [ThanosReceiveControllerIsDown](#thanosreceivecontrollerisdown)
+  - [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
+  - [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
+  - [ThanosReceiveNoUpload](#thanosreceivenoupload)
+  - [ThanosReceiveTrafficBelowThreshold](#thanosreceivetrafficbelowthreshold)
+  - [ThanosRuleHighRuleEvaluationFailures](#thanosrulehighruleevaluationfailures)
+  - [ThanosNoRuleEvaluations](#thanosnoruleevaluations)
+  - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
+  - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
+  - [ThanosRuleIsDown](#thanosruleisdown)
+  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn](#observatoriumapimetricserrorsslobudgetburn)
+  - [GubernatorIsDown](#gubernatorisdown)
+  - [Escalations](#escalations)
 
 <!-- /TOC -->
 
@@ -65,31 +73,222 @@ Check targets are UP in app-sre Prometheus:
 
 ### Logs
 
-- `loki-distributor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-distributor-production%2f0
+- `loki-distributor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-distributor-production%2f0>
 
-- `loki-ingester`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-ingester-production%2f0
+- `loki-ingester`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-ingester-production%2f0>
 
-- `loki-querier`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-querier-production%2f0
+- `loki-querier`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-querier-production%2f0>
 
-- `loki-query-frontend`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-query-frontend-production%2f0
+- `loki-query-frontend`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-query-frontend-production%2f0>
 
-- `loki-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-compactor-production%2f0
+- `loki-compactor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-loki-compactor-production%2f0>
 
 ### Metrics
 
-- `thanos-querier`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-querier-production%2f0
+- `thanos-querier`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-querier-production%2f0>
 
-- `thanos-receive`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-default-production%2f0
+- `thanos-receive`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-default-production%2f0>
 
-- `thanos-store`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-store-production%2f0
+- `thanos-store`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-store-production%2f0>
 
-- `thanos-receive-controller`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-controller-production%2f0
+- `thanos-receive-controller`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-receive-controller-production%2f0>
 
-- `thanos-compactor`: https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0
-
+- `thanos-compactor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0>
 
 ---
+## TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
 
+### Impact
+
+Telemeter Server is currently failing to ingest metrics data. 
+
+### Summary
+
+Telemeter Server is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+This alert indicates there is a problem on the metrics write path, so we need to verify the health of each of the involved components.
+
+* Check on the health of Telemeter Server
+  * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
+  * Check the logs of Telemeter Server pods.
+    * Telemeter Server should log any 5XX requests.
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## TelemeterServerMetricsWriteLatencyErrorBudgetBurning
+
+### Impact
+
+Telemeter Server is taking longer than expected to ingest metrics data.
+
+### Summary
+
+Telemeter Server is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of Telemeter Server
+  * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
+  * Check the logs of Telemeter Server pods.
+    * Telemeter Server should log any 5XX requests.
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## APIMetricsWriteAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to ingest metrics data.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## APIMetricsWriteLatencyErrorBudgetBurning
+
+### Impact
+
+API is taking longer than expected to ingest metrics data.
+
+### Summary
+
+API is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## APIMetricsReadAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to respond to metrics read requests.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses that we are depleting our SLO error budget.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Query Frontend.
+  * Check the Thanos Query Frontend [dashboard](https://grafana.app-sre.devshift.net/d/303c4e660a475c4c8cf6aee97da3a24a/thanos-query-frontend)
+  * Check the logs of the Thanos Query Frontend pods.
+* Check on the health of Thanos Query.
+  * Check the Thanos Query [dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query)
+  * Check the logs of the Thanos Query pods.
+* Check on the health of Thanos Store.
+  * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
+  * Check the logs of the Thanos Store pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## APIMetricsReadLatencyErrorBudgetBurning
+
+### Impact
+
+API is taking longer than expected to respond to metrics read requests.
+
+### Summary
+
+API is returning a high-enough level of slow responses to read requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Query Frontend.
+  * Check the Thanos Query Frontend [dashboard](https://grafana.app-sre.devshift.net/d/303c4e660a475c4c8cf6aee97da3a24a/thanos-query-frontend)
+  * Check the logs of the Thanos Query Frontend pods.
+* Check on the health of Thanos Query.
+  * Check the Thanos Query [dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query)
+  * Check the logs of the Thanos Query pods.
+* Check on the health of Thanos Store.
+  * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
+  * Check the logs of the Thanos Store pods.
+* Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
 ## ObservatoriumHttpTrafficErrorRateHigh
 
 ### Impact
@@ -110,13 +309,13 @@ Users of RHOBS are not able to access API endpoints for either reading, writing 
 - Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
 
 ### Steps
+
 - Check for any outage at Red Hat SSO.
 - Check the Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) for valid Yaml content, valid tenant name, auth information under 'oidc', 'opa' sections and rate limiting information under 'rateLimits' section.
 - Check the logs of Observatorium API deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-api)
 - Check the logs of Observatorium UP deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-up)
 - Check the logs of Observatorium API deployment's for MST tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-mst-production/deployments/observatorium-observatorium-mst-api)
 - Check the logs of Observatorium UP deployment's for MST tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-mst-production/deployments/observatorium-observatorium-up)
-
 
 ## ObservatoriumProActiveMetricsQueryErrorRateHigh
 
@@ -138,6 +337,7 @@ Metrics queries generated by Proactive monitoring are failing.
 - Access to Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) you will most likely need to contact [App-SRE](https://coreos.slack.com/archives/CCRND57FW))
 
 ### Steps
+
 - Check the Vault secret for `tenants.yaml` (link for [staging](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre-stage/telemeter-stage/observatorium-observatorium-api); for [production](https://vault.devshift.net/ui/vault/secrets/app-interface/show/app-sre/telemeter-production/observatorium-observatorium-api) for valid Yaml content, valid tenant name, auth information under 'oidc' and 'opa' sections and rate limiting information under 'rateLimits' section.
 - Check the logs of Observatorium UP deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-up)
 - Check the logs of Observatorium API deployment's for telemeter tenant [pods](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/observatorium-production/deployments/observatorium-observatorium-api)
@@ -341,10 +541,12 @@ Multiple replicas of Thanos Compact shouldn't be running. This leads data corrup
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -368,10 +570,12 @@ Thanos Compact has failed to run and now is halted.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -395,10 +599,12 @@ Thanos Compact is failing to execute of compactions.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -422,10 +628,12 @@ Thanos Compact fails to execute operations against bucket.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -449,10 +657,12 @@ Thanos Compact has not uploaded anything for 24 hours.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -479,10 +689,12 @@ Indicated query job/pod having issues.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -510,10 +722,12 @@ Certain amount of the requests that querier makes to other Store API components 
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -542,10 +756,12 @@ Queriers use DNS Service discovery to discover related components.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -573,10 +789,12 @@ Thanos Queriers are slower than expected to conduct instant vector queries.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -603,10 +821,12 @@ Thanos Queriers are slower than expected to conduct range vector queries.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -634,10 +854,12 @@ Thanos Receive ingests time series from Prometheus remote write or any other req
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -665,10 +887,12 @@ Some of Thanos Receives in the hash-ring might be failing.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -695,10 +919,12 @@ They might be using stale version of configuration.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -725,10 +951,12 @@ Thanos Receives failed to reload the latest configuration files.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -755,10 +983,12 @@ Thanos Stores are failing to handle incoming gRPC requests.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -785,10 +1015,12 @@ A store series gate is a limiter which limits the maximum amount of concurrent q
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -815,10 +1047,12 @@ Thanos Stores are failing to conduct operations against buckets.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -844,10 +1078,12 @@ Thanos Stores are slower than expected to conduct operations against buckets.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -873,10 +1109,12 @@ Thanos Receive Controller is failing to reconcile changes.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -903,10 +1141,12 @@ Thanos Receive Controller is failing to change configmaps.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -934,10 +1174,12 @@ The configuration of the instances of Thanos Receive are old compare to Receive 
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -965,10 +1207,12 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -981,7 +1225,9 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 ---
 
 ## ThanosRuleHighRuleEvaluationFailures
+
 ## ThanosNoRuleEvaluations
+
 ## ThanosRuleRuleEvaluationLatencyHigh
 
 ### Impact
@@ -998,10 +1244,12 @@ Both Thanos Rule replicas fail to evaluate or too slow to evaluate certain recor
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -1010,9 +1258,9 @@ Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in tur
 - Check the [Thanos Rule dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) to get a general overview.
 - Check the [Thanos Query dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Most likely you can focus on the Instant Query API RED metrics.
 - Drill down into the [Thanos Store dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m) and [Thanos Receiver dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=telemeter-production&var-job=All&var-pod=All&var-interval=5m). Depending on which one of them has the same elevated error rate, concentrate on that component.
-   - Probably, the Thanos Receiver is the problem, as the Thanos Ruler mostly looks at very recent data (like last 5min).
+  - Probably, the Thanos Receiver is the problem, as the Thanos Ruler mostly looks at very recent data (like last 5min).
 - Now that you, hopefully, know which component is causing the errors, dive into its logs, query it's raw metrics (check the dashboards as examples).
-   - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+  - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
@@ -1028,10 +1276,12 @@ Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in tur
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -1040,6 +1290,39 @@ Thanos Rulers are querying Thanos Queriers like any other user of Thanos, in tur
 NOTE: This must be done with a 4.x version of the oc client.
 
 ---
+
+## ThanosReceiveTrafficBelowThreshold
+
+### Impact
+
+If there is an unusual drop in traffic/ingestion rate, a *symptom* is that some data loss may happen or that data is not correctly forwarded to Thanos Receive. As a consequence, less data is forwarded to Object Storage.
+
+### Summary
+
+Thanos Receive is experiencing low average 1h ingestion rate relative to average 12h ingestion rate. This may indicate an unusual low amount of data being received.
+
+### Severity
+
+`medium`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check on the status of Thanos Receive:
+  1. Check [Thanos Receive dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-mst-production&var-job=All&var-pod=All&var-interval=5m) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)). Check for the `Rate` and `error` panels. The gRPC rows refer to the gRPC Store API.
+  2. Check Thanos Receive logs
+- Check on the status of Observatorium API:
+  1. Check [Observatorium API dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-metrics-production&var-handler=All) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)).
+  2. Check API logs for potential errors
+- Reach out to Observability Team and ping @observatorium-support at [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ## ThanosRuleTSDBNotIngestingSamples
 
@@ -1057,25 +1340,33 @@ Both Thanos Rule replicas internal TSDB failed to ingest samples.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
-- Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: https://issues.redhat.com/browse/OBS-210
+- Recently we are hitting some issues where both replicas are stuck. We are investigating, but both replica pod restart mitigates the problem for some time (days). See: <https://issues.redhat.com/browse/OBS-210>
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/statefulsets/observatbility-thanos-rule/pods).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
 
 ## MandatoryThanosComponentIsDown
+
 ## ThanosCompactIsDown
+
 ## ThanosQueryIsDown
+
 ## ThanosReceiveIsDown
+
 ## ThanosStoreIsDown
+
 ## ThanosReceiveControllerIsDown
+
 ## ThanosRuleIsDown
 
 ### Impact
@@ -1092,10 +1383,12 @@ Respective component that is supposed to be running is not running.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -1122,10 +1415,12 @@ For the set availability guarantees the observatorium api or the thanos receiver
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 
@@ -1152,8 +1447,8 @@ One or more PVCs are filled to more than 90%. The remaining free space might not
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
   - `observatorium-metrics-stage`
   - `observatorium-metrics-production`
   - `observatorium-mst-stage`
@@ -1165,6 +1460,52 @@ One or more PVCs are filled to more than 90%. The remaining free space might not
 - Assess how much free space on the PVC is there left and how long will it last
 - If extending the PVC is necessary, locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
 - Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
+
+---
+
+## ObservatoriumNoStoreBlocksLoaded
+
+### Impact
+
+Thanos Store blocks are not being loaded. This can indicate possible data loss.
+
+### Summary
+
+During the last 6 hours, not even a single Thanos Store block has been loaded.
+
+### Severity
+
+`medium`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the namespace of RHOBS causing this alert to fire.
+- Check logs, configuration for Thanos compact, store and receive components for possible cause(s).
+- Check Thanos compact Statefulset
+  - Check dashboard of Thanos compact
+  - Check the logs of Thanos compact pods for any errors.
+  - Check for valid configuration as per <https://thanos.io/tip/components/compact.md/>
+    - Object Store configuration (--objstore.config)
+    - Downsampling configuration (--retention.resolution-*)
+      - Currently Thanos compact works as expected if the retention.resolution-raw, retention.resolution-5m and retention.resolution-1h are set for the same duration.
+  - Also check guidelines for these downsampling Thanos compact command line args at: <https://thanos.io/tip/components/compact.md/>
+          - --retention.resolution-5m needs more than 40 hours
+          - --retention.resolution-1h needs to be more than 10 days
+- Check Thanos store statefulset
+  - Check the logs of Thanos store pods for any errors related to blocks loading from Object store.
+  - Check for valid Object store configuration (--objstore.config) as per <https://thanos.io/tip/components/store.md/>
+- Check Thanos receive Statefulset
+  - Check the logs of Thanos receive pods for any errors related to blocks uploaded to Object store.
+  - Check for valid Object store configuration (--objstore.config) as per <https://thanos.io/tip/components/receive.md/>
 
 ## ObservatoriumPersistentVolumeUsageCritical
 
@@ -1182,8 +1523,8 @@ One or more PVCs are filled to more than 95%. The remaining free space does not 
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
   - `observatorium-metrics-stage`
   - `observatorium-metrics-production`
   - `observatorium-mst-stage`
@@ -1195,6 +1536,7 @@ One or more PVCs are filled to more than 95%. The remaining free space does not 
 - Check the pods belonging to the component and establish what object do they belong to
 - Locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
 - Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
+
 ## GubernatorIsDown
 
 ### Impact
@@ -1211,10 +1553,12 @@ Observatorium rate-limiting service is not working.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/telemeter-production))
-- Edit access to the Telemeter namespaces (Observatorium uses Telemeter namespaces):
-  - `telemeter-stage`
-  - `telemeter-production`
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
 
 ### Steps
 

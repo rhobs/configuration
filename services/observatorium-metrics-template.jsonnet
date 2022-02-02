@@ -12,6 +12,7 @@ local obs = import 'observatorium.libsonnet';
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },
+    { name: 'OBSERVATORIUM_NAMESPACE', value: 'observatorium' },
     // Used for ServiceMonitors to discover workloads in given namespaces.
     // This variable is applied using ${{}} syntax, so make sure to provide valid YAML array.
     // See https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html#templates-writing-parameters_using-templates
@@ -27,7 +28,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'MEMCACHED_EXPORTER_IMAGE', value: 'docker.io/prom/memcached-exporter' },
     { name: 'MEMCACHED_EXPORTER_MEMORY_LIMIT', value: '200Mi' },
     { name: 'MEMCACHED_EXPORTER_MEMORY_REQUEST', value: '50Mi' },
-    { name: 'MEMCACHED_IMAGE_TAG', value: '1.5.20-alpine' },
+    { name: 'MEMCACHED_IMAGE_TAG', value: '1.6.13-alpine' },
     { name: 'MEMCACHED_IMAGE', value: 'docker.io/memcached' },
     { name: 'MEMCACHED_MEMORY_LIMIT', value: '1844Mi' },
     { name: 'MEMCACHED_MEMORY_REQUEST', value: '1329Mi' },
@@ -69,6 +70,12 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_QUERY_FRONTEND_MEMORY_REQUEST', value: '256Mi' },
     { name: 'THANOS_QUERY_FRONTEND_REPLICAS', value: '3' },
     { name: 'THANOS_QUERY_FRONTEND_SPLIT_INTERVAL', value: '24h' },
+    { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT', value: '3072' },
+    { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_LIMIT', value: '3' },
+    { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_REQUEST', value: '500m' },
+    { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_LIMIT', value: '3Gi' },
+    { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_REQUEST', value: '2558Mi' },
+    { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB', value: '2048' },
     { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE_TAG', value: 'master-2019-10-18-d55fee2' },
     { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE', value: 'quay.io/observatorium/thanos-receive-controller' },
     { name: 'THANOS_RECEIVE_CPU_LIMIT', value: '1' },
@@ -80,6 +87,8 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_RECEIVE_PVC_STORAGE', value: '100Gi' },
     { name: 'THANOS_RECEIVE_REPLICAS', value: '5' },
     { name: 'THANOS_RECEIVE_TSDB_PATH', value: '/var/thanos/receive' },
+    { name: 'THANOS_RULE_SYNCER_IMAGE', value: 'quay.io/observatorium/thanos-rule-syncer' },
+    { name: 'THANOS_RULE_SYNCER_IMAGE_TAG', value: 'main-2022-01-11-1290656' },
     { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },
     { name: 'THANOS_RULER_CPU_REQUEST', value: '500m' },
     { name: 'THANOS_RULER_LOG_LEVEL', value: 'info' },

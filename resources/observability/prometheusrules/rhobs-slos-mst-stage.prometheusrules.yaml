@@ -1,0 +1,859 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: rhobs-slos-mst-stage
+spec:
+  groups:
+  - name: rhobs-mst-api-metrics-write-availability.slo
+    rules:
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1d]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1h]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[2h]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[30m]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[3d]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[5m]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[6h]))
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate6h
+  - name: rhobs-mst-api-metrics-write-latency.slo
+    rules:
+    - alert: APIMetricsWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
+          and
+          latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
+        )
+        or
+        (
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
+          and
+          latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+        service: telemeter
+        severity: high
+    - alert: APIMetricsWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
+          and
+          latencytarget:http_request_duration_seconds:rate2h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
+        )
+        or
+        (
+          latencytarget:http_request_duration_seconds:rate3d{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
+          and
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[5m]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[5m]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate5m
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[30m]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[30m]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate30m
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[1h]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate1h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[2h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[2h]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate2h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[6h]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[6h]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate6h
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1d]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[1d]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate1d
+    - expr: |
+        1 - (
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[3d]))
+          /
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[3d]))
+        )
+      labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+      record: latencytarget:http_request_duration_seconds:rate3d
+  - name: rhobs-mst-api-metrics-read-availability.slo
+    rules:
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[1d]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[1h]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[2h]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[30m]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[3d]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[5m]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[6h]))
+      labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate6h
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - alert: APIMetricsReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query_range handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1d]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1h]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[2h]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[30m]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[3d]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[5m]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[6h]))
+      labels:
+        handler: query_range
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate6h
+  - name: rhobs-mst-api-metrics-read-latency.slo
+    rules:
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-stage,latency=2.0113571874999994 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (14.4*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (14.4*0.100000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (6*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (6*0.100000)
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-stage,latency=2.0113571874999994 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (3*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (3*0.100000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="2.0113571874999994"} > (0.100000)
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[5m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[5m]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate5m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[30m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[30m]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate30m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[1h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[1h]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate1h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[2h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[2h]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate2h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[6h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[6h]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate6h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[1d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[1d]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate1d
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",le="2.0113571874999994",code!~"5.."}[3d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage"}[3d]))
+        )
+      labels:
+        latency: "2.0113571874999994"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate3d
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-mst-stage,latency=10.761264004567169 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (14.4*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (14.4*0.100000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (6*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (6*0.100000)
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-mst-stage,latency=10.761264004567169 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (3*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (3*0.100000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",latency="10.761264004567169"} > (0.100000)
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[5m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[5m]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate5m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[30m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[30m]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate30m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[1h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[1h]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate1h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[2h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[2h]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate2h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[6h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[6h]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate6h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[1d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[1d]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate1d
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage",le="10.761264004567169",code!~"5.."}[3d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-stage"}[3d]))
+        )
+      labels:
+        latency: "10.761264004567169"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-10M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate3d
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-mst-stage,latency=21.6447457021712 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (14.4*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (14.4*0.100000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (6*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (6*0.100000)
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+        service: telemeter
+        severity: high
+    - alert: APIMetricsReadLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-mst-stage,latency=21.6447457021712 (current value: {{ $value }})'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+      expr: |
+        (
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (3*0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (3*0.100000)
+        )
+        or
+        (
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (0.100000)
+          and
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",latency="21.6447457021712"} > (0.100000)
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+        service: telemeter
+        severity: medium
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[5m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[5m]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate5m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[30m]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[30m]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate30m
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[1h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[1h]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate1h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[2h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[2h]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate2h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[6h]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[6h]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate6h
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[1d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[1d]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate1d
+    - expr: |
+        1 - (
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage",le="21.6447457021712",code!~"5.."}[3d]))
+          /
+          sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-stage"}[3d]))
+        )
+      labels:
+        latency: "21.6447457021712"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-100M-samples
+      record: latencytarget:up_custom_query_duration_seconds:rate3d

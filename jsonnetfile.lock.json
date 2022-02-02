@@ -89,8 +89,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "d7b6867af17766826540ef9f7b06c84210d0481d",
-      "sum": "Z86CgnoTybhpdQKWc2ptURmps1d9Qxhec0/IK6v71kY=",
+      "version": "2a045c463df71e5a1d4fda031891e1056776191d",
+      "sum": "G3fNL0cS5YVdvX5bA7OvmSwptuzf22bTSOgYQx6bERQ=",
       "name": "observatorium-api"
     },
     {
@@ -102,6 +102,17 @@
       },
       "version": "2de7b74fb0ca1b62d2eeab8bc1eecfb8786cb282",
       "sum": "dBeYY+hqNXb64b2x+HACcng7d6d6XyI1vVbTHKyN+GQ="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/observatorium/rules-objstore.git",
+          "subdir": "jsonnet/lib"
+        }
+      },
+      "version": "4a4394f8ac8824d8cf054b32b4b155ebdc0c54a3",
+      "sum": "D6bB+ETuZ53udACsGUX7o6XmOUGP8h/uj+wNmk0DNMU=",
+      "name": "rules-objstore"
     },
     {
       "source": {

@@ -698,18 +698,18 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
 
     alertmanager:: {
       local cfg = {
-        name: "observatorium-alertmanager",
+        name: 'observatorium-alertmanager',
         namespace: thanosSharedConfig.namespace,
-        image: "quay.io/prometheus/alertmanager:main",
-        persistentVolumeClaimName: "alertmanager-data",
-        routingConfigName: "alertmanager-config",
-        routingConfigFileName: "alertmanager.yaml",
+        image: 'quay.io/prometheus/alertmanager:main',
+        persistentVolumeClaimName: 'alertmanager-data',
+        routingConfigName: 'alertmanager-config',
+        routingConfigFileName: 'alertmanager.yaml',
         port: 9093,
         commonLabels: {
-            'app.kubernetes.io/component': 'alertmanager',
-            'app.kubernetes.io/name': 'alertmanager',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
+          'app.kubernetes.io/component': 'alertmanager',
+          'app.kubernetes.io/name': 'alertmanager',
+          'app.kubernetes.io/part-of': 'observatorium',
+        },
       },
       service: {
         apiVersion: 'v1',
@@ -737,10 +737,10 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         },
         spec: {
           accessModes: ['ReadWriteOnce'],
-          storageClassName: "standard",
+          storageClassName: 'standard',
           resources: {
             requests: {
-              storage: "50Gi"
+              storage: '50Gi',
             },
           },
         },
@@ -775,17 +775,17 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                   '--config.file=/etc/config/' + cfg.routingConfigFileName,
                   '--storage.path="data/"',
                   '--web.listen-address=:' + cfg.port,
-                  '--cluster.listen-address=', // Disabled cluster gossiping while we only have one replica
+                  '--cluster.listen-address=',  // Disabled cluster gossiping while we only have one replica
                 ],
                 ports: [
                   {
                     name: 'ui',
                     containerPort: cfg.port,
-                  }
+                  },
                 ],
                 volumeMounts: [
                   { name: 'alertmanager-data', mountPath: '/data', readOnly: false },
-                  { name: cfg.routingConfigName, mountPath: '/etc/config', readOnly: true},
+                  { name: cfg.routingConfigName, mountPath: '/etc/config', readOnly: true },
                 ],
                 livenessProbe: { failureThreshold: 4, periodSeconds: 30, httpGet: {
                   scheme: 'HTTP',
@@ -803,8 +803,8 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                 },
               }],
               volumes: [
-                { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName,},},
-                { name: cfg.routingConfigName, secret:{ name: cfg.routingConfigName,},}
+                { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName } },
+                { name: cfg.routingConfigName, secret: { name: cfg.routingConfigName } },
               ],
             },
           },

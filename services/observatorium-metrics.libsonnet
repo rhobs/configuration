@@ -704,7 +704,6 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         persistentVolumeClaimName: "alertmanager-data",
         routingConfigName: "alertmanager-config",
         routingConfigFileName: "alertmanager.yaml",
-        routingConfigRaw: (import '../configuration/observatorium/observatorium-alertmanager.libsonnet'),
         port: 9093,
         commonLabels: {
             'app.kubernetes.io/component': 'alertmanager',
@@ -746,21 +745,6 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
             },
           },
         },
-
-        configmap: {
-            apiVersion: 'v1',
-            kind: 'ConfigMap',
-            metadata: {
-              name: cfg.routingConfigName,
-              annotations: {
-                'qontract.recycle': 'true',
-              },
-              labels: cfg.commonLabels,
-            },
-            data: {
-              [cfg.routingConfigFileName]: std.manifestYamlDoc(cfg.routingConfigRaw),
-            },
-          },
 
         statefulSet: {
             apiVersion: 'apps/v1',
@@ -820,7 +804,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                   }],
                   volumes: [
                     { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName,},},
-                    { name: cfg.routingConfigName, configMap:{ name: cfg.routingConfigName,},}
+                    { name: cfg.routingConfigName, secret:{ name: cfg.routingConfigName,},}
                   ],
                 },
               },

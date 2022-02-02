@@ -235,53 +235,6 @@ objects:
             storage: ${THANOS_COMPACTOR_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
-  data:
-    alertmanager.yaml: |-
-      "global":
-        "resolve_timeout": "5m"
-      "inhibit_rules":
-      - "equal":
-        - "namespace"
-        - "alertname"
-        "source_matchers":
-        - "severity = critical"
-        "target_matchers":
-        - "severity =~ warning|info"
-      - "equal":
-        - "namespace"
-        - "alertname"
-        "source_matchers":
-        - "severity = warning"
-        "target_matchers":
-        - "severity = info"
-      "receivers":
-      - "name": "Default"
-      - "name": "Watchdog"
-      - "name": "Critical"
-      "route":
-        "group_by":
-        - "namespace"
-        "group_interval": "5m"
-        "group_wait": "30s"
-        "receiver": "Default"
-        "repeat_interval": "12h"
-        "routes":
-        - "matchers":
-          - "alertname = Watchdog"
-          "receiver": "Watchdog"
-        - "matchers":
-          - "severity = critical"
-          "receiver": "Critical"
-  kind: ConfigMap
-  metadata:
-    annotations:
-      qontract.recycle: "true"
-    labels:
-      app.kubernetes.io/component: alertmanager
-      app.kubernetes.io/name: alertmanager
-      app.kubernetes.io/part-of: observatorium
-    name: alertmanager-config
-- apiVersion: v1
   kind: Service
   metadata:
     labels:
@@ -385,9 +338,9 @@ objects:
         - name: alertmanager-data
           persistentVolumeClaim:
             claimName: alertmanager-data
-        - configMap:
+        - name: alertmanager-config
+          secret:
             name: alertmanager-config
-          name: alertmanager-config
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:

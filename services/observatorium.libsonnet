@@ -515,5 +515,5 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null
-  }
+  },
 }

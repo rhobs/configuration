@@ -76,7 +76,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
-      alertmanagersURLs: ["%s.%s.svc.cluster.local" % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
+      alertmanagersURLs: ['%s.%s.svc.cluster.local' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
       queriers: [
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
@@ -712,121 +712,121 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           },
       },
       service: {
-          apiVersion: 'v1',
-          kind: 'Service',
-          metadata: {
-            name: cfg.name,
-            namespace: cfg.namespace,
-            labels: { 'app.kubernetes.io/name': cfg.name },
-          },
-          spec: {
-            ports: [
-              { name: 'ui', targetPort: cfg.port, port: cfg.port },
-            ],
-            selector: cfg.commonLabels,
-          },
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: {
+          name: cfg.name,
+          namespace: cfg.namespace,
+          labels: { 'app.kubernetes.io/name': cfg.name },
         },
+        spec: {
+          ports: [
+            { name: 'ui', targetPort: cfg.port, port: cfg.port },
+          ],
+          selector: cfg.commonLabels,
+        },
+      },
 
-        volumeClaim: {
-          apiVersion: 'v1',
-          kind: 'PersistentVolumeClaim',
-          metadata: {
-            name: cfg.persistentVolumeClaimName,
-            namespace: cfg.namespace,
-            labels: { 'app.kubernetes.io/name': cfg.name },
-          },
-          spec: {
-            accessModes: ['ReadWriteOnce'],
-            storageClassName: "standard",
-            resources: {
-              requests: {
-                storage: "50Gi"
-              },
+      volumeClaim: {
+        apiVersion: 'v1',
+        kind: 'PersistentVolumeClaim',
+        metadata: {
+          name: cfg.persistentVolumeClaimName,
+          namespace: cfg.namespace,
+          labels: { 'app.kubernetes.io/name': cfg.name },
+        },
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          storageClassName: "standard",
+          resources: {
+            requests: {
+              storage: "50Gi"
             },
           },
         },
+      },
 
-        statefulSet: {
-            apiVersion: 'apps/v1',
-            kind: 'StatefulSet',
+      statefulSet: {
+        apiVersion: 'apps/v1',
+        kind: 'StatefulSet',
+        metadata: {
+          name: cfg.name,
+          namespace: cfg.namespace,
+          labels: cfg.commonLabels,
+        },
+        spec: {
+          replicas: 1,
+          selector: { matchLabels: cfg.commonLabels },
+          strategy: {
+            rollingUpdate: {
+              maxSurge: 0,
+              maxUnavailable: 1,
+            },
+          },
+          template: {
             metadata: {
-              name: cfg.name,
-              namespace: cfg.namespace,
               labels: cfg.commonLabels,
             },
             spec: {
-              replicas: 1,
-              selector: { matchLabels: cfg.commonLabels },
-              strategy: {
-                rollingUpdate: {
-                  maxSurge: 0,
-                  maxUnavailable: 1,
+              containers: [{
+                name: cfg.name,
+                image: cfg.image,
+                args: [
+                  '--config.file=/etc/config/' + cfg.routingConfigFileName,
+                  '--storage.path="data/"',
+                  '--web.listen-address=:' + cfg.port,
+                  '--cluster.listen-address=', // Disabled cluster gossiping while we only have one replica
+                ],
+                ports: [
+                  {
+                    name: 'ui',
+                    containerPort: cfg.port,
+                  }
+                ],
+                volumeMounts: [
+                  { name: 'alertmanager-data', mountPath: '/data', readOnly: false },
+                  { name: cfg.routingConfigName, mountPath: '/etc/config', readOnly: true},
+                ],
+                livenessProbe: { failureThreshold: 4, periodSeconds: 30, httpGet: {
+                  scheme: 'HTTP',
+                  port: cfg.port,
+                  path: '/',
+                } },
+                readinessProbe: { failureThreshold: 3, periodSeconds: 30, initialDelaySeconds: 10, httpGet: {
+                  scheme: 'HTTP',
+                  port: cfg.port,
+                  path: '/',
+                } },
+                resources: {
+                  requests: { cpu: '1', memory: '1Gi' },
+                  limits: { cpu: '4', memory: '4Gi' },
                 },
-              },
-              template: {
-                metadata: {
-                  labels: cfg.commonLabels,
-                },
-                spec: {
-                  containers: [{
-                    name: cfg.name,
-                    image: cfg.image,
-                    args: [
-                      '--config.file=/etc/config/' + cfg.routingConfigFileName,
-                      '--storage.path="data/"',
-                      '--web.listen-address=:' + cfg.port,
-                      '--cluster.listen-address=', // Disabled cluster gossiping while we only have one replica
-                    ],
-                    ports: [
-                      {
-                        name: 'ui',
-                        containerPort: cfg.port,
-                      }
-                    ],
-                    volumeMounts: [
-                      { name: 'alertmanager-data', mountPath: '/data', readOnly: false },
-                      { name: cfg.routingConfigName, mountPath: '/etc/config', readOnly: true},
-                    ],
-                    livenessProbe: { failureThreshold: 4, periodSeconds: 30, httpGet: {
-                      scheme: 'HTTP',
-                      port: cfg.port,
-                      path: '/',
-                    } },
-                    readinessProbe: { failureThreshold: 3, periodSeconds: 30, initialDelaySeconds: 10, httpGet: {
-                      scheme: 'HTTP',
-                      port: cfg.port,
-                      path: '/',
-                    } },
-                    resources: {
-                      requests: { cpu: '1', memory: '1Gi' },
-                      limits: { cpu: '4', memory: '4Gi' },
-                    },
-                  }],
-                  volumes: [
-                    { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName,},},
-                    { name: cfg.routingConfigName, secret:{ name: cfg.routingConfigName,},}
-                  ],
-                },
-              },
+              }],
+              volumes: [
+                { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName,},},
+                { name: cfg.routingConfigName, secret:{ name: cfg.routingConfigName,},}
+              ],
             },
           },
-
-        serviceMonitor: {
-          apiVersion: 'monitoring.coreos.com/v1',
-          kind: 'ServiceMonitor',
-          metadata+: {
-            name: cfg.name,
-            namespace: cfg.namespace,
-            labels: cfg.commonLabels,
-          },
-          spec: {
-            selector: { matchLabels: cfg.commonLabels },
-            endpoints: [
-              { port: 'ui' },
-            ],
-            namespaceSelector: { matchNames: ['${NAMESPACE}'] },
-          },
         },
+      },
+
+      serviceMonitor: {
+        apiVersion: 'monitoring.coreos.com/v1',
+        kind: 'ServiceMonitor',
+        metadata+: {
+          name: cfg.name,
+          namespace: cfg.namespace,
+          labels: cfg.commonLabels,
+        },
+        spec: {
+          selector: { matchLabels: cfg.commonLabels },
+          endpoints: [
+            { port: 'ui' },
+          ],
+          namespaceSelector: { matchNames: ['${NAMESPACE}'] },
+        },
+      },
     },
 
     manifests+: {

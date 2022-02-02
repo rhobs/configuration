@@ -2209,7 +2209,7 @@ objects:
               "max_get_multi_batch_size": 10000
               "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
-              "max_item_size": "5MiB"
+              "max_item_size": "64MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-
@@ -2455,7 +2455,7 @@ objects:
               "max_get_multi_batch_size": 10000
               "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
-              "max_item_size": "5MiB"
+              "max_item_size": "64MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-
@@ -2701,7 +2701,7 @@ objects:
               "max_get_multi_batch_size": 10000
               "max_get_multi_concurrency": 100
               "max_idle_connections": 1300
-              "max_item_size": "5MiB"
+              "max_item_size": "64MiB"
               "timeout": "2s"
             "type": "memcached"
           - |-
@@ -2992,17 +2992,17 @@ parameters:
 - name: THANOS_QUERY_FRONTEND_SPLIT_INTERVAL
   value: 24h
 - name: THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT
-  value: "3072"
+  value: "1024"
 - name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_LIMIT
-  value: "3"
+  value: "1"
 - name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_CPU_REQUEST
-  value: 500m
+  value: 250m
 - name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_LIMIT
-  value: 3Gi
+  value: 2048Mi
 - name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_REQUEST
-  value: 2558Mi
+  value: 1024Mi
 - name: THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB
-  value: "2048"
+  value: "1024"
 - name: THANOS_RECEIVE_CONTROLLER_IMAGE_TAG
   value: master-2019-10-18-d55fee2
 - name: THANOS_RECEIVE_CONTROLLER_IMAGE

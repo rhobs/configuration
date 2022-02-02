@@ -282,30 +282,25 @@ objects:
       app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
     name: ${OBSERVATORIUM_API_IDENTIFIER}
   stringData:
+    client-id: test
+    client-secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+    issuer-url: http://dex.dex.svc.cluster.local:5556/dex
     tenants.yaml: |-
       "tenants":
       - "id": "770c1124-6ae8-4324-a9d4-9ce08590094b"
         "name": "rhobs"
         "oidc":
-          "clientID": "id"
-          "clientSecret": "secret"
-          "groupClaim": "groups"
-          "issuerURL": "https://rhobs.tenants.observatorium.io"
-          "usernameClaim": "preferred_username"
+          "clientID": "test"
+          "clientSecret": "ZXhhbXBsZS1hcHAtc2VjcmV0"
+          "issuerURL": "http://dex.dex.svc.cluster.local:5556/dex"
+          "usernameClaim": "email"
       - "id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
         "name": "telemeter"
         "oidc":
-          "clientID": "id"
-          "clientSecret": "secret"
-          "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
-          "usernameClaim": "preferred_username"
-      - "id": "AC879303-C60F-4D0D-A6D5-A485CFD638B8"
-        "name": "dptp"
-        "oidc":
-          "clientID": "id"
-          "clientSecret": "secret"
-          "issuerURL": "https://sso.redhat.com/auth/realms/redhat-external"
-          "usernameClaim": "preferred_username"
+          "clientID": "test"
+          "clientSecret": "ZXhhbXBsZS1hcHAtc2VjcmV0"
+          "issuerURL": "http://dex.dex.svc.cluster.local:5556/dex"
+          "usernameClaim": "email"
 - apiVersion: v1
   kind: Service
   metadata:
@@ -958,7 +953,7 @@ parameters:
 - name: GUBERNATOR_REPLICAS
   value: "2"
 - name: JAEGER_AGENT_IMAGE_TAG
-  value: 1.22.0
+  value: 1.29.0
 - name: JAEGER_AGENT_IMAGE
   value: jaegertracing/jaeger-agent
 - name: JAEGER_COLLECTOR_NAMESPACE
@@ -1012,7 +1007,7 @@ parameters:
 - name: OBSERVATORIUM_API_IDENTIFIER
   value: observatorium-observatorium-api
 - name: OBSERVATORIUM_API_IMAGE_TAG
-  value: master-2021-03-26-v0.1.1-200-gea0242a
+  value: main-2022-01-05-v0.1.2-108-gf8b0fbf
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/api
 - name: OBSERVATORIUM_API_MEMORY_LIMIT
@@ -1028,7 +1023,7 @@ parameters:
 - name: OPA_AMS_CPU_REQUEST
   value: 100m
 - name: OPA_AMS_IMAGE_TAG
-  value: master-2021-02-17-ed50046
+  value: master-2021-07-14-d517f70
 - name: OPA_AMS_IMAGE
   value: quay.io/observatorium/opa-ams
 - name: OPA_AMS_MEMCACHED_EXPIRE

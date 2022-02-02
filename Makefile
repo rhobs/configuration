@@ -83,7 +83,7 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 
 .PHONY: manifests
 manifests: format $(VENDOR_DIR)
-manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml
+manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml
 	$(MAKE) clean
@@ -96,6 +96,14 @@ resources/services/parca-template.yaml: $(wildcard services/parca-*)
 resources/services/jaeger-template.yaml: $(wildcard services/jaeger-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running jaeger-template"
 	$(JSONNET) -J vendor services/jaeger-template.jsonnet | $(GOJSONTOYAML) > $@
+
+tests/minio-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running minio-template"
+	$(JSONNET) -J vendor services/minio-template.jsonnet | $(GOJSONTOYAML) > $@
+
+tests/dex-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running dex-template"
+	$(JSONNET) -J vendor services/dex-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/telemeter-template.yaml: $(wildcard services/telemeter-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running telemeter templates"

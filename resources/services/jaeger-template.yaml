@@ -243,7 +243,7 @@ objects:
           severity: warning
 - apiVersion: v1
   data:
-    session_secret: ""
+    session_secret: c2VjcmV0
   kind: Secret
   metadata:
     labels:

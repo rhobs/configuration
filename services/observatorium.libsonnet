@@ -395,6 +395,14 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
         },
       },
     } + opaAms.serviceMonitor,
+
+    secret+: {
+      stringData+: {
+        'client-id': 'test',
+        'client-secret': 'ZXhhbXBsZS1hcHAtc2VjcmV0',
+        'issuer-url': 'http://dex.dex.svc.cluster.local:5556/dex',
+      },
+    },
   },
 
   up:: up({

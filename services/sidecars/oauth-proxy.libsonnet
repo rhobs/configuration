@@ -37,7 +37,7 @@ function(params) {
     },
     type: 'Opaque',
     data: {
-      session_secret: '',
+      session_secret: std.base64('secret'),
     },
   },
 

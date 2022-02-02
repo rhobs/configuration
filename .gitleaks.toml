@@ -1,0 +1,7 @@
+title = "gitleaks config"
+[allowlist]
+paths=[
+    '''dex-template.jsonnet''',
+    '''observatorium-template.yaml''',
+    '''dex-template.yaml''',
+]

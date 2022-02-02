@@ -251,9 +251,9 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           timeout: '2s',  // default: 500ms
           max_async_buffer_size: 10000000,  // default: 10_000
           max_async_concurrency: 1000,  // default: 20
-          max_get_multi_batch_size: 10000,  // default: 0 - No batching.
-          max_get_multi_concurrency: 100,  // default: 100
-          max_item_size: '64MiB',  // default: 1Mb
+          max_get_multi_batch_size: 20000,  // default: 0 - No batching.
+          max_get_multi_concurrency: 1000,  // default: 100
+          max_item_size: '5MiB',  // default: 1Mb
         },
       },
       bucketCache: {

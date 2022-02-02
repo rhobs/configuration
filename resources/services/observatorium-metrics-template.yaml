@@ -242,7 +242,7 @@ objects:
     name: observatorium-alertmanager
   spec:
     ports:
-    - name: ui
+    - name: http
       port: 9093
       targetPort: 9093
     selector:
@@ -260,7 +260,7 @@ objects:
     name: observatorium-alertmanager
   spec:
     endpoints:
-    - port: ui
+    - port: http
     namespaceSelector:
       matchNames: ${{NAMESPACES}}
     selector:
@@ -311,7 +311,7 @@ objects:
           name: observatorium-alertmanager
           ports:
           - containerPort: 9093
-            name: ui
+            name: http
           readinessProbe:
             failureThreshold: 3
             httpGet:
@@ -352,7 +352,7 @@ objects:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 50Gi
+        storage: 10Gi
     storageClassName: standard
 - apiVersion: v1
   data:
@@ -1714,7 +1714,7 @@ objects:
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
           - --rule-file=/etc/thanos/rules/observatorium-rule-syncer.yaml
-          - --alertmanagers.url=observatorium-alertmanager.${NAMESPACE}.svc.cluster.local
+          - --alertmanagers.url=dnssrv+_http._tcp.observatorium-alertmanager.${NAMESPACE}.svc.cluster.local
           - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":

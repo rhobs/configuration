@@ -76,7 +76,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
-      alertmanagersURLs: ['%s.%s.svc.cluster.local' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
+      alertmanagersURLs: ['dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
       queriers: [
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
@@ -721,7 +721,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         },
         spec: {
           ports: [
-            { name: 'ui', targetPort: cfg.port, port: cfg.port },
+            { name: 'http', targetPort: cfg.port, port: cfg.port },
           ],
           selector: cfg.commonLabels,
         },
@@ -740,7 +740,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
           storageClassName: 'standard',
           resources: {
             requests: {
-              storage: '50Gi',
+              storage: '10Gi',
             },
           },
         },
@@ -779,7 +779,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                 ],
                 ports: [
                   {
-                    name: 'ui',
+                    name: 'http',
                     containerPort: cfg.port,
                   },
                 ],
@@ -822,7 +822,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         spec: {
           selector: { matchLabels: cfg.commonLabels },
           endpoints: [
-            { port: 'ui' },
+            { port: 'http' },
           ],
           namespaceSelector: { matchNames: ['${NAMESPACE}'] },
         },

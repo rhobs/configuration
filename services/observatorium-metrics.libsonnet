@@ -88,7 +88,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         },
       ],
       ruleFiles: [
-        '/etc/thanos/rules/observatorium-rule-syncer.yaml',
+        '/etc/thanos/rules/rule-syncer/observatorium.yaml',
       ],
       resources: {
         limits: {

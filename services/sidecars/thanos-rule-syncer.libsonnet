@@ -2,7 +2,8 @@ local defaults = {
   image: error 'must provide image',
   rulesBackendURL: error 'must provide rules backend url',
   thanosRuleURL: 'http://localhost:10902',
-  file: error 'must provide rules file',
+  volumeName: error 'must provide volume name',
+  fileName: error 'must provide filename',
   interval: 60,
   resources: {
     requests: { cpu: '32m', memory: '64Mi' },
@@ -16,6 +17,8 @@ function(params) {
 
   assert std.isNumber(trs.config.interval) && trs.config.interval > 0 : 'interval has to be number > 0',
 
+  local mountPath = '/etc/thanos-rule-syncer',
+
   local spec = {
     template+: {
       spec+: {
@@ -23,12 +26,20 @@ function(params) {
           name: 'thanos-rule-syncer',
           image: trs.config.image,
           args: [
-            '-file=' + trs.config.file,
+            '-file=' + mountPath + '/' + trs.config.fileName,
             '-interval=%d' % trs.config.interval,
             '-rules-backend-url=' + trs.config.rulesBackendURL,
             '-thanos-rule-url=' + trs.config.thanosRuleURL,
           ],
+          volumeMounts: [{
+            name: trs.config.volumeName,
+            mountPath: mountPath,
+          }],
           resources: trs.config.resources,
+        }],
+        volumes+: [{
+          name: trs.config.volumeName,
+          emptyDir: {},
         }],
         serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
       },

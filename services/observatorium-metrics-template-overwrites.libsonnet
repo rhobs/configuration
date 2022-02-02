@@ -33,10 +33,12 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
     collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
   }),
 
+  local ruleSyncerVolume = 'rule-syncer',
   local ruleSyncerSidecar = thanosRuleSyncer({
     image: '${THANOS_RULE_SYNCER_IMAGE}:${THANOS_RULE_SYNCER_IMAGE_TAG}',
     rulesBackendURL: 'http://rules-objstore.${OBSERVATORIUM_NAMESPACE}.svc:8080',
-    file: '/etc/thanos/rules/observatorium-rule-syncer.yaml',
+    volumeName: ruleSyncerVolume,
+    fileName: 'observatorium.yaml',
   }),
 
   thanos+:: {
@@ -110,6 +112,10 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
               containers: [
                 if c.name == 'thanos-rule' then c {
                   env+: s3EnvVars,
+                  volumeMounts+: [{
+                    name: ruleSyncerVolume,
+                    mountPath: '/etc/thanos/rules/rule-syncer',
+                  }],
                 } else c
                 for c in super.containers
               ],

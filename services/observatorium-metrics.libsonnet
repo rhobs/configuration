@@ -562,7 +562,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
       exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
       connectionLimit: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT}',
       memoryLimitMb: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB}',
-      maxItemSize: '5m',
+      maxItemSize: '64m',
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       resources: {
         memcached: {

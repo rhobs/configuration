@@ -641,7 +641,7 @@ objects:
         containers:
         - args:
           - -m ${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB}
-          - -I 5m
+          - -I 64m
           - -c ${THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT}
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}

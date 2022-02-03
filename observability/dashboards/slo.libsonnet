@@ -204,7 +204,7 @@ function(instanceName, environment, dashboardName) {
             clamp_min(
             ( 1 -
                 (
-                    %(errorCase)s or vector(0)
+                    (%(errorCase)s or vector(0))
                     /
                     %(totalCase)s
                 ) - %(target)s

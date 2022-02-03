@@ -340,7 +340,7 @@ objects:
             claimName: alertmanager-data
         - name: alertmanager-config
           secret:
-            name: alertmanager-config
+            secretName: alertmanager-config
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:

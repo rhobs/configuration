@@ -804,7 +804,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
               }],
               volumes: [
                 { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName } },
-                { name: cfg.routingConfigName, secret: { name: cfg.routingConfigName } },
+                { name: cfg.routingConfigName, secret: { secretName: cfg.routingConfigName } },
               ],
             },
           },

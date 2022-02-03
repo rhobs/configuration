@@ -737,7 +737,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         },
         spec: {
           accessModes: ['ReadWriteOnce'],
-          storageClassName: 'standard',
+          storageClassName: 'gp2',
           resources: {
             requests: {
               storage: '10Gi',

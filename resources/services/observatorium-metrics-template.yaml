@@ -353,7 +353,6 @@ objects:
     resources:
       requests:
         storage: 10Gi
-    storageClassName: standard
 - apiVersion: v1
   data:
     file_sd.yaml: '- targets: ${THANOS_QUERIER_FILE_SD_TARGETS}'

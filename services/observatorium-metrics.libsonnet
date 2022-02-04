@@ -702,6 +702,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         namespace: thanosSharedConfig.namespace,
         image: 'quay.io/prometheus/alertmanager:main',
         persistentVolumeClaimName: 'alertmanager-data',
+        dataMountPath: '/data',
         routingConfigName: 'alertmanager-config',
         routingConfigFileName: 'alertmanager.yaml',
         port: 9093,
@@ -772,7 +773,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                 image: cfg.image,
                 args: [
                   '--config.file=/etc/config/' + cfg.routingConfigFileName,
-                  '--storage.path="data/"',
+                  '--storage.path="%s"' % cfg.dataMountPath,
                   '--web.listen-address=:' + cfg.port,
                   '--cluster.listen-address=',  // Disabled cluster gossiping while we only have one replica
                 ],
@@ -783,7 +784,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                   },
                 ],
                 volumeMounts: [
-                  { name: 'alertmanager-data', mountPath: '/data', readOnly: false },
+                  { name: 'alertmanager-data', mountPath: cfg.dataMountPath, readOnly: false },
                   { name: cfg.routingConfigName, mountPath: '/etc/config', readOnly: true },
                 ],
                 livenessProbe: { failureThreshold: 4, periodSeconds: 30, httpGet: {

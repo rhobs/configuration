@@ -717,25 +717,25 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
 
       local oauth = oauthProxy({
-          name: 'alertmanager',
-          image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
-          upstream: 'http://localhost:%d' % cfg.port,
-          serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
-          sessionSecretName: 'alertmanager-proxy',
-          resources: {
-            requests: {
-              cpu: '${OAUTH_PROXY_CPU_REQUEST}',
-              memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
-            },
-            limits: {
-              cpu: '${OAUTH_PROXY_CPU_LIMITS}',
-              memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
-            },
+        name: 'alertmanager',
+        image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
+        upstream: 'http://localhost:%d' % cfg.port,
+        serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
+        sessionSecretName: 'alertmanager-proxy',
+        resources: {
+          requests: {
+            cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+            memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
           },
-        }),
+          limits: {
+            cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+            memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
+          },
+        },
+      }),
 
       proxySecret: oauth.proxySecret {
-        metadata+: { labels+: cfg.commonLabels},
+        metadata+: { labels+: cfg.commonLabels },
       },
 
       service: {

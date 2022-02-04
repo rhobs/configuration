@@ -708,6 +708,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         routingConfigName: 'alertmanager-config',
         routingConfigFileName: 'alertmanager.yaml',
         port: 9093,
+        portName: 'http',
         commonLabels: {
           'app.kubernetes.io/component': 'alertmanager',
           'app.kubernetes.io/name': 'alertmanager',
@@ -747,7 +748,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         spec: {
           ports: [
-            { name: 'http', targetPort: cfg.port, port: cfg.port },
+            { name: cfg.portName, targetPort: cfg.port, port: cfg.port },
           ],
           selector: cfg.commonLabels,
         },
@@ -804,7 +805,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                 ],
                 ports: [
                   {
-                    name: 'http',
+                    name: cfg.portName,
                     containerPort: cfg.port,
                   },
                 ],
@@ -847,7 +848,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         spec: {
           selector: { matchLabels: cfg.commonLabels },
           endpoints: [
-            { port: 'http' },
+            { port: cfg.portName },
           ],
           namespaceSelector: { matchNames: ['${NAMESPACE}'] },
         },

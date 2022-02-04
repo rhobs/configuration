@@ -235,8 +235,21 @@ objects:
             storage: ${THANOS_COMPACTOR_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
+  data:
+    session_secret: c2VjcmV0
+  kind: Secret
+  metadata:
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+    name: alertmanager-proxy
+  type: Opaque
+- apiVersion: v1
   kind: Service
   metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: alertmanager-tls
     labels:
       app.kubernetes.io/name: observatorium-alertmanager
     name: observatorium-alertmanager
@@ -245,6 +258,9 @@ objects:
     - name: http
       port: 9093
       targetPort: 9093
+    - name: https
+      port: 8443
+      targetPort: 8443
     selector:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
@@ -334,6 +350,41 @@ objects:
           - mountPath: /etc/config
             name: alertmanager-config
             readOnly: true
+        - args:
+          - -provider=openshift
+          - -https-address=:8443
+          - -http-address=
+          - -email-domain=*
+          - -upstream=http://localhost:9093
+          - -openshift-service-account=${SERVICE_ACCOUNT_NAME}
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
+          - -tls-cert=/etc/tls/private/tls.crt
+          - -tls-key=/etc/tls/private/tls.key
+          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret-file=/etc/proxy/secrets/session_secret
+          - -openshift-ca=/etc/pki/tls/cert.pem
+          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          image: ${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}
+          name: oauth-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+          resources:
+            limits:
+              cpu: ${OAUTH_PROXY_CPU_LIMITS}
+              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
+            requests:
+              cpu: ${OAUTH_PROXY_CPU_REQUEST}
+              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: alertmanager-tls
+            readOnly: false
+          - mountPath: /etc/proxy/secrets
+            name: alertmanager-proxy
+            readOnly: false
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
         - name: alertmanager-data
           persistentVolumeClaim:
@@ -341,6 +392,12 @@ objects:
         - name: alertmanager-config
           secret:
             secretName: alertmanager-config
+        - name: alertmanager-tls
+          secret:
+            secretName: alertmanager-tls
+        - name: alertmanager-proxy
+          secret:
+            secretName: alertmanager-proxy
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:

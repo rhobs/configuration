@@ -297,7 +297,7 @@ objects:
         containers:
         - args:
           - --config.file=/etc/config/alertmanager.yaml
-          - --storage.path="data/"
+          - --storage.path=/data
           - --web.listen-address=:9093
           - --cluster.listen-address=
           image: quay.io/prometheus/alertmanager:main

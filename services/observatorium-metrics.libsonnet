@@ -773,8 +773,8 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                 name: cfg.name,
                 image: cfg.image,
                 args: [
-                  '--config.file=%s/%s' % cfg.configMountPath, cfg.routingConfigFileName,
-                  '--storage.path="%s"' % cfg.dataMountPath,
+                  '--config.file=%s/%s' % [cfg.configMountPath, cfg.routingConfigFileName],
+                  '--storage.path=%s' % cfg.dataMountPath,
                   '--web.listen-address=:' + cfg.port,
                   '--cluster.listen-address=',  // Disabled cluster gossiping while we only have one replica
                 ],

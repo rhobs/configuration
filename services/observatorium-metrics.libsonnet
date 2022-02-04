@@ -4,6 +4,7 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 local metricFederationRules = (import '../configuration/observatorium/metric-federation-rules.libsonnet');
 local tenants = (import '../configuration/observatorium/tenants.libsonnet');
+local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
 {
   thanos+:: {
@@ -707,12 +708,36 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         routingConfigName: 'alertmanager-config',
         routingConfigFileName: 'alertmanager.yaml',
         port: 9093,
+        portName: 'http',
         commonLabels: {
           'app.kubernetes.io/component': 'alertmanager',
           'app.kubernetes.io/name': 'alertmanager',
           'app.kubernetes.io/part-of': 'observatorium',
         },
       },
+
+      local oauth = oauthProxy({
+        name: 'alertmanager',
+        image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
+        upstream: 'http://localhost:%d' % cfg.port,
+        serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
+        sessionSecretName: 'alertmanager-proxy',
+        resources: {
+          requests: {
+            cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+            memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+            memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
+          },
+        },
+      }),
+
+      proxySecret: oauth.proxySecret {
+        metadata+: { labels+: cfg.commonLabels },
+      },
+
       service: {
         apiVersion: 'v1',
         kind: 'Service',
@@ -723,11 +748,11 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         },
         spec: {
           ports: [
-            { name: 'http', targetPort: cfg.port, port: cfg.port },
+            { name: cfg.portName, targetPort: cfg.port, port: cfg.port },
           ],
           selector: cfg.commonLabels,
         },
-      },
+      } + oauth.service,
 
       volumeClaim: {
         apiVersion: 'v1',
@@ -780,7 +805,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                 ],
                 ports: [
                   {
-                    name: 'http',
+                    name: cfg.portName,
                     containerPort: cfg.port,
                   },
                 ],
@@ -810,7 +835,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
             },
           },
         },
-      },
+      } + oauth.statefulSet,
 
       serviceMonitor: {
         apiVersion: 'monitoring.coreos.com/v1',
@@ -823,7 +848,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
         spec: {
           selector: { matchLabels: cfg.commonLabels },
           endpoints: [
-            { port: 'http' },
+            { port: cfg.portName },
           ],
           namespaceSelector: { matchNames: ['${NAMESPACE}'] },
         },

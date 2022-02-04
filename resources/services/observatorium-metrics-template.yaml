@@ -2071,7 +2071,7 @@ objects:
           - -m ${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}
           - -I 5m
           - -c ${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}
-          - -v
+          - -vv
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
           name: memcached
           ports:

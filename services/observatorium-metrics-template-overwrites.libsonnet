@@ -189,6 +189,11 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
         spec+: {
           template+: {
             spec+: {
+              containers: [
+                super.containers[0] {
+                  args: super.args[:3] + ['-vv'],
+                },
+              ] + super.containers[1:],
               securityContext: {},
             },
           },

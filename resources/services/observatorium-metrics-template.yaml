@@ -29,6 +29,7 @@ objects:
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-compact
   spec:
+    clusterIP: None
     ports:
     - name: http
       port: 10902
@@ -106,6 +107,24 @@ objects:
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-compact
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - compact
@@ -143,6 +162,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 4
             httpGet:
@@ -208,7 +228,7 @@ objects:
             name: compact-proxy
             readOnly: false
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
@@ -496,6 +516,7 @@ objects:
               fieldRef:
                 fieldPath: status.hostIP
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 4
             httpGet:
@@ -599,7 +620,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
@@ -811,6 +832,7 @@ objects:
               fieldRef:
                 fieldPath: status.hostIP
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 4
             httpGet:
@@ -907,7 +929,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
@@ -1355,12 +1377,12 @@ objects:
           - --http-address=0.0.0.0:10902
           - --remote-write.address=0.0.0.0:19291
           - --receive.replication-factor=3
-          - --objstore.config=$(OBJSTORE_CONFIG)
           - --tsdb.path=${THANOS_RECEIVE_TSDB_PATH}
           - --tsdb.retention=4d
-          - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --label=replica="$(NAME)"
           - --label=receive="true"
+          - --objstore.config=$(OBJSTORE_CONFIG)
+          - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
           - |-
             --tracing.config="config":
@@ -1378,15 +1400,15 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: HOST_IP_ADDRESS
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
           - name: OBJSTORE_CONFIG
             valueFrom:
               secretKeyRef:
                 key: thanos.yaml
                 name: ${THANOS_CONFIG_SECRET}
-          - name: HOST_IP_ADDRESS
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP
           - name: DEBUG
             value: ${THANOS_RECEIVE_DEBUG_ENV}
           - name: AWS_ACCESS_KEY_ID
@@ -1402,6 +1424,7 @@ objects:
           - name: DEBUG
             value: ${THANOS_RECEIVE_DEBUG_ENV}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
             httpGet:
@@ -1474,7 +1497,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 900
@@ -1684,6 +1707,9 @@ objects:
     - name: http
       port: 10902
       targetPort: 10902
+    - name: reloader
+      port: 9533
+      targetPort: 9533
     selector:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: observatorium
@@ -1718,6 +1744,7 @@ objects:
         - namespace
         - pod
         targetLabel: instance
+    - port: reloader
     namespaceSelector:
       matchNames: ${{NAMESPACES}}
     selector:
@@ -1803,6 +1830,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 24
             httpGet:
@@ -1816,6 +1844,8 @@ objects:
             name: grpc
           - containerPort: 10902
             name: http
+          - containerPort: 9533
+            name: reloader
           readinessProbe:
             failureThreshold: 18
             httpGet:
@@ -1844,6 +1874,7 @@ objects:
           - -webhook-url=http://localhost:10902/-/reload
           - -volume-dir=/etc/thanos/rules/observatorium-rules
           image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: configmap-reloader
           volumeMounts:
           - mountPath: /etc/thanos/rules/observatorium-rules
@@ -1901,7 +1932,7 @@ objects:
           - mountPath: /etc/thanos-rule-syncer
             name: rule-syncer
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
@@ -2326,6 +2357,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
             httpGet:
@@ -2394,7 +2426,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
@@ -2572,6 +2604,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
             httpGet:
@@ -2640,7 +2673,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
@@ -2818,6 +2851,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
             httpGet:
@@ -2886,7 +2920,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120

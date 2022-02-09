@@ -62,6 +62,9 @@ objects:
     - name: http
       port: 10902
       targetPort: 10902
+    - name: reloader
+      port: 9533
+      targetPort: 9533
     selector:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
@@ -96,6 +99,7 @@ objects:
         - namespace
         - pod
         targetLabel: instance
+    - port: reloader
     namespaceSelector:
       matchNames: ${{NAMESPACES}}
     selector:
@@ -179,6 +183,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${THANOS_S3_SECRET}
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 24
             httpGet:
@@ -192,6 +197,8 @@ objects:
             name: grpc
           - containerPort: 10902
             name: http
+          - containerPort: 9533
+            name: reloader
           readinessProbe:
             failureThreshold: 18
             httpGet:
@@ -218,6 +225,7 @@ objects:
           - -webhook-url=http://localhost:10902/-/reload
           - -volume-dir=/etc/thanos/rules/metric-federation-rules
           image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: configmap-reloader
           volumeMounts:
           - mountPath: /etc/thanos/rules/metric-federation-rules
@@ -258,7 +266,7 @@ objects:
               cpu: 32m
               memory: 64Mi
         nodeSelector:
-          beta.kubernetes.io/os: linux
+          kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:

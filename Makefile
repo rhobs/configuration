@@ -16,6 +16,10 @@ VENDOR_DIR = vendor
 $(VENDOR_DIR): $(JB) jsonnetfile.json jsonnetfile.lock.json
 	@$(JB) install
 
+.PHONY: update
+update: $(JB) jsonnetfile.json jsonnetfile.lock.json
+	@$(JB) update
+
 JSONNET_SRC = $(shell find . -type f -not -path './*vendor/*' \( -name '*.libsonnet' -o -name '*.jsonnet' \))
 
 .PHONY: format

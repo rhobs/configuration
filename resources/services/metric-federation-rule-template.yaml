@@ -44,6 +44,36 @@ objects:
       app.kubernetes.io/part-of: observatorium
     name: metric-federation-rules
 - apiVersion: v1
+  data:
+    rw-config.yaml: |-
+      "remote_write":
+      - "headers":
+          "THANOS-TENANT": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+        "name": "receive-rhobs"
+        "url": "http://observatorium-thanos-receive.${THANOS_QUERIER_NAMESPACE}.svc.cluster.local:19291"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+        "name": "receive-telemeter"
+        "url": "http://observatorium-thanos-receive.${THANOS_QUERIER_NAMESPACE}.svc.cluster.local:19291"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "source_labels":
+          - "tenant_id"
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/part-of: observatorium
+    name: metric-federation-ruler-remote-write-config
+- apiVersion: v1
   kind: Service
   metadata:
     labels:
@@ -158,6 +188,7 @@ objects:
               "sampler_type": "ratelimiting"
               "service_name": "thanos-rule"
             "type": "JAEGER"
+          - --remote-write.config-file=/etc/thanos/config/metric-federation-ruler-remote-write-config/rw-config.yaml
           env:
           - name: NAME
             valueFrom:
@@ -221,15 +252,21 @@ objects:
             readOnly: false
           - mountPath: /etc/thanos/rules/metric-federation-rules
             name: metric-federation-rules
+          - mountPath: /etc/thanos/config/metric-federation-ruler-remote-write-config
+            name: metric-federation-ruler-remote-write-config
+            readOnly: true
         - args:
           - -webhook-url=http://localhost:10902/-/reload
           - -volume-dir=/etc/thanos/rules/metric-federation-rules
+          - -volume-dir=/etc/thanos/config/metric-federation-ruler-remote-write-config
           image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: configmap-reloader
           volumeMounts:
           - mountPath: /etc/thanos/rules/metric-federation-rules
             name: metric-federation-rules
+          - mountPath: /etc/thanos/config/metric-federation-ruler-remote-write-config
+            name: metric-federation-ruler-remote-write-config
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
@@ -273,6 +310,9 @@ objects:
         - configMap:
             name: metric-federation-rules
           name: metric-federation-rules
+        - configMap:
+            name: metric-federation-ruler-remote-write-config
+          name: metric-federation-ruler-remote-write-config
     volumeClaimTemplates:
     - metadata:
         labels:

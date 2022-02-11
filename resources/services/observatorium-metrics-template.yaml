@@ -1695,7 +1695,7 @@ objects:
       - "headers":
           "THANOS-TENANT": "770c1124-6ae8-4324-a9d4-9ce08590094b"
         "name": "receive-rhobs"
-        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
           "regex": "770c1124-6ae8-4324-a9d4-9ce08590094b"
@@ -1704,7 +1704,7 @@ objects:
       - "headers":
           "THANOS-TENANT": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
         "name": "receive-telemeter"
-        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
           "regex": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"

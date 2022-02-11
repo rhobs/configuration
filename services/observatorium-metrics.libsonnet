@@ -163,7 +163,11 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         data: {
           [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://observatorium-thanos-receive.%s.svc.cluster.local:19291' % thanosSharedConfig.namespace,
+            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
+              thanos.receiversService.metadata.name,
+              thanosSharedConfig.namespace,
+              thanos.receiversService.spec.ports[2].port,
+            ],
           })),
         },
       },
@@ -259,7 +263,11 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         data: {
           [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://observatorium-thanos-receive.%s.svc.cluster.local:19291' % '${THANOS_QUERIER_NAMESPACE}',
+            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
+              thanos.receiversService.metadata.name,
+              thanosSharedConfig.namespace,
+              thanos.receiversService.spec.ports[2].port,
+            ],
           })),
         },
       },

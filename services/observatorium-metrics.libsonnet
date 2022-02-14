@@ -1,6 +1,7 @@
 local t = (import 'github.com/thanos-io/kube-thanos/jsonnet/kube-thanos/thanos.libsonnet');
 local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/lib/thanos-receive-controller.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
+local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 local metricFederationRules = (import '../configuration/observatorium/metric-federation-rules.libsonnet');
 local tenants = (import '../configuration/observatorium/tenants.libsonnet');
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
@@ -128,7 +129,15 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         data: {
           [observatoriumRulesKey]: std.manifestYamlDoc({
-            groups: [],
+            groups: std.map(function(group) {
+              name: 'telemeter-' + group.name,
+              interval: group.interval,
+              rules: std.map(function(rule) rule {
+                labels+: {
+                  tenant_id: tenants.map.telemeter.id,
+                },
+              }, group.rules),
+            }, telemeterRules.prometheus.recordingrules.groups),
           }),
         },
       },

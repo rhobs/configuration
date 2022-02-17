@@ -2264,7 +2264,7 @@ objects:
               "max_async_concurrency": 1000
               "max_get_multi_batch_size": 100000
               "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1300
+              "max_idle_connections": 2500
               "max_item_size": "5MiB"
               "timeout": "2s"
             "type": "memcached"
@@ -2510,7 +2510,7 @@ objects:
               "max_async_concurrency": 1000
               "max_get_multi_batch_size": 100000
               "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1300
+              "max_idle_connections": 2500
               "max_item_size": "5MiB"
               "timeout": "2s"
             "type": "memcached"
@@ -2756,7 +2756,7 @@ objects:
               "max_async_concurrency": 1000
               "max_get_multi_batch_size": 100000
               "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1300
+              "max_idle_connections": 2500
               "max_item_size": "5MiB"
               "timeout": "2s"
             "type": "memcached"

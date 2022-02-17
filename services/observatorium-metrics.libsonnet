@@ -248,7 +248,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         config+: memcachedDefaults {
           addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeIndexCache.service.metadata.name, thanos.storeIndexCache.service.metadata.namespace]],
           // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
-          max_idle_connections: 1300,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
+          max_idle_connections: 2500,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
           timeout: '2s',  // default: 500ms
           max_async_buffer_size: 10000000,  // default: 10_000
           max_async_concurrency: 1000,  // default: 20

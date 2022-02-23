@@ -77,7 +77,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
-      alertmanagersURLs: ['dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
+      alertmanagersURLs: ['dnssrv+http://%s.%s.svc.cluster.local' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
       queriers: [
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],

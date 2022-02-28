@@ -178,6 +178,10 @@ objects:
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_series:sum"}
+          - --whitelist={__name__="openshift_csi_share_configmap"}
+          - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
+          - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
+          - --whitelist={__name__="openshift_csi_share_secret"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}
           - --whitelist={__name__="rhods_total_users"}
@@ -369,6 +373,10 @@ objects:
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_series:sum"}
+          - --whitelist={__name__="openshift_csi_share_configmap"}
+          - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
+          - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
+          - --whitelist={__name__="openshift_csi_share_secret"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}
           - --whitelist={__name__="rhods_total_users"}

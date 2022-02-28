@@ -131,6 +131,7 @@ clean:
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium-logs -type f ! -name '*.yaml' -delete
+	find resources/services/telemeter-template.yaml -type f ! -name '*.yaml' -delete
 
 # Tools
 $(TMP_DIR):

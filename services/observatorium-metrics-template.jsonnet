@@ -38,7 +38,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
     { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
-    { name: 'OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL', value: 'info' }
+    { name: 'OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL', value: 'info' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     { name: 'STORAGE_CLASS', value: 'gp2' },
     { name: 'THANOS_COMPACTOR_CPU_LIMIT', value: '1' },

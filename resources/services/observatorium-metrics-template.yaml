@@ -2984,6 +2984,8 @@ parameters:
   value: 200Mi
 - name: OAUTH_PROXY_MEMORY_REQUEST
   value: 100Mi
+- name: OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL
+  value: info
 - name: SERVICE_ACCOUNT_NAME
   value: prometheus-telemeter
 - name: STORAGE_CLASS

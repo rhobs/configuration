@@ -300,6 +300,7 @@ objects:
           - --storage.path=/data
           - --web.listen-address=:9093
           - --cluster.listen-address=
+          - --log.level=${OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL}
           image: quay.io/prometheus/alertmanager:main
           livenessProbe:
             failureThreshold: 4

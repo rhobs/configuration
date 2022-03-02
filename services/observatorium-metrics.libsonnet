@@ -777,7 +777,7 @@ local tenants = (import '../configuration/observatorium/tenants.libsonnet');
                   '--storage.path=%s' % cfg.dataMountPath,
                   '--web.listen-address=:' + cfg.port,
                   '--cluster.listen-address=',  // Disabled cluster gossiping while we only have one replica
-                  '--log.level=debug',
+                  '--log.level=${OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL}',
                 ],
                 ports: [
                   {

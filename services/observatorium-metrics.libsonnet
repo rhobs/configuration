@@ -27,6 +27,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
       },
       alertmanagerName: 'observatorium-alertmanager',
+      alertmanagerPort: 9093,
     },
 
     compact:: t.compact(thanosSharedConfig {
@@ -77,7 +78,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
-      alertmanagersURLs: ['dnssrv+http://%s.%s.svc.cluster.local' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace]],
+      alertmanagersURLs: ['dnssrv+http://%s.%s.svc.cluster.local:%s' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace, thanosSharedConfig.alertmanagerPort]],
       queriers: [
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],

@@ -1,5 +1,4 @@
 // These are the defaults for this components configuration.
-// These are the defaults for this components configuration.
 // When calling the function to generate the component's manifest,
 // you can pass an object structured like the default to overwrite default values.
 local defaults = {

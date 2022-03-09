@@ -1,0 +1,45 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: roles
+objects:
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    name: ${NAME}
+  rules:
+  - apiGroups:
+    - authentication.k8s.io
+    resources:
+    - tokenreviews
+    verbs:
+    - create
+  - apiGroups:
+    - authorization.k8s.io
+    resources:
+    - subjectaccessreviews
+    verbs:
+    - create
+  - apiGroups:
+      - ""
+    resourceNames:
+    - ${{NAME}}
+    resources:
+    - namespaces
+    verbs:
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: ${NAME}
+  subjects:
+  - kind: ServiceAccount
+    name: rhobs
+    namespace: ${NAME}
+  roleRef:
+    kind: ClusterRole
+    name: ${NAME}
+    apiGroup: rbac.authorization.k8s.io
+parameters:
+- name: NAME
+  value: "<CHANGEME>"

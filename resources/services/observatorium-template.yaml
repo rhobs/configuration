@@ -284,7 +284,7 @@ objects:
   stringData:
     client-id: test
     client-secret: ZXhhbXBsZS1hcHAtc2VjcmV0
-    issuer-url: http://dex.dex.svc.cluster.local:5556/dex
+    issuer-url: http://dex.${TEST_DEX_NAMESPACE}.svc.cluster.local:5556/dex
     tenants.yaml: |-
       "tenants":
       - "id": "770c1124-6ae8-4324-a9d4-9ce08590094b"
@@ -292,14 +292,14 @@ objects:
         "oidc":
           "clientID": "test"
           "clientSecret": "ZXhhbXBsZS1hcHAtc2VjcmV0"
-          "issuerURL": "http://dex.dex.svc.cluster.local:5556/dex"
+          "issuerURL": "http://dex.${TEST_DEX_NAMESPACE}.svc.cluster.local:5556/dex"
           "usernameClaim": "email"
       - "id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
         "name": "telemeter"
         "oidc":
           "clientID": "test"
           "clientSecret": "ZXhhbXBsZS1hcHAtc2VjcmV0"
-          "issuerURL": "http://dex.dex.svc.cluster.local:5556/dex"
+          "issuerURL": "http://dex.${TEST_DEX_NAMESPACE}.svc.cluster.local:5556/dex"
           "usernameClaim": "email"
 - apiVersion: v1
   kind: Service
@@ -1040,3 +1040,5 @@ parameters:
   value: 1Gi
 - name: UP_MEMORY_LIMIT
   value: 2Gi
+- name: TEST_DEX_NAMESPACE
+  value: dex

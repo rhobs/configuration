@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   name: minio
@@ -74,8 +74,6 @@ objects:
       app.kubernetes.io/name: minio
     type: ClusterIP
 parameters:
-- name: NAMESPACE
-  value: minio
 - name: IMAGE
   value: minio/minio
 - name: IMAGE_TAG

@@ -400,7 +400,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
       stringData+: {
         'client-id': 'test',
         'client-secret': 'ZXhhbXBsZS1hcHAtc2VjcmV0',
-        'issuer-url': 'http://dex.dex.svc.cluster.local:5556/dex',
+        'issuer-url': 'http://dex.${TEST_DEX_NAMESPACE}.svc.cluster.local:5556/dex',
       },
     },
   },

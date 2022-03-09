@@ -1693,12 +1693,12 @@ objects:
     rw-config.yaml: |-
       "remote_write":
       - "headers":
-          "THANOS-TENANT": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+          "THANOS-TENANT": "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"
         "name": "receive-rhobs"
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
-          "regex": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+          "regex": "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"
           "source_labels":
           - "tenant_id"
       - "headers":
@@ -1708,6 +1708,33 @@ objects:
         "write_relabel_configs":
         - "action": "keep"
           "regex": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "AC879303-C60F-4D0D-A6D5-A485CFD638B8"
+        "name": "receive-dptp"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "AC879303-C60F-4D0D-A6D5-A485CFD638B8"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+        "name": "receive-osd"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "770c1124-6ae8-4324-a9d4-9ce08590094b"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "63e320cd-622a-4d05-9585-ffd48342633e"
+        "name": "receive-managedkafka"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "63e320cd-622a-4d05-9585-ffd48342633e"
           "source_labels":
           - "tenant_id"
   kind: ConfigMap

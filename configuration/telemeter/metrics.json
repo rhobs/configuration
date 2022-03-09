@@ -66,6 +66,7 @@
   "{__name__=\"eo_es_storage_info\"}",
   "{__name__=\"imageregistry:imagestreamtags_count:sum\"}",
   "{__name__=\"imageregistry:operations_count:sum\"}",
+  "{__name__=\"eo_es_redundancy_policy_info\"}",
   "{__name__=\"insightsclient_request_send_total\"}",
   "{__name__=\"instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile\",quantile=\"0.99\"}",
   "{__name__=\"instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile\",quantile=\"0.99\"}",

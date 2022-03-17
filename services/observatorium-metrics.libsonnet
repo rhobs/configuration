@@ -760,7 +760,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       local cfg = {
         name: 'observatorium-alertmanager',
         namespace: thanosSharedConfig.namespace,
-        image: 'quay.io/prometheus/alertmanager:main',
+        image: '${OBSERVATORIUM_ALERTMANAGER_IMAGE}:${OBSERVATORIUM_ALERTMANAGER_IMAGE_TAG}',
         persistentVolumeClaimName: 'alertmanager-data',
         dataMountPath: '/data',
         configMountPath: '/etc/config',

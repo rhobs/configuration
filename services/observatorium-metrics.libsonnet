@@ -4,7 +4,6 @@ local memcached = (import 'github.com/observatorium/observatorium/configuration/
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 local metricFederationRules = (import '../configuration/observatorium/metric-federation-rules.libsonnet');
 local tenants = (import '../configuration/observatorium/tenants.libsonnet');
-local remoteWriteConfig = (import '../configuration/observatorium/ruler-remote-write.libsonnet');
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
 {
@@ -70,8 +69,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
     local observatoriumRules = 'observatorium-rules',
     local observatoriumRulesKey = 'observatorium.yaml',
-    local statelessRuler = 'remote-write-config',
-    local statelessRulerKey = 'rw-config.yaml',
     rule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-rule',
       commonLabels+:: {
@@ -86,10 +83,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      remoteWriteConfigFile: {
-        name: statelessRuler,
-        key: statelessRulerKey,
-      },
       rulesConfig: [
         {
           name: observatoriumRules,
@@ -122,7 +115,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     }) + {
       // TODO: Move configmap either to upstream (best) or as overwrite.
-      configmap_rules: {
+      configmap: {
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: {
@@ -149,33 +142,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           }),
         },
       },
-      configmap_rwconfig: {
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: {
-          name: statelessRuler,
-          annotations: {
-            'qontract.recycle': 'true',
-          },
-          labels: {
-            'app.kubernetes.io/instance': 'observatorium',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
-        },
-        data: {
-          [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-              thanos.receiversService.metadata.name,
-              thanosSharedConfig.namespace,
-              thanos.receiversService.spec.ports[2].port,
-            ],
-          })),
-        },
-      },
     },
 
     local metricFederationRulesName = 'metric-federation-rules',
-    local metricFederationStatelessRuler = 'metric-federation-ruler-remote-write-config',
     metricFederationRule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-metric-federation-rule',
       commonLabels+:: {
@@ -189,10 +158,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      remoteWriteConfigFile: {
-        name: metricFederationStatelessRuler,
-        key: statelessRulerKey,
-      },
       rulesConfig: [
         {
           name: metricFederationRulesName,
@@ -222,7 +187,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     }) + {
       // TODO: Move configmap either to upstream (best) or as overwrite.
-      configmap_rules: {
+      configmap: {
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: {
@@ -247,29 +212,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
               }, group.rules),
             }, metricFederationRules.prometheus.recordingrules.groups),
           }),
-        },
-      },
-      configmap_rwconfig: {
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: {
-          name: metricFederationStatelessRuler,
-          annotations: {
-            'qontract.recycle': 'true',
-          },
-          labels: {
-            'app.kubernetes.io/instance': 'observatorium',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
-        },
-        data: {
-          [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-              thanos.receiversService.metadata.name,
-              thanosSharedConfig.namespace,
-              thanos.receiversService.spec.ports[2].port,
-            ],
-          })),
         },
       },
     },

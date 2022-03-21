@@ -84,12 +84,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      rulesConfig: [
-        {
-          name: observatoriumRules,
-          key: observatoriumRulesKey,
-        },
-      ],
       ruleFiles: [
         '/etc/thanos/rules/rule-syncer/observatorium.yaml',
       ],
@@ -114,36 +108,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           },
         },
       },
-    }) + {
-      // TODO: Move configmap either to upstream (best) or as overwrite.
-      configmap: {
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: {
-          name: observatoriumRules,
-          annotations: {
-            'qontract.recycle': 'true',
-          },
-          labels: {
-            'app.kubernetes.io/instance': 'observatorium',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
-        },
-        data: {
-          [observatoriumRulesKey]: std.manifestYamlDoc({
-            groups: std.map(function(group) {
-              name: 'telemeter-' + group.name,
-              interval: group.interval,
-              rules: std.map(function(rule) rule {
-                labels+: {
-                  tenant_id: tenants.map.telemeter.id,
-                },
-              }, group.rules),
-            }, telemeterRules.prometheus.recordingrules.groups),
-          }),
-        },
-      },
-    },
+    }),
 
     local statelessRuler = 'remote-write-config',
     local statelessRulerKey = 'rw-config.yaml',
@@ -219,6 +184,34 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           })),
         },
       },
+      // TODO: Move configmap either to upstream (best) or as overwrite.
+      configmap: {
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: {
+          name: observatoriumRules,
+          annotations: {
+            'qontract.recycle': 'true',
+          },
+          labels: {
+            'app.kubernetes.io/instance': 'observatorium',
+            'app.kubernetes.io/part-of': 'observatorium',
+          },
+        },
+        data: {
+          [observatoriumRulesKey]: std.manifestYamlDoc({
+            groups: std.map(function(group) {
+              name: 'telemeter-' + group.name,
+              interval: group.interval,
+              rules: std.map(function(rule) rule {
+                labels+: {
+                  tenant_id: tenants.map.telemeter.id,
+                },
+              }, group.rules),
+            }, telemeterRules.prometheus.recordingrules.groups),
+          }),
+        },
+      },
     },
 
     local metricFederationRulesName = 'metric-federation-rules',
@@ -235,12 +228,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      rulesConfig: [
-        {
-          name: metricFederationRulesName,
-          key: observatoriumRulesKey,
-        },
-      ],
       resources: {
         limits: {
           cpu: '${THANOS_RULER_CPU_LIMIT}',
@@ -262,36 +249,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           },
         },
       },
-    }) + {
-      // TODO: Move configmap either to upstream (best) or as overwrite.
-      configmap: {
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: {
-          name: metricFederationRulesName,
-          annotations: {
-            'qontract.recycle': 'true',
-          },
-          labels: {
-            'app.kubernetes.io/instance': 'observatorium',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
-        },
-        data: {
-          [observatoriumRulesKey]: std.manifestYamlDoc({
-            groups: std.map(function(group) {
-              name: 'telemeter-' + group.name,
-              interval: group.interval,
-              rules: std.map(function(rule) rule {
-                labels+: {
-                  tenant_id: tenants.map.telemeter.id,
-                },
-              }, group.rules),
-            }, metricFederationRules.prometheus.recordingrules.groups),
-          }),
-        },
-      },
-    },
+    }),
 
     local metricFederationStatelessRuler = 'metric-federation-ruler-remote-write-config',
     metricFederationStatelessRule:: t.rule(thanosSharedConfig {
@@ -360,6 +318,34 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
               thanos.receiversService.spec.ports[2].port,
             ],
           })),
+        },
+      },
+      // TODO: Move configmap either to upstream (best) or as overwrite.
+      configmap: {
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: {
+          name: metricFederationRulesName,
+          annotations: {
+            'qontract.recycle': 'true',
+          },
+          labels: {
+            'app.kubernetes.io/instance': 'observatorium',
+            'app.kubernetes.io/part-of': 'observatorium',
+          },
+        },
+        data: {
+          [observatoriumRulesKey]: std.manifestYamlDoc({
+            groups: std.map(function(group) {
+              name: 'telemeter-' + group.name,
+              interval: group.interval,
+              rules: std.map(function(rule) rule {
+                labels+: {
+                  tenant_id: tenants.map.telemeter.id,
+                },
+              }, group.rules),
+            }, metricFederationRules.prometheus.recordingrules.groups),
+          }),
         },
       },
     },

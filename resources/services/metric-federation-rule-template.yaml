@@ -4,46 +4,6 @@ metadata:
   name: metric-federation-rule
 objects:
 - apiVersion: v1
-  data:
-    observatorium.yaml: |-
-      "groups":
-      - "interval": "1m"
-        "name": "telemeter-kafka.rules"
-        "rules":
-        - "expr": |
-            kafka_id:strimzi_resource_state:max_over_time1h
-          "labels":
-            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "kafka_id:strimzi_resource_state:max_over_time1h"
-        - "expr": |
-            kafka_id:haproxy_server_bytes_in_total:rate1h_gibibytes
-          "labels":
-            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "kafka_id:haproxy_server_bytes_in_total:rate1h_gibibytes"
-        - "expr": |
-            kafka_id:haproxy_server_bytes_out_total:rate1h_gibibytes
-          "labels":
-            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "kafka_id:haproxy_server_bytes_out_total:rate1h_gibibytes"
-        - "expr": |
-            kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibytes
-          "labels":
-            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibytes"
-        - "expr": |
-            kafka_id:haproxy_server_bytes_in_out_total:rate1h_gibibytes
-          "labels":
-            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "kafka_id:haproxy_server_bytes_in_out_total:rate1h_gibibytes"
-  kind: ConfigMap
-  metadata:
-    annotations:
-      qontract.recycle: "true"
-    labels:
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/part-of: observatorium
-    name: metric-federation-rules
-- apiVersion: v1
   kind: Service
   metadata:
     labels:
@@ -151,7 +111,6 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${THANOS_QUERIER_NAMESPACE}.svc.cluster.local
-          - --rule-file=/etc/thanos/rules/metric-federation-rules/observatorium.yaml
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -219,17 +178,6 @@ objects:
           - mountPath: /var/thanos/rule
             name: data
             readOnly: false
-          - mountPath: /etc/thanos/rules/metric-federation-rules
-            name: metric-federation-rules
-        - args:
-          - -webhook-url=http://localhost:10902/-/reload
-          - -volume-dir=/etc/thanos/rules/metric-federation-rules
-          image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: configmap-reloader
-          volumeMounts:
-          - mountPath: /etc/thanos/rules/metric-federation-rules
-            name: metric-federation-rules
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
           - --reporter.type=grpc
@@ -269,10 +217,7 @@ objects:
           kubernetes.io/os: linux
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
-        volumes:
-        - configMap:
-            name: metric-federation-rules
-          name: metric-federation-rules
+        volumes: []
     volumeClaimTemplates:
     - metadata:
         labels:
@@ -288,6 +233,46 @@ objects:
           requests:
             storage: ${THANOS_RULER_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
+- apiVersion: v1
+  data:
+    observatorium.yaml: |-
+      "groups":
+      - "interval": "1m"
+        "name": "telemeter-kafka.rules"
+        "rules":
+        - "expr": |
+            kafka_id:strimzi_resource_state:max_over_time1h
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "kafka_id:strimzi_resource_state:max_over_time1h"
+        - "expr": |
+            kafka_id:haproxy_server_bytes_in_total:rate1h_gibibytes
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "kafka_id:haproxy_server_bytes_in_total:rate1h_gibibytes"
+        - "expr": |
+            kafka_id:haproxy_server_bytes_out_total:rate1h_gibibytes
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "kafka_id:haproxy_server_bytes_out_total:rate1h_gibibytes"
+        - "expr": |
+            kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibytes
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibytes"
+        - "expr": |
+            kafka_id:haproxy_server_bytes_in_out_total:rate1h_gibibytes
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "kafka_id:haproxy_server_bytes_in_out_total:rate1h_gibibytes"
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/part-of: observatorium
+    name: metric-federation-rules
 - apiVersion: v1
   data:
     rw-config.yaml: |-

@@ -8,7 +8,7 @@ local obs = import 'observatorium.libsonnet';
       metadata+: { namespace:: 'hidden' },
     }
     for name in std.objectFields(obs.thanos.manifests)
-    if obs.thanos.manifests[name] != null && std.startsWith(name, 'metric-federation-rule')
+    if obs.thanos.manifests[name] != null && std.startsWith(name, 'metric-federation')
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },

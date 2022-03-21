@@ -293,6 +293,77 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
+    local metricFederationStatelessRuler = 'metric-federation-ruler-remote-write-config',
+    metricFederationStatelessRule:: t.rule(thanosSharedConfig {
+      name: 'observatorium-thanos-metric-federation-statless-rule',
+      commonLabels+:: {
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/instance': 'metric-federation',
+      },
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      logLevel: '${THANOS_RULER_LOG_LEVEL}',
+      serviceMonitor: true,
+      queriers: [
+        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
+      ],
+      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
+      remoteWriteConfigFile: {
+        name: metricFederationStatelessRuler,
+        key: statelessRulerKey,
+      },
+      rulesConfig: [
+        {
+          name: metricFederationRulesName,
+          key: observatoriumRulesKey,
+        },
+      ],
+      resources: {
+        limits: {
+          cpu: '${THANOS_RULER_CPU_LIMIT}',
+          memory: '${THANOS_RULER_MEMORY_LIMIT}',
+        },
+        requests: {
+          cpu: '${THANOS_RULER_CPU_REQUEST}',
+          memory: '${THANOS_RULER_MEMORY_REQUEST}',
+        },
+      },
+      volumeClaimTemplate: {
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          storageClassName: '${STORAGE_CLASS}',
+          resources: {
+            requests: {
+              storage: '${THANOS_RULER_PVC_REQUEST}',
+            },
+          },
+        },
+      },
+    }) + {
+      configmap_rwconfig: {
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: {
+          name: statelessRuler,
+          annotations: {
+            'qontract.recycle': 'true',
+          },
+          labels: {
+            'app.kubernetes.io/instance': 'observatorium',
+            'app.kubernetes.io/part-of': 'observatorium',
+          },
+        },
+        data: {
+          [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
+            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
+              thanos.receiversService.metadata.name,
+              thanosSharedConfig.namespace,
+              thanos.receiversService.spec.ports[2].port,
+            ],
+          })),
+        },
+      },
+    },
+
     local storeShards = 3,
     stores:: t.storeShards(thanosSharedConfig {
       shards: storeShards,
@@ -947,6 +1018,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     } + {
       ['metric-federation-rule-' + name]: thanos.metricFederationRule[name]
       for name in std.objectFields(thanos.metricFederationRule)
+    } + {
+      ['metric-federation-stateless-rule-' + name]: thanos.metricFederationStatelessRule[name]
+      for name in std.objectFields(thanos.metricFederationStatelessRule)
     } + {
       ['observatorium-thanos-stateless-rule' + name]: thanos.statelessRule[name]
       for name in std.objectFields(thanos.statelessRule)

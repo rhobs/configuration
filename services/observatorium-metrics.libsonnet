@@ -84,9 +84,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      ruleFiles: [
-        '/etc/thanos/rules/rule-syncer/observatorium.yaml',
-      ],
       resources: {
         limits: {
           cpu: '${THANOS_RULER_CPU_LIMIT}',

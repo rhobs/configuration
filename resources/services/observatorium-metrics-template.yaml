@@ -2135,7 +2135,6 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
-          - --rule-file=/etc/thanos/rules/rule-syncer/observatorium.yaml
           - --alertmanagers.url=dnssrv+http://observatorium-alertmanager.${NAMESPACE}.svc.cluster.local:9093
           - |-
             --tracing.config="config":

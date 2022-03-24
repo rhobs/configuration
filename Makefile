@@ -18,6 +18,10 @@ $(VENDOR_DIR): $(JB) jsonnetfile.json jsonnetfile.lock.json
 
 JSONNET_SRC = $(shell find . -type f -not -path './*vendor/*' \( -name '*.libsonnet' -o -name '*.jsonnet' \))
 
+.PHONY: update
+update: $(JB) jsonnetfile.json jsonnetfile.lock.json
+	@$(JB) update https://github.com/thanos-io/kube-thanos/jsonnet/kube-thanos@main
+
 .PHONY: format
 format: $(JSONNET_SRC) $(JSONNETFMT)
 	@echo ">>>>> Running format"

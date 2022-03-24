@@ -339,7 +339,7 @@ objects:
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-    name: observatorium-thanos-metric-federation-statless-rule
+    name: observatorium-thanos-metric-federation-stateless-rule
   spec:
     clusterIP: None
     ports:
@@ -366,7 +366,7 @@ objects:
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-    name: observatorium-thanos-metric-federation-statless-rule
+    name: observatorium-thanos-metric-federation-stateless-rule
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -376,7 +376,7 @@ objects:
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
-    name: observatorium-thanos-metric-federation-statless-rule
+    name: observatorium-thanos-metric-federation-stateless-rule
   spec:
     endpoints:
     - port: http
@@ -404,7 +404,7 @@ objects:
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
-    name: observatorium-thanos-metric-federation-statless-rule
+    name: observatorium-thanos-metric-federation-stateless-rule
   spec:
     replicas: ${{THANOS_RULER_REPLICAS}}
     selector:
@@ -413,7 +413,7 @@ objects:
         app.kubernetes.io/instance: metric-federation
         app.kubernetes.io/name: thanos-rule
         app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-thanos-metric-federation-statless-rule
+    serviceName: observatorium-thanos-metric-federation-stateless-rule
     template:
       metadata:
         labels:

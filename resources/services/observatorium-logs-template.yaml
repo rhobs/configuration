@@ -92,6 +92,7 @@ objects:
           - -c 1024
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: memcached
           ports:
           - containerPort: 11211
@@ -108,6 +109,7 @@ objects:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: exporter
           ports:
           - containerPort: 9150
@@ -204,6 +206,7 @@ objects:
           - -c 1024
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: memcached
           ports:
           - containerPort: 11211
@@ -220,6 +223,7 @@ objects:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: exporter
           ports:
           - containerPort: 9150
@@ -316,6 +320,7 @@ objects:
           - -c 1024
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: memcached
           ports:
           - containerPort: 11211
@@ -332,6 +337,7 @@ objects:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: exporter
           ports:
           - containerPort: 9150
@@ -440,7 +446,6 @@ objects:
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
           - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
-          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -463,6 +468,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -582,7 +588,7 @@ objects:
         "frontend_address": "observatorium-loki-query-frontend-grpc.${NAMESPACE}.svc.cluster.local:9095"
         "grpc_client_config":
           "max_send_msg_size": 104857600
-        "parallelism": 32
+        "match_max_concurrent": true
       "ingester":
         "chunk_block_size": 262144
         "chunk_encoding": "snappy"
@@ -600,6 +606,10 @@ objects:
             "kvstore":
               "store": "memberlist"
         "max_transfer_retries": 0
+        "wal":
+          "dir": "/data/loki/wal"
+          "enabled": true
+          "replay_memory_ceiling": "4GB"
       "ingester_client":
         "grpc_client_config":
           "max_recv_msg_size": 67108864
@@ -629,6 +639,7 @@ objects:
           "max_look_back_period": "5m"
           "timeout": "3m"
         "extra_query_delay": "0s"
+        "max_concurrent": 2
         "query_ingesters_within": "2h"
         "query_timeout": "1h"
         "tail_max_duration": "1h"
@@ -727,7 +738,6 @@ objects:
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
           - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
-          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -750,6 +760,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -1014,7 +1025,7 @@ objects:
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
           - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
-          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
+          - -ingester.wal-replay-memory-ceiling=${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -1037,6 +1048,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -1230,7 +1242,8 @@ objects:
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
           - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
-          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
+          - -querier.max-concurrent=${LOKI_QUERIER_MAX_CONCURRENCY}
+          - -querier.worker-match-max-concurrent
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -1253,6 +1266,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -1381,7 +1395,6 @@ objects:
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
           - -distributor.replication-factor=${LOKI_REPLICATION_FACTOR}
-          - -querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}
           env:
           - name: S3_BUCKETS
             valueFrom:
@@ -1404,6 +1417,7 @@ objects:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -1541,7 +1555,7 @@ parameters:
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
-  value: 2.2.1
+  value: 2.4.2
 - name: LOKI_IMAGE
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET
@@ -1596,8 +1610,10 @@ parameters:
   value: 1200Mi
 - name: LOKI_REPLICATION_FACTOR
   value: "2"
-- name: LOKI_QUERY_PARALLELISM
+- name: LOKI_QUERIER_MAX_CONCURRENCY
   value: "2"
+- name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
+  value: 5GB
 - name: LOKI_CHUNK_CACHE_REPLICAS
   value: "2"
 - name: LOKI_CHUNK_CACHE_CPU_REQUESTS

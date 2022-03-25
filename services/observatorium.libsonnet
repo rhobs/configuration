@@ -410,7 +410,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'],
     namespace: obs.config.namespaces.default,
     commonLabels+:: obs.config.commonLabels,
-    version: 'master-2021-10-18-8943d73',
+    version: 'master-2022-03-24-098c31a',
     image: 'quay.io/observatorium/up:' + cfg.version,
     replicas: 1,
     endpointType: 'metrics',
@@ -492,10 +492,10 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
                   obs.config.namespaces.metrics,
                   obs.thanos.receiversService.spec.ports[2].port,
                 ],  // this is the internal cluster url of the thanos receive service
-                '--remote-write-interval=30s',  // how frequenetly to remote_write data
+                '--remote-write-interval=30s',  // how frequently to remote_write data
                 '--remote-requests-count=1000000',  // how many requests we make before exiting - make it a big number
                 '--value-interval=3600',  // how often to update the metric values
-                '--series-interval=86400',  // 24h - how often to create new series names
+                '--series-interval=315360000',  // 10y - how often to create new series names
                 '--metric-interval=315360000',  // 10y - how often to create new metric names
                 '--remote-tenant-header=THANOS-TENANT',  // this is tenant header to set in remote write requests
                 '--remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2',  // this is tenant we will write data to

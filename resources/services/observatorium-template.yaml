@@ -551,7 +551,7 @@ objects:
           - --remote-write-interval=30s
           - --remote-requests-count=1000000
           - --value-interval=3600
-          - --series-interval=86400
+          - --series-interval=315360000
           - --metric-interval=315360000
           - --remote-tenant-header=THANOS-TENANT
           - --remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
@@ -820,7 +820,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2021-10-18-8943d73
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-observatorium-up
 - apiVersion: apps/v1
   kind: Deployment
@@ -830,7 +830,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2021-10-18-8943d73
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-observatorium-up
   spec:
     replicas: 1
@@ -847,7 +847,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: observatorium-up
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: master-2021-10-18-8943d73
+          app.kubernetes.io/version: master-2022-03-24-098c31a
       spec:
         containers:
         - args:
@@ -856,7 +856,7 @@ objects:
           - --endpoint-type=metrics
           - --queries-file=/etc/up/queries.yaml
           - --endpoint-read=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090
-          image: quay.io/observatorium/up:master-2021-10-18-8943d73
+          image: quay.io/observatorium/up:master-2022-03-24-098c31a
           name: observatorium-up
           ports:
           - containerPort: 8080
@@ -884,7 +884,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2021-10-18-8943d73
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-observatorium-up
   spec:
     ports:

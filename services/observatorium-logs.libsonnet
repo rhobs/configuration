@@ -67,6 +67,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     version: '${LOKI_IMAGE_TAG}',
     image: '%s:%s' % ['${LOKI_IMAGE}', cfg.version],
     commonLabels+: obs.config.commonLabels,
+    queryConcurrency: 2,  // overwritten in observatorium-logs-template-overwrites.libsonnet
     objectStorageConfig: {
       secretName: '${LOKI_S3_SECRET}',
       bucketsKey: 'bucket',
@@ -76,6 +77,9 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     },
     memberlist: {
       ringName: 'gossip-ring',
+    },
+    wal: {
+      replayMemoryCeiling: '4GB',  // overwritten in observatorium-logs-template-overwrites.libsonnet
     },
     replicas: {
       compactor: 1,  // Loki supports only a single compactor instance.

@@ -59,7 +59,7 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
     manifests+:: {
       [name]+:
         local m = super[name];
-        if m.kind == 'Deployment' || m.kind == 'StatefulSet' then
+        if m.kind == 'StatefulSet' && std.length(std.findSubstr('querier', name)) != 0 then
           m {
             spec+: {
               template+: {
@@ -69,11 +69,57 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                       args: std.filter(function(arg)
                               !std.member([
                                 '-distributor.replication-factor',
-                                '-querier.worker-parallelism',
+                                '-querier.max-concurrent',
+                                '-querier.worker-match-max-concurrent',
                               ], std.split(arg, '=')[0]), super.args)
                             + [
                               '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
-                              '-querier.worker-parallelism=${LOKI_QUERY_PARALLELISM}',
+                              '-querier.max-concurrent=${LOKI_QUERIER_MAX_CONCURRENCY}',
+                              '-querier.worker-match-max-concurrent',
+                            ],
+                    }
+                    for c in super.containers
+                  ],
+                },
+              },
+            } + jaegerAgentSidecar.spec,
+          }
+        else if m.kind == 'StatefulSet' && std.length(std.findSubstr('ingester', name)) != 0 then
+          m {
+            spec+: {
+              template+: {
+                spec+: {
+                  containers: [
+                    c {
+                      args: std.filter(function(arg)
+                              !std.member([
+                                '-distributor.replication-factor',
+                                '-ingester.wal-replay-memory-ceiling',
+                              ], std.split(arg, '=')[0]), super.args)
+                            + [
+                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
+                              '-ingester.wal-replay-memory-ceiling=${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}',
+                            ],
+                    }
+                    for c in super.containers
+                  ],
+                },
+              },
+            } + jaegerAgentSidecar.spec,
+          }
+        else if m.kind == 'Deployment' || m.kind == 'StatefulSet' then
+          m {
+            spec+: {
+              template+: {
+                spec+: {
+                  containers: [
+                    c {
+                      args: std.filter(function(arg)
+                              !std.member([
+                                '-distributor.replication-factor',
+                              ], std.split(arg, '=')[0]), super.args)
+                            + [
+                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
                             ],
                     }
                     for c in super.containers

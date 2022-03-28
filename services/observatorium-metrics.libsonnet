@@ -298,7 +298,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         apiVersion: 'v1',
         kind: 'ConfigMap',
         metadata: {
-          name: statelessRuler,
+          name: metricFederationStatelessRuler,
           annotations: {
             'qontract.recycle': 'true',
           },

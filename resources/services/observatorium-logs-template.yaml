@@ -1137,7 +1137,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: ${LOKI_PVC_REQUEST}
+            storage: ${LOKI_INGESTER_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -1645,7 +1645,9 @@ parameters:
 - name: LOKI_RESULTS_CACHE_MEMORY_LIMITS
   value: 1536Mi
 - name: LOKI_PVC_REQUEST
-  value: 50Gi
+  value: 10Gi
+- name: LOKI_INGESTER_PVC_REQUEST
+  value: 150Gi
 - name: JAEGER_COLLECTOR_NAMESPACE
   value: observatorium
 - name: JAEGER_AGENT_IMAGE

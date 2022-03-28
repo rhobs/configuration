@@ -6,7 +6,7 @@ XARGS ?= xargs
 TMP_DIR := $(shell pwd)/tmp
 BIN_DIR ?= $(TMP_DIR)/bin
 OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
-OC_VERSION ?= 4.7.14
+OC_VERSION ?= 4.10.6
 OC ?= $(BIN_DIR)/oc
 
 .PHONY: all

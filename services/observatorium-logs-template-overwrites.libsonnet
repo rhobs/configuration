@@ -105,6 +105,20 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                   ],
                 },
               },
+              volumeClaimTemplates: [
+                t {
+                  spec: {
+                    accessModes: ['ReadWriteOnce'],
+                    resources: {
+                      requests: {
+                        storage: '${LOKI_INGESTER_PVC_REQUEST}',
+                      },
+                    },
+                    storageClassName: '${STORAGE_CLASS}',
+                  },
+                }
+                for t in super.volumeClaimTemplates
+              ],
             } + jaegerAgentSidecar.spec,
           }
         else if m.kind == 'Deployment' || m.kind == 'StatefulSet' then

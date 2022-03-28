@@ -877,7 +877,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         metadata: {
           name: cfg.name,
           namespace: cfg.namespace,
-          labels: { 'app.kubernetes.io/name': cfg.name },
+          labels: cfg.commonLabels,
         },
         spec: {
           ports: [

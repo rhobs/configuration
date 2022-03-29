@@ -250,7 +250,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
     local metricFederationStatelessRuler = 'metric-federation-ruler-remote-write-config',
     metricFederationStatelessRule:: t.rule(thanosSharedConfig {
-      name: 'observatorium-thanos-metric-federation-stateless-rule',
+      name: 'observatorium-thanos-metric-fed-stateless-rule',
       commonLabels+:: {
         'app.kubernetes.io/part-of': 'observatorium',
         'app.kubernetes.io/instance': 'metric-federation',

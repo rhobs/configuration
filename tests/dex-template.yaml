@@ -34,6 +34,7 @@ objects:
           - serve
           - /etc/dex/cfg/config.yaml
           image: ${IMAGE}:${IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: dex
           ports:
           - containerPort: 5556

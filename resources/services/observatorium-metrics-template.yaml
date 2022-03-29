@@ -1170,6 +1170,7 @@ objects:
           - -c ${THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT}
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: memcached
           ports:
           - containerPort: 11211
@@ -1186,6 +1187,7 @@ objects:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: exporter
           ports:
           - containerPort: 9150
@@ -2367,6 +2369,7 @@ objects:
           - -c ${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: memcached
           ports:
           - containerPort: 11211
@@ -2383,6 +2386,7 @@ objects:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: exporter
           ports:
           - containerPort: 9150
@@ -2484,6 +2488,7 @@ objects:
           - -c ${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: memcached
           ports:
           - containerPort: 11211
@@ -2500,6 +2505,7 @@ objects:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: exporter
           ports:
           - containerPort: 9150

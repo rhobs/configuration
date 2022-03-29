@@ -67,7 +67,9 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     version: '${LOKI_IMAGE_TAG}',
     image: '%s:%s' % ['${LOKI_IMAGE}', cfg.version],
     commonLabels+: obs.config.commonLabels,
-    queryConcurrency: 2,  // overwritten in observatorium-logs-template-overwrites.libsonnet
+    query+: {
+      concurrency: 2,  // overwritten in observatorium-logs-template-overwrites.libsonnet
+    },
     objectStorageConfig: {
       secretName: '${LOKI_S3_SECRET}',
       bucketsKey: 'bucket',
@@ -85,7 +87,9 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       compactor: 1,  // Loki supports only a single compactor instance.
       distributor: '${{LOKI_DISTRIBUTOR_REPLICAS}}',
       ingester: '${{LOKI_INGESTER_REPLICAS}}',
+      index_gateway: '${{LOKI_INDEX_GATEWAY_REPLICAS}}',
       querier: '${{LOKI_QUERIER_REPLICAS}}',
+      query_scheduler: '${{LOKI_QUERY_SCHEDULER_REPLICAS}}',
       query_frontend: '${{LOKI_QUERY_FRONTEND_REPLICAS}}',
     },
     resources: {
@@ -119,6 +123,16 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
           memory: '${LOKI_INGESTER_MEMORY_LIMITS}',
         },
       },
+      index_gateway: {
+        requests: {
+          cpu: '${LOKI_INDEX_GATEWAY_CPU_REQUESTS}',
+          memory: '${LOKI_INDEX_GATEWAY_MEMORY_REQUESTS}',
+        },
+        limits: {
+          cpu: '${LOKI_INDEX_GATEWAY_CPU_LIMITS}',
+          memory: '${LOKI_INDEX_GATEWAY_MEMORY_LIMITS}',
+        },
+      },
       querier: {
         requests: {
           cpu: '${LOKI_QUERIER_CPU_REQUESTS}',
@@ -127,6 +141,16 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         limits: {
           cpu: '${LOKI_QUERIER_CPU_LIMITS}',
           memory: '${LOKI_QUERIER_MEMORY_LIMITS}',
+        },
+      },
+      query_scheduler: {
+        requests: {
+          cpu: '${LOKI_QUERY_SCHEDULER_CPU_REQUESTS}',
+          memory: '${LOKI_QUERY_SCHEDULER_MEMORY_REQUESTS}',
+        },
+        limits: {
+          cpu: '${LOKI_QUERY_SCHEDULER_CPU_LIMITS}',
+          memory: '${LOKI_QUERY_SCHEDULER_MEMORY_LIMITS}',
         },
       },
       query_frontend: {
@@ -170,7 +194,9 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       compactor+: { withServiceMonitor: true },
       distributor+: { withServiceMonitor: true },
       ingester+: { withServiceMonitor: true },
+      index_gateway+: { withServiceMonitor: true },
       querier+: { withServiceMonitor: true },
+      query_scheduler+: { withServiceMonitor: true },
       query_frontend+: { withServiceMonitor: true },
     },
     config+: {

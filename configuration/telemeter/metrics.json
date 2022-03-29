@@ -27,6 +27,8 @@
   "{__name__=\"cluster:network_attachment_definition_instances:max\"}",
   "{__name__=\"cluster:node_instance_type_count:sum\"}",
   "{__name__=\"cluster:telemetry_selected_series:count\"}",
+  "{__name__=\"cluster:velero_backup_total:max\"}",
+  "{__name__=\"cluster:velero_restore_total:max\"}",
   "{__name__=\"cluster:virt_platform_nodes:sum\"}",
   "{__name__=\"cluster:vmi_request_cpu_cores:sum\"}",
   "{__name__=\"cluster:vsphere_esxi_version_total:sum\"}",

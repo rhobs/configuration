@@ -273,7 +273,9 @@ objects:
     annotations:
       service.alpha.openshift.io/serving-cert-secret-name: alertmanager-tls
     labels:
-      app.kubernetes.io/name: observatorium-alertmanager
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
     name: observatorium-alertmanager
   spec:
     ports:

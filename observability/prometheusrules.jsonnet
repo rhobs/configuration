@@ -349,7 +349,7 @@ local renderAlerts(name, environment, mixin) = {
             alertMessage: 'API /query endpoint is burning too much error budget to guarantee latency SLOs',
             metric: 'up_custom_query_duration_seconds',
             selectors: ['query="query-path-sli-1M-samples"', upNamespaceSelector],
-            latencyTarget: 2.0113571874999994,
+            latencyTarget: 5,
             latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
           slo.latencyburn({
@@ -357,7 +357,7 @@ local renderAlerts(name, environment, mixin) = {
             alertMessage: 'API /query endpoint is burning too much error budget to guarantee latency SLOs',
             metric: 'up_custom_query_duration_seconds',
             selectors: ['query="query-path-sli-10M-samples"', upNamespaceSelector],
-            latencyTarget: 10.761264004567169,
+            latencyTarget: 15,
             latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
           slo.latencyburn({
@@ -366,7 +366,7 @@ local renderAlerts(name, environment, mixin) = {
             metric: 'up_custom_query_duration_seconds',
             // We can't use !~ operator in these selectors
             selectors: ['query="query-path-sli-100M-samples"', upNamespaceSelector],
-            latencyTarget: 21.6447457021712,
+            latencyTarget: 100,
             latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
         ],

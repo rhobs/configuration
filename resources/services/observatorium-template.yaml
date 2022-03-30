@@ -7,6 +7,32 @@ objects:
   data:
     rbac.yaml: |-
       "roleBindings":
+      - "name": "rhacs-metrics"
+        "roles":
+        - "rhacs-metrics-write"
+        - "rhacs-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhacs-metrics-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhacs-metrics"
+      - "name": "rhacs-metrics-grafana"
+        "roles":
+        - "rhacs-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhacs-grafana-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhacs-grafana"
+      - "name": "rhacs-logs"
+        "roles":
+        - "rhacs-logs-read"
+        - "rhacs-logs-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhacs-logs-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhacs-logs"
       - "name": "rhobs"
         "roles":
         - "rhobs-write"
@@ -41,6 +67,34 @@ objects:
         - "kind": "user"
           "name": "service-account-observatorium-subwatch"
       "roles":
+      - "name": "rhacs-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhacs"
+      - "name": "rhacs-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhacs"
+      - "name": "rhacs-logs-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "rhacs"
+      - "name": "rhacs-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "rhacs"
       - "name": "rhobs-read"
         "permissions":
         - "read"

@@ -1,6 +1,54 @@
 {
   roles: [
     {
+      name: 'rhacs-metrics-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'rhacs',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'rhacs-metrics-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'rhacs',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
+    {
+      name: 'rhacs-logs-write',
+      resources: [
+        'logs',
+      ],
+      tenants: [
+        'rhacs',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
+    {
+      name: 'rhacs-logs-read',
+      resources: [
+        'logs',
+      ],
+      tenants: [
+        'rhacs',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
       name: 'rhobs-read',
       resources: [
         'metrics',
@@ -52,6 +100,56 @@
     },
   ],
   roleBindings: [
+    {
+      name: 'rhacs-metrics',
+      roles: [
+        'rhacs-metrics-write',
+        'rhacs-metrics-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-rhacs-metrics-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-rhacs-metrics',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'rhacs-metrics-grafana',
+      roles: [
+        'rhacs-metrics-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-rhacs-grafana-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-rhacs-grafana',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'rhacs-logs',
+      roles: [
+        'rhacs-logs-read',
+        'rhacs-logs-write',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-rhacs-logs-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-rhacs-logs',
+          kind: 'user',
+        },
+      ],
+    },
     {
       name: 'rhobs',
       roles: [

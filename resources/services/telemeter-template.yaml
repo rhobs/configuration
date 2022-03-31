@@ -137,6 +137,7 @@ objects:
           - --whitelist={__name__="cluster_operator_up"}
           - --whitelist={__name__="cluster_version"}
           - --whitelist={__name__="cluster_version_available_updates"}
+          - --whitelist={__name__="cluster_version_capability"}
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
           - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
@@ -334,6 +335,7 @@ objects:
           - --whitelist={__name__="cluster_operator_up"}
           - --whitelist={__name__="cluster_version"}
           - --whitelist={__name__="cluster_version_available_updates"}
+          - --whitelist={__name__="cluster_version_capability"}
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
           - --whitelist={__name__="code:apiserver_request_count:rate:sum"}

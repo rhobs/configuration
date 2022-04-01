@@ -43,6 +43,7 @@
   "{__name__=\"cluster_operator_up\"}",
   "{__name__=\"cluster_version\"}",
   "{__name__=\"cluster_version_available_updates\"}",
+  "{__name__=\"cluster_version_capability\"}",
   "{__name__=\"cluster_version_payload\"}",
   "{__name__=\"cnv:vmi_status_running:count\"}",
   "{__name__=\"code:apiserver_request_count:rate:sum\"}",

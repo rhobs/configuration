@@ -851,7 +851,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 10M samples return < 20s</center>",
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 10M samples return < 15s</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",

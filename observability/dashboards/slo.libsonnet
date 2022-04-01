@@ -450,7 +450,7 @@ function(instanceName, environment, dashboardName) {
       6
     ) +
     latencyRow(
-      '90% of valid requests that process 10M samples return < 20s',
+      '90% of valid requests that process 10M samples return < 15s',
       0.9,
       10,
       'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples",le="15"}[28d]))' % instance.upNamespace,

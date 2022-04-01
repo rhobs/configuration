@@ -234,6 +234,7 @@ objects:
           - --opa.package=observatorium
           - --memcached=observatorium-api-cache-memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
+          - --ams.mappings=cnvqe=${CNVQE_ORGANIZATION_ID}
           - --ams.mappings=dptp=${DPTP_ORGANIZATION_ID}
           - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
@@ -981,6 +982,8 @@ parameters:
   value: observatorium-logs
 - name: AMS_URL
   value: https://api.openshift.com
+- name: CNVQE_ORGANIZATION_ID
+  value: ""
 - name: DPTP_ORGANIZATION_ID
   value: ""
 - name: GUBERNATOR_CPU_LIMIT

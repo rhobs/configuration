@@ -328,6 +328,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
         osd: '${OSD_ORGANIZATION_ID}',
         dptp: '${DPTP_ORGANIZATION_ID}',
         managedkafka: '${MANAGEDKAFKA_ORGANIZATION_ID}',
+        cnvqe: '${CNVQE_ORGANIZATION_ID}',
       },
       memcached: '%s.%s.svc.cluster.local:%d' % [
         obs.memcached.service.metadata.name,

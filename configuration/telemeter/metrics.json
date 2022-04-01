@@ -63,6 +63,8 @@
   "{__name__=\"jaeger_operator_instances_agent_strategies\"}",
   "{__name__=\"jaeger_operator_instances_storage_types\"}",
   "{__name__=\"jaeger_operator_instances_strategies\"}",
+  "{__name__=\"jaeger_operator_autoprovisioning\"}",
+  "{__name__=\"jaeger_operator_managed\"}",
   "{__name__=\"job:ceph_osd_metadata:count\"}",
   "{__name__=\"job:ceph_pools_iops:total\"}",
   "{__name__=\"job:ceph_pools_iops_bytes:total\"}",

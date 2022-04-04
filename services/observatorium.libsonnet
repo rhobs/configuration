@@ -157,6 +157,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
       name: '${RULES_OBJSTORE_SECRET}',
       key: 'objstore.yaml',
     },
+    commonLabels+:: obs.config.commonLabels,
     serviceMonitor: true,
   }) + {
     deployment+: {

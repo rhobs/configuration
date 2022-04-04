@@ -73,7 +73,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OSD_ORGANIZATION_ID', value: '' },
     { name: 'RULES_OBJSTORE_IMAGE', value: 'quay.io/observatorium/rules-objstore' },
-    { name: 'RULES_OBJSTORE_IMAGE_TAG', value: 'main-2022-01-31-4a4394f' },
+    { name: 'RULES_OBJSTORE_IMAGE_TAG', value: 'main-2022-04-01-64cd17e' },
     { name: 'RULES_OBJSTORE_S3_SECRET', value: 'rules-objstore-stage-s3' },
     { name: 'RULES_OBJSTORE_SECRET', value: 'rules-objstore' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },

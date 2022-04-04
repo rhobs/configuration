@@ -737,8 +737,9 @@ objects:
   metadata:
     labels:
       app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
     name: rules-objstore
   spec:
@@ -746,8 +747,9 @@ objects:
     selector:
       matchLabels:
         app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: rules-objstore
+        app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
     strategy:
       rollingUpdate:
         maxSurge: 0
@@ -756,8 +758,9 @@ objects:
       metadata:
         labels:
           app.kubernetes.io/component: rules-storage
-          app.kubernetes.io/instance: rules-objstore
+          app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: rules-objstore
+          app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
       spec:
         containers:
@@ -818,8 +821,9 @@ objects:
   metadata:
     labels:
       app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
     name: rules-objstore
   spec:
@@ -832,15 +836,17 @@ objects:
       targetPort: 8080
     selector:
       app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
     labels:
       app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: rules-objstore
+      app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
     name: rules-objstore
 - apiVersion: monitoring.coreos.com/v1
@@ -857,8 +863,9 @@ objects:
     selector:
       matchLabels:
         app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: rules-objstore
+        app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     queries.yaml: |-
@@ -1085,7 +1092,7 @@ parameters:
 - name: RULES_OBJSTORE_IMAGE
   value: quay.io/observatorium/rules-objstore
 - name: RULES_OBJSTORE_IMAGE_TAG
-  value: main-2022-01-31-4a4394f
+  value: main-2022-04-01-64cd17e
 - name: RULES_OBJSTORE_S3_SECRET
   value: rules-objstore-stage-s3
 - name: RULES_OBJSTORE_SECRET

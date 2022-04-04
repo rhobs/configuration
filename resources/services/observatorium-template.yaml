@@ -42,6 +42,15 @@ objects:
           "name": "service-account-observatorium-rhobs-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhobs"
+      - "name": "rhobs-mst"
+        "roles":
+        - "rhobs-write"
+        - "rhobs-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhobs-mst-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhobs-mst"
       - "name": "rhobs-admin"
         "roles":
         - "telemeter-read"

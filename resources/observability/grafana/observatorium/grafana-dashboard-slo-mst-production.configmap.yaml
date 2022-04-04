@@ -692,7 +692,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 1M samples return < 2s</center>",
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 1M samples return < 5s</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -834,7 +834,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\",le=\"2.0113571874999994\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\",le=\"5\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
@@ -851,7 +851,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 10M samples return < 10s</center>",
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 10M samples return < 15s</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -993,7 +993,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\",le=\"10.761264004567169\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\",le=\"15\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
@@ -1010,7 +1010,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 100M samples return < 20s</center>",
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests that process 100M samples return < 100s</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -1152,7 +1152,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\",le=\"21.6447457021712\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\",le=\"100\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",

@@ -70,46 +70,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
     local observatoriumRules = 'observatorium-rules',
     local observatoriumRulesKey = 'observatorium.yaml',
-    rule:: t.rule(thanosSharedConfig {
-      name: 'observatorium-thanos-rule',
-      commonLabels+:: {
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/instance': 'observatorium',
-      },
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      logLevel: '${THANOS_RULER_LOG_LEVEL}',
-      serviceMonitor: true,
-      alertmanagersURLs: ['dnssrv+http://%s.%s.svc.cluster.local:%s' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace, thanosSharedConfig.alertmanagerPort]],
-      queriers: [
-        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
-      ],
-      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      resources: {
-        limits: {
-          cpu: '${THANOS_RULER_CPU_LIMIT}',
-          memory: '${THANOS_RULER_MEMORY_LIMIT}',
-        },
-        requests: {
-          cpu: '${THANOS_RULER_CPU_REQUEST}',
-          memory: '${THANOS_RULER_MEMORY_REQUEST}',
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          storageClassName: '${STORAGE_CLASS}',
-          resources: {
-            requests: {
-              storage: '${THANOS_RULER_PVC_REQUEST}',
-            },
-          },
-        },
-      },
-    }),
-
     local statelessRuler = 'remote-write-config',
     local statelessRulerKey = 'rw-config.yaml',
-    statelessRule:: t.rule(thanosSharedConfig {
+    rule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-stateless-rule',
       commonLabels+:: {
         'app.kubernetes.io/part-of': 'observatorium',
@@ -212,42 +175,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     },
 
     local metricFederationRulesName = 'metric-federation-rules',
-    metricFederationRule:: t.rule(thanosSharedConfig {
-      name: 'observatorium-thanos-metric-federation-rule',
-      commonLabels+:: {
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/instance': 'metric-federation',
-      },
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      logLevel: '${THANOS_RULER_LOG_LEVEL}',
-      serviceMonitor: true,
-      queriers: [
-        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
-      ],
-      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      resources: {
-        limits: {
-          cpu: '${THANOS_RULER_CPU_LIMIT}',
-          memory: '${THANOS_RULER_MEMORY_LIMIT}',
-        },
-        requests: {
-          cpu: '${THANOS_RULER_CPU_REQUEST}',
-          memory: '${THANOS_RULER_MEMORY_REQUEST}',
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          storageClassName: '${STORAGE_CLASS}',
-          resources: {
-            requests: {
-              storage: '${THANOS_RULER_PVC_REQUEST}',
-            },
-          },
-        },
-      },
-    }),
-
     local metricFederationStatelessRuler = 'metric-federation-ruler-remote-write-config',
     metricFederationStatelessRule:: t.rule(thanosSharedConfig {
       name: 'observatorium-thanos-metric-fed-stateless-rule',
@@ -565,7 +492,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
           [thanos.rule.service] +
-          [thanos.statelessRule.service] +
           [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
           [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)]
       ],
@@ -999,14 +925,8 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       ['store-bucket-cache-' + name]: thanos.storeBucketCache[name]
       for name in std.objectFields(thanos.storeBucketCache)
     } + {
-      ['metric-federation-rule-' + name]: thanos.metricFederationRule[name]
-      for name in std.objectFields(thanos.metricFederationRule)
-    } + {
       ['metric-federation-stateless-rule-' + name]: thanos.metricFederationStatelessRule[name]
       for name in std.objectFields(thanos.metricFederationStatelessRule)
-    } + {
-      ['observatorium-thanos-stateless-rule' + name]: thanos.statelessRule[name]
-      for name in std.objectFields(thanos.statelessRule)
     } + {
       ['observatorium-alertmanager-' + name]: thanos.alertmanager[name]
       for name in std.objectFields(thanos.alertmanager)

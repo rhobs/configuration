@@ -125,29 +125,6 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
       },
     },
 
-    statelessRule+:: {
-      statefulSet+: jaegerAgentSidecar.statefulSet + ruleSyncerSidecar.statefulSet {
-        spec+: {
-          replicas: '${{THANOS_RULER_REPLICAS}}',
-          template+: {
-            spec+: {
-              securityContext: {},
-              containers: [
-                if c.name == 'thanos-rule' then c {
-                  env+: s3EnvVars,
-                  volumeMounts+: [{
-                    name: ruleSyncerVolume,
-                    mountPath: '/etc/thanos/rules/rule-syncer',
-                  }],
-                } else c
-                for c in super.containers
-              ],
-            },
-          },
-        },
-      },
-    },
-
     metricFederationRule+:: {
       statefulSet+: jaegerAgentSidecar.statefulSet {
         spec+: {

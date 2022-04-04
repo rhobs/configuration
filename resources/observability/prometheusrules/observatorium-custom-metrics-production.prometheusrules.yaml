@@ -32,7 +32,7 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumnorulesloaded
         summary: Observatorium Thanos Ruler has not any rule to evaluate. This should not have happened. Check out the configuration.
       expr: |
-        sum by (namespace, job) (thanos_rule_loaded_rules{job=~"observatorium-thanos-rule.*|observatorium-thanos-stateless-rule.*|observatorium-thanos-metric-federation-rule.*|observatorium-thanos-metric-fed-stateless-rule.*"}) == 0
+        sum by (namespace, job) (thanos_rule_loaded_rules{job=~"observatorium-thanos-stateless-rule.*|observatorium-thanos-metric-fed-stateless-rule.*"}) == 0
       for: 5m
       labels:
         service: telemeter

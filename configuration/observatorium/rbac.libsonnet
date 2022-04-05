@@ -168,6 +168,23 @@
       ],
     },
     {
+      name: 'rhobs-mst',
+      roles: [
+        'rhobs-write',
+        'rhobs-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-rhobs-mst-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-rhobs-mst',
+          kind: 'user',
+        },
+      ],
+    },
+    {
       name: 'rhobs-admin',
       roles: [
         'telemeter-read',

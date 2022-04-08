@@ -98,6 +98,30 @@
         'read',
       ],
     },
+    {
+      name: 'psiocp-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'psiocp',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'psiocp-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'psiocp',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
   ],
   roleBindings: [
     {
@@ -226,6 +250,19 @@
         },
         {
           name: 'service-account-observatorium-subwatch',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'psiocp',
+      roles: [
+        'psiocp-write',
+        'psiocp-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-psiocp-staging',
           kind: 'user',
         },
       ],

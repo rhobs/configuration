@@ -75,6 +75,13 @@ objects:
           "name": "service-account-observatorium-subwatch-staging"
         - "kind": "user"
           "name": "service-account-observatorium-subwatch"
+      - "name": "psiocp"
+        "roles":
+        - "psiocp-write"
+        - "psiocp-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-psiocp-staging"
       "roles":
       - "name": "rhacs-metrics-read"
         "permissions":
@@ -134,6 +141,20 @@ objects:
         - "metrics"
         "tenants":
         - "telemeter"
+      - "name": "psiocp-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "psiocp"
+      - "name": "psiocp-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "psiocp"
   kind: ConfigMap
   metadata:
     annotations:

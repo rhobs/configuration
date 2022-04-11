@@ -1,6 +1,54 @@
 {
   roles: [
     {
+      name: 'rhods-metrics-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'rhods',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'rhods-metrics-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'rhods',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
+    {
+      name: 'rhods-logs-read',
+      resources: [
+        'logs',
+      ],
+      tenants: [
+        'rhods',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'rhods-logs-write',
+      resources: [
+        'logs',
+      ],
+      tenants: [
+        'rhods',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
+    {
       name: 'rhacs-metrics-read',
       resources: [
         'metrics',
@@ -124,6 +172,19 @@
     },
   ],
   roleBindings: [
+    {
+      name: 'rhods-metrics',
+      roles: [
+        'rhods-metrics-write',
+        'rhods-metrics-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-rhods-isv-staging',
+          kind: 'user',
+        },
+      ],
+    },
     {
       name: 'rhacs-metrics',
       roles: [

@@ -7,6 +7,13 @@ objects:
   data:
     rbac.yaml: |-
       "roleBindings":
+      - "name": "rhods-metrics"
+        "roles":
+        - "rhods-metrics-write"
+        - "rhods-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhods-isv-staging"
       - "name": "rhacs-metrics"
         "roles":
         - "rhacs-metrics-write"
@@ -83,6 +90,34 @@ objects:
         - "kind": "user"
           "name": "service-account-observatorium-psiocp-staging"
       "roles":
+      - "name": "rhods-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhods"
+      - "name": "rhods-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhods"
+      - "name": "rhods-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "rhods"
+      - "name": "rhods-logs-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "rhods"
       - "name": "rhacs-metrics-read"
         "permissions":
         - "read"

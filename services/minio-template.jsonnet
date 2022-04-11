@@ -1,6 +1,5 @@
 local minio = (import 'github.com/observatorium/observatorium/configuration/components/minio.libsonnet')({
   name:: 'minio',
-  namespace:: '${NAMESPACE}',
   image:: '${IMAGE}:${IMAGE_TAG}',
   version:: '${IMAGE_TAG}',
   accessKey:: '${MINIO_ACCESS_KEY}',
@@ -34,7 +33,7 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
     name: 'minio',
@@ -48,7 +47,6 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
     for name in std.objectFields(minio)
   ],
   parameters: [
-    { name: 'NAMESPACE', value: 'minio' },
     { name: 'IMAGE', value: 'minio/minio' },
     { name: 'IMAGE_TAG', value: 'RELEASE.2021-09-09T21-37-07Z' },
     { name: 'REPLICAS', value: '1' },

@@ -6,7 +6,7 @@
       oidc: {
         clientID: 'test',
         clientSecret: 'ZXhhbXBsZS1hcHAtc2VjcmV0',
-        issuerURL: 'http://dex.dex.svc.cluster.local:5556/dex',
+        issuerURL: 'http://dex.${TEST_DEX_NAMESPACE}.svc.cluster.local:5556/dex',
         usernameClaim: 'email',
       },
     },
@@ -16,7 +16,7 @@
       oidc: {
         clientID: 'test',
         clientSecret: 'ZXhhbXBsZS1hcHAtc2VjcmV0',
-        issuerURL: 'http://dex.dex.svc.cluster.local:5556/dex',
+        issuerURL: 'http://dex.${TEST_DEX_NAMESPACE}.svc.cluster.local:5556/dex',
         usernameClaim: 'email',
       },
     },

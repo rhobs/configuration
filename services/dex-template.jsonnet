@@ -24,7 +24,7 @@ local dex = (import 'github.com/observatorium/observatorium/configuration/compon
         userID: '08a8684b-db88-4b73-90a9-3cd1661f5466',
       },
     ],
-    issuer: 'http://${NAMESPACE}.${NAMESPACE}.svc.cluster.local:5556/dex',
+    issuer: 'http://dex.${NAMESPACE}.svc.cluster.local:5556/dex',
     storage: {
       type: 'sqlite3',
       config: { file: '/storage/dex.db' },
@@ -81,7 +81,7 @@ local dex = (import 'github.com/observatorium/observatorium/configuration/compon
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
     name: 'dex',

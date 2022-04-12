@@ -243,6 +243,10 @@
       ],
       subjects: [
         {
+          name: 'service-account-observatorium-rhobs-testing',
+          kind: 'user',
+        },
+        {
           name: 'service-account-observatorium-rhobs-staging',
           kind: 'user',
         },

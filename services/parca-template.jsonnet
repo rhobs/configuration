@@ -22,6 +22,7 @@ local config = {
     metrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
     mst: '${OBSERVATORIUM_MST_NAMESPACE}',
     logs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
+    telemeter: '${TELEMETER_NAMESPACE}',
   },
 
   rawconfig+:: {
@@ -35,116 +36,140 @@ local config = {
         config: { directory: '/parca' },
       },
     },
-    scrape_configs: [{
-      job_name: 'thanos',
-      kubernetes_sd_configs: [{
-        namespaces: { names: [
-          config.namespaces.default,
-          config.namespaces.metrics,
-          config.namespaces.mst,
-        ] },
-        role: 'pod',
-      }],
-      relabel_configs: [
-        {
-          action: 'keep',
-          regex: 'observatorium-thanos-.+',
-          source_labels: ['__meta_kubernetes_pod_name'],
-        },
-        {
-          action: 'keep',
-          regex: 'http',
-          source_labels: ['__meta_kubernetes_pod_container_port_name'],
-        },
-        {
-          source_labels: ['__meta_kubernetes_namespace'],
-          target_label: 'namespace',
-        },
-        {
-          source_labels: ['__meta_kubernetes_pod_name'],
-          target_label: 'pod',
-        },
-        {
-          source_labels: ['__meta_kubernetes_pod_container_name'],
-          target_label: 'container',
-        },
-      ],
-      scrape_interval: '30s',
-      scrape_timeout: '1m',
-    }, {
-      job_name: 'loki',
-      kubernetes_sd_configs: [{
-        namespaces: { names: ['${OBSERVATORIUM_LOGS_NAMESPACE}'] },
-        role: 'pod',
-      }],
-      relabel_configs: [
-        {
-          action: 'keep',
-          regex: 'observatorium-loki-.+',
-          source_labels: ['__meta_kubernetes_pod_name'],
-        },
-        {
-          action: 'keep',
-          regex: 'observatorium-loki-.+',
-          source_labels: ['__meta_kubernetes_pod_container_name'],
-        },
-        {
-          action: 'keep',
-          regex: 'metrics',
-          source_labels: ['__meta_kubernetes_pod_container_port_name'],
-        },
-        {
-          source_labels: ['__meta_kubernetes_namespace'],
-          target_label: 'namespace',
-        },
-        {
-          source_labels: ['__meta_kubernetes_pod_name'],
-          target_label: 'pod',
-        },
-        {
-          source_labels: ['__meta_kubernetes_pod_container_name'],
-          target_label: 'container',
-        },
-      ],
-      scrape_interval: '30s',
-      scrape_timeout: '1m',
-    }, {
-      job_name: 'telemeter',
-      kubernetes_sd_configs: [{
-        namespaces: { names: [config.namespaces.default] },
-        role: 'pod',
-      }],
-      relabel_configs: [
-        {
-          action: 'keep',
-          regex: 'telemeter-server-.+',
-          source_labels: ['__meta_kubernetes_pod_name'],
-        },
-        {
-          action: 'keep',
-          regex: 'internal',
-          source_labels: ['__meta_kubernetes_pod_container_port_name'],
-        },
-        {
-          source_labels: ['__meta_kubernetes_namespace'],
-          target_label: 'namespace',
-        },
-        {
-          source_labels: ['__meta_kubernetes_pod_name'],
-          target_label: 'pod',
-        },
-        {
-          source_labels: ['__meta_kubernetes_pod_container_name'],
-          target_label: 'container',
-        },
-      ],
-      scrape_interval: '30s',
-      scrape_timeout: '1m',
-      scheme: 'https',
-      tls_config: {
-        insecure_skip_verify: true,
+    scrape_configs: [
+      {
+        job_name: 'parca',
+        scrape_interval: '1m',
+        scrape_timeout: '30s',
+        static_configs: [
+          {
+            targets: ['localhost:7070'],
+            labels: {
+              instance: 'parca',
+              job: 'parca',
+            },
+          },
+        ],
       },
-    }],
+      {
+        job_name: 'rhobs',
+        kubernetes_sd_configs: [{
+          namespaces: { names: [
+            config.namespaces.default,
+            config.namespaces.metrics,
+            config.namespaces.mst,
+          ] },
+          role: 'pod',
+        }],
+        relabel_configs: [
+          // gubernator does not appear to expose pprof endpoints
+          {
+            action: 'drop',
+            regex: 'gubernator',
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'observatorium-.+',
+            source_labels: ['__meta_kubernetes_pod_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'http',
+            source_labels: ['__meta_kubernetes_pod_container_port_name'],
+          },
+          {
+            source_labels: ['__meta_kubernetes_namespace'],
+            target_label: 'namespace',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_name'],
+            target_label: 'pod',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+            target_label: 'container',
+          },
+        ],
+        scrape_interval: '1m',
+        scrape_timeout: '30s',
+      },
+      {
+        job_name: 'loki',
+        kubernetes_sd_configs: [{
+          namespaces: { names: ['${OBSERVATORIUM_LOGS_NAMESPACE}'] },
+          role: 'pod',
+        }],
+        relabel_configs: [
+          {
+            action: 'keep',
+            regex: 'observatorium-loki-.+',
+            source_labels: ['__meta_kubernetes_pod_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'observatorium-loki-.+',
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'metrics',
+            source_labels: ['__meta_kubernetes_pod_container_port_name'],
+          },
+          {
+            source_labels: ['__meta_kubernetes_namespace'],
+            target_label: 'namespace',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_name'],
+            target_label: 'pod',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+            target_label: 'container',
+          },
+        ],
+        scrape_interval: '1m',
+        scrape_timeout: '30s',
+      },
+      {
+        job_name: 'telemeter',
+        kubernetes_sd_configs: [{
+          namespaces: { names: [config.namespaces.telemeter] },
+          role: 'pod',
+        }],
+        relabel_configs: [
+          {
+            action: 'keep',
+            regex: 'telemeter-server.+',
+            source_labels: ['__meta_kubernetes_pod_name'],
+          },
+          {
+            action: 'keep',
+            regex: 'internal',
+            source_labels: ['__meta_kubernetes_pod_container_port_name'],
+          },
+          {
+            source_labels: ['__meta_kubernetes_namespace'],
+            target_label: 'namespace',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_name'],
+            target_label: 'pod',
+          },
+          {
+            source_labels: ['__meta_kubernetes_pod_container_name'],
+            target_label: 'container',
+          },
+        ],
+        scrape_interval: '1m',
+        scrape_timeout: '30s',
+        scheme: 'https',
+        tls_config: {
+          insecure_skip_verify: true,
+        },
+      },
+    ],
   },
 };
 
@@ -280,8 +305,9 @@ local proxyContainer = {
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
       { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
+      { name: 'TELEMETER_NAMESPACE', value: 'telemeter' },
       { name: 'IMAGE', value: 'ghcr.io/parca-dev/parca' },
-      { name: 'IMAGE_TAG', value: 'v0.1.0' },
+      { name: 'IMAGE_TAG', value: 'v0.10.0' },
       { name: 'PARCA_REPLICAS', value: '1' },
       { name: 'PARCA_CPU_REQUEST', value: '1' },
       { name: 'PARCA_MEMORY_REQUEST', value: '4Gi' },
@@ -304,16 +330,43 @@ local proxyContainer = {
     },
     objects: [
       ourRole {
-        metadata+: { namespace: '${REMOTE_NAMESPACE}' },
+        metadata+: { namespace: '${NAMESPACE}' },
       },
       ourRoleBinding {
-        metadata+: { namespace: '${REMOTE_NAMESPACE}' },
+        metadata+: { namespace: '${NAMESPACE}' },
+      },
+      ourRole {
+        metadata+: { namespace: '${OBSERVATORIUM_METRICS_NAMESPACE}' },
+      },
+      ourRoleBinding {
+        metadata+: { namespace: '${OBSERVATORIUM_METRICS_NAMESPACE}' },
+      },
+      ourRole {
+        metadata+: { namespace: '${OBSERVATORIUM_MST_NAMESPACE}' },
+      },
+      ourRoleBinding {
+        metadata+: { namespace: '${OBSERVATORIUM_MST_NAMESPACE}' },
+      },
+      ourRole {
+        metadata+: { namespace: '${OBSERVATORIUM_LOGS_NAMESPACE}' },
+      },
+      ourRoleBinding {
+        metadata+: { namespace: '${OBSERVATORIUM_LOGS_NAMESPACE}' },
+      },
+      ourRole {
+        metadata+: { namespace: '${TELEMETER_NAMESPACE}' },
+      },
+      ourRoleBinding {
+        metadata+: { namespace: '${TELEMETER_NAMESPACE}' },
       },
     ],
     parameters: [
-      { name: 'IMAGE_TAG', value: 'v0.1.0' },
+      { name: 'IMAGE_TAG', value: 'v0.10.0' },
       { name: 'NAMESPACE', value: 'observatorium' },
-      { name: 'REMOTE_NAMESPACE', value: 'observatorium-mst' },
+      { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
+      { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
+      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
+      { name: 'TELEMETER_NAMESPACE', value: 'telemeter' },
       { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
     ],
   },

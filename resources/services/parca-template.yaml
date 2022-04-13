@@ -16,7 +16,16 @@ objects:
             "directory": "/parca"
           "type": "FILESYSTEM"
       "scrape_configs":
-      - "job_name": "thanos"
+      - "job_name": "parca"
+        "scrape_interval": "1m"
+        "scrape_timeout": "30s"
+        "static_configs":
+        - "labels":
+            "instance": "parca"
+            "job": "parca"
+          "targets":
+          - "localhost:7070"
+      - "job_name": "rhobs"
         "kubernetes_sd_configs":
         - "namespaces":
             "names":
@@ -25,8 +34,12 @@ objects:
             - "${OBSERVATORIUM_MST_NAMESPACE}"
           "role": "pod"
         "relabel_configs":
+        - "action": "drop"
+          "regex": "gubernator"
+          "source_labels":
+          - "__meta_kubernetes_pod_container_name"
         - "action": "keep"
-          "regex": "observatorium-thanos-.+"
+          "regex": "observatorium-.+"
           "source_labels":
           - "__meta_kubernetes_pod_name"
         - "action": "keep"
@@ -42,8 +55,8 @@ objects:
         - "source_labels":
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
-        "scrape_interval": "30s"
-        "scrape_timeout": "1m"
+        "scrape_interval": "1m"
+        "scrape_timeout": "30s"
       - "job_name": "loki"
         "kubernetes_sd_configs":
         - "namespaces":
@@ -72,17 +85,17 @@ objects:
         - "source_labels":
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
-        "scrape_interval": "30s"
-        "scrape_timeout": "1m"
+        "scrape_interval": "1m"
+        "scrape_timeout": "30s"
       - "job_name": "telemeter"
         "kubernetes_sd_configs":
         - "namespaces":
             "names":
-            - "${NAMESPACE}"
+            - "${TELEMETER_NAMESPACE}"
           "role": "pod"
         "relabel_configs":
         - "action": "keep"
-          "regex": "telemeter-server-.+"
+          "regex": "telemeter-server.+"
           "source_labels":
           - "__meta_kubernetes_pod_name"
         - "action": "keep"
@@ -99,8 +112,8 @@ objects:
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
         "scheme": "https"
-        "scrape_interval": "30s"
-        "scrape_timeout": "1m"
+        "scrape_interval": "1m"
+        "scrape_timeout": "30s"
         "tls_config":
           "insecure_skip_verify": true
   kind: ConfigMap
@@ -310,10 +323,12 @@ parameters:
   value: observatorium-mst
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs
+- name: TELEMETER_NAMESPACE
+  value: telemeter
 - name: IMAGE
   value: ghcr.io/parca-dev/parca
 - name: IMAGE_TAG
-  value: v0.1.0
+  value: v0.10.0
 - name: PARCA_REPLICAS
   value: "1"
 - name: PARCA_CPU_REQUEST

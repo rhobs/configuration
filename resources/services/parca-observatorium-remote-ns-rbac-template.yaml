@@ -12,7 +12,7 @@ objects:
       app.kubernetes.io/name: parca
       app.kubernetes.io/version: ${IMAGE_TAG}
     name: parca
-    namespace: ${REMOTE_NAMESPACE}
+    namespace: ${NAMESPACE}
   rules:
   - apiGroups:
     - ""
@@ -33,7 +33,163 @@ objects:
       app.kubernetes.io/name: parca
       app.kubernetes.io/version: ${IMAGE_TAG}
     name: parca
-    namespace: ${REMOTE_NAMESPACE}
+    namespace: ${NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: parca
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${OBSERVATORIUM_METRICS_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${OBSERVATORIUM_METRICS_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: parca
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${OBSERVATORIUM_MST_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${OBSERVATORIUM_MST_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: parca
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: parca
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${TELEMETER_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
+    namespace: ${TELEMETER_NAMESPACE}
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -44,10 +200,16 @@ objects:
     namespace: ${NAMESPACE}
 parameters:
 - name: IMAGE_TAG
-  value: v0.1.0
+  value: v0.10.0
 - name: NAMESPACE
   value: observatorium
-- name: REMOTE_NAMESPACE
+- name: OBSERVATORIUM_METRICS_NAMESPACE
+  value: observatorium-metrics
+- name: OBSERVATORIUM_MST_NAMESPACE
   value: observatorium-mst
+- name: OBSERVATORIUM_LOGS_NAMESPACE
+  value: observatorium-logs
+- name: TELEMETER_NAMESPACE
+  value: telemeter
 - name: SERVICE_ACCOUNT_NAME
   value: observatorium

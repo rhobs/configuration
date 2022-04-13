@@ -281,7 +281,7 @@
       ],
       subjects: [
         {
-          name: 'team-observability-platform@redhat.com',
+          name: 'team-monitoring@redhat.com',
           kind: 'group',
         },
       ],

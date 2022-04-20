@@ -441,28 +441,28 @@ function(instanceName, environment, dashboardName) {
     ) +
     titleRow('API > Metrics Read > Latency') +
     latencyRow(
-      '90% of valid requests that process 1M samples return < 5s',
+      '90% of valid requests that process 1M samples return < 10s',
       0.9,
-      2,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples",le="5"}[28d]))' % instance.upNamespace,
+      10,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples",le="10"}[28d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples"}[1d])' % instance.upNamespace,
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-1M-samples"}[28d]))' % instance.upNamespace,
       6
     ) +
     latencyRow(
-      '90% of valid requests that process 10M samples return < 15s',
+      '90% of valid requests that process 10M samples return < 30s',
       0.9,
-      10,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples",le="15"}[28d]))' % instance.upNamespace,
+      30,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples",le="30"}[28d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples"}[1d])' % instance.upNamespace,
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-10M-samples"}[28d]))' % instance.upNamespace,
       7
     ) +
     latencyRow(
-      '90% of valid requests that process 100M samples return < 100s',
+      '90% of valid requests that process 100M samples return < 120s',
       0.9,
-      20,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples",le="100"}[28d]))' % instance.upNamespace,
+      120,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples",le="120"}[28d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples"}[1d])' % instance.upNamespace,
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
       8

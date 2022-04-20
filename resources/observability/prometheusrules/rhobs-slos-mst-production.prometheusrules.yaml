@@ -491,22 +491,22 @@ spec:
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-production,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-production,latency=10 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (14.4*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (14.4*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (14.4*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (6*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (6*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (6*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (6*0.100000)
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
         service: telemeter
@@ -514,122 +514,122 @@ spec:
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-production,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-production,latency=10 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (3*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (3*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (3*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (3*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="5"} > (0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",latency="10"} > (0.100000)
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
         service: telemeter
         severity: medium
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[5m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[5m]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[5m]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[30m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[30m]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[30m]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[1h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[1h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[1h]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[2h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[2h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[2h]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[6h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[6h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[6h]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[1d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[1d]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[1d]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="5",code!~"5.."}[3d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",namespace="observatorium-mst-production",le="10",code!~"5.."}[3d]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",namespace="observatorium-mst-production"}[3d]))
         )
       labels:
-        latency: "5"
+        latency: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-mst-production,latency=15 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-mst-production,latency=30 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (14.4*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (14.4*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (14.4*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (6*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (6*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (6*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (6*0.100000)
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
         service: telemeter
@@ -637,122 +637,122 @@ spec:
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-mst-production,latency=15 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for query=query-path-sli-10M-samples,namespace=observatorium-mst-production,latency=30 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (3*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (3*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (3*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (3*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="15"} > (0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",latency="30"} > (0.100000)
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
         service: telemeter
         severity: medium
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[5m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[5m]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[5m]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[30m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[30m]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[30m]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[1h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[1h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[1h]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[2h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[2h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[2h]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[6h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[6h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[6h]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[1d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[1d]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[1d]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="15",code!~"5.."}[3d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",namespace="observatorium-mst-production",le="30",code!~"5.."}[3d]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",namespace="observatorium-mst-production"}[3d]))
         )
       labels:
-        latency: "15"
+        latency: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-mst-production,latency=100 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-mst-production,latency=120 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (14.4*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (14.4*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (14.4*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (6*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (6*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (6*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (6*0.100000)
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
         service: telemeter
@@ -760,100 +760,100 @@ spec:
     - alert: APIMetricsReadLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-mst-production,latency=100 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for query=query-path-sli-100M-samples,namespace=observatorium-mst-production,latency=120 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (3*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate1d{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (3*0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (3*0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate2h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (3*0.100000)
         )
         or
         (
-          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate3d{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (0.100000)
           and
-          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="100"} > (0.100000)
+          latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",latency="120"} > (0.100000)
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
         service: telemeter
         severity: medium
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[5m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[5m]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[5m]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[30m]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[30m]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[30m]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[1h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[1h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[1h]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[2h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[2h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[2h]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[6h]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[6h]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[6h]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[1d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[1d]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[1d]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="100",code!~"5.."}[3d]))
+          sum(rate(up_custom_query_duration_seconds_bucket{query="query-path-sli-100M-samples",namespace="observatorium-mst-production",le="120",code!~"5.."}[3d]))
           /
           sum(rate(up_custom_query_duration_seconds_count{query="query-path-sli-100M-samples",namespace="observatorium-mst-production"}[3d]))
         )
       labels:
-        latency: "100"
+        latency: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d

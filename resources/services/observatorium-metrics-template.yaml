@@ -1745,6 +1745,42 @@ objects:
           "regex": "63e320cd-622a-4d05-9585-ffd48342633e"
           "source_labels":
           - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "1b9b6e43-9128-4bbf-bfff-3c120bbe6f11"
+        "name": "receive-rhacs"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "1b9b6e43-9128-4bbf-bfff-3c120bbe6f11"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "9ca26972-4328-4fe3-92db-31302013d03f"
+        "name": "receive-cnvqe"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "9ca26972-4328-4fe3-92db-31302013d03f"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "37b8fd3f-56ff-4b64-8272-917c9b0d1623"
+        "name": "receive-psiocp"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "37b8fd3f-56ff-4b64-8272-917c9b0d1623"
+          "source_labels":
+          - "tenant_id"
+      - "headers":
+          "THANOS-TENANT": "8ace13a2-1c72-4559-b43d-ab43e32a255a"
+        "name": "receive-rhods"
+        "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
+        "write_relabel_configs":
+        - "action": "keep"
+          "regex": "8ace13a2-1c72-4559-b43d-ab43e32a255a"
+          "source_labels":
+          - "tenant_id"
   kind: ConfigMap
   metadata:
     annotations:

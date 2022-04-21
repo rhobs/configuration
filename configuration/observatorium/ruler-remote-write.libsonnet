@@ -72,5 +72,61 @@ function(params) {
         },
       ],
     },
+    {
+      url: params.url,
+      name: 'receive-rhacs',
+      headers: {
+        'THANOS-TENANT': '1b9b6e43-9128-4bbf-bfff-3c120bbe6f11',
+      },
+      write_relabel_configs: [
+        {
+          source_labels: ['tenant_id'],
+          regex: '1b9b6e43-9128-4bbf-bfff-3c120bbe6f11',
+          action: 'keep',
+        },
+      ],
+    },
+    {
+      url: params.url,
+      name: 'receive-cnvqe',
+      headers: {
+        'THANOS-TENANT': '9ca26972-4328-4fe3-92db-31302013d03f',
+      },
+      write_relabel_configs: [
+        {
+          source_labels: ['tenant_id'],
+          regex: '9ca26972-4328-4fe3-92db-31302013d03f',
+          action: 'keep',
+        },
+      ],
+    },
+    {
+      url: params.url,
+      name: 'receive-psiocp',
+      headers: {
+        'THANOS-TENANT': '37b8fd3f-56ff-4b64-8272-917c9b0d1623',
+      },
+      write_relabel_configs: [
+        {
+          source_labels: ['tenant_id'],
+          regex: '37b8fd3f-56ff-4b64-8272-917c9b0d1623',
+          action: 'keep',
+        },
+      ],
+    },
+    {
+      url: params.url,
+      name: 'receive-rhods',
+      headers: {
+        'THANOS-TENANT': '8ace13a2-1c72-4559-b43d-ab43e32a255a',
+      },
+      write_relabel_configs: [
+        {
+          source_labels: ['tenant_id'],
+          regex: '8ace13a2-1c72-4559-b43d-ab43e32a255a',
+          action: 'keep',
+        },
+      ],
+    },
   ],
 }

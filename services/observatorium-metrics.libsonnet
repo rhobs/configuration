@@ -491,10 +491,14 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       stores: [
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
-          [thanos.rule.service] +
-          [thanos.metricFederationStatelessRule.service] +
           [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
           [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)]
+      ],
+      rules: [
+        'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
+        for service in
+          [thanos.rule.service] +
+          [thanos.metricFederationStatelessRule.service]
       ],
       serviceMonitor: true,
       resources: {

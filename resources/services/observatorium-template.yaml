@@ -261,6 +261,8 @@ objects:
             periodSeconds: 30
           name: observatorium-api
           ports:
+          - containerPort: 8090
+            name: grpc-public
           - containerPort: 8081
             name: internal
           - containerPort: 8080
@@ -435,6 +437,9 @@ objects:
     name: ${OBSERVATORIUM_API_IDENTIFIER}
   spec:
     ports:
+    - name: grpc-public
+      port: 8090
+      targetPort: 8090
     - name: internal
       port: 8081
       targetPort: 8081

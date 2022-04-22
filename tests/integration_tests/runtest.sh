@@ -16,7 +16,8 @@ export METRIC_NAME=${METRIC_NAME:-rhobs_e2e}
 export METRIC_LABELS=${METRIC_LABELS:-_id=\"test\"}
 
 # Up run parameters
-export UP_DURATION=${UP_DURATION:-10s}
+export UP_DURATION=${UP_DURATION:-30s}
+export UP_INITIAL_DELAY=${UP_INITIAL_DELAY:-5s}
 
 export TOKEN=$(curl \
     --fail-with-body \
@@ -31,11 +32,12 @@ if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
 fi
 
 up --endpoint-type=metrics \
-    --endpoint-read=${OBSERVATORIUM_API_URL}/api/metrics/v1/${TENANT}/api/v1/query \
+    --endpoint-read=${OBSERVATORIUM_API_URL}/api/metrics/v1/${TENANT} \
 	--endpoint-write=${OBSERVATORIUM_API_URL}/api/metrics/v1/${TENANT}/api/v1/receive \
     --token=${TOKEN} \
 	--log.level=${LOG_LEVEL} \
 	--name=${METRIC_NAME} \
 	--labels=${METRIC_LABELS} \
-    --duration=${UP_DURATION}
+    --duration=${UP_DURATION} \
+    --initial-query-delay=${UP_INITIAL_DELAY}
 

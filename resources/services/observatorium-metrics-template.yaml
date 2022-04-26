@@ -1703,6 +1703,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"
         "name": "receive-rhobs"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1712,6 +1720,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
         "name": "receive-telemeter"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1721,6 +1737,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "AC879303-C60F-4D0D-A6D5-A485CFD638B8"
         "name": "receive-dptp"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1730,6 +1754,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "770c1124-6ae8-4324-a9d4-9ce08590094b"
         "name": "receive-osd"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1739,6 +1771,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "63e320cd-622a-4d05-9585-ffd48342633e"
         "name": "receive-managedkafka"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1748,6 +1788,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "1b9b6e43-9128-4bbf-bfff-3c120bbe6f11"
         "name": "receive-rhacs"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1757,6 +1805,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "9ca26972-4328-4fe3-92db-31302013d03f"
         "name": "receive-cnvqe"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1766,6 +1822,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "37b8fd3f-56ff-4b64-8272-917c9b0d1623"
         "name": "receive-psiocp"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"
@@ -1775,6 +1839,14 @@ objects:
       - "headers":
           "THANOS-TENANT": "8ace13a2-1c72-4559-b43d-ab43e32a255a"
         "name": "receive-rhods"
+        "queue_config":
+          "batch_send_deadline": "5s"
+          "capacity": 120000
+          "max_backoff": "5m"
+          "max_samples_per_send": 40000
+          "max_shards": 50
+          "min_backoff": "5s"
+          "min_shards": 1
         "url": "http://observatorium-thanos-receive.${NAMESPACE}.svc.cluster.local:19291/api/v1/receive"
         "write_relabel_configs":
         - "action": "keep"

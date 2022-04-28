@@ -4,6 +4,251 @@ metadata:
   name: metric-federation-rule
 objects:
 - apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: metric-federation
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
+    name: observatorium-thanos-metric-federation-rule
+  spec:
+    clusterIP: None
+    ports:
+    - name: grpc
+      port: 10901
+      targetPort: 10901
+    - name: http
+      port: 10902
+      targetPort: 10902
+    - name: reloader
+      port: 9533
+      targetPort: 9533
+    selector:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: metric-federation
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: metric-federation
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
+    name: observatorium-thanos-metric-federation-rule
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: metric-federation
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-thanos-metric-federation-rule
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    - port: reloader
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rule-evaluation-engine
+        app.kubernetes.io/instance: metric-federation
+        app.kubernetes.io/name: thanos-rule
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: metric-federation
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
+    name: observatorium-thanos-metric-federation-rule
+  spec:
+    replicas: ${{THANOS_RULER_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rule-evaluation-engine
+        app.kubernetes.io/instance: metric-federation
+        app.kubernetes.io/name: thanos-rule
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-thanos-metric-federation-rule
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: rule-evaluation-engine
+          app.kubernetes.io/instance: metric-federation
+          app.kubernetes.io/name: thanos-rule
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/tracing: jaeger-agent
+          app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - rule
+          - --log.level=${THANOS_RULER_LOG_LEVEL}
+          - --log.format=logfmt
+          - --grpc-address=0.0.0.0:10901
+          - --http-address=0.0.0.0:10902
+          - --objstore.config=$(OBJSTORE_CONFIG)
+          - --data-dir=/var/thanos/rule
+          - --label=rule_replica="$(NAME)"
+          - --alert.label-drop=rule_replica
+          - --tsdb.retention=48h
+          - --tsdb.block-duration=2h
+          - --query=dnssrv+_http._tcp.observatorium-thanos-query.${THANOS_QUERIER_NAMESPACE}.svc.cluster.local
+          - --rule-file=/etc/thanos/rules/metric-federation-rules/observatorium.yaml
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-rule"
+            "type": "JAEGER"
+          env:
+          - name: NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: OBJSTORE_CONFIG
+            valueFrom:
+              secretKeyRef:
+                key: thanos.yaml
+                name: ${THANOS_CONFIG_SECRET}
+          - name: HOST_IP_ADDRESS
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: ${THANOS_S3_SECRET}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: ${THANOS_S3_SECRET}
+          image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 24
+            httpGet:
+              path: /-/healthy
+              port: 10902
+              scheme: HTTP
+            periodSeconds: 5
+          name: thanos-rule
+          ports:
+          - containerPort: 10901
+            name: grpc
+          - containerPort: 10902
+            name: http
+          - containerPort: 9533
+            name: reloader
+          readinessProbe:
+            failureThreshold: 18
+            httpGet:
+              path: /-/ready
+              port: 10902
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: ${THANOS_RULER_CPU_LIMIT}
+              memory: ${THANOS_RULER_MEMORY_LIMIT}
+            requests:
+              cpu: ${THANOS_RULER_CPU_REQUEST}
+              memory: ${THANOS_RULER_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/thanos/rule
+            name: data
+            readOnly: false
+          - mountPath: /etc/thanos/rules/metric-federation-rules
+            name: metric-federation-rules
+        - args:
+          - -webhook-url=http://localhost:10902/-/reload
+          - -volume-dir=/etc/thanos/rules/metric-federation-rules
+          image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          name: configmap-reloader
+          volumeMounts:
+          - mountPath: /etc/thanos/rules/metric-federation-rules
+            name: metric-federation-rules
+        - args:
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
+          - containerPort: 14271
+            name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+        nodeSelector:
+          kubernetes.io/os: linux
+        securityContext: {}
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
+        volumes:
+        - configMap:
+            name: metric-federation-rules
+          name: metric-federation-rules
+    volumeClaimTemplates:
+    - metadata:
+        labels:
+          app.kubernetes.io/component: rule-evaluation-engine
+          app.kubernetes.io/instance: metric-federation
+          app.kubernetes.io/name: thanos-rule
+          app.kubernetes.io/part-of: observatorium
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: ${THANOS_RULER_PVC_REQUEST}
+        storageClassName: ${STORAGE_CLASS}
+- apiVersion: v1
   data:
     observatorium.yaml: |-
       "groups":

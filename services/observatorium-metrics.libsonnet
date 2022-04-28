@@ -234,6 +234,12 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
+      rulesConfig: [
+        {
+          name: metricFederationRulesName,
+          key: observatoriumRulesKey,
+        },
+      ],
       resources: {
         limits: {
           cpu: '${THANOS_RULER_CPU_LIMIT}',
@@ -581,6 +587,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         for service in
           [thanos.rule.service] +
           [thanos.statelessRule.service] +
+          [thanos.metricFederationRule.service] +
           [thanos.metricFederationStatelessRule.service]
       ],
       serviceMonitor: true,

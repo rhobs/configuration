@@ -1057,6 +1057,7 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-stateless-rule.${NAMESPACE}.svc.cluster.local
+          - --rule=dnssrv+_grpc._tcp.observatorium-thanos-metric-federation-rule.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-metric-fed-stateless-rule.${NAMESPACE}.svc.cluster.local
           - --web.prefix-header=X-Forwarded-Prefix
           - --query.timeout=15m

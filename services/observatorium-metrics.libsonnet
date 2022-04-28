@@ -83,6 +83,15 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       queriers: [
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
+      ruleFiles: [
+        '/etc/thanos/rules/rule-syncer/observatorium.yaml',
+      ],
+      rulesConfig: [
+        {
+          name: observatoriumRules,
+          key: observatoriumRulesKey,
+        },
+      ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
       resources: {
         limits: {

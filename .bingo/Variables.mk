@@ -1,4 +1,4 @@
-# Auto generated binary variables helper managed by https://github.com/bwplotka/bingo v0.5.2. DO NOT EDIT.
+# Auto generated binary variables helper managed by https://github.com/bwplotka/bingo v0.6. DO NOT EDIT.
 # All tools are designed to be build inside $GOBIN.
 BINGO_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 GOPATH ?= $(shell go env GOPATH)
@@ -64,6 +64,12 @@ $(JSONNETFMT): $(BINGO_DIR)/jsonnetfmt.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
 	@echo "(re)installing $(GOBIN)/jsonnetfmt-v0.18.0"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnetfmt.mod -o=$(GOBIN)/jsonnetfmt-v0.18.0 "github.com/google/go-jsonnet/cmd/jsonnetfmt"
+
+OBSCTL := $(GOBIN)/obsctl-v0.0.0-20220427121052-da6d568fb711
+$(OBSCTL): $(BINGO_DIR)/obsctl.mod
+	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
+	@echo "(re)installing $(GOBIN)/obsctl-v0.0.0-20220427121052-da6d568fb711"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=obsctl.mod -o=$(GOBIN)/obsctl-v0.0.0-20220427121052-da6d568fb711 "github.com/observatorium/obsctl"
 
 PROMTOOL := $(GOBIN)/promtool-v1.8.2-0.20200522113006-f4dd45609a05
 $(PROMTOOL): $(BINGO_DIR)/promtool.mod

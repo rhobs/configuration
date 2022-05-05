@@ -852,12 +852,12 @@ objects:
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           livenessProbe:
-            failureThreshold: 24
+            failureThreshold: 10
             httpGet:
               path: /-/healthy
               port: 10902
               scheme: HTTP
-            periodSeconds: 5
+            periodSeconds: 120
           name: thanos-rule
           ports:
           - containerPort: 10901
@@ -2275,12 +2275,12 @@ objects:
           image: ${THANOS_IMAGE}:${THANOS_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           livenessProbe:
-            failureThreshold: 24
+            failureThreshold: 10
             httpGet:
               path: /-/healthy
               port: 10902
               scheme: HTTP
-            periodSeconds: 5
+            periodSeconds: 120
           name: thanos-rule
           ports:
           - containerPort: 10901

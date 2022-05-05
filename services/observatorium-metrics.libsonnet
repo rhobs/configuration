@@ -123,6 +123,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       commonLabels+:: {
         'app.kubernetes.io/part-of': 'observatorium',
         'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/name': 'thanos-stateless-rule',
       },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
@@ -260,6 +261,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       commonLabels+:: {
         'app.kubernetes.io/part-of': 'observatorium',
         'app.kubernetes.io/instance': 'metric-federation',
+        'app.kubernetes.io/name': 'thanos-stateless-rule',
       },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
       logLevel: '${THANOS_RULER_LOG_LEVEL}',

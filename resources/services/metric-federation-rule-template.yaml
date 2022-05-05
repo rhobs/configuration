@@ -459,7 +459,7 @@ objects:
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
-      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/name: thanos-stateless-rule
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-metric-fed-stateless-rule
@@ -478,7 +478,7 @@ objects:
     selector:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
-      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/name: thanos-stateless-rule
       app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: ServiceAccount
@@ -486,7 +486,7 @@ objects:
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
-      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/name: thanos-stateless-rule
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-metric-fed-stateless-rule
@@ -496,7 +496,7 @@ objects:
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
-      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/name: thanos-stateless-rule
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
     name: observatorium-thanos-metric-fed-stateless-rule
@@ -516,7 +516,7 @@ objects:
       matchLabels:
         app.kubernetes.io/component: rule-evaluation-engine
         app.kubernetes.io/instance: metric-federation
-        app.kubernetes.io/name: thanos-rule
+        app.kubernetes.io/name: thanos-stateless-rule
         app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: StatefulSet
@@ -524,7 +524,7 @@ objects:
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
-      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/name: thanos-stateless-rule
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
     name: observatorium-thanos-metric-fed-stateless-rule
@@ -534,7 +534,7 @@ objects:
       matchLabels:
         app.kubernetes.io/component: rule-evaluation-engine
         app.kubernetes.io/instance: metric-federation
-        app.kubernetes.io/name: thanos-rule
+        app.kubernetes.io/name: thanos-stateless-rule
         app.kubernetes.io/part-of: observatorium
     serviceName: observatorium-thanos-metric-fed-stateless-rule
     template:
@@ -542,7 +542,7 @@ objects:
         labels:
           app.kubernetes.io/component: rule-evaluation-engine
           app.kubernetes.io/instance: metric-federation
-          app.kubernetes.io/name: thanos-rule
+          app.kubernetes.io/name: thanos-stateless-rule
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/tracing: jaeger-agent
           app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
@@ -689,7 +689,7 @@ objects:
         labels:
           app.kubernetes.io/component: rule-evaluation-engine
           app.kubernetes.io/instance: metric-federation
-          app.kubernetes.io/name: thanos-rule
+          app.kubernetes.io/name: thanos-stateless-rule
           app.kubernetes.io/part-of: observatorium
         name: data
       spec:

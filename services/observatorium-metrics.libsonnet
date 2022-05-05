@@ -132,19 +132,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      rulesConfig: [
-        {
-          name: observatoriumRules,
-          key: observatoriumRulesKey,
-        },
-      ],
       remoteWriteConfigFile: {
         name: statelessRuler,
         key: statelessRulerKey,
       },
-      ruleFiles: [
-        '/etc/thanos/rules/rule-syncer/observatorium.yaml',
-      ],
       resources: {
         limits: {
           cpu: '${THANOS_RULER_CPU_LIMIT}',
@@ -281,12 +272,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         name: metricFederationStatelessRuler,
         key: statelessRulerKey,
       },
-      rulesConfig: [
-        {
-          name: metricFederationRulesName,
-          key: observatoriumRulesKey,
-        },
-      ],
       resources: {
         limits: {
           cpu: '${THANOS_RULER_CPU_LIMIT}',

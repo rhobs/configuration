@@ -561,7 +561,6 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${THANOS_QUERIER_NAMESPACE}.svc.cluster.local
-          - --rule-file=/etc/thanos/rules/metric-federation-rules/observatorium.yaml
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -630,21 +629,16 @@ objects:
           - mountPath: /var/thanos/rule
             name: data
             readOnly: false
-          - mountPath: /etc/thanos/rules/metric-federation-rules
-            name: metric-federation-rules
           - mountPath: /etc/thanos/config/metric-federation-ruler-remote-write-config
             name: metric-federation-ruler-remote-write-config
             readOnly: true
         - args:
           - -webhook-url=http://localhost:10902/-/reload
-          - -volume-dir=/etc/thanos/rules/metric-federation-rules
           - -volume-dir=/etc/thanos/config/metric-federation-ruler-remote-write-config
           image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: configmap-reloader
           volumeMounts:
-          - mountPath: /etc/thanos/rules/metric-federation-rules
-            name: metric-federation-rules
           - mountPath: /etc/thanos/config/metric-federation-ruler-remote-write-config
             name: metric-federation-ruler-remote-write-config
         - args:
@@ -687,9 +681,6 @@ objects:
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
-        - configMap:
-            name: metric-federation-rules
-          name: metric-federation-rules
         - configMap:
             name: metric-federation-ruler-remote-write-config
           name: metric-federation-ruler-remote-write-config

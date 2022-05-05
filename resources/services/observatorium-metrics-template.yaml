@@ -867,13 +867,13 @@ objects:
           - containerPort: 9533
             name: reloader
           readinessProbe:
-            failureThreshold: 18
+            failureThreshold: 3
             httpGet:
               path: /-/ready
               port: 10902
               scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 60
+            periodSeconds: 180
           resources:
             limits:
               cpu: ${THANOS_RULER_CPU_LIMIT}
@@ -2290,13 +2290,13 @@ objects:
           - containerPort: 9533
             name: reloader
           readinessProbe:
-            failureThreshold: 18
+            failureThreshold: 3
             httpGet:
               path: /-/ready
               port: 10902
               scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 60
+            periodSeconds: 180
           resources:
             limits:
               cpu: ${THANOS_RULER_CPU_LIMIT}

@@ -817,9 +817,7 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
-          - --rule-file=/etc/thanos/rules/rule-syncer/observatorium.yaml
           - --alertmanagers.url=dnssrv+http://observatorium-alertmanager.${NAMESPACE}.svc.cluster.local:9093
-          - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -888,8 +886,6 @@ objects:
           - mountPath: /var/thanos/rule
             name: data
             readOnly: false
-          - mountPath: /etc/thanos/rules/observatorium-rules
-            name: observatorium-rules
           - mountPath: /etc/thanos/config/remote-write-config
             name: remote-write-config
             readOnly: true
@@ -897,14 +893,11 @@ objects:
             name: rule-syncer
         - args:
           - -webhook-url=http://localhost:10902/-/reload
-          - -volume-dir=/etc/thanos/rules/observatorium-rules
           - -volume-dir=/etc/thanos/config/remote-write-config
           image: ${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: configmap-reloader
           volumeMounts:
-          - mountPath: /etc/thanos/rules/observatorium-rules
-            name: observatorium-rules
           - mountPath: /etc/thanos/config/remote-write-config
             name: remote-write-config
         - args:
@@ -964,9 +957,6 @@ objects:
         securityContext: {}
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
-        - configMap:
-            name: observatorium-rules
-          name: observatorium-rules
         - configMap:
             name: remote-write-config
           name: remote-write-config

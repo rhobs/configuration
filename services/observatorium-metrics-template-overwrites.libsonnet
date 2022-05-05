@@ -116,6 +116,11 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     name: ruleSyncerVolume,
                     mountPath: '/etc/thanos/rules/rule-syncer',
                   }],
+                  readinessProbe+: {
+                    failureThreshold: 3,
+                    periodSeconds: 180,
+                    initialDelaySeconds: 60,
+                  },
                 } else c
                 for c in super.containers
               ],
@@ -139,6 +144,11 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     name: ruleSyncerVolume,
                     mountPath: '/etc/thanos/rules/rule-syncer',
                   }],
+                  readinessProbe+: {
+                    failureThreshold: 3,
+                    periodSeconds: 180,
+                    initialDelaySeconds: 60,
+                  },
                 } else c
                 for c in super.containers
               ],

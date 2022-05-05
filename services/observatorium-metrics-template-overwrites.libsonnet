@@ -121,6 +121,10 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     periodSeconds: 180,
                     initialDelaySeconds: 60,
                   },
+                  livenessProbe+: {
+                    failureThreshold: 10,
+                    periodSeconds: 120,
+                  },
                 } else c
                 for c in super.containers
               ],
@@ -148,6 +152,10 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     failureThreshold: 3,
                     periodSeconds: 180,
                     initialDelaySeconds: 60,
+                  },
+                  livenessProbe+: {
+                    failureThreshold: 10,
+                    periodSeconds: 120,
                   },
                 } else c
                 for c in super.containers

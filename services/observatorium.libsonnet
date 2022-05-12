@@ -514,7 +514,6 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
   },
 
   tracing:: tracing({
-    local cfg = self,
     namespace: 'observatorium',
     commonLabels+:: obs.config.commonLabels,
     enabled: true,

@@ -154,6 +154,7 @@ objects:
         "resources":
         - "metrics"
         - "logs"
+        - "traces"
         "tenants":
         - "rhobs"
       - "name": "rhobs-write"
@@ -162,6 +163,7 @@ objects:
         "resources":
         - "metrics"
         - "logs"
+        - "traces"
         "tenants":
         - "rhobs"
       - "name": "telemeter-write"

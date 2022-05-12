@@ -117,6 +117,7 @@ objects:
           - --whitelist={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:memory_usage_bytes:sum"}
+          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
@@ -315,6 +316,7 @@ objects:
           - --whitelist={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:memory_usage_bytes:sum"}
+          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}

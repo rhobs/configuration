@@ -101,6 +101,7 @@
       resources: [
         'metrics',
         'logs',
+        'traces',
       ],
       tenants: [
         'rhobs',
@@ -114,6 +115,7 @@
       resources: [
         'metrics',
         'logs',
+        'traces',
       ],
       tenants: [
         'rhobs',

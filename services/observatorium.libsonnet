@@ -3,6 +3,7 @@ local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/observatorium/configuration/components/gubernator.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/lib/rules-objstore.libsonnet');
+local tracing = (import 'github.com/observatorium/observatorium/configuration/components/tracing.libsonnet');
 
 (import 'github.com/observatorium/observatorium/configuration/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
@@ -233,6 +234,9 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', cfg.version],
     replicas: 1,
     serviceMonitor: true,
+    traces: {
+      writeEndpoint: obs.tracing.manifests.otelcollector.metadata.name + '-collector:4318',
+    },
     logs: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.loki.manifests['query-frontend-http-service'].metadata.name,
@@ -509,6 +513,17 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     },
   },
 
+  tracing:: tracing({
+    local cfg = self,
+    namespace: 'observatorium',
+    commonLabels+:: obs.config.commonLabels,
+    enabled: true,
+    tenants: [
+      tenant.name
+      for tenant in (import '../configuration/observatorium/tenants.libsonnet').tenants
+    ],
+  }),
+
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
@@ -525,5 +540,8 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null
-  },
+  } + if obs.tracing.config.enabled then {
+    ['tracing-' + name]: obs.tracing.manifests[name]
+    for name in std.objectFields(obs.tracing.manifests)
+  } else {},
 }

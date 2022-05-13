@@ -3,13 +3,13 @@ local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/observatorium/configuration/components/gubernator.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/lib/rules-objstore.libsonnet');
-local tracing = (import 'github.com/observatorium/observatorium/configuration/components/tracing.libsonnet');
 
 (import 'github.com/observatorium/observatorium/configuration/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
 (import 'observatorium-metrics-template-overwrites.libsonnet') +
 (import 'observatorium-logs.libsonnet') +
 (import 'observatorium-logs-template-overwrites.libsonnet') +
+(import 'observatorium-traces.libsonnet') +
 {
   local obs = self,
 
@@ -513,16 +513,6 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     },
   },
 
-  tracing:: tracing({
-    namespace: 'observatorium',
-    commonLabels+:: obs.config.commonLabels,
-    enabled: true,
-    tenants: [
-      tenant.name
-      for tenant in (import '../configuration/observatorium/tenants.libsonnet').tenants
-    ],
-  }),
-
   manifests+:: {
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
@@ -539,8 +529,5 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null
-  } + if obs.tracing.config.enabled then {
-    ['tracing-' + name]: obs.tracing.manifests[name]
-    for name in std.objectFields(obs.tracing.manifests)
-  } else {},
+  },
 }

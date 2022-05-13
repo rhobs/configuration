@@ -11,7 +11,8 @@ local obs = import 'observatorium.libsonnet';
       for name in std.objectFields(obs.manifests)
       if obs.manifests[name] != null &&
         !std.startsWith(name, 'thanos-') &&
-        !std.startsWith(name, 'loki-')
+        !std.startsWith(name, 'loki-') &&
+        !std.startsWith(name, 'tracing-')
     ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },

@@ -3,7 +3,8 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
   local obs = self,
 
   tracing:: tracing({
-    namespace: 'observatorium',
+    name: obs.config.name,
+    namespace: '${NAMESPACE}',
     commonLabels+:: obs.config.commonLabels,
     enabled: true,
     tenants: [

@@ -11,7 +11,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: otelcol
       app.kubernetes.io/part-of: observatorium
-    name: observatorium-xyz-jaeger-rhobs
+    name: observatorium-jaeger-rhobs
   spec:
     strategy: allinone
 - apiVersion: jaegertracing.io/v1
@@ -22,7 +22,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: otelcol
       app.kubernetes.io/part-of: observatorium
-    name: observatorium-xyz-jaeger-telemeter
+    name: observatorium-jaeger-telemeter
   spec:
     strategy: allinone
 - apiVersion: opentelemetry.io/v1alpha1
@@ -33,16 +33,16 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: otelcol
       app.kubernetes.io/part-of: observatorium
-    name: observatorium-xyz-otel
+    name: observatorium-otel
   spec:
     config: |-
       exporters:
         jaeger/rhobs:
-          endpoint: "observatorium-xyz-jaeger-rhobs-collector:14250"
+          endpoint: "observatorium-jaeger-rhobs-collector:14250"
           tls:
             insecure: true
         jaeger/telemeter:
-          endpoint: "observatorium-xyz-jaeger-telemeter-collector:14250"
+          endpoint: "observatorium-jaeger-telemeter-collector:14250"
           tls:
             insecure: true
       processors:

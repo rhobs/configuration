@@ -91,6 +91,13 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-psiocp-staging"
+      - "name": "rhoc"
+        "roles":
+        - "rhoc-metrics-read"
+        - "rhoc-metrics-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhoc-staging"
       "roles":
       - "name": "rhods-metrics-read"
         "permissions":
@@ -192,6 +199,20 @@ objects:
         - "metrics"
         "tenants":
         - "psiocp"
+      - "name": "rhoc-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhoc"
+      - "name": "rhoc-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhoc"
   kind: ConfigMap
   metadata:
     annotations:

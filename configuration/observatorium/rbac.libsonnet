@@ -170,6 +170,30 @@
         'write',
       ],
     },
+    {
+      name: 'rhoc-metrics-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'rhoc',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'rhoc-metrics-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'rhoc',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
   ],
   roleBindings: [
     {
@@ -328,6 +352,19 @@
       subjects: [
         {
           name: 'service-account-observatorium-psiocp-staging',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'rhoc',
+      roles: [
+        'rhoc-metrics-read',
+        'rhoc-metrics-write',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-rhoc-staging',
           kind: 'user',
         },
       ],

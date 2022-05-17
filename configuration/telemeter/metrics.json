@@ -99,5 +99,7 @@
   "{__name__=\"visual_web_terminal_sessions_total\"}",
   "{__name__=\"workload:cpu_usage_cores:sum\"}",
   "{__name__=\"workload:memory_usage_bytes:sum\"}",
-  "{__name__=~\"cluster:usage:.*\"}"
+  "{__name__=~\"cluster:usage:.*\"}",
+  "{__name__=\"imageregistry:imagestreamtags_count:sum\"}",
+  "{__name__=\"imageregistry:operations_count:sum\"}"
 ]

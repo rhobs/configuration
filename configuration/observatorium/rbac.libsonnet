@@ -194,6 +194,30 @@
         'write',
       ],
     },
+    {
+      name: 'odfms-metrics-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'odfms',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'odfms-metrics-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'odfms',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
   ],
   roleBindings: [
     {
@@ -365,6 +389,19 @@
       subjects: [
         {
           name: 'service-account-observatorium-rhoc-staging',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'odfms',
+      roles: [
+        'odfms-metrics-read',
+        'odfms-metrics-write',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-odfms-staging',
           kind: 'user',
         },
       ],

@@ -98,6 +98,13 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhoc-staging"
+      - "name": "odfms"
+        "roles":
+        - "odfms-metrics-read"
+        - "odfms-metrics-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-odfms-staging"
       "roles":
       - "name": "rhods-metrics-read"
         "permissions":
@@ -213,6 +220,20 @@ objects:
         - "metrics"
         "tenants":
         - "rhoc"
+      - "name": "odfms-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "odfms"
+      - "name": "odfms-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "odfms"
   kind: ConfigMap
   metadata:
     annotations:

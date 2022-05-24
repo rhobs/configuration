@@ -20,15 +20,15 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
       kind: 'Subscription',
       metadata: {
         name: 'rhobs-opentelemetry',
-        namespace: 'openshift-operators',
+        namespace: '${OPENTELEMETRY_OPERATOR_NAMESPACE}',
       },
       spec: {
         channel: 'stable',
         installPlanApproval: 'Automatic',
         name: 'opentelemetry-product',
-        source: 'redhat-operators',
+        source: '${OPENTELEMETRY_OPERATOR_SOURCE}',
         sourceNamespace: 'openshift-marketplace',
-        startingCSV: 'opentelemetry-operator.v${OPENTELEMETRY_OPERATOR_RH_VERSION}',
+        startingCSV: 'opentelemetry-operator.v${OPENTELEMETRY_OPERATOR_VERSION}',
       },
     },
 
@@ -37,15 +37,15 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
       kind: 'Subscription',
       metadata: {
         name: 'rhobs-jaeger',
-        namespace: 'openshift-operators',
+        namespace: '${JAEGER_OPERATOR_NAMESPACE}',
       },
       spec: {
         channel: 'stable',
         installPlanApproval: 'Automatic',
         name: 'jaeger-product',
-        source: 'redhat-operators',
+        source: '${JAEGER_OPERATOR_SOURCE}',
         sourceNamespace: 'openshift-marketplace',
-        startingCSV: 'jaeger-operator.v${JAEGER_OPERATOR_RH_VERSION}',
+        startingCSV: 'jaeger-operator.v${JAEGER_OPERATOR_VERSION}',
       },
     },
   },

@@ -6,15 +6,15 @@ local obs = import 'observatorium.libsonnet';
     name: 'observatorium-traces',
   },
   objects: [
+    obs.tracingsubs.otelcol,
+    obs.tracingsubs.jaeger,
+  ] + [
     obs.tracing.manifests[name] {
       metadata+: {
         namespace:: 'hidden',
       },
     }
     for name in std.objectFields(obs.tracing.manifests)
-  ] + [
-    obs.tracingsubs.otelcol,
-    obs.tracingsubs.jaeger,
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-traces' },

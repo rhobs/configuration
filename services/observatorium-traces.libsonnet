@@ -48,9 +48,5 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
         startingCSV: 'jaeger-operator.v${JAEGER_OPERATOR_RH_VERSION}',
       },
     },
-    manifests: {
-      'tracing-otelcolsubs': obs.tracingsubs.otelcol,
-      'tracing-jaegersubs': obs.tracingsubs.jaeger,
-    },
   },
 }

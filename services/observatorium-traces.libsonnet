@@ -48,7 +48,7 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
   },
 
   manifests: {
-    otelcolsubs: obs.otelcolsubs,
-    jaegersubs: obs.jaegersubs,
+    'tracing-otelcolsubs': obs.otelcolsubs,
+    'tracing-jaegersubs': obs.jaegersubs,
   },
 }

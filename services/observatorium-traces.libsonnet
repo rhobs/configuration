@@ -13,9 +13,42 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     ],
   }),
 
-  manifests+::
-    if obs.tracing.config.enabled then {
-      ['tracing-' + name]: obs.tracing.manifests[name]
-      for name in std.objectFields(obs.tracing.manifests)
-    } else {},
+  otelcolsubs:: {
+    apiVersion: 'operators.coreos.com/v1alpha1',
+    kind: 'Subscription',
+    metadata: {
+      name: 'rhobs-opentelemetry',
+      namespace: 'openshift-operators',
+    },
+    spec: {
+      channel: 'stable',
+      installPlanApproval: 'Automatic',
+      name: 'opentelemetry-product',
+      source: 'redhat-operators',
+      sourceNamespace: 'openshift-marketplace',
+      startingCSV: 'opentelemetry-operator.v${OPENTELEMETRY_OPERATOR_RH_VERSION}',
+    },
+  },
+
+  jaegersubs:: {
+    apiVersion: 'operators.coreos.com/v1alpha1',
+    kind: 'Subscription',
+    metadata: {
+      name: 'rhobs-jaeger',
+      namespace: 'openshift-operators',
+    },
+    spec: {
+      channel: 'stable',
+      installPlanApproval: 'Automatic',
+      name: 'jaeger-product',
+      source: 'redhat-operators',
+      sourceNamespace: 'openshift-marketplace',
+      startingCSV: 'jaeger-operator.v${JAEGER_OPERATOR_RH_VERSION}',
+    },
+  },
+
+  manifests: {
+    otelcolsubs: obs.otelcolsubs,
+    jaegersubs: obs.jaegersubs,
+  },
 }

@@ -71,6 +71,34 @@ objects:
             - "otlp"
     image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.46.0
     mode: deployment
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-opentelemetry
+    namespace: openshift-operators
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: opentelemetry-product
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: opentelemetry-operator.v${OPENTELEMETRY_OPERATOR_RH_VERSION}
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-jaeger
+    namespace: openshift-operators
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: jaeger-product
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: jaeger-operator.v${JAEGER_OPERATOR_RH_VERSION}
 parameters:
 - name: NAMESPACE
   value: observatorium-traces
+- name: OPENTELEMETRY_OPERATOR_RH_VERSION
+  value: 0.44.1-2
+- name: JAEGER_OPERATOR_RH_VERSION
+  value: 1.30.2

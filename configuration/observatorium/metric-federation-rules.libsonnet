@@ -43,9 +43,9 @@
           interval: '1m',
           rules: [
             {
-              record: 'rox_central_cluster_metrics_cpu_capacity',
+              record: 'rhacs:rox_central_cluster_metrics_cpu_capacity:avg_over_time1h',
               expr: |||
-                rox_central_cluster_metrics_cpu_capacity
+                rhacs:rox_central_cluster_metrics_cpu_capacity:avg_over_time1h
               |||,
             },
           ],

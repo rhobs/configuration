@@ -39,10 +39,10 @@ objects:
         "name": "telemeter-rhacs.rules"
         "rules":
         - "expr": |
-            rox_central_cluster_metrics_cpu_capacity
+            rhacs:rox_central_cluster_metrics_cpu_capacity:avg_over_time1h
           "labels":
             "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
-          "record": "rox_central_cluster_metrics_cpu_capacity"
+          "record": "rhacs:rox_central_cluster_metrics_cpu_capacity:avg_over_time1h"
   kind: ConfigMap
   metadata:
     annotations:

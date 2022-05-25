@@ -248,7 +248,7 @@ objects:
           - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.write.endpoint=http://observatorium-loki-distributor-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
-          - --traces.write.endpoint=observatorium-otel-collector:4318
+          - --traces.write.endpoint=http://observatorium-otel-collector.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:4317
           - --grpc.listen=0.0.0.0:8090
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
@@ -1063,6 +1063,8 @@ parameters:
   value: observatorium-metrics
 - name: OBSERVATORIUM_LOGS_NAMESPACE
   value: observatorium-logs
+- name: OBSERVATORIUM_TRACES_NAMESPACE
+  value: observatorium-traces
 - name: AMS_URL
   value: https://api.openshift.com
 - name: CNVQE_ORGANIZATION_ID

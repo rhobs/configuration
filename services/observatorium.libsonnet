@@ -19,6 +19,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
       default: '${NAMESPACE}',
       metrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
       logs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
+      traces: '${OBSERVATORIUM_TRACES_NAMESPACE}',
     },
 
     commonLabels:: {
@@ -235,7 +236,11 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     replicas: 1,
     serviceMonitor: true,
     traces: {
-      writeEndpoint: obs.tracing.manifests.otelcollector.metadata.name + '-collector:4318',
+      writeEndpoint: 'http://%s-collector.%s.svc.cluster.local:%d' % [
+        obs.tracing.manifests.otelcollector.metadata.name,
+        obs.config.namespaces.traces,
+        4317,
+      ],
     },
     logs: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [

@@ -36,6 +36,7 @@ objects:
       app.kubernetes.io/name: otelcol
       app.kubernetes.io/part-of: observatorium
     name: observatorium-jaeger-rhobs
+    namespace: ${NAMESPACE}
   spec:
     strategy: allinone
 - apiVersion: jaegertracing.io/v1
@@ -47,6 +48,7 @@ objects:
       app.kubernetes.io/name: otelcol
       app.kubernetes.io/part-of: observatorium
     name: observatorium-jaeger-telemeter
+    namespace: ${NAMESPACE}
   spec:
     strategy: allinone
 - apiVersion: opentelemetry.io/v1alpha1
@@ -58,6 +60,7 @@ objects:
       app.kubernetes.io/name: otelcol
       app.kubernetes.io/part-of: observatorium
     name: observatorium-otel
+    namespace: ${NAMESPACE}
   spec:
     config: |-
       exporters:
@@ -99,7 +102,7 @@ parameters:
 - name: NAMESPACE
   value: observatorium-traces
 - name: OPENTELEMETRY_OPERATOR_VERSION
-  value: 0.44.1-2
+  value: 0.44.1-1
 - name: OPENTELEMETRY_OPERATOR_NAMESPACE
   value: openshift-operators
 - name: OPENTELEMETRY_OPERATOR_SOURCE

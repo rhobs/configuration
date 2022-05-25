@@ -236,7 +236,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     replicas: 1,
     serviceMonitor: true,
     traces: {
-      writeEndpoint: 'http://%s-collector.%s.svc.cluster.local:%d' % [
+      writeEndpoint: '%s-collector.%s.svc.cluster.local:%d' % [
         obs.tracing.manifests.otelcollector.metadata.name,
         obs.config.namespaces.traces,
         4317,

@@ -38,6 +38,18 @@
             },
           ],
         },
+        {
+          name: 'rhacs.rules',
+          interval: '1m',
+          rules: [
+            {
+              record: 'rox_central_cluster_metrics_cpu_capacity',
+              expr: |||
+                rox_central_cluster_metrics_cpu_capacity
+              |||,
+            },
+          ],
+        },
       ],
     },
   },

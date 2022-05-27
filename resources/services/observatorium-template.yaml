@@ -7,6 +7,15 @@ objects:
   data:
     rbac.yaml: |-
       "roleBindings":
+      - "name": "cnv-qe-metrics"
+        "roles":
+        - "cnv-qe-metrics-write"
+        - "cnv-qe-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-cnv-qe-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-cnv-qe"
       - "name": "rhods-metrics"
         "roles":
         - "rhods-metrics-write"
@@ -106,6 +115,20 @@ objects:
         - "kind": "user"
           "name": "service-account-observatorium-odfms-staging"
       "roles":
+      - "name": "cnv-qe-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "cnvqe"
+      - "name": "cnv-qe-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "cnvqe"
       - "name": "rhods-metrics-read"
         "permissions":
         - "read"

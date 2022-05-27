@@ -1,6 +1,30 @@
 {
   roles: [
     {
+      name: 'cnv-qe-metrics-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'cnvqe',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'cnv-qe-metrics-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'cnvqe',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
+    {
       name: 'rhods-metrics-read',
       resources: [
         'metrics',
@@ -220,6 +244,23 @@
     },
   ],
   roleBindings: [
+    {
+      name: 'cnv-qe-metrics',
+      roles: [
+        'cnv-qe-metrics-write',
+        'cnv-qe-metrics-read',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-cnv-qe-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-cnv-qe',
+          kind: 'user',
+        },
+      ],
+    },
     {
       name: 'rhods-metrics',
       roles: [

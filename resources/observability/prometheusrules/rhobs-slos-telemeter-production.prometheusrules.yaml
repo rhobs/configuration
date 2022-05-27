@@ -22,6 +22,7 @@ spec:
         sum(haproxy_server_http_responses_total:burnrate1h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
         service: telemeter
         severity: critical
@@ -36,6 +37,7 @@ spec:
         sum(haproxy_server_http_responses_total:burnrate6h{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
         service: telemeter
         severity: critical
@@ -50,6 +52,7 @@ spec:
         sum(haproxy_server_http_responses_total:burnrate1d{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
         service: telemeter
         severity: medium
@@ -64,6 +67,7 @@ spec:
         sum(haproxy_server_http_responses_total:burnrate3d{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
         service: telemeter
         severity: medium
@@ -72,6 +76,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[1d]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate1d
     - expr: |
@@ -79,6 +84,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[1h]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate1h
     - expr: |
@@ -86,6 +92,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[2h]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate2h
     - expr: |
@@ -93,6 +100,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[30m]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate30m
     - expr: |
@@ -100,6 +108,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[3d]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate3d
     - expr: |
@@ -107,6 +116,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[5m]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate5m
     - expr: |
@@ -114,6 +124,7 @@ spec:
         /
         sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code=~"^(2..|3..|5..)$"}[6h]))
       labels:
+        code: ^(2..|3..|5..)$
         route: telemeter-server-upload|telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate6h
   - name: rhobs-telemeter-telemeter-server-metrics-write-latency.slo
@@ -136,6 +147,7 @@ spec:
           latencytarget:http_request_duration_seconds:rate30m{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -159,6 +171,7 @@ spec:
           latencytarget:http_request_duration_seconds:rate6h{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -171,6 +184,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[5m]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -182,6 +196,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[30m]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -193,6 +208,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[1h]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -204,6 +220,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[2h]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -215,6 +232,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[6h]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -226,6 +244,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[1d]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -237,6 +256,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler=~"upload|receive",code=~"^(2..|3..|5..)$"}[3d]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: upload|receive
         job: telemeter-server
         latency: "5"
@@ -254,6 +274,7 @@ spec:
         sum(http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
@@ -269,6 +290,7 @@ spec:
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
@@ -284,6 +306,7 @@ spec:
         sum(http_requests_total:burnrate1d{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
@@ -299,6 +322,7 @@ spec:
         sum(http_requests_total:burnrate3d{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         service: telemeter
@@ -308,6 +332,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1d]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
@@ -316,6 +341,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
@@ -324,6 +350,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[2h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
@@ -332,6 +359,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[30m]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
@@ -340,6 +368,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[3d]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
@@ -348,6 +377,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[5m]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
@@ -356,6 +386,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[6h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
@@ -379,6 +410,7 @@ spec:
           latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -402,6 +434,7 @@ spec:
           latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -414,6 +447,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[5m]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -425,6 +459,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[30m]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -436,6 +471,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[1h]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -447,6 +483,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[2h]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -458,6 +495,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[6h]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -469,6 +507,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[1d]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -480,6 +519,7 @@ spec:
           sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code=~"^(2..|3..|5..)$"}[3d]))
         )
       labels:
+        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-api
         latency: "5"
@@ -497,6 +537,7 @@ spec:
         sum(http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
         service: telemeter
@@ -512,6 +553,7 @@ spec:
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
         service: telemeter
@@ -527,6 +569,7 @@ spec:
         sum(http_requests_total:burnrate1d{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
         service: telemeter
@@ -542,6 +585,7 @@ spec:
         sum(http_requests_total:burnrate3d{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
         service: telemeter
@@ -551,6 +595,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[1d]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
@@ -559,6 +604,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[1h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
@@ -567,6 +613,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[2h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
@@ -575,6 +622,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[30m]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
@@ -583,6 +631,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[3d]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
@@ -591,6 +640,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[5m]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
@@ -599,6 +649,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"^(2..|3..|5..)$"}[6h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h
@@ -613,6 +664,7 @@ spec:
         sum(http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
@@ -628,6 +680,7 @@ spec:
         sum(http_requests_total:burnrate6h{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
@@ -643,6 +696,7 @@ spec:
         sum(http_requests_total:burnrate1d{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
@@ -658,6 +712,7 @@ spec:
         sum(http_requests_total:burnrate3d{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
         service: telemeter
@@ -667,6 +722,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1d]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
@@ -675,6 +731,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
@@ -683,6 +740,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[2h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
@@ -691,6 +749,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[30m]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
@@ -699,6 +758,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[3d]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
@@ -707,6 +767,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[5m]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
@@ -715,6 +776,7 @@ spec:
         /
         sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"^(2..|3..|5..)$"}[6h]))
       labels:
+        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate6h

@@ -125,7 +125,6 @@ local appSREOverwrites(environment) = {
     // Prune selector label because not allowed by AppSRE
     labels: std.prune(labels {
       group: null,
-      code: null,
     }),
   },
 

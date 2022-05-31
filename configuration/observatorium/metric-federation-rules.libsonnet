@@ -25,6 +25,12 @@
               |||,
             },
             {
+              record: 'kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibyte_months',
+              expr: |||
+                kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibyte_months
+              |||,
+            },
+            {
               record: 'kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibytes',
               expr: |||
                 kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibytes

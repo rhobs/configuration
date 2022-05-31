@@ -3,6 +3,407 @@ kind: Template
 metadata:
   name: observatorium
 objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/name: avalanche-remote-writer
+      app.kubernetes.io/part-of: observatorium
+    name: avalanche-remote-writer
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: avalanche
+        app.kubernetes.io/name: avalanche-remote-writer
+        app.kubernetes.io/part-of: observatorium
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: avalanche
+          app.kubernetes.io/name: avalanche-remote-writer
+          app.kubernetes.io/part-of: observatorium
+      spec:
+        containers:
+        - args:
+          - --metric-count=1
+          - --series-count=8333
+          - --remote-url=http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291/api/v1/receive
+          - --remote-write-interval=30s
+          - --remote-requests-count=1000000
+          - --value-interval=3600
+          - --series-interval=315360000
+          - --metric-interval=315360000
+          - --remote-tenant-header=THANOS-TENANT
+          - --remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+          image: quay.io/observatorium/avalanche:make-tenant-header-configurable-2021-10-07-0a2cbf5
+          name: avalanche-remote-writer
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-api-cache-memcached
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-api-cache-memcached
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-api-cache-memcached
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+    name: observatorium-api-cache-memcached
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-api-cache-memcached
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: api-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - -m ${MEMCACHED_MEMORY_LIMIT_MB}
+          - -I 5m
+          - -c ${MEMCACHED_CONNECTION_LIMIT}
+          - -v
+          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+          resources:
+            limits:
+              cpu: ${MEMCACHED_CPU_LIMIT}
+              memory: ${MEMCACHED_MEMORY_LIMIT}
+            requests:
+              cpu: ${MEMCACHED_CPU_REQUEST}
+              memory: ${MEMCACHED_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+          resources:
+            limits:
+              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
+            requests:
+              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
+              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
+        securityContext: {}
+        serviceAccountName: observatorium-api-cache-memcached
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+    name: rules-objstore
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: rules-storage
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: rules-objstore
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+      spec:
+        containers:
+        - args:
+          - --debug.name=rules-objstore
+          - --web.listen=0.0.0.0:8080
+          - --web.internal.listen=0.0.0.0:8081
+          - --web.healthchecks.url=http://localhost:8080
+          - --log.level=info
+          - --log.format=logfmt
+          - --objstore.config-file=/etc/rules-objstore/objstore.yaml
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          image: ${RULES_OBJSTORE_IMAGE}:${RULES_OBJSTORE_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 30
+          name: rules-objstore
+          ports:
+          - containerPort: 8081
+            name: internal
+          - containerPort: 8080
+            name: public
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 5
+          resources: {}
+          volumeMounts:
+          - mountPath: /etc/rules-objstore/objstore.yaml
+            name: objstore
+            readOnly: true
+            subPath: objstore.yaml
+        serviceAccountName: rules-objstore
+        volumes:
+        - name: objstore
+          secret:
+            secretName: ${RULES_OBJSTORE_SECRET}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+    name: rules-objstore
+  spec:
+    ports:
+    - name: internal
+      port: 8081
+      targetPort: 8081
+    - name: public
+      port: 8080
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
+    name: rules-objstore
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: rules-objstore
+  spec:
+    endpoints:
+    - port: internal
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  data:
+    queries.yaml: |-
+      "queries":
+      - "name": "query-path-sli-1M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[1h])"
+      - "name": "query-path-sli-10M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[10h])"
+      - "name": "query-path-sli-100M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2022-03-24-098c31a
+    name: observatorium-observatorium-up
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2022-03-24-098c31a
+    name: observatorium-observatorium-up
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: blackbox-prober
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: observatorium-up
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: master-2022-03-24-098c31a
+      spec:
+        containers:
+        - args:
+          - --duration=0
+          - --log.level=debug
+          - --endpoint-type=metrics
+          - --queries-file=/etc/up/queries.yaml
+          - --endpoint-read=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090
+          image: quay.io/observatorium/up:master-2022-03-24-098c31a
+          name: observatorium-up
+          ports:
+          - containerPort: 8080
+            name: http
+          resources:
+            limits:
+              cpu: ${UP_CPU_LIMIT}
+              memory: ${UP_MEMORY_LIMIT}
+            requests:
+              cpu: ${UP_CPU_REQUEST}
+              memory: ${UP_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/up/
+            name: query-config
+            readOnly: false
+        volumes:
+        - configMap:
+            name: observatorium-observatorium-up
+          name: query-config
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2022-03-24-098c31a
+    name: observatorium-observatorium-up
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-up
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     rbac.yaml: |-
@@ -720,407 +1121,6 @@ objects:
         app.kubernetes.io/component: rate-limiter
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: gubernator
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      app.kubernetes.io/component: avalanche
-      app.kubernetes.io/name: avalanche-remote-writer
-      app.kubernetes.io/part-of: observatorium
-    name: avalanche-remote-writer
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: avalanche
-        app.kubernetes.io/name: avalanche-remote-writer
-        app.kubernetes.io/part-of: observatorium
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: avalanche
-          app.kubernetes.io/name: avalanche-remote-writer
-          app.kubernetes.io/part-of: observatorium
-      spec:
-        containers:
-        - args:
-          - --metric-count=1
-          - --series-count=8333
-          - --remote-url=http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291/api/v1/receive
-          - --remote-write-interval=30s
-          - --remote-requests-count=1000000
-          - --value-interval=3600
-          - --series-interval=315360000
-          - --metric-interval=315360000
-          - --remote-tenant-header=THANOS-TENANT
-          - --remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-          image: quay.io/observatorium/avalanche:make-tenant-header-configurable-2021-10-07-0a2cbf5
-          name: avalanche-remote-writer
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: api-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-api-cache-memcached
-  spec:
-    clusterIP: None
-    ports:
-    - name: client
-      port: 11211
-      targetPort: 11211
-    - name: metrics
-      port: 9150
-      targetPort: 9150
-    selector:
-      app.kubernetes.io/component: api-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  imagePullSecrets:
-  - name: quay.io
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: api-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-api-cache-memcached
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      prometheus: app-sre
-    name: observatorium-api-cache-memcached
-  spec:
-    endpoints:
-    - port: metrics
-    namespaceSelector:
-      matchNames: ${{NAMESPACES}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: api-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: apps/v1
-  kind: StatefulSet
-  metadata:
-    labels:
-      app.kubernetes.io/component: api-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-api-cache-memcached
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: api-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-api-cache-memcached
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: api-cache
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: memcached
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-      spec:
-        containers:
-        - args:
-          - -m ${MEMCACHED_MEMORY_LIMIT_MB}
-          - -I 5m
-          - -c ${MEMCACHED_CONNECTION_LIMIT}
-          - -v
-          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: memcached
-          ports:
-          - containerPort: 11211
-            name: client
-          resources:
-            limits:
-              cpu: ${MEMCACHED_CPU_LIMIT}
-              memory: ${MEMCACHED_MEMORY_LIMIT}
-            requests:
-              cpu: ${MEMCACHED_CPU_REQUEST}
-              memory: ${MEMCACHED_MEMORY_REQUEST}
-          terminationMessagePolicy: FallbackToLogsOnError
-        - args:
-          - --memcached.address=localhost:11211
-          - --web.listen-address=0.0.0.0:9150
-          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: exporter
-          ports:
-          - containerPort: 9150
-            name: metrics
-          resources:
-            limits:
-              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
-            requests:
-              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-        securityContext: {}
-        serviceAccountName: observatorium-api-cache-memcached
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
-    name: rules-objstore
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-objstore
-        app.kubernetes.io/part-of: observatorium
-    strategy:
-      rollingUpdate:
-        maxSurge: 0
-        maxUnavailable: 1
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: rules-storage
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: rules-objstore
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
-      spec:
-        containers:
-        - args:
-          - --debug.name=rules-objstore
-          - --web.listen=0.0.0.0:8080
-          - --web.internal.listen=0.0.0.0:8081
-          - --web.healthchecks.url=http://localhost:8080
-          - --log.level=info
-          - --log.format=logfmt
-          - --objstore.config-file=/etc/rules-objstore/objstore.yaml
-          env:
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                key: aws_access_key_id
-                name: ${RULES_OBJSTORE_S3_SECRET}
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                key: aws_secret_access_key
-                name: ${RULES_OBJSTORE_S3_SECRET}
-          image: ${RULES_OBJSTORE_IMAGE}:${RULES_OBJSTORE_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 10
-            httpGet:
-              path: /live
-              port: 8081
-              scheme: HTTP
-            periodSeconds: 30
-          name: rules-objstore
-          ports:
-          - containerPort: 8081
-            name: internal
-          - containerPort: 8080
-            name: public
-          readinessProbe:
-            failureThreshold: 12
-            httpGet:
-              path: /ready
-              port: 8081
-              scheme: HTTP
-            periodSeconds: 5
-          resources: {}
-          volumeMounts:
-          - mountPath: /etc/rules-objstore/objstore.yaml
-            name: objstore
-            readOnly: true
-            subPath: objstore.yaml
-        serviceAccountName: rules-objstore
-        volumes:
-        - name: objstore
-          secret:
-            secretName: ${RULES_OBJSTORE_SECRET}
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
-    name: rules-objstore
-  spec:
-    ports:
-    - name: internal
-      port: 8081
-      targetPort: 8081
-    - name: public
-      port: 8080
-      targetPort: 8080
-    selector:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
-    name: rules-objstore
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      prometheus: app-sre
-    name: rules-objstore
-  spec:
-    endpoints:
-    - port: internal
-    namespaceSelector:
-      matchNames: ${{NAMESPACES}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-objstore
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  data:
-    queries.yaml: |-
-      "queries":
-      - "name": "query-path-sli-1M-samples"
-        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[1h])"
-      - "name": "query-path-sli-10M-samples"
-        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[10h])"
-      - "name": "query-path-sli-100M-samples"
-        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
-  kind: ConfigMap
-  metadata:
-    annotations:
-      qontract.recycle: "true"
-    labels:
-      app.kubernetes.io/component: blackbox-prober
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-up
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
-    name: observatorium-observatorium-up
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      app.kubernetes.io/component: blackbox-prober
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-up
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
-    name: observatorium-observatorium-up
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: blackbox-prober
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: observatorium-up
-        app.kubernetes.io/part-of: observatorium
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: blackbox-prober
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: observatorium-up
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: master-2022-03-24-098c31a
-      spec:
-        containers:
-        - args:
-          - --duration=0
-          - --log.level=debug
-          - --endpoint-type=metrics
-          - --queries-file=/etc/up/queries.yaml
-          - --endpoint-read=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090
-          image: quay.io/observatorium/up:master-2022-03-24-098c31a
-          name: observatorium-up
-          ports:
-          - containerPort: 8080
-            name: http
-          resources:
-            limits:
-              cpu: ${UP_CPU_LIMIT}
-              memory: ${UP_MEMORY_LIMIT}
-            requests:
-              cpu: ${UP_CPU_REQUEST}
-              memory: ${UP_MEMORY_REQUEST}
-          volumeMounts:
-          - mountPath: /etc/up/
-            name: query-config
-            readOnly: false
-        volumes:
-        - configMap:
-            name: observatorium-observatorium-up
-          name: query-config
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: blackbox-prober
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-up
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
-    name: observatorium-observatorium-up
-  spec:
-    ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-    selector:
-      app.kubernetes.io/component: blackbox-prober
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-up
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      prometheus: app-sre
-    name: observatorium-up
-  spec:
-    endpoints:
-    - port: http
-    namespaceSelector:
-      matchNames: ${{NAMESPACES}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: blackbox-prober
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: observatorium-up
         app.kubernetes.io/part-of: observatorium
 parameters:
 - name: NAMESPACE

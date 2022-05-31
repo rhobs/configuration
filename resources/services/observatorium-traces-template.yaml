@@ -65,11 +65,11 @@ objects:
     config: |-
       exporters:
         jaeger/rhobs:
-          endpoint: "observatorium-jaeger-rhobs-collector:14250"
+          endpoint: "observatorium-jaeger-rhobs-collector.${NAMESPACE}.svc.cluster.local:14250"
           tls:
             insecure: true
         jaeger/telemeter:
-          endpoint: "observatorium-jaeger-telemeter-collector:14250"
+          endpoint: "observatorium-jaeger-telemeter-collector.${NAMESPACE}.svc.cluster.local:14250"
           tls:
             insecure: true
       processors:

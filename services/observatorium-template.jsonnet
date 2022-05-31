@@ -11,7 +11,8 @@ local obs = import 'observatorium.libsonnet';
       for name in std.objectFields(obs.manifests)
       if obs.manifests[name] != null &&
         !std.startsWith(name, 'thanos-') &&
-        !std.startsWith(name, 'loki-')
+        !std.startsWith(name, 'loki-') &&
+        !std.startsWith(name, 'tracing-')
     ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },
@@ -21,6 +22,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'NAMESPACES', value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]' },
     { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
+    { name: 'OBSERVATORIUM_TRACES_NAMESPACE', value: 'observatorium-traces' },
     { name: 'AMS_URL', value: 'https://api.openshift.com' },
     { name: 'CNVQE_ORGANIZATION_ID', value: '' },
     { name: 'DPTP_ORGANIZATION_ID', value: '' },

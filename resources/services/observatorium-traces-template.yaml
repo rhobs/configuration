@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: observatorium-traces
+objects:
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-opentelemetry
+    namespace: ${OPENTELEMETRY_OPERATOR_NAMESPACE}
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: opentelemetry-product
+    source: ${OPENTELEMETRY_OPERATOR_SOURCE}
+    sourceNamespace: openshift-marketplace
+    startingCSV: opentelemetry-operator.v${OPENTELEMETRY_OPERATOR_VERSION}
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-jaeger
+    namespace: ${JAEGER_OPERATOR_NAMESPACE}
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: jaeger-product
+    source: ${JAEGER_OPERATOR_SOURCE}
+    sourceNamespace: openshift-marketplace
+    startingCSV: jaeger-operator.v${JAEGER_OPERATOR_VERSION}
+- apiVersion: jaegertracing.io/v1
+  kind: Jaeger
+  metadata:
+    labels:
+      app.kubernetes.io/component: rhobs
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-jaeger-rhobs
+    namespace: ${NAMESPACE}
+  spec:
+    strategy: allinone
+- apiVersion: jaegertracing.io/v1
+  kind: Jaeger
+  metadata:
+    labels:
+      app.kubernetes.io/component: telemeter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-jaeger-telemeter
+    namespace: ${NAMESPACE}
+  spec:
+    strategy: allinone
+- apiVersion: opentelemetry.io/v1alpha1
+  kind: OpenTelemetryCollector
+  metadata:
+    labels:
+      app.kubernetes.io/component: jaeger
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-otel
+    namespace: ${NAMESPACE}
+  spec:
+    config: |-
+      exporters:
+        jaeger/rhobs:
+          endpoint: "observatorium-jaeger-rhobs-collector:14250"
+          tls:
+            insecure: true
+        jaeger/telemeter:
+          endpoint: "observatorium-jaeger-telemeter-collector:14250"
+          tls:
+            insecure: true
+      processors:
+        routing:
+          from_attribute: "X-Tenant"
+          table:
+          - exporters:
+            - "jaeger/rhobs"
+            value: "rhobs"
+          - exporters:
+            - "jaeger/telemeter"
+            value: "telemeter"
+      receivers:
+        otlp:
+          protocols:
+            grpc: {}
+      service:
+        pipelines:
+          traces:
+            exporters:
+            - "jaeger/rhobs"
+            - "jaeger/telemeter"
+            processors:
+            - "routing"
+            receivers:
+            - "otlp"
+    image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.46.0
+    mode: deployment
+parameters:
+- name: NAMESPACE
+  value: observatorium-traces
+- name: OPENTELEMETRY_OPERATOR_VERSION
+  value: 0.44.1-1
+- name: OPENTELEMETRY_OPERATOR_NAMESPACE
+  value: openshift-operators
+- name: OPENTELEMETRY_OPERATOR_SOURCE
+  value: redhat-operators
+- name: JAEGER_OPERATOR_VERSION
+  value: 1.30.2
+- name: JAEGER_OPERATOR_NAMESPACE
+  value: openshift-operators
+- name: JAEGER_OPERATOR_SOURCE
+  value: redhat-operators

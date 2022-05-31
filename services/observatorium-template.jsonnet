@@ -3,17 +3,16 @@ local obs = import 'observatorium.libsonnet';
   apiVersion: 'v1',
   kind: 'Template',
   metadata: { name: 'observatorium' },
-  objects:
-    [
-      obs.manifests[name] {
-        metadata+: { namespace:: 'hidden' },
-      }
-      for name in std.objectFields(obs.manifests)
-      if obs.manifests[name] != null &&
+  objects: std.sort([
+    obs.manifests[name] {
+      metadata+: { namespace:: 'hidden' },
+    }
+    for name in std.objectFields(obs.manifests)
+    if obs.manifests[name] != null &&
         !std.startsWith(name, 'thanos-') &&
         !std.startsWith(name, 'loki-') &&
         !std.startsWith(name, 'tracing-')
-    ],
+  ], std.manifestJsonMinified),
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },
     // Used for ServiceMonitors to discover workloads in given namespaces.

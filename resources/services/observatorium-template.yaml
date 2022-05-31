@@ -5238,6 +5238,74 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
+- apiVersion: jaegertracing.io/v1
+  kind: Jaeger
+  metadata:
+    labels:
+      app.kubernetes.io/component: rhobs
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-jaeger-rhobs
+  spec:
+    strategy: allinone
+- apiVersion: jaegertracing.io/v1
+  kind: Jaeger
+  metadata:
+    labels:
+      app.kubernetes.io/component: telemeter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-jaeger-telemeter
+  spec:
+    strategy: allinone
+- apiVersion: opentelemetry.io/v1alpha1
+  kind: OpenTelemetryCollector
+  metadata:
+    labels:
+      app.kubernetes.io/component: jaeger
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-otel
+  spec:
+    config: |-
+      exporters:
+        jaeger/rhobs:
+          endpoint: "observatorium-jaeger-rhobs-collector.${NAMESPACE}.svc.cluster.local:14250"
+          tls:
+            insecure: true
+        jaeger/telemeter:
+          endpoint: "observatorium-jaeger-telemeter-collector.${NAMESPACE}.svc.cluster.local:14250"
+          tls:
+            insecure: true
+      processors:
+        routing:
+          from_attribute: "X-Tenant"
+          table:
+          - exporters:
+            - "jaeger/rhobs"
+            value: "rhobs"
+          - exporters:
+            - "jaeger/telemeter"
+            value: "telemeter"
+      receivers:
+        otlp:
+          protocols:
+            grpc: {}
+      service:
+        pipelines:
+          traces:
+            exporters:
+            - "jaeger/rhobs"
+            - "jaeger/telemeter"
+            processors:
+            - "routing"
+            receivers:
+            - "otlp"
+    image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.46.0
+    mode: deployment
 parameters:
 - name: NAMESPACE
   value: observatorium

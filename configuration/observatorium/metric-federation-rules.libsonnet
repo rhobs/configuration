@@ -36,6 +36,12 @@
                 kafka_id:haproxy_server_bytes_in_out_total:rate1h_gibibytes
               |||,
             },
+            {
+              record: 'kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibyte_months',
+              expr: |||
+                kafka_id:kafka_broker_quota_totalstorageusedbytes:max_over_time1h_gibibyte_months
+              |||,
+            },
           ],
         },
         {

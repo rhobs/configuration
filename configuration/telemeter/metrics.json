@@ -19,6 +19,7 @@
   "{__name__=\"cluster:capacity_memory_bytes:sum\"}",
   "{__name__=\"cluster:cpu_usage_cores:sum\"}",
   "{__name__=\"cluster:ingress_controller_aws_nlb_active:sum\"}",
+  "{__name__=\"cluster:kata_monitor_running_shim_count:sum\"}",
   "{__name__=\"cluster:kube_persistentvolume_plugin_type_counts:sum\"}",
   "{__name__=\"cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum\"}",
   "{__name__=\"cluster:kubelet_volume_stats_used_bytes:provisioner:sum\"}",

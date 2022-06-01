@@ -45,6 +45,22 @@ $JB update https://github.com/thanos-io/kube-thanos/jsonnet/kube-thanos@main
 $JB update
 ```
 
+## Testing cluster
+
+The purpose of [RHOBS testing cluster](https://console-openshift-console.apps.rhobs-testing.qqzf.p1.openshiftapps.com/dashboards) is to
+experiment before changes are rolled out to staging and production environments. The objects in the cluster are managed by app-interface, however the testing cluster uses a different set of namespaces - `observatorium{-metrics,-traces}-testing`.
+
+Changes can be applied to the cluster manually, however they will be overridden by app-interface during the next deployment cycle.
+
+### Refresh token
+
+The refresh token can be obtained via [token-refresher](https://github.com/observatorium/token-refresher).
+
+```bash
+./token-refresher --url=https://observatorium.apps.rhobs-testing.qqzf.p1.openshiftapps.com  --oidc.client-id=observatorium-rhobs-testing  --oidc.client-secret=<token> --log.level=debug --oidc.issuer-url=https://sso.redhat.com/auth/realms/redhat-external --oidc.audience=observatorium-telemeter-testing --file /tmp/token
+cat /tmp/token
+```
+
 ## App Interface
 
 Our deployments our managed by our Red Hat AppSRE team.

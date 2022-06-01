@@ -129,7 +129,7 @@ resources/services/observatorium-traces-template.yaml: $(wildcard services/obser
 	@echo ">>>>> Running observatorium-traces templates"
 	$(JSONNET) -J vendor services/observatorium-traces-template.jsonnet | $(GOJSONTOYAML) > $@
 
-resources/services/metric-federation-rule-template.yaml: $(wildcard services/metric-federation-rule*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/services/metric-federation-rule-template.yaml: $(wildcard services/metric-federation-rule*) $(wildcard configuration/observatorium/metric-federation-rule*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running metric-federation-rule templates"
 	$(JSONNET) -J vendor services/metric-federation-rule-template.jsonnet | $(GOJSONTOYAML) > $@
 

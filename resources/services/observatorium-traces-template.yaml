@@ -65,13 +65,15 @@ objects:
     config: |-
       exporters:
         jaeger/rhobs:
-          endpoint: "observatorium-jaeger-rhobs-collector.${NAMESPACE}.svc.cluster.local:14250"
+          endpoint: "observatorium-jaeger-rhobs-collector-headless.${NAMESPACE}.svc.cluster.local:14250"
           tls:
-            insecure: true
+            ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+            insecure: false
         jaeger/telemeter:
-          endpoint: "observatorium-jaeger-telemeter-collector.${NAMESPACE}.svc.cluster.local:14250"
+          endpoint: "observatorium-jaeger-telemeter-collector-headless.${NAMESPACE}.svc.cluster.local:14250"
           tls:
-            insecure: true
+            ca_file: "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+            insecure: false
       processors:
         routing:
           from_attribute: "X-Tenant"

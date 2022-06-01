@@ -11,6 +11,10 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
       tenant.name
       for tenant in (import '../configuration/observatorium/tenants.libsonnet').tenants
     ],
+    otelcolTLS: {
+      insecure: false,
+      ca_file: '/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt',
+    },
   }),
 
 

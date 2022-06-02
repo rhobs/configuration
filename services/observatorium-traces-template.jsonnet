@@ -8,6 +8,7 @@ local obs = import 'observatorium.libsonnet';
   objects: [
     obs.tracingsubs.otelcol,
     obs.tracingsubs.jaeger,
+    obs.tracingsubs.elasticsearch,
   ] + [
     obs.tracing.manifests[name] {
       metadata+: {
@@ -25,5 +26,8 @@ local obs = import 'observatorium.libsonnet';
     { name: 'JAEGER_OPERATOR_VERSION', value: '1.30.2' },
     { name: 'JAEGER_OPERATOR_NAMESPACE', value: 'openshift-operators' },
     { name: 'JAEGER_OPERATOR_SOURCE', value: 'redhat-operators' },
+    { name: 'ELASTICSEARCH_OPERATOR_VERSION', value: '5.4.1-24' },
+    { name: 'ELASTICSEARCH_OPERATOR_NAMESPACE', value: 'openshift-operators' },
+    { name: 'ELASTICSEARCH_OPERATOR_SOURCE', value: 'redhat-operators' },
   ],
 }

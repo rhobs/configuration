@@ -54,5 +54,22 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
         startingCSV: 'jaeger-operator.v${JAEGER_OPERATOR_VERSION}',
       },
     },
+
+    elasticsearch:: {
+      apiVersion: 'operators.coreos.com/v1alpha1',
+      kind: 'Subscription',
+      metadata: {
+        name: 'rhobs-elasticsearch',
+        namespace: '${ELASTIC_OPERATOR_NAMESPACE}',
+      },
+      spec: {
+        channel: 'stable',
+        installPlanApproval: 'Automatic',
+        name: 'elasticsearch-operator',
+        source: '${ELASTICSEARCH_OPERATOR_SOURCE}',
+        sourceNamespace: 'openshift-marketplace',
+        startingCSV: 'elasticsearch-operator.${ELASTICSEARCH_OPERATOR_VERSION}',
+      },
+    },
   },
 }

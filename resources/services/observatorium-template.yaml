@@ -12,7 +12,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
     name: avalanche-remote-writer
   spec:
-    replicas: ${AVALANCHE_REPLICAS}
+    replicas: ${{AVALANCHE_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: avalanche

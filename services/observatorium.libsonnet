@@ -485,7 +485,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
         namespace: obs.config.namespaces.metrics,
       },
       spec: {
-        replicas: 1,
+        replicas: '${AVALANCHE_REPLICAS}',
         selector: { matchLabels: config.commonLabels },
         template: {
           metadata: {

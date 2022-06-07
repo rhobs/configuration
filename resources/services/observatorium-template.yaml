@@ -12,7 +12,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
     name: avalanche-remote-writer
   spec:
-    replicas: 1
+    replicas: ${AVALANCHE_REPLICAS}
     selector:
       matchLabels:
         app.kubernetes.io/component: avalanche
@@ -1253,3 +1253,5 @@ parameters:
   value: 1Gi
 - name: UP_MEMORY_LIMIT
   value: 2Gi
+- name: AVALANCHE_REPLICAS
+  value: "1"

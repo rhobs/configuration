@@ -83,5 +83,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'UP_CPU_LIMIT', value: '500m' },
     { name: 'UP_MEMORY_REQUEST', value: '1Gi' },
     { name: 'UP_MEMORY_LIMIT', value: '2Gi' },
+    { name: 'AVALANCHE_REPLICAS', value: '1' },
   ],
 }

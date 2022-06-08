@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: rhobs-e2e-tests
+objects:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: rhobs-e2e-tests-${SUFFIX}-${JOBID}
+  spec:
+    backoffLimit: 2
+    selector: {}
+    template:
+      metadata:
+        name: rhobs-e2e-tests
+      spec:
+        containers:
+            - image: ${IMAGE}
+              imagePullPolicy: Always
+              name: rhobs-e2e-tests
+              env:
+                - name: CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${CREDENTIALS_SECRET}
+                      key: client_id
+                - name: CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${CREDENTIALS_SECRET}
+                      key: client_secret
+                - name: OBSERVATORIUM_API_URL
+                  value: ${API_URL}
+        restartPolicy: Never
+parameters:
+- name: SUFFIX
+  value: 'suffix'
+  required: true
+- name: IMAGE
+  value: 'quay.io/app-sre/rhobs-e2e'
+- name: JOBID
+  generate: expression
+  from: "[0-9a-f]{7}"
+- name: CREDENTIALS_SECRET
+  value: 'secret'
+- name: API_URL
+  value: 'observatorium.api'

@@ -81,7 +81,7 @@ local dex = (import 'github.com/observatorium/observatorium/configuration/compon
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
     name: 'dex',

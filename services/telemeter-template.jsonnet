@@ -118,7 +118,7 @@ local tr = (import 'github.com/observatorium/token-refresher/jsonnet/lib/token-r
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: { name: 'telemeter' },
   objects: [

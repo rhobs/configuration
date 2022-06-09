@@ -116,7 +116,7 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
     name: 'jaeger',

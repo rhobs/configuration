@@ -98,7 +98,7 @@ objects:
             - "routing"
             receivers:
             - "otlp"
-    image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.46.0
+    image: ${OPENTELEMETRY_COLLECTOR_IMAGE}:${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}
     mode: deployment
 parameters:
 - name: NAMESPACE
@@ -109,6 +109,10 @@ parameters:
   value: openshift-operators
 - name: OPENTELEMETRY_OPERATOR_SOURCE
   value: redhat-operators
+- name: OPENTELEMETRY_COLLECTOR_IMAGE
+  value: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
+- name: OPENTELEMETRY_COLLECTOR_IMAGE_TAG
+  value: 0.46.0
 - name: JAEGER_OPERATOR_VERSION
   value: 1.30.2
 - name: JAEGER_OPERATOR_NAMESPACE

@@ -15,6 +15,8 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
       insecure: false,
       ca_file: '/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt',
     },
+    otelcolImage: '${OPENTELEMETRY_COLLECTOR_IMAGE}',
+    otelcolVersion: '${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}',
   }),
 
 

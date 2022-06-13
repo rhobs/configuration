@@ -19,6 +19,4 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     otelcolVersion: '${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}',
   }),
 
-
-  tracingsubs:: (import 'observatorium-traces-subscriptions.libsonnet'),
 }

@@ -241,6 +241,9 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
         obs.config.namespaces.traces,
         4317,
       ],
+      templateEndpoint: 'http://observatorium-jaeger-{tenant}-query.%s.svc.cluster.local:16686/' % [
+        obs.config.namespaces.traces,
+      ],
     },
     logs: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [

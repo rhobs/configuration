@@ -88,7 +88,7 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 .PHONY: manifests
 manifests: format $(VENDOR_DIR)
 manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
-manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-template.yaml
+manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml
 	$(MAKE) clean
 
@@ -128,6 +128,10 @@ resources/services/observatorium-logs-template.yaml: $(wildcard services/observa
 resources/services/observatorium-traces-template.yaml: $(wildcard services/observatorium-traces-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium-traces templates"
 	$(JSONNET) -J vendor services/observatorium-traces-template.jsonnet | $(GOJSONTOYAML) > $@
+
+resources/services/observatorium-traces-subscriptions-template.yaml: $(wildcard services/observatorium-traces-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running observatorium-traces-subscriptions templates"
+	$(JSONNET) -J vendor services/observatorium-traces-subscriptions-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/metric-federation-rule-template.yaml: $(wildcard services/metric-federation-rule*) $(wildcard configuration/observatorium/metric-federation-rule*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running metric-federation-rule templates"

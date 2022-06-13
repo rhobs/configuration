@@ -34,7 +34,7 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
     name: 'minio',

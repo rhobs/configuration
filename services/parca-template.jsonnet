@@ -231,7 +231,7 @@ local proxyContainer = {
 
 {
   'parca-template': {
-    apiVersion: 'v1',
+    apiVersion: 'template.openshift.io/v1',
     kind: 'Template',
     metadata: {
       name: 'parca',
@@ -323,7 +323,7 @@ local proxyContainer = {
     ],
   },
   'parca-observatorium-remote-ns-rbac-template': {
-    apiVersion: 'v1',
+    apiVersion: 'template.openshift.io/v1',
     kind: 'Template',
     metadata: {
       name: 'parca-observatorium-rbac',

@@ -22,7 +22,7 @@ local dashboards = {
 };
 
 {
-  apiVersion: 'v1',
+  apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
     name: 'observatorium-logs-dahboards-templates',

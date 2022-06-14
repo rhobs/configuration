@@ -17,6 +17,9 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     },
     otelcolImage: '${OPENTELEMETRY_COLLECTOR_IMAGE}',
     otelcolVersion: '${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}',
+    jaegerSpec: {
+      strategy: 'allinone',
+    },
   }),
 
 }

@@ -1,0 +1,60 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: observatorium-traces-subscriptions
+objects:
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-opentelemetry
+    namespace: ${OPENTELEMETRY_OPERATOR_NAMESPACE}
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: opentelemetry-product
+    source: ${OPENTELEMETRY_OPERATOR_SOURCE}
+    sourceNamespace: openshift-marketplace
+    startingCSV: opentelemetry-operator.v${OPENTELEMETRY_OPERATOR_VERSION}
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-jaeger
+    namespace: ${JAEGER_OPERATOR_NAMESPACE}
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: jaeger-product
+    source: ${JAEGER_OPERATOR_SOURCE}
+    sourceNamespace: openshift-marketplace
+    startingCSV: jaeger-operator.v${JAEGER_OPERATOR_VERSION}
+- apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: rhobs-elasticsearch
+    namespace: ${ELASTIC_OPERATOR_NAMESPACE}
+  spec:
+    channel: stable
+    installPlanApproval: Automatic
+    name: elasticsearch-operator
+    source: ${ELASTICSEARCH_OPERATOR_SOURCE}
+    sourceNamespace: openshift-marketplace
+    startingCSV: elasticsearch-operator.${ELASTICSEARCH_OPERATOR_VERSION}
+parameters:
+- name: OPENTELEMETRY_OPERATOR_VERSION
+  value: 0.44.1-1
+- name: OPENTELEMETRY_OPERATOR_NAMESPACE
+  value: openshift-operators
+- name: OPENTELEMETRY_OPERATOR_SOURCE
+  value: redhat-operators
+- name: JAEGER_OPERATOR_VERSION
+  value: 1.30.2
+- name: JAEGER_OPERATOR_NAMESPACE
+  value: openshift-operators
+- name: JAEGER_OPERATOR_SOURCE
+  value: redhat-operators
+- name: ELASTICSEARCH_OPERATOR_VERSION
+  value: 5.4.1-24
+- name: ELASTICSEARCH_OPERATOR_NAMESPACE
+  value: openshift-operators
+- name: ELASTICSEARCH_OPERATOR_SOURCE
+  value: redhat-operators

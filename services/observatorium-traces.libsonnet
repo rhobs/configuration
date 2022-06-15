@@ -8,10 +8,10 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     metadata: {
       annotations: {
         'logging.openshift.io/elasticsearch-cert-management': 'true',
-        'logging.openshift.io/elasticsearch-cert.jaeger-shared-es': 'user.jaeger',
-        'logging.openshift.io/elasticsearch-cert.curator-shared-es': 'system.logging.curator',
+        'logging.openshift.io/elasticsearch-cert.jaeger-${ELASTICSEARCH_NAME}': 'user.jaeger',
+        'logging.openshift.io/elasticsearch-cert.curator-${ELASTICSEARCH_NAME}': 'system.logging.curator',
       },
-      name: 'shared-es',
+      name: '${ELASTICSEARCH_NAME}',
       namespace: '${NAMESPACE}',
     },
     spec: {
@@ -60,7 +60,15 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     otelcolImage: '${OPENTELEMETRY_COLLECTOR_IMAGE}',
     otelcolVersion: '${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}',
     jaegerSpec: {
-      strategy: 'allinone',
+      strategy: 'production',
+      storage: {
+        type: 'elasticsearch',
+        elasticsearch: {
+          name: '${ELASTICSEARCH_NAME}',
+          useCertManagement: true,
+          doNotProvision: true,
+        },
+      },
     },
   }),
 

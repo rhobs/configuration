@@ -21,5 +21,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'ELASTICSEARCH_LIMIT_MEMORY', value: '4Gi' },
     { name: 'ELASTICSEARCH_REQUEST_MEMORY', value: '4Gi' },
     { name: 'ELASTICSEARCH_REQUEST_CPU', value: '200m' },
+    { name: 'ELASTICSEARCH_NAME', value: 'shared-es' },
   ],
 }

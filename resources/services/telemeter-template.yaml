@@ -112,15 +112,20 @@ objects:
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
           - --whitelist={__name__="cluster:cpu_usage_cores:sum"}
+          - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
+          - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}
+          - --whitelist={__name__="cluster:eo_es_documents_deleted_total:sum"}
           - --whitelist={__name__="cluster:ingress_controller_aws_nlb_active:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
+          - --whitelist={__name__="cluster:log_collected_bytes_total:sum"}
+          - --whitelist={__name__="cluster:log_logged_bytes_total:sum"}
           - --whitelist={__name__="cluster:memory_usage_bytes:sum"}
-          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
+          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:velero_backup_total:max"}
           - --whitelist={__name__="cluster:velero_restore_total:max"}
@@ -148,6 +153,13 @@ objects:
           - --whitelist={__name__="count:up1"}
           - --whitelist={__name__="csv_abnormal"}
           - --whitelist={__name__="csv_succeeded"}
+          - --whitelist={__name__="eo_es_cluster_management_state_info"}
+          - --whitelist={__name__="eo_es_defined_delete_namespaces_total"}
+          - --whitelist={__name__="eo_es_misconfigured_memory_resources_info"}
+          - --whitelist={__name__="eo_es_redundancy_policy_info"}
+          - --whitelist={__name__="eo_es_storage_info"}
+          - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
+          - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --whitelist={__name__="insightsclient_request_send_total"}
           - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
@@ -166,6 +178,11 @@ objects:
           - --whitelist={__name__="job:noobaa_bucket_count:sum"}
           - --whitelist={__name__="job:noobaa_total_object_count:sum"}
           - --whitelist={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+          - --whitelist={__name__="log_collector_error_count_total"}
+          - --whitelist={__name__="log_forwarder_input_info"}
+          - --whitelist={__name__="log_forwarder_output_info"}
+          - --whitelist={__name__="log_forwarder_pipeline_info"}
+          - --whitelist={__name__="log_logging_info"}
           - --whitelist={__name__="monitoring:container_memory_working_set_bytes:sum"}
           - --whitelist={__name__="monitoring:haproxy_server_http_responses_total:sum"}
           - --whitelist={__name__="namespace_job:scrape_samples_post_metric_relabeling:topk3"}
@@ -186,6 +203,7 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}
           - --whitelist={__name__="rhods_total_users"}
@@ -195,8 +213,6 @@ objects:
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
-          - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
-          - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --elide-label=prometheus_replica
           - --log-level=${TELEMETER_LOG_LEVEL}
           - --token-expire-seconds=${TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}
@@ -313,15 +329,20 @@ objects:
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
           - --whitelist={__name__="cluster:cpu_usage_cores:sum"}
+          - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
+          - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}
+          - --whitelist={__name__="cluster:eo_es_documents_deleted_total:sum"}
           - --whitelist={__name__="cluster:ingress_controller_aws_nlb_active:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolumeclaim_resource_requests_storage_bytes:provisioner:sum"}
           - --whitelist={__name__="cluster:kubelet_volume_stats_used_bytes:provisioner:sum"}
+          - --whitelist={__name__="cluster:log_collected_bytes_total:sum"}
+          - --whitelist={__name__="cluster:log_logged_bytes_total:sum"}
           - --whitelist={__name__="cluster:memory_usage_bytes:sum"}
-          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
+          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:velero_backup_total:max"}
           - --whitelist={__name__="cluster:velero_restore_total:max"}
@@ -349,6 +370,13 @@ objects:
           - --whitelist={__name__="count:up1"}
           - --whitelist={__name__="csv_abnormal"}
           - --whitelist={__name__="csv_succeeded"}
+          - --whitelist={__name__="eo_es_cluster_management_state_info"}
+          - --whitelist={__name__="eo_es_defined_delete_namespaces_total"}
+          - --whitelist={__name__="eo_es_misconfigured_memory_resources_info"}
+          - --whitelist={__name__="eo_es_redundancy_policy_info"}
+          - --whitelist={__name__="eo_es_storage_info"}
+          - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
+          - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --whitelist={__name__="insightsclient_request_send_total"}
           - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
@@ -367,6 +395,11 @@ objects:
           - --whitelist={__name__="job:noobaa_bucket_count:sum"}
           - --whitelist={__name__="job:noobaa_total_object_count:sum"}
           - --whitelist={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+          - --whitelist={__name__="log_collector_error_count_total"}
+          - --whitelist={__name__="log_forwarder_input_info"}
+          - --whitelist={__name__="log_forwarder_output_info"}
+          - --whitelist={__name__="log_forwarder_pipeline_info"}
+          - --whitelist={__name__="log_logging_info"}
           - --whitelist={__name__="monitoring:container_memory_working_set_bytes:sum"}
           - --whitelist={__name__="monitoring:haproxy_server_http_responses_total:sum"}
           - --whitelist={__name__="namespace_job:scrape_samples_post_metric_relabeling:topk3"}
@@ -387,6 +420,7 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}
           - --whitelist={__name__="rhods_total_users"}
@@ -396,8 +430,6 @@ objects:
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
-          - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
-          - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --elide-label=prometheus_replica
           - --log-level=${TELEMETER_LOG_LEVEL}
           - --token-expire-seconds=${TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}

@@ -22,10 +22,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'ELASTICSEARCH_REQUEST_MEMORY', value: '4Gi' },
     { name: 'ELASTICSEARCH_REQUEST_CPU', value: '200m' },
     { name: 'ELASTICSEARCH_NAME', value: 'shared-es' },
-    { name: 'ELASTICSEARCH_NODES_ALLINONE', value: '1' },
-    { name: 'ELASTICSEARCH_NODES_MASTER', value: '0' },
-    { name: 'ELASTICSEARCH_NODES_CLIENT', value: '0' },
-    { name: 'ELASTICSEARCH_NODES_DATA', value: '0' },
+    { name: 'ELASTICSEARCH_NODE_COUNT', value: '1' },
     { name: 'ELASTICSEARCH_REDUNDANCY_POLICY', value: 'ZeroRedundancy' },
   ],
 }

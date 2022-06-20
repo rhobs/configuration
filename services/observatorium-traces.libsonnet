@@ -28,44 +28,17 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
         },
       },
       nodes: [
-        (if '${{ELASTICSEARCH_NODES_ALLINONE}}' != 0 then {
-           nodeCount: '${{ELASTICSEARCH_NODES_ALLINONE}}',
-           proxyResources: {},
-           resources: {},
-           roles: [
-             'master',
-             'client',
-             'data',
-           ],
-           storage: {},
-         } else {}),
-        (if '${{ELASTICSEARCH_NODES_MASTER}}' != 0 then {
-           nodeCount: '${{ELASTICSEARCH_NODES_MASTER}}',
-           proxyResources: {},
-           resources: {},
-           roles: [
-             'master',
-           ],
-           storage: {},
-         } else {}),
-        (if '${{ELASTICSEARCH_NODES_CLIENT}}' != 0 then {
-           nodeCount: '${{ELASTICSEARCH_NODES_CLIENT}}',
-           proxyResources: {},
-           resources: {},
-           roles: [
-             'client',
-           ],
-           storage: {},
-         } else {}),
-        (if '${{ELASTICSEARCH_NODES_DATA}}' != 0 then {
-           nodeCount: '${{ELASTICSEARCH_NODES_DATA}}',
-           proxyResources: {},
-           resources: {},
-           roles: [
-             'data',
-           ],
-           storage: {},
-         } else {}),
+        {
+          nodeCount: '${{ELASTICSEARCH_NODE_COUNT}}',
+          proxyResources: {},
+          resources: {},
+          roles: [
+            'master',
+            'client',
+            'data',
+          ],
+          storage: {},
+        },
       ],
       redundancyPolicy: '${ELASTICSEARCH_REDUNDANCY_POLICY}',
     },

@@ -19,11 +19,11 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
       nodeSpec: {
         resources: {
           limits: {
-            memory: '${ELASTICSEARCH_LIMIT_MEMORY}',
+            memory: '${ELASTICSEARCH_MEMORY}',
           },
           requests: {
             cpu: '${ELASTICSEARCH_REQUEST_CPU}',
-            memory: '${ELASTICSEARCH_REQUEST_MEMORY}',
+            memory: '${ELASTICSEARCH_MEMORY}',
           },
         },
       },

@@ -3,6 +3,34 @@ kind: Template
 metadata:
   name: observatorium-traces
 objects:
+- apiVersion: logging.openshift.io/v1
+  kind: Elasticsearch
+  metadata:
+    annotations:
+      logging.openshift.io/elasticsearch-cert-management: "true"
+      logging.openshift.io/elasticsearch-cert.curator-${ELASTICSEARCH_NAME}: system.logging.curator
+      logging.openshift.io/elasticsearch-cert.jaeger-${ELASTICSEARCH_NAME}: user.jaeger
+    name: ${ELASTICSEARCH_NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    managementState: Managed
+    nodeSpec:
+      resources:
+        limits:
+          memory: ${ELASTICSEARCH_MEMORY}
+        requests:
+          cpu: ${ELASTICSEARCH_REQUEST_CPU}
+          memory: ${ELASTICSEARCH_MEMORY}
+    nodes:
+    - nodeCount: ${{ELASTICSEARCH_NODE_COUNT}}
+      proxyResources: {}
+      resources: {}
+      roles:
+      - master
+      - client
+      - data
+      storage: {}
+    redundancyPolicy: ${ELASTICSEARCH_REDUNDANCY_POLICY}
 - apiVersion: jaegertracing.io/v1
   kind: Jaeger
   metadata:
@@ -14,7 +42,16 @@ objects:
     name: observatorium-jaeger-rhobs
     namespace: ${NAMESPACE}
   spec:
-    strategy: allinone
+    storage:
+      elasticsearch:
+        doNotProvision: true
+        name: ${ELASTICSEARCH_NAME}
+        useCertManagement: true
+      options:
+        es:
+          index-prefix: rhobs
+      type: elasticsearch
+    strategy: production
 - apiVersion: jaegertracing.io/v1
   kind: Jaeger
   metadata:
@@ -26,7 +63,16 @@ objects:
     name: observatorium-jaeger-telemeter
     namespace: ${NAMESPACE}
   spec:
-    strategy: allinone
+    storage:
+      elasticsearch:
+        doNotProvision: true
+        name: ${ELASTICSEARCH_NAME}
+        useCertManagement: true
+      options:
+        es:
+          index-prefix: telemeter
+      type: elasticsearch
+    strategy: production
 - apiVersion: opentelemetry.io/v1alpha1
   kind: OpenTelemetryCollector
   metadata:
@@ -83,3 +129,13 @@ parameters:
   value: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
 - name: OPENTELEMETRY_COLLECTOR_IMAGE_TAG
   value: 0.46.0
+- name: ELASTICSEARCH_MEMORY
+  value: 4Gi
+- name: ELASTICSEARCH_REQUEST_CPU
+  value: 200m
+- name: ELASTICSEARCH_NAME
+  value: shared-es
+- name: ELASTICSEARCH_NODE_COUNT
+  value: "1"
+- name: ELASTICSEARCH_REDUNDANCY_POLICY
+  value: ZeroRedundancy

@@ -515,6 +515,17 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-odfms-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-odfms"
+      - "name": "reference-addon"
+        "roles":
+        - "reference-addon-metrics-read"
+        - "reference-addon-metrics-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-reference-addon-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-reference-addon"
       "roles":
       - "name": "cnv-qe-metrics-read"
         "permissions":
@@ -660,6 +671,20 @@ objects:
         - "metrics"
         "tenants":
         - "odfms"
+      - "name": "reference-addon-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "reference-addon"
+      - "name": "reference-addon-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "reference-addon"
   kind: ConfigMap
   metadata:
     annotations:

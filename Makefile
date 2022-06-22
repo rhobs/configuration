@@ -113,7 +113,7 @@ resources/services/telemeter-template.yaml: $(wildcard services/telemeter-*) $(J
 	@echo ">>>>> Running telemeter templates"
 	$(JSONNET) -J vendor services/telemeter-template.jsonnet | $(GOJSONTOYAML) > $@
 
-resources/services/observatorium-template.yaml: services/observatorium.libsonnet services/observatorium-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+resources/services/observatorium-template.yaml: services/observatorium.libsonnet services/observatorium-template.jsonnet configuration/observatorium/rbac.libsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"
 	$(JSONNET) -J vendor services/observatorium-template.jsonnet | $(GOJSONTOYAML) > $@
 

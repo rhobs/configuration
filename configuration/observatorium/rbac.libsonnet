@@ -244,6 +244,30 @@
         'write',
       ],
     },
+    {
+      name: 'reference-addon-metrics-read',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'reference-addon',
+      ],
+      permissions: [
+        'read',
+      ],
+    },
+    {
+      name: 'reference-addon-metrics-write',
+      resources: [
+        'metrics',
+      ],
+      tenants: [
+        'reference-addon',
+      ],
+      permissions: [
+        'write',
+      ],
+    },
   ],
   roleBindings: [
     {
@@ -445,6 +469,27 @@
       subjects: [
         {
           name: 'service-account-observatorium-odfms-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-odfms',
+          kind: 'user',
+        },
+      ],
+    },
+    {
+      name: 'reference-addon',
+      roles: [
+        'reference-addon-metrics-read',
+        'reference-addon-metrics-write',
+      ],
+      subjects: [
+        {
+          name: 'service-account-observatorium-reference-addon-staging',
+          kind: 'user',
+        },
+        {
+          name: 'service-account-observatorium-reference-addon',
           kind: 'user',
         },
       ],

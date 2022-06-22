@@ -11,14 +11,10 @@ import (
 type tenantID string
 
 const (
-	cnvqeTenant     tenantID = "cnvqe"
 	telemeterTenant tenantID = "telemeter"
-	rhobsTenant     tenantID = "rhobs"
 	psiocpTenant    tenantID = "psiocp"
 	rhodsTenant     tenantID = "rhods"
-	rhacsTenant     tenantID = "rhacs"
 	rhocTenant      tenantID = "rhoc"
-	odfmsTenant     tenantID = "odfms"
 	refAddonTenant  tenantID = "reference-addon"
 )
 
@@ -53,7 +49,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// CNV-QE
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-cnv-qe",
-		tenant:  cnvqeTenant,
+		tenant:  tenantID(cnvqeTenant.Name),
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
@@ -71,21 +67,21 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// RHACS
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhacs-metrics",
-		tenant:  rhacsTenant,
+		tenant:  tenantID(rhacsTenant.Name),
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
 	})
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhacs-grafana",
-		tenant:  rhacsTenant,
+		tenant:  tenantID(rhacsTenant.Name),
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
 	})
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhacs-logs",
-		tenant:  rhacsTenant,
+		tenant:  tenantID(rhacsTenant.Name),
 		signals: []signal{logsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
@@ -94,14 +90,14 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// RHOBS
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhobs",
-		tenant:  rhobsTenant,
+		tenant:  tenantID(rhobsTenant.Name),
 		signals: []signal{metricsSignal, logsSignal, tracesSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{testingEnv, stagingEnv, productionEnv},
 	})
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhobs-mst",
-		tenant:  rhobsTenant,
+		tenant:  tenantID(rhobsTenant.Name),
 		signals: []signal{metricsSignal, logsSignal, tracesSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
@@ -111,9 +107,9 @@ func GenerateRBAC(gen *mimic.Generator) {
 		Name: "rhobs-admin",
 		Roles: []string{
 			getOrCreateRoleName(&obsRBAC, telemeterTenant, metricsSignal, rbac.Read),
-			getOrCreateRoleName(&obsRBAC, rhobsTenant, metricsSignal, rbac.Read),
-			getOrCreateRoleName(&obsRBAC, rhobsTenant, logsSignal, rbac.Read),
-			getOrCreateRoleName(&obsRBAC, rhobsTenant, tracesSignal, rbac.Read),
+			getOrCreateRoleName(&obsRBAC, tenantID(rhobsTenant.Name), metricsSignal, rbac.Read),
+			getOrCreateRoleName(&obsRBAC, tenantID(rhobsTenant.Name), logsSignal, rbac.Read),
+			getOrCreateRoleName(&obsRBAC, tenantID(rhobsTenant.Name), tracesSignal, rbac.Read),
 		},
 		Subjects: []rbac.Subject{{Name: "team-monitoring@redhat.com", Kind: rbac.Group}},
 	})
@@ -157,7 +153,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// ODFMS
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-odfms",
-		tenant:  odfmsTenant,
+		tenant:  tenantID(odfmsTenant.Name),
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},

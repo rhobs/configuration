@@ -11,4 +11,5 @@ func main() {
 	defer gen.Generate()
 
 	cfgobservatorium.GenerateRBAC(gen.With("tenants"))
+	cfgobservatorium.GenerateTenantSecret(gen.With("tenants"))
 }

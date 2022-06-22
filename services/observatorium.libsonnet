@@ -286,7 +286,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
         obs.gubernator.config.ports.grpc,
       ],
     },
-    rbac: (import '../configuration/observatorium/rbac.libsonnet'),
+    rbac: (import '../resources/.tmp/tenants/rbac.json'),
     tenants: (import '../configuration/observatorium/tenants.libsonnet'),
     resources: {
       requests: {

@@ -408,23 +408,23 @@ objects:
   data:
     rbac.yaml: |-
       "roleBindings":
-      - "name": "cnv-qe-metrics"
+      - "name": "observatorium-cnv-qe"
         "roles":
-        - "cnv-qe-metrics-write"
-        - "cnv-qe-metrics-read"
+        - "cnvqe-metrics-write"
+        - "cnvqe-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-cnv-qe-staging"
         - "kind": "user"
           "name": "service-account-observatorium-cnv-qe"
-      - "name": "rhods-metrics"
+      - "name": "observatorium-rhods-isv"
         "roles":
         - "rhods-metrics-write"
         - "rhods-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhods-isv-staging"
-      - "name": "rhacs-metrics"
+      - "name": "observatorium-rhacs-metrics"
         "roles":
         - "rhacs-metrics-write"
         - "rhacs-metrics-read"
@@ -433,7 +433,7 @@ objects:
           "name": "service-account-observatorium-rhacs-metrics-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhacs-metrics"
-      - "name": "rhacs-metrics-grafana"
+      - "name": "observatorium-rhacs-grafana"
         "roles":
         - "rhacs-metrics-read"
         "subjects":
@@ -441,19 +441,23 @@ objects:
           "name": "service-account-observatorium-rhacs-grafana-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhacs-grafana"
-      - "name": "rhacs-logs"
+      - "name": "observatorium-rhacs-logs"
         "roles":
-        - "rhacs-logs-read"
         - "rhacs-logs-write"
+        - "rhacs-logs-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhacs-logs-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhacs-logs"
-      - "name": "rhobs"
+      - "name": "observatorium-rhobs"
         "roles":
-        - "rhobs-write"
-        - "rhobs-read"
+        - "rhobs-metrics-write"
+        - "rhobs-metrics-read"
+        - "rhobs-logs-write"
+        - "rhobs-logs-read"
+        - "rhobs-traces-write"
+        - "rhobs-traces-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhobs-testing"
@@ -461,10 +465,14 @@ objects:
           "name": "service-account-observatorium-rhobs-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhobs"
-      - "name": "rhobs-mst"
+      - "name": "observatorium-rhobs-mst"
         "roles":
-        - "rhobs-write"
-        - "rhobs-read"
+        - "rhobs-metrics-write"
+        - "rhobs-metrics-read"
+        - "rhobs-logs-write"
+        - "rhobs-logs-read"
+        - "rhobs-traces-write"
+        - "rhobs-traces-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhobs-mst-staging"
@@ -472,82 +480,77 @@ objects:
           "name": "service-account-observatorium-rhobs-mst"
       - "name": "rhobs-admin"
         "roles":
-        - "telemeter-read"
-        - "rhobs-read"
+        - "telemeter-metrics-read"
+        - "rhobs-metrics-read"
+        - "rhobs-logs-read"
+        - "rhobs-traces-read"
         "subjects":
         - "kind": "group"
           "name": "team-monitoring@redhat.com"
-      - "name": "telemeter-server"
+      - "name": "telemeter-service"
         "roles":
-        - "telemeter-write"
-        - "telemeter-read"
+        - "telemeter-metrics-write"
+        - "telemeter-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-telemeter-service-staging"
         - "kind": "user"
           "name": "service-account-telemeter-service"
-      - "name": "subwatch"
+      - "name": "observatorium-subwatch"
         "roles":
-        - "telemeter-read"
+        - "telemeter-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-subwatch-staging"
         - "kind": "user"
           "name": "service-account-observatorium-subwatch"
-      - "name": "psiocp"
+      - "name": "observatorium-psiocp"
         "roles":
-        - "psiocp-write"
-        - "psiocp-read"
+        - "psiocp-metrics-write"
+        - "psiocp-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-psiocp-staging"
-      - "name": "rhoc"
+      - "name": "observatorium-rhoc"
         "roles":
-        - "rhoc-metrics-read"
         - "rhoc-metrics-write"
+        - "rhoc-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhoc-staging"
-      - "name": "odfms"
+      - "name": "observatorium-odfms"
         "roles":
-        - "odfms-metrics-read"
         - "odfms-metrics-write"
+        - "odfms-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-odfms-staging"
         - "kind": "user"
           "name": "service-account-observatorium-odfms"
-      - "name": "reference-addon"
+      - "name": "observatorium-reference-addon"
         "roles":
-        - "reference-addon-metrics-read"
         - "reference-addon-metrics-write"
+        - "reference-addon-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-reference-addon-staging"
         - "kind": "user"
           "name": "service-account-observatorium-reference-addon"
       "roles":
-      - "name": "cnv-qe-metrics-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "cnvqe"
-      - "name": "cnv-qe-metrics-write"
+      - "name": "cnvqe-metrics-write"
         "permissions":
         - "write"
         "resources":
         - "metrics"
         "tenants":
         - "cnvqe"
-      - "name": "rhods-metrics-read"
+      - "name": "cnvqe-metrics-read"
         "permissions":
         - "read"
         "resources":
         - "metrics"
         "tenants":
-        - "rhods"
+        - "cnvqe"
       - "name": "rhods-metrics-write"
         "permissions":
         - "write"
@@ -555,30 +558,23 @@ objects:
         - "metrics"
         "tenants":
         - "rhods"
-      - "name": "rhods-logs-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "logs"
-        "tenants":
-        - "rhods"
-      - "name": "rhods-logs-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "rhods"
-      - "name": "rhacs-metrics-read"
+      - "name": "rhods-metrics-read"
         "permissions":
         - "read"
         "resources":
         - "metrics"
         "tenants":
-        - "rhacs"
+        - "rhods"
       - "name": "rhacs-metrics-write"
         "permissions":
         - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhacs"
+      - "name": "rhacs-metrics-read"
+        "permissions":
+        - "read"
         "resources":
         - "metrics"
         "tenants":
@@ -597,59 +593,76 @@ objects:
         - "logs"
         "tenants":
         - "rhacs"
-      - "name": "rhobs-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "metrics"
-        - "logs"
-        - "traces"
-        "tenants":
-        - "rhobs"
-      - "name": "rhobs-write"
+      - "name": "rhobs-metrics-write"
         "permissions":
         - "write"
         "resources":
         - "metrics"
+        "tenants":
+        - "rhobs"
+      - "name": "rhobs-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhobs"
+      - "name": "rhobs-logs-write"
+        "permissions":
+        - "write"
+        "resources":
         - "logs"
+        "tenants":
+        - "rhobs"
+      - "name": "rhobs-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "rhobs"
+      - "name": "rhobs-traces-write"
+        "permissions":
+        - "write"
+        "resources":
         - "traces"
         "tenants":
         - "rhobs"
-      - "name": "telemeter-write"
+      - "name": "rhobs-traces-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "traces"
+        "tenants":
+        - "rhobs"
+      - "name": "telemeter-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "telemeter"
+      - "name": "telemeter-metrics-write"
         "permissions":
         - "write"
         "resources":
         - "metrics"
         "tenants":
         - "telemeter"
-      - "name": "telemeter-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "telemeter"
-      - "name": "psiocp-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "psiocp"
-      - "name": "psiocp-write"
+      - "name": "psiocp-metrics-write"
         "permissions":
         - "write"
         "resources":
         - "metrics"
         "tenants":
         - "psiocp"
-      - "name": "rhoc-metrics-read"
+      - "name": "psiocp-metrics-read"
         "permissions":
         - "read"
         "resources":
         - "metrics"
         "tenants":
-        - "rhoc"
+        - "psiocp"
       - "name": "rhoc-metrics-write"
         "permissions":
         - "write"
@@ -657,13 +670,13 @@ objects:
         - "metrics"
         "tenants":
         - "rhoc"
-      - "name": "odfms-metrics-read"
+      - "name": "rhoc-metrics-read"
         "permissions":
         - "read"
         "resources":
         - "metrics"
         "tenants":
-        - "odfms"
+        - "rhoc"
       - "name": "odfms-metrics-write"
         "permissions":
         - "write"
@@ -671,16 +684,23 @@ objects:
         - "metrics"
         "tenants":
         - "odfms"
-      - "name": "reference-addon-metrics-read"
+      - "name": "odfms-metrics-read"
         "permissions":
         - "read"
         "resources":
         - "metrics"
         "tenants":
-        - "reference-addon"
+        - "odfms"
       - "name": "reference-addon-metrics-write"
         "permissions":
         - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "reference-addon"
+      - "name": "reference-addon-metrics-read"
+        "permissions":
+        - "read"
         "resources":
         - "metrics"
         "tenants":

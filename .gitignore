@@ -1,4 +1,6 @@
 vendor/
+vendor_jsonnet/
 .bin
 .idea
 .envrc
+resources/.tmp/

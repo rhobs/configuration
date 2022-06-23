@@ -159,7 +159,16 @@ func GenerateRBAC(gen *mimic.Generator) {
 		name:    "observatorium-odfms",
 		tenant:  odfmsTenant,
 		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
+		perms:   []rbac.Permission{rbac.Write}, // Write only.
+		envs:    []env{stagingEnv, productionEnv},
+	})
+	// Special request of extra read account.
+	// Ref: https://issues.redhat.com/browse/MON-2536?focusedCommentId=20492830&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-20492830
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-odfms-read",
+		tenant:  odfmsTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read}, // Read only.
 		envs:    []env{stagingEnv, productionEnv},
 	})
 

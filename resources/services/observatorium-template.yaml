@@ -521,12 +521,19 @@ objects:
       - "name": "observatorium-odfms"
         "roles":
         - "odfms-metrics-write"
-        - "odfms-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-odfms-staging"
         - "kind": "user"
           "name": "service-account-observatorium-odfms"
+      - "name": "observatorium-odfms-read"
+        "roles":
+        - "odfms-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-odfms-read-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-odfms-read"
       - "name": "observatorium-reference-addon"
         "roles":
         - "reference-addon-metrics-write"

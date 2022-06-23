@@ -2,6 +2,48 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
 {
   local obs = self,
 
+  elasticsearch:: {
+    apiVersion: 'logging.openshift.io/v1',
+    kind: 'Elasticsearch',
+    metadata: {
+      annotations: {
+        'logging.openshift.io/elasticsearch-cert-management': 'true',
+        'logging.openshift.io/elasticsearch-cert.jaeger-${ELASTICSEARCH_NAME}': 'user.jaeger',
+        'logging.openshift.io/elasticsearch-cert.curator-${ELASTICSEARCH_NAME}': 'system.logging.curator',
+      },
+      name: '${ELASTICSEARCH_NAME}',
+      namespace: '${NAMESPACE}',
+    },
+    spec: {
+      managementState: 'Managed',
+      nodeSpec: {
+        resources: {
+          limits: {
+            memory: '${ELASTICSEARCH_MEMORY}',
+          },
+          requests: {
+            cpu: '${ELASTICSEARCH_REQUEST_CPU}',
+            memory: '${ELASTICSEARCH_MEMORY}',
+          },
+        },
+      },
+      nodes: [
+        {
+          nodeCount: '${{ELASTICSEARCH_NODE_COUNT}}',
+          proxyResources: {},
+          resources: {},
+          roles: [
+            'master',
+            'client',
+            'data',
+          ],
+          storage: {},
+        },
+      ],
+      redundancyPolicy: '${ELASTICSEARCH_REDUNDANCY_POLICY}',
+    },
+  },
+
   tracing:: tracing({
     name: obs.config.name,
     namespace: '${NAMESPACE}',
@@ -18,7 +60,15 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     otelcolImage: '${OPENTELEMETRY_COLLECTOR_IMAGE}',
     otelcolVersion: '${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}',
     jaegerSpec: {
-      strategy: 'allinone',
+      strategy: 'production',
+      storage: {
+        type: 'elasticsearch',
+        elasticsearch: {
+          name: '${ELASTICSEARCH_NAME}',
+          useCertManagement: true,
+          doNotProvision: true,
+        },
+      },
     },
   }),
 

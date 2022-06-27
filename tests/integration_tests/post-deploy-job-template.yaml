@@ -16,7 +16,7 @@ objects:
         name: rhobs-e2e-tests
       spec:
         containers:
-            - image: ${IMAGE}
+            - image: ${IMAGE}:{IMAGE_TAG}
               imagePullPolicy: Always
               name: rhobs-e2e-tests
               env:
@@ -39,6 +39,8 @@ parameters:
   required: true
 - name: IMAGE
   value: 'quay.io/app-sre/rhobs-e2e'
+- name: IMAGE_TAG
+  value: "e21a7ce"
 - name: JOBID
   generate: expression
   from: "[0-9a-f]{7}"

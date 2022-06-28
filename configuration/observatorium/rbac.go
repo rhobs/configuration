@@ -67,6 +67,14 @@ func GenerateRBAC(gen *mimic.Generator) {
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv},
 	})
+	attachBinding(&obsRBAC, bindingOpts{
+		// Write only SA
+		name:    "observatorium-rhods-isv-staging-wo",
+		tenant:  rhodsTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write},
+		envs:    []env{stagingEnv},
+	})
 
 	// RHACS
 	attachBinding(&obsRBAC, bindingOpts{

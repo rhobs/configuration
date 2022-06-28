@@ -67,6 +67,14 @@ func GenerateRBAC(gen *mimic.Generator) {
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv},
 	})
+	attachBinding(&obsRBAC, bindingOpts{
+		// Write only SA
+		name:    "observatorium-rhods-isv-staging-wo",
+		tenant:  rhodsTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write},
+		envs:    []env{stagingEnv},
+	})
 
 	// RHACS
 	attachBinding(&obsRBAC, bindingOpts{
@@ -202,7 +210,7 @@ type observatoriumRBAC struct {
 }
 
 type bindingOpts struct {
-	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account username (it has to match it)/
+	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account 	username (it has to match it)/
 	// Any change, require changes on tenant side, so be careful.
 	name    string
 	tenant  tenantID

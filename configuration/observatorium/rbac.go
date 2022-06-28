@@ -210,7 +210,7 @@ type observatoriumRBAC struct {
 }
 
 type bindingOpts struct {
-	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account 	username (it has to match it)/
+	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account username (it has to match it)/
 	// Any change, require changes on tenant side, so be careful.
 	name    string
 	tenant  tenantID

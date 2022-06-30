@@ -16,7 +16,7 @@ objects:
         name: rhobs-e2e-tests
       spec:
         containers:
-            - image: ${IMAGE}:{IMAGE_TAG}
+            - image: ${IMAGE}:${IMAGE_TAG}
               imagePullPolicy: Always
               name: rhobs-e2e-tests
               env:

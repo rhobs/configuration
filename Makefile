@@ -120,6 +120,10 @@ resources/services/observatorium-tenants-mst-template.yaml: services/observatori
 	@echo ">>>>> Running observatorium mst tenants templates"
 	$(JSONNET) -J vendor services/observatorium-tenants-mst.jsonnet | $(GOJSONTOYAML) > $@
 
+resources/services/observatorium-tenants-telemeter-template.yaml: services/observatorium-tenants-telemeter.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running observatorium telemeter tenants templates"
+	$(JSONNET) -J vendor services/observatorium-tenants-telemeter.jsonnet | $(GOJSONTOYAML) > $@
+
 resources/services/observatorium-template.yaml: services/observatorium.libsonnet services/observatorium-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"
 	$(JSONNET) -J vendor_jsonnet services/observatorium-template.jsonnet | $(GOJSONTOYAML) > $@

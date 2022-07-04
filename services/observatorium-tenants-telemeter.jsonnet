@@ -7,7 +7,7 @@
           apiVersion: 'v1',
           kind: 'Secret',
           metadata+: {
-            name: 'observatorium-observatorium-mst-api',
+            name: 'observatorium-observatorium-api',
           },
           type: 'Opaque',
           data: {

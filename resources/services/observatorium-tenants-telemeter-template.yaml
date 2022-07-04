@@ -17,7 +17,7 @@ objects:
           clientSecret: ${CLIENT_SECRET}
           groupClaim: email
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
-          redirectURL: https://observatorium.api.stage.openshift.com/oidc/rhobs/callback
+          redirectURL: ${RHOBS_URL}/oidc/rhobs/callback
           usernameClaim: preferred_username
       - id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
         name: telemeter
@@ -25,7 +25,7 @@ objects:
           clientID: ${CLIENT_ID}
           clientSecret: ${CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
-          redirectURL: https://observatorium.api.stage.openshift.com/oidc/telemeter/callback
+          redirectURL: ${RHOBS_URL}/oidc/telemeter/callback
           usernameClaim: preferred_username
       - id: AC879303-C60F-4D0D-A6D5-A485CFD638B8
         name: dptp
@@ -33,14 +33,15 @@ objects:
           clientID: ${CLIENT_ID}
           clientSecret: ${CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
-          redirectURL: https://observatorium.api.stage.openshift.com/oidc/dptp/callback
+          redirectURL: ${RHOBS_URL}/oidc/dptp/callback
           usernameClaim: preferred_username
         opa:
           url: http://127.0.0.1:8082/v1/data/observatorium/allow
   kind: Secret
   metadata:
-    name: observatorium-observatorium-mst-api
+    name: observatorium-observatorium-api
   type: Opaque
 parameters:
 - name: CLIENT_ID
 - name: CLIENT_SECRET
+- name: RHOBS_URL

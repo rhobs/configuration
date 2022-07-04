@@ -23,7 +23,7 @@
                 clientID: '${CLIENT_ID}',
                 clientSecret: '${CLIENT_SECRET}',
                 issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-                redirectURL: 'https://observatorium.api.stage.openshift.com/oidc/rhobs/callback',
+                redirectURL: '${RHOBS_URL}/oidc/rhobs/callback',
                 usernameClaim: 'preferred_username',
                 groupClaim: 'email',
               },
@@ -35,7 +35,7 @@
                 clientID: '${CLIENT_ID}',
                 clientSecret: '${CLIENT_SECRET}',
                 issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-                redirectURL: 'https://observatorium.api.stage.openshift.com/oidc/telemeter/callback',
+                redirectURL: '${RHOBS_URL}/oidc/telemeter/callback',
                 usernameClaim: 'preferred_username',
               },
             },
@@ -46,7 +46,7 @@
                 clientID: '${CLIENT_ID}',
                 clientSecret: '${CLIENT_SECRET}',
                 issuerURL: 'https://sso.redhat.com/auth/realms/redhat-external',
-                redirectURL: 'https://observatorium.api.stage.openshift.com/oidc/dptp/callback',
+                redirectURL: '${RHOBS_URL}/oidc/dptp/callback',
                 usernameClaim: 'preferred_username',
               },
               opa: {
@@ -61,5 +61,6 @@
   parameters: [
     { name: 'CLIENT_ID' },
     { name: 'CLIENT_SECRET' },
+    { name: 'RHOBS_URL' },
   ],
 }

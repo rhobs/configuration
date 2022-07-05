@@ -19,7 +19,7 @@
     },
   ],
   parameters: [
-    { name: 'SECRET_NAME'},
+    { name: 'SECRET_NAME' },
     { name: 'CLIENT_ID' },
     { name: 'CLIENT_SECRET' },
     { name: 'TENANTS' },

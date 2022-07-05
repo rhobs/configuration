@@ -8,6 +8,9 @@
       kind: 'Secret',
       metadata+: {
         name: '${SECRET_NAME}',
+        annotations: {
+          'qontract.recycle': 'true',
+        },
       },
       type: 'Opaque',
       stringData: {

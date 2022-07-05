@@ -7,6 +7,8 @@ objects:
   kind: Secret
   metadata:
     name: ${SECRET_NAME}
+    annotations:
+      qontract.recycle: "true"
   stringData:
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}

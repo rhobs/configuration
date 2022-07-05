@@ -11,7 +11,8 @@ objects:
     client-id: ${CLIENT_ID}
     client-secret: ${CLIENT_SECRET}
     issuer-url: https://sso.redhat.com/auth/realms/redhat-external
-    tenants.yaml: ${TENANTS}
+    tenants.yaml: |
+      ${TENANTS}
   type: Opaque
 parameters:
 - name: SECRET_NAME

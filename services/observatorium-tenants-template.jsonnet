@@ -1,7 +1,12 @@
 {
   apiVersion: 'v1',
   kind: 'Template',
-  metadata: { name: '${SECRET_NAME}' },
+  metadata: {
+    name: '${SECRET_NAME}',
+    annotations: {
+      'qontract.recycle': 'true',
+    },
+  },
   objects: [
     {
       apiVersion: 'v1',

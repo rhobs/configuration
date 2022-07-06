@@ -523,22 +523,25 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhoc-staging"
-      - "name": "observatorium-odfms"
+      - "name": "observatorium-odfms-write"
         "roles":
         - "odfms-metrics-write"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-odfms-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-odfms"
+          "name": "service-account-observatorium-odfms-write"
       - "name": "observatorium-odfms-read"
         "roles":
         - "odfms-metrics-read"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-odfms-read-staging"
-        - "kind": "user"
           "name": "service-account-observatorium-odfms-read"
+      - "name": "observatorium-odfms"
+        "roles":
+        - "odfms-metrics-read"
+        - "odfms-metrics-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-odfms-staging"
       - "name": "observatorium-reference-addon"
         "roles":
         - "reference-addon-metrics-write"

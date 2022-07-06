@@ -11,15 +11,16 @@ import (
 type tenantID string
 
 const (
-	cnvqeTenant     tenantID = "cnvqe"
-	telemeterTenant tenantID = "telemeter"
-	rhobsTenant     tenantID = "rhobs"
-	psiocpTenant    tenantID = "psiocp"
-	rhodsTenant     tenantID = "rhods"
-	rhacsTenant     tenantID = "rhacs"
-	rhocTenant      tenantID = "rhoc"
-	odfmsTenant     tenantID = "odfms"
-	refAddonTenant  tenantID = "reference-addon"
+	cnvqeTenant      tenantID = "cnvqe"
+	telemeterTenant  tenantID = "telemeter"
+	rhobsTenant      tenantID = "rhobs"
+	psiocpTenant     tenantID = "psiocp"
+	rhodsTenant      tenantID = "rhods"
+	rhacsTenant      tenantID = "rhacs"
+	rhocTenant       tenantID = "rhoc"
+	odfmsTenant      tenantID = "odfms"
+	refAddonTenant   tenantID = "reference-addon"
+	hypershiftTenant tenantID = "hypershift"
 )
 
 type signal string
@@ -194,6 +195,15 @@ func GenerateRBAC(gen *mimic.Generator) {
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-reference-addon",
 		tenant:  refAddonTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write, rbac.Read},
+		envs:    []env{stagingEnv, productionEnv},
+	})
+
+	// hypershift
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-hypershift",
+		tenant:  hypershiftTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},

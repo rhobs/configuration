@@ -551,6 +551,15 @@ objects:
           "name": "service-account-observatorium-reference-addon-staging"
         - "kind": "user"
           "name": "service-account-observatorium-reference-addon"
+      - "name": "observatorium-hypershift"
+        "roles":
+        - "hypershift-metrics-write"
+        - "hypershift-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -720,6 +729,20 @@ objects:
         - "metrics"
         "tenants":
         - "reference-addon"
+      - "name": "hypershift-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "hypershift"
+      - "name": "hypershift-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "hypershift"
   kind: ConfigMap
   metadata:
     annotations:

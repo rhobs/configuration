@@ -417,13 +417,12 @@ objects:
           "name": "service-account-observatorium-cnv-qe-staging"
         - "kind": "user"
           "name": "service-account-observatorium-cnv-qe"
-      - "name": "observatorium-rhods-isv"
+      - "name": "rhods-isv-staging"
         "roles":
-        - "rhods-metrics-write"
         - "rhods-metrics-read"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-rhods-isv-staging"
+          "name": "service-account-rhods-isv-staging-staging"
       - "name": "observatorium-rhods-isv-staging-wo"
         "roles":
         - "rhods-metrics-write"
@@ -564,16 +563,16 @@ objects:
         - "metrics"
         "tenants":
         - "cnvqe"
-      - "name": "rhods-metrics-write"
+      - "name": "rhods-metrics-read"
         "permissions":
-        - "write"
+        - "read"
         "resources":
         - "metrics"
         "tenants":
         - "rhods"
-      - "name": "rhods-metrics-read"
+      - "name": "rhods-metrics-write"
         "permissions":
-        - "read"
+        - "write"
         "resources":
         - "metrics"
         "tenants":

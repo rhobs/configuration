@@ -190,7 +190,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{stagingEnv, productionEnv},
 	})
 
-	// reference-addon
+	// hypershift
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-hypershift",
 		tenant:  hypershiftTenant,

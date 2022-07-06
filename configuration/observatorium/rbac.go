@@ -61,10 +61,10 @@ func GenerateRBAC(gen *mimic.Generator) {
 
 	// RHODS
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-rhods-isv",
+		name:    "rhods-isv-staging",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
+		perms:   []rbac.Permission{rbac.Read},
 		envs:    []env{stagingEnv},
 	})
 	attachBinding(&obsRBAC, bindingOpts{

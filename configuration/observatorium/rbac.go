@@ -160,7 +160,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  rhocTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{stagingEnv},
+		envs:    []env{stagingEnv, productionEnv},
 	})
 
 	// ODFMS

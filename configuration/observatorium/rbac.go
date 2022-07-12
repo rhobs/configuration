@@ -61,13 +61,24 @@ func GenerateRBAC(gen *mimic.Generator) {
 	})
 
 	// RHODS
+	// Starbust write-only
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "rhods-isv-staging",
+		name:    "observatorium-starburst-isv-write-staging",
+		tenant:  rhodsTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write},
+		envs:    []env{stagingEnv},
+	})
+	// Starbust read-only
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-starburst-isv-read-staging",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read},
 		envs:    []env{stagingEnv},
 	})
+	// TODO(douglascamata): Old RHODS account to be removed when the 2 above are
+	// confirmed to be working and they have migrated to use them everywhere.
 	attachBinding(&obsRBAC, bindingOpts{
 		// Write only SA
 		name:    "observatorium-rhods-isv-staging-wo",
@@ -189,7 +200,6 @@ func GenerateRBAC(gen *mimic.Generator) {
 		perms:   []rbac.Permission{rbac.Read, rbac.Write},
 		envs:    []env{stagingEnv},
 	})
-
 
 	// reference-addon
 	attachBinding(&obsRBAC, bindingOpts{

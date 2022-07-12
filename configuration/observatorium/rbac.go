@@ -202,7 +202,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 
 	// hypershift
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-hypershift",
+		name:    "observatorium-hypershift-platform",
 		tenant:  hypershiftTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},

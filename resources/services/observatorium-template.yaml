@@ -551,15 +551,15 @@ objects:
           "name": "service-account-observatorium-reference-addon-staging"
         - "kind": "user"
           "name": "service-account-observatorium-reference-addon"
-      - "name": "observatorium-hypershift"
+      - "name": "observatorium-hypershift-platform"
         "roles":
         - "hypershift-metrics-write"
         - "hypershift-metrics-read"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-hypershift-staging"
+          "name": "service-account-observatorium-hypershift-platform-staging"
         - "kind": "user"
-          "name": "service-account-observatorium-hypershift"
+          "name": "service-account-observatorium-hypershift-platform"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":

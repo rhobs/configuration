@@ -20,7 +20,7 @@ const (
 	rhocTenant       tenantID = "rhoc"
 	odfmsTenant      tenantID = "odfms"
 	refAddonTenant   tenantID = "reference-addon"
-	hypershiftTenant tenantID = "hypershift"
+	hypershiftTenant tenantID = "hypershift-platform"
 )
 
 type signal string

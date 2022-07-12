@@ -553,8 +553,8 @@ objects:
           "name": "service-account-observatorium-reference-addon"
       - "name": "observatorium-hypershift-platform"
         "roles":
-        - "hypershift-metrics-write"
-        - "hypershift-metrics-read"
+        - "hypershift-platform-metrics-write"
+        - "hypershift-platform-metrics-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform-staging"
@@ -729,20 +729,20 @@ objects:
         - "metrics"
         "tenants":
         - "reference-addon"
-      - "name": "hypershift-metrics-write"
+      - "name": "hypershift-platform-metrics-write"
         "permissions":
         - "write"
         "resources":
         - "metrics"
         "tenants":
-        - "hypershift"
-      - "name": "hypershift-metrics-read"
+        - "hypershift-platform"
+      - "name": "hypershift-platform-metrics-read"
         "permissions":
         - "read"
         "resources":
         - "metrics"
         "tenants":
-        - "hypershift"
+        - "hypershift-platform"
   kind: ConfigMap
   metadata:
     annotations:

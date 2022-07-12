@@ -417,18 +417,18 @@ objects:
           "name": "service-account-observatorium-cnv-qe-staging"
         - "kind": "user"
           "name": "service-account-observatorium-cnv-qe"
-      - "name": "rhods-isv-staging"
-        "roles":
-        - "rhods-metrics-read"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-rhods-isv-staging-staging"
-      - "name": "observatorium-rhods-isv-staging-wo"
+      - "name": "observatorium-starburst-isv-write-staging"
         "roles":
         - "rhods-metrics-write"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-rhods-isv-staging-wo-staging"
+          "name": "service-account-observatorium-starburst-isv-write-staging-staging"
+      - "name": "observatorium-starburst-isv-read-staging"
+        "roles":
+        - "rhods-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-starburst-isv-read-staging-staging"
       - "name": "observatorium-rhacs-metrics"
         "roles":
         - "rhacs-metrics-write"
@@ -577,16 +577,16 @@ objects:
         - "metrics"
         "tenants":
         - "cnvqe"
-      - "name": "rhods-metrics-read"
+      - "name": "rhods-metrics-write"
         "permissions":
-        - "read"
+        - "write"
         "resources":
         - "metrics"
         "tenants":
         - "rhods"
-      - "name": "rhods-metrics-write"
+      - "name": "rhods-metrics-read"
         "permissions":
-        - "write"
+        - "read"
         "resources":
         - "metrics"
         "tenants":

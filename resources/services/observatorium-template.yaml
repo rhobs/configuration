@@ -429,12 +429,6 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-starburst-isv-read-staging-staging"
-      - "name": "observatorium-rhods-isv-staging-wo"
-        "roles":
-        - "rhods-metrics-write"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-rhods-isv-staging-wo-staging"
       - "name": "observatorium-rhacs-metrics"
         "roles":
         - "rhacs-metrics-write"

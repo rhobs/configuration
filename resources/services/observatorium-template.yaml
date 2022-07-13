@@ -562,6 +562,22 @@ objects:
           "name": "service-account-observatorium-hypershift-platform-staging"
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform"
+      - "name": "observatorium-dptp-reader"
+        "roles":
+        - "dptp-logs-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-reader-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-reader"
+      - "name": "observatorium-dptp-collector"
+        "roles":
+        - "dptp-logs-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-collector-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-collector"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -745,6 +761,20 @@ objects:
         - "metrics"
         "tenants":
         - "hypershift-platform"
+      - "name": "dptp-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "dptp"
+      - "name": "dptp-logs-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "dptp"
   kind: ConfigMap
   metadata:
     annotations:

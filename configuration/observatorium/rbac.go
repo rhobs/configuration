@@ -2,6 +2,7 @@ package cfgobservatorium
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
@@ -63,7 +64,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// RHODS
 	// Starbust write-only
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-starburst-isv-write",
+		name:    "observatorium-starburst-isv-write-staging",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write},
@@ -273,6 +274,14 @@ func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 
 	var subs []rbac.Subject
 	for _, e := range opts.envs {
+		if strings.HasSuffix(opts.name, string(e)) {
+			err := fmt.Sprintf(
+				"found name breaking conventions with environment suffix: %s, should be: %s",
+				opts.name,
+				strings.TrimRight(strings.TrimSuffix(opts.name, string(e)), "-"),
+			)
+			mimic.Panicf(err)
+		}
 		n := fmt.Sprintf("service-account-%s-%s", opts.name, e)
 		if e == productionEnv {
 			n = fmt.Sprintf("service-account-%s", opts.name)

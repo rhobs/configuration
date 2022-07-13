@@ -578,6 +578,22 @@ objects:
           "name": "service-account-observatorium-dptp-collector-staging"
         - "kind": "user"
           "name": "service-account-observatorium-dptp-collector"
+      - "name": "observatorium-ocm-reader"
+        "roles":
+        - "ocm-logs-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-reader-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-reader"
+      - "name": "observatorium-ocm-collector"
+        "roles":
+        - "ocm-logs-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-collector-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-collector"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -775,6 +791,20 @@ objects:
         - "logs"
         "tenants":
         - "dptp"
+      - "name": "ocm-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "ocm"
+      - "name": "ocm-logs-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "ocm"
   kind: ConfigMap
   metadata:
     annotations:

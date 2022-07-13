@@ -562,6 +562,38 @@ objects:
           "name": "service-account-observatorium-hypershift-platform-staging"
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform"
+      - "name": "observatorium-dptp-reader"
+        "roles":
+        - "dptp-logs-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-reader-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-reader"
+      - "name": "observatorium-dptp-collector"
+        "roles":
+        - "dptp-logs-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-collector-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-dptp-collector"
+      - "name": "observatorium-ocm-reader"
+        "roles":
+        - "ocm-logs-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-reader-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-reader"
+      - "name": "observatorium-ocm-collector"
+        "roles":
+        - "ocm-logs-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-collector-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-ocm-collector"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -745,6 +777,34 @@ objects:
         - "metrics"
         "tenants":
         - "hypershift-platform"
+      - "name": "dptp-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "dptp"
+      - "name": "dptp-logs-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "dptp"
+      - "name": "ocm-logs-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "logs"
+        "tenants":
+        - "ocm"
+      - "name": "ocm-logs-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "logs"
+        "tenants":
+        - "ocm"
   kind: ConfigMap
   metadata:
     annotations:
@@ -862,6 +922,7 @@ objects:
           - --ams.mappings=cnvqe=${CNVQE_ORGANIZATION_ID}
           - --ams.mappings=dptp=${DPTP_ORGANIZATION_ID}
           - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
+          - --ams.mappings=ocm=${OCM_ORGANIZATION_ID}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
           - --internal.tracing.endpoint=localhost:6831
           env:
@@ -1224,6 +1285,8 @@ parameters:
 - name: CNVQE_ORGANIZATION_ID
   value: ""
 - name: DPTP_ORGANIZATION_ID
+  value: ""
+- name: OCM_ORGANIZATION_ID
   value: ""
 - name: GUBERNATOR_CPU_LIMIT
   value: 200m

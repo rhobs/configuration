@@ -13,12 +13,14 @@ type tenantID string
 
 const (
 	cnvqeTenant      tenantID = "cnvqe"
+	dptpTenant       tenantID = "dptp"
 	telemeterTenant  tenantID = "telemeter"
 	rhobsTenant      tenantID = "rhobs"
 	psiocpTenant     tenantID = "psiocp"
 	rhodsTenant      tenantID = "rhods"
 	rhacsTenant      tenantID = "rhacs"
 	rhocTenant       tenantID = "rhoc"
+	ocmTenant        tenantID = "ocm"
 	odfmsTenant      tenantID = "odfms"
 	refAddonTenant   tenantID = "reference-addon"
 	hypershiftTenant tenantID = "hypershift-platform"
@@ -207,6 +209,44 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  hypershiftTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
+		envs:    []env{stagingEnv, productionEnv},
+	})
+
+	// RHOBS Logs only tenants
+
+	// DPTP
+	// Reader serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-dptp-reader",
+		tenant:  dptpTenant,
+		signals: []signal{logsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv, productionEnv},
+	})
+	// Writer serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-dptp-collector",
+		tenant:  dptpTenant,
+		signals: []signal{logsSignal},
+		perms:   []rbac.Permission{rbac.Write},
+		envs:    []env{stagingEnv, productionEnv},
+	})
+
+	// OCM
+	// Reader serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-ocm-reader",
+		tenant:  ocmTenant,
+		signals: []signal{logsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv, productionEnv},
+	})
+	// Writer serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-ocm-collector",
+		tenant:  ocmTenant,
+		signals: []signal{logsSignal},
+		perms:   []rbac.Permission{rbac.Write},
 		envs:    []env{stagingEnv, productionEnv},
 	})
 

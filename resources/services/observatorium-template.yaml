@@ -417,18 +417,18 @@ objects:
           "name": "service-account-observatorium-cnv-qe-staging"
         - "kind": "user"
           "name": "service-account-observatorium-cnv-qe"
-      - "name": "observatorium-starburst-isv-write-staging"
+      - "name": "observatorium-starburst-isv-write"
         "roles":
         - "rhods-metrics-write"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-starburst-isv-write-staging-staging"
-      - "name": "observatorium-starburst-isv-read-staging"
+          "name": "service-account-observatorium-starburst-isv-write-staging"
+      - "name": "observatorium-starburst-isv-read"
         "roles":
         - "rhods-metrics-read"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-starburst-isv-read-staging-staging"
+          "name": "service-account-observatorium-starburst-isv-read-staging"
       - "name": "observatorium-rhacs-metrics"
         "roles":
         - "rhacs-metrics-write"

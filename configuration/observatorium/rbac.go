@@ -63,7 +63,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// RHODS
 	// Starbust write-only
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-starburst-isv-write-staging",
+		name:    "observatorium-starburst-isv-write",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write},
@@ -71,7 +71,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 	})
 	// Starbust read-only
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-starburst-isv-read-staging",
+		name:    "observatorium-starburst-isv-read",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read},

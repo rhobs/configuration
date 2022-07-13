@@ -142,6 +142,7 @@ objects:
           - --downsample.concurrency=1
           - --deduplication.replica-label=replica
           - --debug.max-compaction-level=3
+          - --debug.accept-malformed-index=true
           - ${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}
           env:
           - name: OBJSTORE_CONFIG

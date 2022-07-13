@@ -25,7 +25,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'STORAGE_CLASS', value: 'gp2' },
     { name: 'LOKI_IMAGE_TAG', value: '2.4.2' },
     { name: 'LOKI_IMAGE', value: 'docker.io/grafana/loki' },
-    { name: 'LOKI_S3_SECRET', value: 'observatorium-logs-stage-s3' },
+    { name: 'LOKI_S3_SECRET', value: 'observatorium-mst-logs-stage-s3' },
     { name: 'LOKI_COMPACTOR_CPU_REQUESTS', value: '500m' },
     { name: 'LOKI_COMPACTOR_CPU_LIMITS', value: '1000m' },
     { name: 'LOKI_COMPACTOR_MEMORY_REQUESTS', value: '2Gi' },

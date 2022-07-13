@@ -1994,7 +1994,7 @@ objects:
               ],
               "query": "label_values(kube_pod_info, namespace)",
               "refresh": 1,
-              "regex": "^telemeter.*|observatorium-logs.*",
+              "regex": "observatorium-mst.*",
               "skipUrlSync": false,
               "sort": 2,
               "tagValuesQuery": "",
@@ -12188,7 +12188,7 @@ objects:
             "pluginVersion": "7.1.1",
             "targets": [
               {
-                "expr": "count(count by(pod)({namespace=\"observatorium\", pod=~\".+loki.+(ingester|querier|distributor).*\"}))",
+                "expr": "count(count by(pod)({namespace=\"observatorium-mst-production\", pod=~\".+loki.+(ingester|querier|distributor).*\"}))",
                 "interval": "",
                 "legendFormat": "Expected Members",
                 "refId": "A"
@@ -16417,6 +16417,6 @@ parameters:
 - name: OBSERVATORIUM_API_DATASOURCE
   value: telemeter-prod-01-prometheus
 - name: OBSERVATORIUM_API_NAMESPACE
-  value: observatorium-production
+  value: observatorium-mst-production
 - name: OBSERVATORIUM_LOGS_NAMESPACE
-  value: observatorium-logs-production
+  value: observatorium-mst-production

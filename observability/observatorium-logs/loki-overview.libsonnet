@@ -216,7 +216,7 @@ function(datasource, namespace) {
             pluginVersion: '7.1.1',
             targets: [
               {
-                expr: 'count(count by(pod)({namespace="observatorium", pod=~".+loki.+(ingester|querier|distributor).*"}))',
+                expr: 'count(count by(pod)({namespace="observatorium-mst-production", pod=~".+loki.+(ingester|querier|distributor).*"}))',
                 interval: '',
                 legendFormat: 'Expected Members',
                 refId: 'A',

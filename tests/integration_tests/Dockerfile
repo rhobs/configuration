@@ -1,4 +1,4 @@
-FROM quay.io/observatorium/up:master-2022-03-31-2aa26e9
+FROM quay.io/observatorium/up:master-2022-07-13-7f0630b
 
 RUN apk update &&\
     apk add curl jq

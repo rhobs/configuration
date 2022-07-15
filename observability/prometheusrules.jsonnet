@@ -587,13 +587,13 @@ local renderAlerts(name, environment, mixin) = {
 {
   'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', loki),
 
-  local obsLogsStageEnv = 'observatorium-logs-stage',
+  local obsLogsStageEnv = 'observatorium-mst-stage',
   local obsLogsStage = loki + lokiTenants(obsLogsStageEnv),
-  'observatorium-logs-stage.prometheusrules': renderAlerts(obsLogsStageEnv, 'stage', obsLogsStage),
+  'rhobs-logs-mst-stage.prometheusrules': renderAlerts(obsLogsStageEnv, 'stage', obsLogsStage),
 
-  local obsLogsProdEnv = 'observatorium-logs-production',
+  local obsLogsProdEnv = 'observatorium-mst-production',
   local obsLogsProd = loki + lokiTenants(obsLogsProdEnv),
-  'observatorium-logs-production.prometheusrules': renderAlerts(obsLogsProdEnv, 'production', obsLogsProd),
+  'rhobs-logs-mst-production.prometheusrules': renderAlerts(obsLogsProdEnv, 'production', obsLogsProd),
 }
 
 {

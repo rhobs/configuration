@@ -2,7 +2,7 @@ local config = (import 'config.libsonnet');
 local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet') + config.loki;
 
 local obsDatasource = 'telemeter-prod-01-prometheus';
-local obsNamespace = 'telemeter-production';
+local obsNamespace = 'observatorium-mst-production';
 
 local dashboards = {
   ['grafana-dashboard-observatorium-logs-%s.configmap' % std.split(name, '.')[0]]: {
@@ -42,7 +42,7 @@ local dashboards = {
   ],
   parameters: [
     { name: 'OBSERVATORIUM_API_DATASOURCE', value: 'telemeter-prod-01-prometheus' },
-    { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'observatorium-production' },
-    { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs-production' },
+    { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'observatorium-mst-production' },
+    { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-mst-production' },
   ],
 }

@@ -467,6 +467,40 @@ function(instanceName, environment, dashboardName) {
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
       8
     ),
+  local apiLogsPanels =
+    titleRow('API > Logs Write > Availability') +
+    availabilityRow(
+      '95% of valid requests return successfully',
+      0.95,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"push", code=~"5.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"push", code!~"4.+"}[28d]))' % instance.apiJob,
+      2
+    ) +
+    titleRow('API > Logs Write > Latency') +
+    latencyRow(
+      '90% of valid requests return < 5s',
+      0.9,
+      5,
+      'sum(rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="logsv1",handler=~"push", le="5"}[28d]))' % instance.apiJob,
+      'rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="logsv1",handler=~"push"}[28d])' % instance.apiJob,
+      'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",group="logsv1",handler=~"push"}[28d]))' % instance.apiJob,
+      3
+    ) +
+    titleRow('API > Logs Read > Availability') +
+    availabilityRow(
+      '95% of valid /query requests return successfully',
+      0.95,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler="query", code=~"5.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler="query", code!~"4.+"}[28d]))' % instance.apiJob,
+      4
+    ) +
+    availabilityRow(
+      '95% of valid /query_range requests return successfully',
+      0.95,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"query_range", code=~"5.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"query_range", code!~"4.+"}[28d]))' % instance.apiJob,
+      5
+    ),
 
   apiVersion: 'v1',
   kind: 'ConfigMap',
@@ -476,7 +510,11 @@ function(instanceName, environment, dashboardName) {
   data: {
     'slo.json': std.manifestJson({
       // Only add telemeter-server panels if we're generating SLOs for the telemeter instance.
-      panels: titlePanel + (if instanceName == 'telemeter' then telemeterPanels else []) + apiPanels,
+      // Only add API Logs panels if we're generating SLOs for the mst instance.
+      panels: titlePanel +
+              (if instanceName == 'telemeter' then telemeterPanels else []) +
+              apiPanels +
+              (if instanceName == 'mst' then apiLogsPanels else []),
       refresh: false,
       schemaVersion: 31,
       style: 'dark',

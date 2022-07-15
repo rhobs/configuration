@@ -20,7 +20,6 @@ export UP_DURATION=${UP_DURATION:-30s}
 export UP_INITIAL_DELAY=${UP_INITIAL_DELAY:-5s}
 
 export TOKEN=$(curl \
-    --fail-with-body \
     --request POST  \
     --url ${OIDC_URL} \
     --header 'content-type: application/x-www-form-urlencoded' \

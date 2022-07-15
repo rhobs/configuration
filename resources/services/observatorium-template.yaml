@@ -920,9 +920,7 @@ objects:
           - --memcached=observatorium-api-cache-memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
           - --ams.mappings=cnvqe=${CNVQE_ORGANIZATION_ID}
-          - --ams.mappings=dptp=${DPTP_ORGANIZATION_ID}
           - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
-          - --ams.mappings=ocm=${OCM_ORGANIZATION_ID}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
           - --internal.tracing.endpoint=localhost:6831
           env:
@@ -1283,10 +1281,6 @@ parameters:
 - name: AMS_URL
   value: https://api.openshift.com
 - name: CNVQE_ORGANIZATION_ID
-  value: ""
-- name: DPTP_ORGANIZATION_ID
-  value: ""
-- name: OCM_ORGANIZATION_ID
   value: ""
 - name: GUBERNATOR_CPU_LIMIT
   value: 200m

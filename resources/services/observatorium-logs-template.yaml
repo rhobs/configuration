@@ -560,6 +560,8 @@ objects:
 - apiVersion: v1
   data:
     config.yaml: |-
+      "analytics":
+        "reporting_enabled": false
       "auth_enabled": true
       "chunk_store_config":
         "chunk_cache_config":
@@ -638,6 +640,7 @@ objects:
         "per_stream_rate_limit_burst": "15MB"
         "reject_old_samples": true
         "reject_old_samples_max_age": "24h"
+        "split_queries_by_interval": "30m"
       "memberlist":
         "abort_if_cluster_join_fails": false
         "bind_port": 7946
@@ -668,7 +671,6 @@ objects:
               "max_idle_conns": 16
               "timeout": "500ms"
               "update_interval": "1m"
-        "split_queries_by_interval": "30m"
       "query_scheduler":
         "max_outstanding_requests_per_tenant": 256
       "schema_config":
@@ -1971,7 +1973,7 @@ parameters:
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
-  value: 2.4.2
+  value: 2.6.1
 - name: LOKI_IMAGE
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET

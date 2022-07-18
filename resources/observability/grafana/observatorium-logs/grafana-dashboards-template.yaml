@@ -11963,25 +11963,42 @@ objects:
           "list": [
             {
               "builtIn": 1,
-              "datasource": "-- Grafana --",
+              "datasource": {
+                "type": "datasource",
+                "uid": "grafana"
+              },
               "enable": true,
               "hide": true,
               "iconColor": "rgba(0, 211, 255, 1)",
               "name": "Annotations & Alerts",
+              "target": {
+                "limit": 100,
+                "matchAny": false,
+                "tags": [
+
+                ],
+                "type": "dashboard"
+              },
               "type": "dashboard"
             }
           ]
         },
         "editable": true,
-        "gnetId": null,
+        "fiscalYearStartMonth": 0,
         "graphTooltip": 0,
-        "id": 1,
+        "id": 141,
+        "iteration": 1658131123044,
         "links": [
 
         ],
+        "liveNow": false,
         "panels": [
           {
-            "datasource": null,
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
             "gridPos": {
               "h": 1,
               "w": 24,
@@ -11989,17 +12006,29 @@ objects:
               "y": 0
             },
             "id": 49,
+            "panels": [
+
+            ],
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
+                },
+                "refId": "A"
+              }
+            ],
             "title": "Overall Health",
             "type": "row"
           },
           {
-            "datasource": null,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
             "description": "This metric describes a node's perception of its own health based on how well it is meeting the soft real-time requirements of the protocol. This metric ranges from 0 to 8, where 0 indicates \"totally healthy\". This health score is used to scale the time between outgoing probes, and higher scores translate into longer probing intervals. For more details see section IV of the Lifeguard paper: https://arxiv.org/pdf/1707.00788.pdf",
             "fieldConfig": {
               "defaults": {
-                "custom": {
-
-                },
                 "decimals": 0,
                 "mappings": [
 
@@ -12026,16 +12055,17 @@ objects:
               ]
             },
             "gridPos": {
-              "h": 8,
-              "w": 12,
+              "h": 12,
+              "w": 24,
               "x": 0,
               "y": 1
             },
             "id": 39,
             "options": {
+              "orientation": "auto",
               "reduceOptions": {
                 "calcs": [
-                  "last"
+                  "lastNotNull"
                 ],
                 "fields": "",
                 "values": false
@@ -12043,23 +12073,29 @@ objects:
               "showThresholdLabels": false,
               "showThresholdMarkers": true
             },
-            "pluginVersion": "7.1.1",
+            "pluginVersion": "9.0.1",
             "targets": [
               {
-                "expr": "label_replace(memberlist_client_cluster_node_health_score, \"pod\", \"$1\", \"pod\", \"observatorium.+(distributor|ingester|querier).+\")",
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "label_replace(memberlist_client_cluster_node_health_score{namespace=\"$namespace\"}, \"pod\", \"$1\", \"pod\", \"observatorium.+(compactor.*|distributor.*|ingester.*|querier.*).*\")",
                 "instant": false,
                 "interval": "",
                 "legendFormat": "{{ pod }}",
                 "refId": "A"
               }
             ],
-            "timeFrom": null,
-            "timeShift": null,
             "title": "Memberlist Health Score",
             "type": "gauge"
           },
           {
-            "datasource": null,
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
             "gridPos": {
               "h": 1,
               "w": 24,
@@ -12067,19 +12103,33 @@ objects:
               "y": 9
             },
             "id": 45,
+            "panels": [
+
+            ],
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
+                },
+                "refId": "A"
+              }
+            ],
             "title": "Memberlist",
             "type": "row"
           },
           {
-            "datasource": null,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
             "fieldConfig": {
               "defaults": {
-                "custom": {
-
-                },
                 "mappings": [
 
                 ],
+                "max": 1,
+                "min": 0,
                 "thresholds": {
                   "mode": "percentage",
                   "steps": [
@@ -12104,13 +12154,14 @@ objects:
               ]
             },
             "gridPos": {
-              "h": 8,
+              "h": 10,
               "w": 12,
               "x": 0,
-              "y": 10
+              "y": 14
             },
             "id": 47,
             "options": {
+              "orientation": "auto",
               "reduceOptions": {
                 "calcs": [
                   "mean"
@@ -12121,28 +12172,30 @@ objects:
               "showThresholdLabels": false,
               "showThresholdMarkers": true
             },
-            "pluginVersion": "7.1.1",
+            "pluginVersion": "9.0.1",
             "targets": [
               {
-                "expr": "(\n  label_replace(rate(memberlist_client_cas_success_total[5m]), \"pod\", \"$1\", \"pod\", \"observatorium.+(distributor|ingester|querier).+\")\n/\n  label_replace(rate(memberlist_client_cas_attempt_total[5m]), \"pod\", \"$1\", \"pod\", \"observatorium.+(distributor|ingester|querier).+\")\n) \n> -1\n",
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "(\n  label_replace(rate(memberlist_client_cas_success_total{namespace=\"$namespace\"}[5m]), \"pod\", \"$1\", \"pod\", \"observatorium.+(compactor.*|distributor.*|ingester.*|querier.*).*\")\n/\n  label_replace(rate(memberlist_client_cas_attempt_total{namespace=\"$namespace\"}[5m]), \"pod\", \"$1\", \"pod\", \"observatorium.+(compactor.*|distributor.*|ingester.*|querier.*).*\")\n) \n> -1\n",
                 "interval": "",
                 "legendFormat": "{{ pod }}",
                 "refId": "A"
               }
             ],
-            "timeFrom": null,
-            "timeShift": null,
             "title": "CAS success rate",
             "type": "gauge"
           },
           {
-            "datasource": null,
-            "description": "Every ingester, querier, distributor is expected to be a member of the memberlist. The actual members and expected members should be equal. ",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "description": "Every ingester, querier, distributor, compactor is expected to be a member of the memberlist. The actual members and expected members should be equal. ",
             "fieldConfig": {
               "defaults": {
-                "custom": {
-
-                },
                 "mappings": [
 
                 ],
@@ -12165,10 +12218,10 @@ objects:
               ]
             },
             "gridPos": {
-              "h": 8,
+              "h": 10,
               "w": 12,
               "x": 12,
-              "y": 10
+              "y": 14
             },
             "id": 43,
             "options": {
@@ -12185,29 +12238,38 @@ objects:
               },
               "textMode": "auto"
             },
-            "pluginVersion": "7.1.1",
+            "pluginVersion": "9.0.1",
             "targets": [
               {
-                "expr": "count(count by(pod)({namespace=\"observatorium-mst-production\", pod=~\".+loki.+(ingester|querier|distributor).*\"}))",
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "count(count by(pod)({namespace=\"$namespace\", pod=~\".+loki.+(compactor|ingester|querier|distributor).*\"}))",
                 "interval": "",
                 "legendFormat": "Expected Members",
                 "refId": "A"
               },
               {
-                "expr": "bottomk(1, memberlist_client_cluster_members_count)",
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "bottomk(1, memberlist_client_cluster_members_count{namespace=\"$namespace\"})",
                 "interval": "",
                 "legendFormat": "Actual Members",
                 "refId": "B"
               }
             ],
-            "timeFrom": null,
-            "timeShift": null,
             "title": "Memberlist Members",
             "type": "stat"
           },
           {
-            "collapsed": true,
-            "datasource": null,
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
             "gridPos": {
               "h": 1,
               "w": 24,
@@ -12216,768 +12278,717 @@ objects:
             },
             "id": 41,
             "panels": [
+
+            ],
+            "targets": [
               {
-                "aliasColors": {
-
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
                 },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    },
-                    "mappings": [
-
-                    ],
-                    "thresholds": {
-                      "mode": "absolute",
-                      "steps": [
-                        {
-                          "color": "green",
-                          "value": null
-                        },
-                        {
-                          "color": "red",
-                          "value": 80
-                        }
-                      ]
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 12,
-                  "x": 0,
-                  "y": 9
-                },
-                "hiddenSeries": false,
-                "id": 25,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum by (route)(rate(loki_request_duration_seconds_count{ job=~\".*loki-querier-http\", status_code!~\"5[0-9]{2}\"}[1m]))\n/\nsum by (route)(rate(loki_request_duration_seconds_count{ job=~\".*loki-querier-http\"}[1m])) ",
-                    "instant": false,
-                    "interval": "",
-                    "legendFormat": "",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Querier Success Rate",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "$$hashKey": "object:178",
-                    "decimals": null,
-                    "format": "percentunit",
-                    "label": "",
-                    "logBase": 1,
-                    "max": "1",
-                    "min": "0",
-                    "show": true
-                  },
-                  {
-                    "$$hashKey": "object:179",
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
+                "refId": "A"
               }
             ],
             "title": "Query Path",
             "type": "row"
           },
           {
-            "collapsed": true,
-            "datasource": null,
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fill": 1,
+            "fillGradient": 0,
             "gridPos": {
-              "h": 1,
+              "h": 8,
               "w": 24,
               "x": 0,
               "y": 19
             },
+            "hiddenSeries": false,
+            "id": 25,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum by (route)(rate(loki_request_duration_seconds_count{namespace=\"$namespace\",job=~\".*loki-querier-http\", route=~\"loki_api_v1.*\", status_code!~\"5[0-9]{2}\"}[1m]))\n/\nsum by (route)(rate(loki_request_duration_seconds_count{namespace=\"$namespace\", job=~\".*loki-querier-http\", route=~\"loki_api_v1.*\"}[1m])) ",
+                "instant": false,
+                "interval": "",
+                "legendFormat": "__auto",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Querier Success Rate",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "$$hashKey": "object:178",
+                "format": "percentunit",
+                "label": "",
+                "logBase": 1,
+                "max": "1",
+                "min": "0",
+                "show": true
+              },
+              {
+                "$$hashKey": "object:179",
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
+            "gridPos": {
+              "h": 1,
+              "w": 24,
+              "x": 0,
+              "y": 27
+            },
             "id": 37,
             "panels": [
+
+            ],
+            "targets": [
               {
-                "aliasColors": {
-
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
                 },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "editable": true,
-                "error": false,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {
-
-                },
-                "gridPos": {
-                  "h": 7,
-                  "w": 8,
-                  "x": 0,
-                  "y": 10
-                },
-                "hiddenSeries": false,
-                "id": 35,
-                "isNew": true,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [
-
-                ],
-                "nullPointMode": "connected",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum (memcached_current_items{})",
-                    "interval": "",
-                    "intervalFactor": 2,
-                    "legendFormat": "items ",
-                    "refId": "A",
-                    "step": 2,
-                    "target": ""
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Memcached Items in cache",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "editable": true,
-                "error": false,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {
-
-                },
-                "gridPos": {
-                  "h": 7,
-                  "w": 8,
-                  "x": 8,
-                  "y": 10
-                },
-                "hiddenSeries": false,
-                "id": 29,
-                "isNew": true,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [
-
-                ],
-                "nullPointMode": "connected",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum by (command)(rate(memcached_commands_total{}[5m])) ",
-                    "interval": "",
-                    "intervalFactor": 1,
-                    "legendFormat": "{{command}}",
-                    "refId": "A",
-                    "step": 2,
-                    "target": ""
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Memcached Commands",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-                  "evicts": "#890F02",
-                  "memcached_items_evicted_total{instance=\"172.17.0.1:9150\",job=\"prometheus\"}": "#890F02",
-                  "reclaims": "#3F6833"
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "editable": true,
-                "error": false,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {
-
-                },
-                "gridPos": {
-                  "h": 7,
-                  "w": 8,
-                  "x": 16,
-                  "y": 10
-                },
-                "hiddenSeries": false,
-                "id": 31,
-                "isNew": true,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [
-
-                ],
-                "nullPointMode": "connected",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-                  {
-                    "alias": "reclaims",
-                    "yaxis": 2
-                  }
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum(rate(memcached_items_evicted_total{}[5m]))",
-                    "interval": "",
-                    "intervalFactor": 2,
-                    "legendFormat": "evicts",
-                    "refId": "A",
-                    "step": 2,
-                    "target": ""
-                  },
-                  {
-                    "expr": "sum(rate(memcached_items_reclaimed_total{}[5m]))",
-                    "interval": "",
-                    "intervalFactor": 2,
-                    "legendFormat": "reclaims",
-                    "refId": "B",
-                    "step": 2
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Memcached evicts / reclaims",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "editable": true,
-                "error": false,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {
-
-                },
-                "gridPos": {
-                  "h": 7,
-                  "w": 8,
-                  "x": 0,
-                  "y": 17
-                },
-                "hiddenSeries": false,
-                "id": 33,
-                "isNew": true,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [
-
-                ],
-                "nullPointMode": "connected",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum(memcached_current_bytes{}) / sum(memcached_limit_bytes{})",
-                    "interval": "",
-                    "intervalFactor": 2,
-                    "legendFormat": "% used memory used",
-                    "refId": "A",
-                    "step": 2,
-                    "target": ""
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Memcached Total memory usage",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "percentunit",
-                    "label": null,
-                    "logBase": 1,
-                    "max": 1,
-                    "min": 0,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": "Prometheus",
-                "editable": true,
-                "error": false,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "grid": {
-
-                },
-                "gridPos": {
-                  "h": 7,
-                  "w": 8,
-                  "x": 8,
-                  "y": 17
-                },
-                "hiddenSeries": false,
-                "id": 27,
-                "isNew": true,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 2,
-                "links": [
-
-                ],
-                "nullPointMode": "connected",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum(memcached_commands_total{status=\"miss\"})  / sum (memcached_commands_total{}) ",
-                    "hide": false,
-                    "interval": "",
-                    "intervalFactor": 2,
-                    "legendFormat": "hit ratio",
-                    "refId": "A",
-                    "step": 2,
-                    "target": ""
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Memcached % Hit ratio",
-                "tooltip": {
-                  "msResolution": false,
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "cumulative"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "percentunit",
-                    "label": null,
-                    "logBase": 1,
-                    "max": 1,
-                    "min": 0,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
+                "refId": "A"
               }
             ],
             "title": "Memcached",
             "type": "row"
           },
           {
-            "collapsed": true,
-            "datasource": null,
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editable": true,
+            "error": false,
+            "fill": 1,
+            "fillGradient": 0,
+            "grid": {
+
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 8,
+              "x": 0,
+              "y": 28
+            },
+            "hiddenSeries": false,
+            "id": 35,
+            "isNew": true,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 2,
+            "links": [
+
+            ],
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 5,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum (memcached_current_items{namespace=\"$namespace\", job=~\"observatorium-loki.+\"}) by (job)",
+                "interval": "",
+                "intervalFactor": 2,
+                "legendFormat": "{{ job }}",
+                "range": true,
+                "refId": "A",
+                "step": 2,
+                "target": ""
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Memcached Items in cache",
+            "tooltip": {
+              "msResolution": false,
+              "shared": true,
+              "sort": 0,
+              "value_type": "cumulative"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 10,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 2,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "never",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [
+
+                ],
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                },
+                "unit": "short"
+              },
+              "overrides": [
+
+              ]
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 8,
+              "x": 8,
+              "y": 28
+            },
+            "id": 29,
+            "links": [
+
+            ],
+            "options": {
+              "legend": {
+                "calcs": [
+
+                ],
+                "displayMode": "list",
+                "placement": "bottom"
+              },
+              "tooltip": {
+                "mode": "multi",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.0.1",
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum by (job, command)(rate(memcached_commands_total{namespace=\"$namespace\", job=~\"observatorium-loki.+\"}[5m]))",
+                "interval": "",
+                "intervalFactor": 1,
+                "legendFormat": "{{job}} {{command}}",
+                "range": true,
+                "refId": "A",
+                "step": 2,
+                "target": ""
+              }
+            ],
+            "title": "Memcached Commands",
+            "type": "timeseries"
+          },
+          {
+            "aliasColors": {
+              "evicts": "#890F02",
+              "memcached_items_evicted_total{instance=\"172.17.0.1:9150\",job=\"prometheus\"}": "#890F02",
+              "reclaims": "#3F6833"
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editable": true,
+            "error": false,
+            "fill": 1,
+            "fillGradient": 0,
+            "grid": {
+
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 8,
+              "x": 16,
+              "y": 28
+            },
+            "hiddenSeries": false,
+            "id": 31,
+            "isNew": true,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 2,
+            "links": [
+
+            ],
+            "nullPointMode": "connected",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 5,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+              {
+                "alias": "reclaims",
+                "yaxis": 2
+              }
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum(rate(memcached_items_evicted_total{namespace=\"$namespace\", job=~\"observatorium-loki.+\"}[5m])) by(job)",
+                "interval": "",
+                "intervalFactor": 2,
+                "legendFormat": "{{job}} evicts",
+                "range": true,
+                "refId": "A",
+                "step": 2,
+                "target": ""
+              },
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum(rate(memcached_items_reclaimed_total{namespace=\"$namespace\", job=~\"observatorium-loki.+\"}[5m])) by (job)",
+                "interval": "",
+                "intervalFactor": 2,
+                "legendFormat": "{{job}} reclaims",
+                "range": true,
+                "refId": "B",
+                "step": 2
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Memcached evicts / reclaims",
+            "tooltip": {
+              "msResolution": false,
+              "shared": true,
+              "sort": 0,
+              "value_type": "cumulative"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 10,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 2,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "never",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [
+
+                ],
+                "max": 1,
+                "min": 0,
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                },
+                "unit": "percentunit"
+              },
+              "overrides": [
+
+              ]
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 8,
+              "x": 0,
+              "y": 35
+            },
+            "id": 33,
+            "links": [
+
+            ],
+            "options": {
+              "legend": {
+                "calcs": [
+
+                ],
+                "displayMode": "list",
+                "placement": "bottom"
+              },
+              "tooltip": {
+                "mode": "multi",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.0.1",
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum by (job) (memcached_current_bytes{namespace=\"$namespace\", job=~\"observatorium-loki.+\"}) / sum  by (job) (memcached_limit_bytes{namespace=\"$namespace\", job=~\"observatorium-loki.+\"})",
+                "interval": "",
+                "intervalFactor": 2,
+                "legendFormat": "{{job}} % used memory used",
+                "range": true,
+                "refId": "A",
+                "step": 2,
+                "target": ""
+              }
+            ],
+            "title": "Memcached Total memory usage",
+            "type": "timeseries"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "palette-classic"
+                },
+                "custom": {
+                  "axisLabel": "",
+                  "axisPlacement": "auto",
+                  "barAlignment": 0,
+                  "drawStyle": "line",
+                  "fillOpacity": 10,
+                  "gradientMode": "none",
+                  "hideFrom": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": false
+                  },
+                  "lineInterpolation": "linear",
+                  "lineWidth": 2,
+                  "pointSize": 5,
+                  "scaleDistribution": {
+                    "type": "linear"
+                  },
+                  "showPoints": "never",
+                  "spanNulls": true,
+                  "stacking": {
+                    "group": "A",
+                    "mode": "none"
+                  },
+                  "thresholdsStyle": {
+                    "mode": "off"
+                  }
+                },
+                "mappings": [
+
+                ],
+                "max": 1,
+                "min": 0,
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                },
+                "unit": "percentunit"
+              },
+              "overrides": [
+
+              ]
+            },
+            "gridPos": {
+              "h": 7,
+              "w": 8,
+              "x": 8,
+              "y": 35
+            },
+            "id": 27,
+            "links": [
+
+            ],
+            "options": {
+              "legend": {
+                "calcs": [
+
+                ],
+                "displayMode": "list",
+                "placement": "bottom"
+              },
+              "tooltip": {
+                "mode": "multi",
+                "sort": "none"
+              }
+            },
+            "pluginVersion": "9.0.1",
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum by (job) (memcached_commands_total{status=\"miss\", namespace=\"$namespace\", job=~\"observatorium-loki.+\"})  / sum by (job)  (memcached_commands_total{namespace=\"$namespace\", job=~\"observatorium-loki.+\"}) ",
+                "hide": false,
+                "interval": "",
+                "intervalFactor": 2,
+                "legendFormat": "{{job}} hit ratio",
+                "range": true,
+                "refId": "A",
+                "step": 2,
+                "target": ""
+              }
+            ],
+            "title": "Memcached % Hit ratio",
+            "type": "timeseries"
+          },
+          {
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
             "gridPos": {
               "h": 1,
               "w": 24,
               "x": 0,
-              "y": 20
+              "y": 42
             },
             "id": 23,
             "panels": [
@@ -12988,16 +12999,9 @@ objects:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
                 },
                 "fill": 1,
                 "fillGradient": 0,
@@ -13005,7 +13009,7 @@ objects:
                   "h": 8,
                   "w": 12,
                   "x": 0,
-                  "y": 11
+                  "y": 5
                 },
                 "hiddenSeries": false,
                 "id": 19,
@@ -13021,8 +13025,11 @@ objects:
                 "lines": true,
                 "linewidth": 1,
                 "nullPointMode": "null",
+                "options": {
+                  "alertThreshold": true
+                },
                 "percentage": false,
-                "pluginVersion": "7.1.1",
+                "pluginVersion": "9.0.1",
                 "pointradius": 2,
                 "points": false,
                 "renderer": "flot",
@@ -13034,7 +13041,11 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "histogram_quantile(.95, sum(rate(cortex_s3_request_duration_seconds_bucket{ }[5m])) by (operation, le))",
+                    "datasource": {
+                      "type": "prometheus",
+                      "uid": "${datasource}"
+                    },
+                    "expr": "histogram_quantile(.95, sum(rate(loki_s3_request_duration_seconds_bucket{namespace=\"$namespace\"}[5m])) by (operation, le))",
                     "interval": "",
                     "legendFormat": "",
                     "refId": "A"
@@ -13043,11 +13054,9 @@ objects:
                 "thresholds": [
 
                 ],
-                "timeFrom": null,
                 "timeRegions": [
 
                 ],
-                "timeShift": null,
                 "title": "S3 Latency by Operation",
                 "tooltip": {
                   "shared": true,
@@ -13056,9 +13065,7 @@ objects:
                 },
                 "type": "graph",
                 "xaxis": {
-                  "buckets": null,
                   "mode": "time",
-                  "name": null,
                   "show": true,
                   "values": [
 
@@ -13067,24 +13074,17 @@ objects:
                 "yaxes": [
                   {
                     "format": "short",
-                    "label": null,
                     "logBase": 1,
-                    "max": null,
-                    "min": null,
                     "show": true
                   },
                   {
                     "format": "short",
-                    "label": null,
                     "logBase": 1,
-                    "max": null,
-                    "min": null,
                     "show": true
                   }
                 ],
                 "yaxis": {
-                  "align": false,
-                  "alignLevel": null
+                  "align": false
                 }
               },
               {
@@ -13094,16 +13094,9 @@ objects:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
                 },
                 "fill": 1,
                 "fillGradient": 0,
@@ -13111,7 +13104,7 @@ objects:
                   "h": 8,
                   "w": 12,
                   "x": 12,
-                  "y": 11
+                  "y": 5
                 },
                 "hiddenSeries": false,
                 "id": 21,
@@ -13127,8 +13120,11 @@ objects:
                 "lines": true,
                 "linewidth": 1,
                 "nullPointMode": "null",
+                "options": {
+                  "alertThreshold": true
+                },
                 "percentage": false,
-                "pluginVersion": "7.1.1",
+                "pluginVersion": "9.0.1",
                 "pointradius": 2,
                 "points": false,
                 "renderer": "flot",
@@ -13140,20 +13136,24 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status_code, operation)(rate(cortex_s3_request_duration_seconds_count{ }[5m])) ",
+                    "datasource": {
+                      "type": "prometheus",
+                      "uid": "${datasource}"
+                    },
+                    "editorMode": "code",
+                    "expr": "sum by (status_code, operation)(rate(loki_s3_request_duration_seconds_count{namespace=\"$namespace\"}[5m])) ",
                     "interval": "",
                     "legendFormat": "",
+                    "range": true,
                     "refId": "A"
                   }
                 ],
                 "thresholds": [
 
                 ],
-                "timeFrom": null,
                 "timeRegions": [
 
                 ],
-                "timeShift": null,
                 "title": "S3 Status by Operation",
                 "tooltip": {
                   "shared": true,
@@ -13162,9 +13162,7 @@ objects:
                 },
                 "type": "graph",
                 "xaxis": {
-                  "buckets": null,
                   "mode": "time",
-                  "name": null,
                   "show": true,
                   "values": [
 
@@ -13173,723 +13171,759 @@ objects:
                 "yaxes": [
                   {
                     "format": "short",
-                    "label": null,
                     "logBase": 1,
-                    "max": null,
-                    "min": null,
                     "show": true
                   },
                   {
                     "format": "short",
-                    "label": null,
                     "logBase": 1,
-                    "max": null,
-                    "min": null,
                     "show": true
                   }
                 ],
                 "yaxis": {
-                  "align": false,
-                  "alignLevel": null
+                  "align": false
                 }
+              }
+            ],
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
+                },
+                "refId": "A"
               }
             ],
             "title": "S3",
             "type": "row"
           },
           {
-            "collapsed": true,
-            "datasource": null,
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
             "gridPos": {
               "h": 1,
               "w": 24,
               "x": 0,
-              "y": 21
+              "y": 43
             },
             "id": 15,
             "panels": [
+
+            ],
+            "targets": [
               {
-                "aliasColors": {
-
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
                 },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 8,
-                  "x": 0,
-                  "y": 11
-                },
-                "hiddenSeries": false,
-                "id": 13,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum by (status_code, operation)(rate(loki_boltdb_shipper_request_duration_seconds_count{ }[5m]))",
-                    "interval": "",
-                    "legendFormat": "",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Shipper Status by Method",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 8,
-                  "x": 8,
-                  "y": 11
-                },
-                "hiddenSeries": false,
-                "id": 11,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{}[5m])) by (operation, le))",
-                    "interval": "",
-                    "legendFormat": "",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Shipper Latency by Operation",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "$$hashKey": "object:365",
-                    "decimals": 4,
-                    "format": "short",
-                    "label": "",
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "$$hashKey": "object:366",
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "description": "",
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    }
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 8,
-                  "x": 16,
-                  "y": 11
-                },
-                "hiddenSeries": false,
-                "id": 9,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "irate(loki_boltdb_shipper_tables_upload_operation_total[2m])",
-                    "interval": "",
-                    "legendFormat": "",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Shipper Table Uploads",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
+                "refId": "A"
               }
             ],
             "title": "BoltDB Shipper",
             "type": "row"
           },
           {
-            "collapsed": true,
-            "datasource": null,
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 8,
+              "x": 0,
+              "y": 44
+            },
+            "hiddenSeries": false,
+            "id": 13,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "sum by (status_code, operation)(rate(loki_boltdb_shipper_request_duration_seconds_count{namespace=\"$namespace\"}[5m]))",
+                "interval": "",
+                "legendFormat": "",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Shipper Status by Method",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 8,
+              "x": 8,
+              "y": 44
+            },
+            "hiddenSeries": false,
+            "id": 11,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{namespace=\"$namespace\"}[5m])) by (operation, le))",
+                "interval": "",
+                "legendFormat": "",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Shipper Latency by Operation",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "$$hashKey": "object:365",
+                "decimals": 4,
+                "format": "short",
+                "label": "",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "$$hashKey": "object:366",
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "description": "",
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 8,
+              "x": 16,
+              "y": 44
+            },
+            "hiddenSeries": false,
+            "id": 9,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "editorMode": "code",
+                "expr": "sum(irate(loki_boltdb_shipper_tables_upload_operation_total{namespace=\"$namespace\"}[2m])) by (job)",
+                "interval": "",
+                "legendFormat": "{{job}}",
+                "range": true,
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Shipper Table Uploads",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "collapsed": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "tuHy3WB7z"
+            },
             "gridPos": {
               "h": 1,
               "w": 24,
               "x": 0,
-              "y": 22
+              "y": 52
             },
             "id": 7,
             "panels": [
+
+            ],
+            "targets": [
               {
-                "aliasColors": {
-
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "tuHy3WB7z"
                 },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    },
-                    "links": [
-
-                    ]
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 12,
-                  "x": 0,
-                  "y": 12
-                },
-                "hiddenSeries": false,
-                "id": 2,
-                "legend": {
-                  "alignAsTable": false,
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": false,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum by(service)(rate(process_cpu_seconds_total{pod=~\".+loki.+\"}[3m]))",
-                    "instant": false,
-                    "legendFormat": "{{ service }}",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "CPU Usage",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "decimals": null,
-                    "format": "percentunit",
-                    "label": "",
-                    "logBase": 1,
-                    "max": "1",
-                    "min": "0",
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "cacheTimeout": null,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    },
-                    "links": [
-
-                    ]
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 12,
-                  "x": 12,
-                  "y": 12
-                },
-                "hiddenSeries": false,
-                "id": 3,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "links": [
-
-                ],
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum by(service)(process_resident_memory_bytes{pod=~\".+loki.+\"})",
-                    "legendFormat": "{{ service }}",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "Memory Usage",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "format": "bytes",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
-              },
-              {
-                "aliasColors": {
-
-                },
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fieldConfig": {
-                  "defaults": {
-                    "custom": {
-
-                    },
-                    "links": [
-
-                    ]
-                  },
-                  "overrides": [
-
-                  ]
-                },
-                "fill": 1,
-                "fillGradient": 0,
-                "gridPos": {
-                  "h": 8,
-                  "w": 12,
-                  "x": 0,
-                  "y": 20
-                },
-                "hiddenSeries": false,
-                "id": 5,
-                "legend": {
-                  "avg": false,
-                  "current": false,
-                  "max": false,
-                  "min": false,
-                  "show": true,
-                  "total": false,
-                  "values": false
-                },
-                "lines": true,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pluginVersion": "7.1.1",
-                "pointradius": 2,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [
-
-                ],
-                "spaceLength": 10,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [
-                  {
-                    "expr": "sum by(service) (\n    process_open_fds{pod=~\".+loki.+\"}\n  /\n    process_max_fds{pod=~\".+loki.+\"}\n)",
-                    "legendFormat": "{{ service }}",
-                    "refId": "A"
-                  }
-                ],
-                "thresholds": [
-
-                ],
-                "timeFrom": null,
-                "timeRegions": [
-
-                ],
-                "timeShift": null,
-                "title": "File Descriptors Usage",
-                "tooltip": {
-                  "shared": true,
-                  "sort": 0,
-                  "value_type": "individual"
-                },
-                "type": "graph",
-                "xaxis": {
-                  "buckets": null,
-                  "mode": "time",
-                  "name": null,
-                  "show": true,
-                  "values": [
-
-                  ]
-                },
-                "yaxes": [
-                  {
-                    "decimals": null,
-                    "format": "percentunit",
-                    "label": null,
-                    "logBase": 1,
-                    "max": "1",
-                    "min": "0",
-                    "show": true
-                  },
-                  {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                  }
-                ],
-                "yaxis": {
-                  "align": false,
-                  "alignLevel": null
-                }
+                "refId": "A"
               }
             ],
             "title": "Machine",
             "type": "row"
+          },
+          {
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": [
+
+                ]
+              },
+              "overrides": [
+
+              ]
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 53
+            },
+            "hiddenSeries": false,
+            "id": 2,
+            "legend": {
+              "alignAsTable": false,
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": false,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "sum by(service)(rate(process_cpu_seconds_total{namespace=\"$namespace\", pod=~\".+loki.+\"}[3m]))",
+                "instant": false,
+                "legendFormat": "{{ service }}",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "CPU Usage",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "percentunit",
+                "label": "",
+                "logBase": 1,
+                "max": "1",
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": [
+
+                ]
+              },
+              "overrides": [
+
+              ]
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 12,
+              "y": 53
+            },
+            "hiddenSeries": false,
+            "id": 3,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [
+
+            ],
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "sum by(service)(process_resident_memory_bytes{namespace=\"$namespace\", pod=~\".+loki.+\"})",
+                "legendFormat": "{{ service }}",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "Memory Usage",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "bytes",
+                "logBase": 1,
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
+          },
+          {
+            "aliasColors": {
+
+            },
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "links": [
+
+                ]
+              },
+              "overrides": [
+
+              ]
+            },
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+              "h": 8,
+              "w": 12,
+              "x": 0,
+              "y": 61
+            },
+            "hiddenSeries": false,
+            "id": 5,
+            "legend": {
+              "avg": false,
+              "current": false,
+              "max": false,
+              "min": false,
+              "show": true,
+              "total": false,
+              "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+              "alertThreshold": true
+            },
+            "percentage": false,
+            "pluginVersion": "9.0.1",
+            "pointradius": 2,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [
+
+            ],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+              {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+                },
+                "expr": "sum by(service) (\n    process_open_fds{namespace=\"$namespace\", pod=~\".+loki.+\"}\n  /\n    process_max_fds{namespace=\"$namespace\", pod=~\".+loki.+\"}\n)",
+                "legendFormat": "{{ service }}",
+                "refId": "A"
+              }
+            ],
+            "thresholds": [
+
+            ],
+            "timeRegions": [
+
+            ],
+            "title": "File Descriptors Usage",
+            "tooltip": {
+              "shared": true,
+              "sort": 0,
+              "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+              "mode": "time",
+              "show": true,
+              "values": [
+
+              ]
+            },
+            "yaxes": [
+              {
+                "format": "percentunit",
+                "logBase": 1,
+                "max": "1",
+                "min": "0",
+                "show": true
+              },
+              {
+                "format": "short",
+                "logBase": 1,
+                "show": true
+              }
+            ],
+            "yaxis": {
+              "align": false
+            }
           }
         ],
-        "schemaVersion": 26,
+        "schemaVersion": 36,
         "style": "dark",
         "tags": [
-
+          "observatorium",
+          "observatorium-logs"
         ],
         "templating": {
           "list": [
+            {
+              "current": {
+                "selected": true,
+                "text": "${OBSERVATORIUM_LOGS_DATASOURCE}",
+                "value": "${OBSERVATORIUM_LOGS_DATASOURCE}"
+              },
+              "hide": 0,
+              "includeAll": false,
+              "multi": false,
+              "name": "datasource",
+              "options": [
 
+              ],
+              "query": "prometheus",
+              "queryValue": "",
+              "refresh": 1,
+              "regex": "(app-sre-stage|telemeter-prod)-01-prometheus",
+              "skipUrlSync": false,
+              "type": "datasource"
+            },
+            {
+              "current": {
+                "selected": true,
+                "text": "${OBSERVATORIUM_API_NAMESPACE}",
+                "value": "${OBSERVATORIUM_API_NAMESPACE}"
+              },
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "definition": "label_values(kube_pod_info, namespace)",
+              "hide": 0,
+              "includeAll": false,
+              "multi": false,
+              "name": "namespace",
+              "options": [
+
+              ],
+              "query": {
+                "query": "label_values(kube_pod_info, namespace)",
+                "refId": "StandardVariableQuery"
+              },
+              "refresh": 1,
+              "regex": "observatorium-mst.*",
+              "skipUrlSync": false,
+              "sort": 0,
+              "type": "query"
+            }
           ]
         },
         "time": {
@@ -13912,7 +13946,8 @@ objects:
         "timezone": "",
         "title": "Loki / Overview",
         "uid": "sabLuepMk",
-        "version": 22
+        "version": 2,
+        "weekStart": ""
       }
   kind: ConfigMap
   metadata:

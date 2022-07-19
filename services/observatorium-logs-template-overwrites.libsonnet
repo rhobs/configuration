@@ -59,7 +59,15 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
     manifests+:: {
       [name]+:
         local m = super[name];
-        if m.kind == 'StatefulSet' && std.length(std.findSubstr('querier', name)) != 0 then
+        if m.kind == 'ConfigMap' then
+          m {
+            metadata+: {
+              annotations+: {
+                'qontract.recycle': 'true',
+              },
+            },
+          }
+        else if m.kind == 'StatefulSet' && std.length(std.findSubstr('querier', name)) != 0 then
           m {
             spec+: {
               template+: {

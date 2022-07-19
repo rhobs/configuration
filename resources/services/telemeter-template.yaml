@@ -161,7 +161,6 @@ objects:
           - --whitelist={__name__="eo_es_storage_info"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
-          - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="insightsclient_request_send_total"}
           - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
@@ -178,8 +177,10 @@ objects:
           - --whitelist={__name__="job:ceph_versions_running:count"}
           - --whitelist={__name__="job:kube_pv:count"}
           - --whitelist={__name__="job:noobaa_bucket_count:sum"}
+          - --whitelist={__name__="job:noobaa_namespace_bucket_count"}
           - --whitelist={__name__="job:noobaa_total_object_count:sum"}
           - --whitelist={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+          - --whitelist={__name__="job:noobaa_total_unhealthy_namespace_buckets"}
           - --whitelist={__name__="log_collector_error_count_total"}
           - --whitelist={__name__="log_forwarder_input_info"}
           - --whitelist={__name__="log_forwarder_output_info"}
@@ -193,6 +194,12 @@ objects:
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_sockets:sum"}
           - --whitelist={__name__="node_uname_info"}
           - --whitelist={__name__="noobaa_accounts_num"}
+          - --whitelist={__name__="noobaa_namespace_bucket_status"}
+          - --whitelist={__name__="noobaa_namespace_resource_status"}
+          - --whitelist={__name__="noobaa_num_buckets_claims"}
+          - --whitelist={__name__="noobaa_num_namespace_resources"}
+          - --whitelist={__name__="noobaa_num_unhealthy_bucket_claims"}
+          - --whitelist={__name__="noobaa_num_unhealthy_namespace_resources"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
@@ -205,6 +212,8 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
+          - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}
@@ -380,7 +389,6 @@ objects:
           - --whitelist={__name__="eo_es_storage_info"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
-          - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="insightsclient_request_send_total"}
           - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
@@ -397,8 +405,10 @@ objects:
           - --whitelist={__name__="job:ceph_versions_running:count"}
           - --whitelist={__name__="job:kube_pv:count"}
           - --whitelist={__name__="job:noobaa_bucket_count:sum"}
+          - --whitelist={__name__="job:noobaa_namespace_bucket_count"}
           - --whitelist={__name__="job:noobaa_total_object_count:sum"}
           - --whitelist={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+          - --whitelist={__name__="job:noobaa_total_unhealthy_namespace_buckets"}
           - --whitelist={__name__="log_collector_error_count_total"}
           - --whitelist={__name__="log_forwarder_input_info"}
           - --whitelist={__name__="log_forwarder_output_info"}
@@ -412,6 +422,12 @@ objects:
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_sockets:sum"}
           - --whitelist={__name__="node_uname_info"}
           - --whitelist={__name__="noobaa_accounts_num"}
+          - --whitelist={__name__="noobaa_namespace_bucket_status"}
+          - --whitelist={__name__="noobaa_namespace_resource_status"}
+          - --whitelist={__name__="noobaa_num_buckets_claims"}
+          - --whitelist={__name__="noobaa_num_namespace_resources"}
+          - --whitelist={__name__="noobaa_num_unhealthy_bucket_claims"}
+          - --whitelist={__name__="noobaa_num_unhealthy_namespace_resources"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
@@ -424,6 +440,8 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
+          - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}

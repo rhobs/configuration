@@ -257,7 +257,7 @@ local proxyContainer = {
               serviceAccountName: config.serviceAccountName,
               containers: [
                 super.containers[0] {
-                  args+: ['--storage-tsdb-retention-time=${RETENTION_TIME}'],
+                  args+: ['--storage-active-memory=${STORAGE_ACTIVE_MEMORY}'],
                   resources: {
                     requests: {
                       cpu: '${PARCA_CPU_REQUEST}',
@@ -320,7 +320,7 @@ local proxyContainer = {
       { name: 'PARCA_PROXY_CPU_LIMITS', value: '200m' },
       { name: 'PARCA_PROXY_MEMORY_LIMITS', value: '200Mi' },
       { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
-      { name: 'RETENTION_TIME', value: '12h' },
+      { name: 'STORAGE_ACTIVE_MEMORY', value: '7000000000' },
     ],
   },
   'parca-observatorium-remote-ns-rbac-template': {

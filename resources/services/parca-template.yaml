@@ -150,7 +150,7 @@ objects:
           - /parca
           - --config-path=/var/parca/parca.yaml
           - --log-level=info
-          - --storage-tsdb-retention-time=${RETENTION_TIME}
+          - --storage-active-memory=${STORAGE_ACTIVE_MEMORY}
           image: ${IMAGE}:${IMAGE_TAG}
           livenessProbe:
             exec:
@@ -353,5 +353,5 @@ parameters:
   value: 200Mi
 - name: SERVICE_ACCOUNT_NAME
   value: observatorium
-- name: RETENTION_TIME
-  value: 12h
+- name: STORAGE_ACTIVE_MEMORY
+  value: "7000000000"

@@ -25,8 +25,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OBSERVATORIUM_TRACES_NAMESPACE', value: 'observatorium-traces' },
     { name: 'AMS_URL', value: 'https://api.openshift.com' },
     { name: 'CNVQE_ORGANIZATION_ID', value: '' },
-    { name: 'DPTP_ORGANIZATION_ID', value: '' },
-    { name: 'OCM_ORGANIZATION_ID', value: '' },
     { name: 'GUBERNATOR_CPU_LIMIT', value: '200m' },
     { name: 'GUBERNATOR_CPU_REQUEST', value: '100m' },
     { name: 'GUBERNATOR_IMAGE_TAG', value: '1.0.0-rc.1' },

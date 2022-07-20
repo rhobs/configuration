@@ -339,8 +339,6 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
       amsURL: '${AMS_URL}',
       mappings: {
         osd: '${OSD_ORGANIZATION_ID}',
-        dptp: '${DPTP_ORGANIZATION_ID}',
-        ocm: '${OCM_ORGANIZATION_ID}',
         managedkafka: '${MANAGEDKAFKA_ORGANIZATION_ID}',
         cnvqe: '${CNVQE_ORGANIZATION_ID}',
       },

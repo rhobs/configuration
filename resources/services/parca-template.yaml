@@ -150,7 +150,7 @@ objects:
           - /parca
           - --config-path=/var/parca/parca.yaml
           - --log-level=info
-          - --storage-tsdb-retention-time=12h
+          - --storage-tsdb-retention-time=${RETENTION_TIME}
           image: ${IMAGE}:${IMAGE_TAG}
           livenessProbe:
             exec:
@@ -328,7 +328,7 @@ parameters:
 - name: IMAGE
   value: ghcr.io/parca-dev/parca
 - name: IMAGE_TAG
-  value: v0.10.0
+  value: v0.12.0
 - name: PARCA_REPLICAS
   value: "1"
 - name: PARCA_CPU_REQUEST
@@ -336,7 +336,7 @@ parameters:
 - name: PARCA_MEMORY_REQUEST
   value: 4Gi
 - name: PARCA_CPU_LIMITS
-  value: "4"
+  value: "2"
 - name: PARCA_MEMORY_LIMITS
   value: 8Gi
 - name: OAUTH_PROXY_IMAGE
@@ -353,3 +353,5 @@ parameters:
   value: 200Mi
 - name: SERVICE_ACCOUNT_NAME
   value: observatorium
+- name: RETENTION_TIME
+  value: 12h

@@ -200,7 +200,7 @@ objects:
     namespace: ${NAMESPACE}
 parameters:
 - name: IMAGE_TAG
-  value: v0.10.0
+  value: v0.12.0
 - name: NAMESPACE
   value: observatorium
 - name: OBSERVATORIUM_METRICS_NAMESPACE

@@ -257,7 +257,7 @@ local proxyContainer = {
               serviceAccountName: config.serviceAccountName,
               containers: [
                 super.containers[0] {
-                  args+: ['--storage-tsdb-retention-time=12h'],
+                  args+: ['--storage-tsdb-retention-time=${RETENTION_TIME}'],
                   resources: {
                     requests: {
                       cpu: '${PARCA_CPU_REQUEST}',
@@ -307,11 +307,11 @@ local proxyContainer = {
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'TELEMETER_NAMESPACE', value: 'telemeter' },
       { name: 'IMAGE', value: 'ghcr.io/parca-dev/parca' },
-      { name: 'IMAGE_TAG', value: 'v0.10.0' },
+      { name: 'IMAGE_TAG', value: 'v0.12.0' },
       { name: 'PARCA_REPLICAS', value: '1' },
       { name: 'PARCA_CPU_REQUEST', value: '1' },
       { name: 'PARCA_MEMORY_REQUEST', value: '4Gi' },
-      { name: 'PARCA_CPU_LIMITS', value: '4' },
+      { name: 'PARCA_CPU_LIMITS', value: '2' },
       { name: 'PARCA_MEMORY_LIMITS', value: '8Gi' },
       { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
       { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
@@ -320,6 +320,7 @@ local proxyContainer = {
       { name: 'PARCA_PROXY_CPU_LIMITS', value: '200m' },
       { name: 'PARCA_PROXY_MEMORY_LIMITS', value: '200Mi' },
       { name: 'SERVICE_ACCOUNT_NAME', value: 'observatorium' },
+      { name: 'RETENTION_TIME', value: '12h' },
     ],
   },
   'parca-observatorium-remote-ns-rbac-template': {
@@ -361,7 +362,7 @@ local proxyContainer = {
       },
     ],
     parameters: [
-      { name: 'IMAGE_TAG', value: 'v0.10.0' },
+      { name: 'IMAGE_TAG', value: 'v0.12.0' },
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
       { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },

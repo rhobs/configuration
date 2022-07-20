@@ -9,11 +9,13 @@ export CLIENT_ID=${CLIENT_ID:-client_id}
 export CLIENT_SECRET=${CLIENT_SECRET:-client_secret}
 
 # Up configuration vars
+export ENDPOINT_TYPE=${ENDPOINT_TYPE:-metrics}
 export TENANT=${TENANT:-rhobs}
 export OBSERVATORIUM_API_URL=${OBSERVATORIUM_API_URL:-https://observatorium.api}
 export LOG_LEVEL=${LOG_LEVEL:-info}
 export METRIC_NAME=${METRIC_NAME:-rhobs_e2e}
 export METRIC_LABELS=${METRIC_LABELS:-_id=\"test\"}
+export LOGS_FILE=${LOGS_FILE}
 
 # Up run parameters
 export UP_DURATION=${UP_DURATION:-30s}
@@ -30,13 +32,27 @@ if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
     echo "Failed to obtain the bearer token"; exit 1;
 fi
 
-up --endpoint-type=metrics \
-    --endpoint-read=${OBSERVATORIUM_API_URL}/api/metrics/v1/${TENANT} \
-	--endpoint-write=${OBSERVATORIUM_API_URL}/api/metrics/v1/${TENANT}/api/v1/receive \
-    --token=${TOKEN} \
-	--log.level=${LOG_LEVEL} \
-	--name=${METRIC_NAME} \
-	--labels=${METRIC_LABELS} \
-    --duration=${UP_DURATION} \
-    --initial-query-delay=${UP_INITIAL_DELAY}
+READ_PATH=""
+INGEST_PATH="/api/v1/receive"
+if [ "$ENDPOINT_TYPE" = "logs" ]; then
+    READ_PATH="/loki/api/v1/query"
+    INGEST_PATH="/loki/api/v1/push"
+fi
 
+UP_PARAMS=(
+    "--endpoint-type=${ENDPOINT_TYPE}"
+    "--endpoint-read=${OBSERVATORIUM_API_URL}/api/${ENDPOINT_TYPE}/v1/${TENANT}${READ_PATH}"
+	"--endpoint-write=${OBSERVATORIUM_API_URL}/api/${ENDPOINT_TYPE}/v1/${TENANT}${INGEST_PATH}"
+    "--token=${TOKEN}"
+	"--log.level=${LOG_LEVEL}"
+	"--name=${METRIC_NAME}"
+	"--labels=${METRIC_LABELS}"
+    "--duration=${UP_DURATION}"
+    "--initial-query-delay=${UP_INITIAL_DELAY}"
+)
+
+if [ -n "$LOGS_FILE" ] && [ "$ENDPOINT_TYPE" = "logs" ]; then
+  UP_PARAMS+=("--logs-file=${LOGS_FILE}")
+fi
+
+up "${UP_PARAMS[@]}"

@@ -48,7 +48,7 @@ $JB update
 ## Testing cluster
 
 The purpose of [RHOBS testing cluster](https://console-openshift-console.apps.rhobs-testing.qqzf.p1.openshiftapps.com/dashboards) is to
-experiment before changes are rolled out to staging and production environments. The objects in the cluster are managed by app-interface, however the testing cluster uses a different set of namespaces - `observatorium{-metrics,-traces}-testing`.
+experiment before changes are rolled out to staging and production environments. The objects in the cluster are managed by app-interface, however the testing cluster uses a different set of namespaces - `observatorium{-logs,-metrics,-traces}-testing`.
 
 Changes can be applied to the cluster manually, however they will be overridden by app-interface during the next deployment cycle.
 

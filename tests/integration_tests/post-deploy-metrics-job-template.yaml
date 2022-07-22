@@ -1,0 +1,58 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-e2e-metrics-tests
+objects:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: rhobs-e2e-${ENDPOINT_TYPE}-tests-${SUFFIX}-${JOBID}
+  spec:
+    backoffLimit: 2
+    selector: {}
+    template:
+      metadata:
+        name: rhobs-e2e-${ENDPOINT_TYPE}-tests
+      spec:
+        containers:
+        - image: ${IMAGE}:${IMAGE_TAG}
+          imagePullPolicy: Always
+          name: rhobs-e2e-${ENDPOINT_TYPE}-tests
+          env:
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: ${CREDENTIALS_SECRET}
+                key: client_id
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: ${CREDENTIALS_SECRET}
+                key: client_secret
+          - name: OBSERVATORIUM_API_URL
+            value: ${API_URL}
+          - name: ENDPOINT_TYPE
+            value: ${ENDPOINT_TYPE}
+          - name: METRIC_LABELS
+            value: ${METRIC_LABELS}
+        restartPolicy: Never
+parameters:
+- name: SUFFIX
+  value: suffix
+  required: true
+- name: IMAGE
+  value: quay.io/app-sre/rhobs-e2e
+- name: IMAGE_TAG
+  value: f343591
+- name: JOBID
+  generate: expression
+  from: "[0-9a-f]{7}"
+- name: CREDENTIALS_SECRET
+  value: secret
+- name: API_URL
+  value: observatorium.api
+- name: ENDPOINT_TYPE
+  value: metrics
+- name: METRIC_LABELS
+  value: _id="test"

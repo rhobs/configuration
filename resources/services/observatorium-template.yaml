@@ -324,7 +324,7 @@ objects:
       app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-observatorium-up
   spec:
-    replicas: 1
+    replicas: ${{UP_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: blackbox-prober
@@ -1396,5 +1396,7 @@ parameters:
   value: 1Gi
 - name: UP_MEMORY_LIMIT
   value: 2Gi
+- name: UP_REPLICAS
+  value: "1"
 - name: AVALANCHE_REPLICAS
   value: "1"

@@ -573,9 +573,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
           [thanos.rule.service] +
-          [thanos.statelessRule.service] +
-          [thanos.metricFederationRule.service] +
-          [thanos.metricFederationStatelessRule.service]
+          [thanos.statelessRule.service]
       ],
       serviceMonitor: true,
       resources: {

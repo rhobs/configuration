@@ -441,6 +441,11 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
       },
     },
   }) {
+    deployment+: {
+      spec+: {
+        replicas: '${{UP_REPLICAS}}',
+      },
+    },
     serviceMonitor+: {
       metadata+: {
         name: 'observatorium-up',

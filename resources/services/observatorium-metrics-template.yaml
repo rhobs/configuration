@@ -439,7 +439,7 @@ objects:
   data:
     observatorium.yaml: |-
       "groups":
-      - "interval": "3m"
+      - "interval": "4m"
         "name": "telemeter-telemeter.rules"
         "rules":
         - "expr": |

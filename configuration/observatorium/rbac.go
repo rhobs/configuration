@@ -12,6 +12,7 @@ import (
 type tenantID string
 
 const (
+	appsreTenant     tenantID = "appsre"
 	cnvqeTenant      tenantID = "cnvqe"
 	dptpTenant       tenantID = "dptp"
 	telemeterTenant  tenantID = "telemeter"
@@ -20,7 +21,6 @@ const (
 	rhodsTenant      tenantID = "rhods"
 	rhacsTenant      tenantID = "rhacs"
 	rhocTenant       tenantID = "rhoc"
-	ocmTenant        tenantID = "ocm"
 	odfmsTenant      tenantID = "odfms"
 	refAddonTenant   tenantID = "reference-addon"
 	hypershiftTenant tenantID = "hypershift-platform"
@@ -232,22 +232,14 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{stagingEnv, productionEnv},
 	})
 
-	// OCM
-	// Reader serviceaccount
+	// APPSRE
+	// Reader and Writer serviceaccount
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-ocm-reader",
-		tenant:  ocmTenant,
+		name:    "observatorium-appsre",
+		tenant:  appsreTenant,
 		signals: []signal{logsSignal},
-		perms:   []rbac.Permission{rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
-	})
-	// Writer serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-ocm-collector",
-		tenant:  ocmTenant,
-		signals: []signal{logsSignal},
-		perms:   []rbac.Permission{rbac.Write},
-		envs:    []env{stagingEnv, productionEnv},
+		perms:   []rbac.Permission{rbac.Read, rbac.Write},
+		envs:    []env{stagingEnv},
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.

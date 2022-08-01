@@ -578,22 +578,13 @@ objects:
           "name": "service-account-observatorium-dptp-collector-staging"
         - "kind": "user"
           "name": "service-account-observatorium-dptp-collector"
-      - "name": "observatorium-ocm-reader"
+      - "name": "observatorium-appsre"
         "roles":
-        - "ocm-logs-read"
+        - "appsre-logs-read"
+        - "appsre-logs-write"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-ocm-reader-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-ocm-reader"
-      - "name": "observatorium-ocm-collector"
-        "roles":
-        - "ocm-logs-write"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-ocm-collector-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-ocm-collector"
+          "name": "service-account-observatorium-appsre-staging"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -791,20 +782,20 @@ objects:
         - "logs"
         "tenants":
         - "dptp"
-      - "name": "ocm-logs-read"
+      - "name": "appsre-logs-read"
         "permissions":
         - "read"
         "resources":
         - "logs"
         "tenants":
-        - "ocm"
-      - "name": "ocm-logs-write"
+        - "appsre"
+      - "name": "appsre-logs-write"
         "permissions":
         - "write"
         "resources":
         - "logs"
         "tenants":
-        - "ocm"
+        - "appsre"
   kind: ConfigMap
   metadata:
     annotations:

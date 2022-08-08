@@ -90,6 +90,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_RECEIVE_PVC_STORAGE', value: '100Gi' },
     { name: 'THANOS_RECEIVE_REPLICAS', value: '5' },
     { name: 'THANOS_RECEIVE_TSDB_PATH', value: '/var/thanos/receive' },
+    { name: 'THANOS_RECEIVE_TSDB_RETENTION', value: '4d' },
     { name: 'THANOS_RULE_SYNCER_IMAGE', value: 'quay.io/observatorium/thanos-rule-syncer' },
     { name: 'THANOS_RULE_SYNCER_IMAGE_TAG', value: 'main-2022-01-11-1290656' },
     { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },

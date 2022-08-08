@@ -1928,7 +1928,7 @@ objects:
           - --remote-write.address=0.0.0.0:19291
           - --receive.replication-factor=3
           - --tsdb.path=${THANOS_RECEIVE_TSDB_PATH}
-          - --tsdb.retention=4d
+          - --tsdb.retention=${THANOS_RECEIVE_TSDB_RETENTION}
           - --label=replica="$(NAME)"
           - --label=receive="true"
           - --objstore.config=$(OBJSTORE_CONFIG)
@@ -3566,6 +3566,8 @@ parameters:
   value: "5"
 - name: THANOS_RECEIVE_TSDB_PATH
   value: /var/thanos/receive
+- name: THANOS_RECEIVE_TSDB_RETENTION
+  value: 4d
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

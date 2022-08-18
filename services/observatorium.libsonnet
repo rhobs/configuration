@@ -154,7 +154,7 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     name: 'rules-objstore',
     version: '${RULES_OBJSTORE_IMAGE_TAG}',
     image: '%s:%s' % ['${RULES_OBJSTORE_IMAGE}', cfg.version],
-    replicas: 1,
+    replicas: 2,
     objectStorageConfig: {
       name: '${RULES_OBJSTORE_SECRET}',
       key: 'objstore.yaml',

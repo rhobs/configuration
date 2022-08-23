@@ -349,7 +349,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
-    local storeShards = 3,
+    local storeShards = 6,
     stores:: t.storeShards(thanosSharedConfig {
       shards: storeShards,
       name: 'observatorium-thanos-store-shard',

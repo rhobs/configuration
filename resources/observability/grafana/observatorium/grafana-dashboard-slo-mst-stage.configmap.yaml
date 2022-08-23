@@ -1167,6 +1167,1000 @@ data:
                 "panels": [
 
                 ],
+                "title": "API > Rules Write (/rules/raw) > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of valid write requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 18,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code=~\"5.+\", method=~\"PUT\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code!~\"4.+\", method=~\"PUT\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 19,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code=~\"5.+\", method=~\"PUT\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code!~\"4.+\", method=~\"PUT\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Rules Write > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of rules are successfully synced to Thanos Ruler</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 20,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(thanos_rule_loaded_rules{container=\"thanos-rule\",namespace=\"observatorium-mst-stage\"}) < 0 or vector(0))\n/\nsum(prometheus_rule_group_rules{job=\"observatorium-thanos-rule\",namespace=\"observatorium-mst-stage\"})\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 21,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(thanos_rule_loaded_rules{container=\"thanos-rule\",namespace=\"observatorium-mst-stage\"}) < 0 or vector(0))\n        /\n        sum(prometheus_rule_group_rules{job=\"observatorium-thanos-rule\",namespace=\"observatorium-mst-stage\"})\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Rules Read (/rules) > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 22,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\", code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\", code!~\"4.+\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 23,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\", code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\", code!~\"4.+\"}[28d]))\n    ) - 0.90000000000000002\n)\n/\n(1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Rules Read (/rules/raw) > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">90% of valid requests return successfully</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 24,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code!~\"4.+\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 25,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\", code!~\"4.+\"}[28d]))\n    ) - 0.90000000000000002\n)\n/\n(1 - 0.90000000000000002), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
+                "title": "API > Alerting > Availability",
+                "type": "row"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of alerts are successfully delivered to Alertmanager</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 26,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-mst-stage\"}[28d])) or vector(0))\n/\nsum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-mst-stage\"}[28d]))\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 27,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-mst-stage\"}[28d])) or vector(0))\n        /\n        sum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-mst-stage\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 0
+                },
+                "options": {
+                    "content": "<center style=\"font-size: 25px;\">95% of alerts are successfully delivered to upstream targets</center>",
+                    "mode": "markdown"
+                },
+                "pluginVersion": "8.2.1",
+                "title": "SLO",
+                "type": "text"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 95
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 97.5
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 5
+                },
+                "id": 28,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "1-\n(sum(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"observatorium-mst-stage\"}) or vector(0))\n/\nsum(alertmanager_notifications_total{service=\"observatorium-alertmanager\", namespace=\"observatorium-mst-stage\"})\n",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Availability (28d)",
+                "type": "stat"
+            },
+            {
+                "datasource": "app-sre-stage-01-prometheus",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "decimals": 2,
+                        "mappings": [
+
+                        ],
+                        "max": 1,
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "percentage",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": null
+                                },
+                                {
+                                    "color": "orange",
+                                    "value": 33
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 66
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": [
+
+                    ]
+                },
+                "gridPos": {
+                    "h": 5,
+                    "w": 5,
+                    "x": 10
+                },
+                "id": 29,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {
+
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.2.1",
+                "targets": [
+                    {
+                        "exemplar": true,
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"observatorium-mst-stage\"}) or vector(0))\n        /\n        sum(alertmanager_notifications_total{service=\"observatorium-alertmanager\", namespace=\"observatorium-mst-stage\"})\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "hide": false,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "B"
+                    }
+                ],
+                "title": "Error Budget (28d)",
+                "type": "stat"
+            },
+            {
+                "collapsed": false,
+                "panels": [
+
+                ],
                 "title": "API > Logs Write > Availability",
                 "type": "row"
             },

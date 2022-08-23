@@ -467,6 +467,55 @@ function(instanceName, environment, dashboardName) {
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
       8
     ),
+  local apiRulesPanels =
+    titleRow('API > Rules Write (/rules/raw) > Availability') +
+    availabilityRow(
+      '95% of valid write requests return successfully',
+      0.95,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw", code=~"5.+", method=~"PUT"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw", code!~"4.+", method=~"PUT"}[28d]))' % instance.apiJob,
+      9
+    ) +
+    titleRow('API > Rules Write > Availability') +
+    availabilityRow(
+      '95% of rules are successfully synced to Thanos Ruler',
+      0.95,
+      'sum(thanos_rule_loaded_rules{container="thanos-rule",namespace="%s"}) < 0' % instance.upNamespace,
+      'sum(prometheus_rule_group_rules{job="observatorium-thanos-rule",namespace="%s"})' % instance.upNamespace,
+      10
+    ) +
+    titleRow('API > Rules Read (/rules) > Availability') +
+    availabilityRow(
+      '90% of valid requests return successfully',
+      0.9,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules", code=~"5.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules", code!~"4.+"}[28d]))' % instance.apiJob,
+      11
+    ) +
+    titleRow('API > Rules Read (/rules/raw) > Availability') +
+    availabilityRow(
+      '90% of valid requests return successfully',
+      0.9,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw", code=~"5.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw", code!~"4.+"}[28d]))' % instance.apiJob,
+      12
+    ),
+  local apiAlertingPanels =
+    titleRow('API > Alerting > Availability') +
+    availabilityRow(
+      '95% of alerts are successfully delivered to Alertmanager',
+      0.95,
+      'sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="%s"}[28d]))' % instance.upNamespace,
+      'sum(rate(thanos_alert_sender_alerts_sent_total{container="thanos-rule",namespace="%s"}[28d]))' % instance.upNamespace,
+      13
+    ) +
+    availabilityRow(
+      '95% of alerts are successfully delivered to upstream targets',
+      0.95,
+      'sum(alertmanager_notifications_failed_total{service="observatorium-alertmanager", namespace="%s"})' % instance.upNamespace,
+      'sum(alertmanager_notifications_total{service="observatorium-alertmanager", namespace="%s"})' % instance.upNamespace,
+      14
+    ),
   local apiLogsPanels =
     titleRow('API > Logs Write > Availability') +
     availabilityRow(
@@ -510,11 +559,11 @@ function(instanceName, environment, dashboardName) {
   data: {
     'slo.json': std.manifestJson({
       // Only add telemeter-server panels if we're generating SLOs for the telemeter instance.
-      // Only add API Logs panels if we're generating SLOs for the mst instance.
+      // Only add API Logs and alerting panels if we're generating SLOs for the mst instance.
       panels: titlePanel +
               (if instanceName == 'telemeter' then telemeterPanels else []) +
               apiPanels +
-              (if instanceName == 'mst' then apiLogsPanels else []),
+              (if instanceName == 'mst' then apiRulesPanels + apiAlertingPanels + apiLogsPanels else []),
       refresh: false,
       schemaVersion: 31,
       style: 'dark',

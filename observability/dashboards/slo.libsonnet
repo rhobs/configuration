@@ -557,7 +557,7 @@ function(instanceName, environment, dashboardName) {
   data: {
     'slo.json': std.manifestJson({
       // Only add telemeter-server panels if we're generating SLOs for the telemeter instance.
-      // Only add API Logs and alerting panels if we're generating SLOs for the mst instance.
+      // Only add API Logs panels if we're generating SLOs for the mst instance.
       panels: titlePanel +
               (if instanceName == 'telemeter' then telemeterPanels else []) +
               apiPanels +

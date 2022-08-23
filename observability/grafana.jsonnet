@@ -17,6 +17,7 @@ local memcached = (import 'github.com/grafana/jsonnet-libs/memcached-mixin/mixin
 
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'telemeter-production';
+local obsTraces = 'observatorium-traces';
 
 local sanitizeDashboardName(name) = std.strReplace(std.split(name, '.')[0], '_', '-');
 
@@ -66,7 +67,9 @@ local dashboards =
   { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'production', 'Telemeter Production SLOs') } +
   { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'stage', 'Telemeter Staging SLOs') } +
   { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo.libsonnet')('mst', 'production', 'MST Production SLOs') } +
-  { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo.libsonnet')('mst', 'stage', 'MST Stage SLOs') };
+  { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo.libsonnet')('mst', 'stage', 'MST Stage SLOs') } +
+  { 'grafana-dashboard-tracing-otel.configmap': (import 'dashboards/opentelemetry.libsonnet')(obsDatasource, obsTraces) } +
+  { 'grafana-dashboard-tracing-jaeger.configmap': (import 'dashboards/tracing.libsonnet')(obsDatasource, obsTraces) };
 {
   [name]: dashboards[name] {
     metadata+: {

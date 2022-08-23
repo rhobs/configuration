@@ -49,6 +49,7 @@ local tracing = (import 'github.com/observatorium/observatorium/configuration/co
     namespace: '${NAMESPACE}',
     commonLabels+:: obs.config.commonLabels,
     enabled: true,
+    monitoring: true,
     tenants: [
       tenant.name
       for tenant in (import '../configuration/observatorium/tenants.libsonnet').tenants

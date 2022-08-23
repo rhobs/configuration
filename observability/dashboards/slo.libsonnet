@@ -466,8 +466,7 @@ function(instanceName, environment, dashboardName) {
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples"}[1d])' % instance.upNamespace,
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
       8
-    ),
-  local apiRulesPanels =
+    ) +
     titleRow('API > Rules Write (/rules/raw) > Availability') +
     availabilityRow(
       '95% of valid write requests return successfully',
@@ -499,8 +498,7 @@ function(instanceName, environment, dashboardName) {
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw", code=~"5.+"}[28d]))' % instance.apiJob,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw", code!~"4.+"}[28d]))' % instance.apiJob,
       12
-    ),
-  local apiAlertingPanels =
+    ) +
     titleRow('API > Alerting > Availability') +
     availabilityRow(
       '95% of alerts are successfully delivered to Alertmanager',
@@ -563,7 +561,7 @@ function(instanceName, environment, dashboardName) {
       panels: titlePanel +
               (if instanceName == 'telemeter' then telemeterPanels else []) +
               apiPanels +
-              (if instanceName == 'mst' then apiRulesPanels + apiAlertingPanels + apiLogsPanels else []),
+              (if instanceName == 'mst' then apiLogsPanels else []),
       refresh: false,
       schemaVersion: 31,
       style: 'dark',

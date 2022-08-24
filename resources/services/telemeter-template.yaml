@@ -161,7 +161,6 @@ objects:
           - --whitelist={__name__="eo_es_storage_info"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
-          - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="insightsclient_request_send_total"}
           - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
@@ -187,6 +186,15 @@ objects:
           - --whitelist={__name__="log_logging_info"}
           - --whitelist={__name__="monitoring:container_memory_working_set_bytes:sum"}
           - --whitelist={__name__="monitoring:haproxy_server_http_responses_total:sum"}
+          - --whitelist={__name__="namespace:noobaa_accounts:max"}
+          - --whitelist={__name__="namespace:noobaa_buckets_claims:max"}
+          - --whitelist={__name__="namespace:noobaa_namespace_buckets:max"}
+          - --whitelist={__name__="namespace:noobaa_namespace_resources:max"}
+          - --whitelist={__name__="namespace:noobaa_system_health_status:max"}
+          - --whitelist={__name__="namespace:noobaa_unhealthy_bucket_claims:max"}
+          - --whitelist={__name__="namespace:noobaa_unhealthy_namespace_buckets:max"}
+          - --whitelist={__name__="namespace:noobaa_unhealthy_namespace_resources:max"}
+          - --whitelist={__name__="namespace:noobaa_usage:max"}
           - --whitelist={__name__="namespace_job:scrape_samples_post_metric_relabeling:topk3"}
           - --whitelist={__name__="namespace_job:scrape_series_added:topk3_sum1h"}
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_cores:sum"}
@@ -205,6 +213,8 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
+          - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}
@@ -380,7 +390,6 @@ objects:
           - --whitelist={__name__="eo_es_storage_info"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
-          - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="insightsclient_request_send_total"}
           - --whitelist={__name__="instance:etcd_disk_backend_commit_duration_seconds:histogram_quantile",quantile="0.99"}
           - --whitelist={__name__="instance:etcd_disk_wal_fsync_duration_seconds:histogram_quantile",quantile="0.99"}
@@ -406,6 +415,15 @@ objects:
           - --whitelist={__name__="log_logging_info"}
           - --whitelist={__name__="monitoring:container_memory_working_set_bytes:sum"}
           - --whitelist={__name__="monitoring:haproxy_server_http_responses_total:sum"}
+          - --whitelist={__name__="namespace:noobaa_accounts:max"}
+          - --whitelist={__name__="namespace:noobaa_buckets_claims:max"}
+          - --whitelist={__name__="namespace:noobaa_namespace_buckets:max"}
+          - --whitelist={__name__="namespace:noobaa_namespace_resources:max"}
+          - --whitelist={__name__="namespace:noobaa_system_health_status:max"}
+          - --whitelist={__name__="namespace:noobaa_unhealthy_bucket_claims:max"}
+          - --whitelist={__name__="namespace:noobaa_unhealthy_namespace_buckets:max"}
+          - --whitelist={__name__="namespace:noobaa_unhealthy_namespace_resources:max"}
+          - --whitelist={__name__="namespace:noobaa_usage:max"}
           - --whitelist={__name__="namespace_job:scrape_samples_post_metric_relabeling:topk3"}
           - --whitelist={__name__="namespace_job:scrape_series_added:topk3_sum1h"}
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_cores:sum"}
@@ -424,6 +442,8 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
+          - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhods_aggregate_availability"}

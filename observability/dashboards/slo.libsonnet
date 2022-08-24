@@ -510,8 +510,8 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '95% of alerts are successfully delivered to upstream targets',
       0.95,
-      'sum(alertmanager_notifications_failed_total{service="observatorium-alertmanager", namespace="%s"})' % instance.upNamespace,
-      'sum(alertmanager_notifications_total{service="observatorium-alertmanager", namespace="%s"})' % instance.upNamespace,
+      'sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager", namespace="%s"}[28d]))' % instance.upNamespace,
+      'sum(rate(alertmanager_notifications_total{service="observatorium-alertmanager", namespace="%s"}[28d]))' % instance.upNamespace,
       14
     ),
   local apiLogsPanels =

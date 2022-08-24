@@ -1247,7 +1247,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\", method=~\"PUT\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\", method=~\"PUT\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[28d]))\n",
                         "interval": "",
                         "legendFormat": "",
                         "refId": "A"
@@ -1319,7 +1319,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\", method=~\"PUT\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\", method=~\"PUT\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",

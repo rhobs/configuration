@@ -170,6 +170,107 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     },
   }),
 
+  rulesSLOPrometheusRule: {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: 'rules-reloader-slo',
+      labels: {
+        tenant: 'rhobs',
+      },
+    },
+    spec: {
+      groups: [
+        {
+          interval: '30s',
+          name: 'reloader-slo-alert',
+          rules: [
+            {
+              alert: 'AlwaysFiringAlert',
+              expr: 'vector(1)',
+              'for': '1m',
+              annotations: {
+                description: 'Firing alert!',
+                message: 'Alert fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+            {
+              alert: 'AlwaysFiringAlert2',
+              expr: 'vector(1)',
+              'for': '1m',
+              annotations: {
+                description: 'Firing alert 2!',
+                message: 'Alert 2 fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+            {
+              alert: 'NeverFiringAlert',
+              expr: 'vector(0)',
+              'for': '1m',
+              annotations: {
+                description: 'Does not fire!',
+                message: 'Alert not fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+          ],
+        },
+        {
+          interval: '30s',
+          name: 'reloader-slo-record',
+          rules: [
+            {
+              record: 'AlwaysRecord',
+              expr: 'vector(1)',
+              labels: {
+                test: 'slo-record',
+              },
+            },
+            {
+              record: 'NeverRecord',
+              expr: 'vector(0)',
+              labels: {
+                test: 'slo-record',
+              },
+            },
+          ],
+        },
+        {
+          interval: '30s',
+          name: 'reloader-slo-combined',
+          rules: [
+            {
+              record: 'CombinedRecord',
+              expr: 'vector(1)',
+              labels: {
+                test: 'slo-record',
+              },
+            },
+            {
+              alert: 'CombinedAlert',
+              expr: 'vector(1)',
+              annotations: {
+                description: 'Combined alert firing!',
+                message: 'Combined alert fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   rulesObjstore:: rulesObjstore({
     local cfg = self,
     name: 'rules-objstore',
@@ -566,5 +667,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     ['observatorium-obsctl-reloader-' + name]: obs.obsctlReloader[name]
     for name in std.objectFields(obs.obsctlReloader)
     if obs.obsctlReloader[name] != null
+  } + {
+    'observatorium-rules-slo-prom-rule': obs.rulesSLOPrometheusRule,
   },
 }

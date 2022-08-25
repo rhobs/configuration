@@ -400,6 +400,66 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: rules-objstore
         app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    labels:
+      tenant: rhobs
+    name: rules-reloader-slo
+  spec:
+    groups:
+    - interval: 30s
+      name: reloader-slo-alert
+      rules:
+      - alert: AlwaysFiringAlert
+        annotations:
+          description: Firing alert!
+          message: Alert fired.
+        expr: vector(1)
+        for: 1m
+        labels:
+          severity: page
+      - alert: AlwaysFiringAlert2
+        annotations:
+          description: Firing alert 2!
+          message: Alert 2 fired.
+        expr: vector(1)
+        for: 1m
+        labels:
+          severity: page
+      - alert: NeverFiringAlert
+        annotations:
+          description: Does not fire!
+          message: Alert not fired.
+        expr: vector(0)
+        for: 1m
+        labels:
+          severity: page
+    - interval: 30s
+      name: reloader-slo-record
+      rules:
+      - expr: vector(1)
+        labels:
+          test: slo-record
+        record: AlwaysRecord
+      - expr: vector(0)
+        labels:
+          test: slo-record
+        record: NeverRecord
+    - interval: 30s
+      name: reloader-slo-combined
+      rules:
+      - expr: vector(1)
+        labels:
+          test: slo-record
+        record: CombinedRecord
+      - alert: CombinedAlert
+        annotations:
+          description: Combined alert firing!
+          message: Combined alert fired.
+        expr: vector(1)
+        labels:
+          severity: page
 - apiVersion: v1
   data:
     queries.yaml: |-

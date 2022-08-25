@@ -390,7 +390,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIRulesSyncAvailabilityErrorBudgetBurning',
             alertMessage: 'API /reload endpoint is burning too much error budget to guarantee availability SLOs',
             metric: 'client_api_requests_total',
-            selectors: ['client="oauth"', upNamespaceSelector, 'code=~"^(2..|3..|5..)$"'],
+            selectors: ['client="oauth"', 'container="thanos-rule-syncer"', upNamespaceSelector, 'code=~"^(2..|3..|5..)$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),

@@ -3,6 +3,7 @@ local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/observatorium/configuration/components/gubernator.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/lib/rules-objstore.libsonnet');
+local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obsctl-reloader.libsonnet');
 
 (import 'github.com/observatorium/observatorium/configuration/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
@@ -148,6 +149,26 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
       imagePullSecrets+: [{ name: 'quay.io' }],
     },
   },
+
+  obsctlReloader:: obsctlReloader({
+    local cfg = self,
+    name: 'rules-obsctl-reloader',
+    version: '${OBSCTL_RELOADER_IMAGE_TAG}',
+    image: '%s:%s' % ['${OBSCTL_RELOADER_IMAGE}', cfg.version],
+    replicas: 1,
+    commonLabels+:: {
+      'app.kubernetes.io/name': 'rules-obsctl-reloader',
+      'app.kubernetes.io/component': 'rules-obsctl-reloader',
+    } + obs.config.commonLabels,
+    env: {
+      observatoriumURL: '${OBSERVATORIUM_URL}',
+      oidcAudience: '${OIDC_AUDIENCE}',
+      oidcIssuerURL: '${OIDC_ISSUER_URL}',
+      sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
+      managedTenants: '${MANAGED_TENANTS}',
+      obsctlReloaderSecret: '${OBSCTL_RELOADER_SECRET_NAME}',
+    },
+  }),
 
   rulesObjstore:: rulesObjstore({
     local cfg = self,
@@ -541,5 +562,9 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null
+  } + {
+    ['observatorium-obsctl-reloader-' + name]: obs.obsctlReloader[name]
+    for name in std.objectFields(obs.obsctlReloader)
+    if obs.obsctlReloader[name] != null
   },
 }

@@ -479,8 +479,8 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '95% of rules are successfully synced to Thanos Ruler',
       0.95,
-      'sum(rate(client_api_requests_total{client="oauth",namespace="%s",code=~"5.+"}[28d]))' % instance.upNamespace,
-      'sum(rate(client_api_requests_total{client="oauth",namespace="%s",code!~"4.+"}[28d]))' % instance.upNamespace,
+      'sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="%s",code=~"5.+"}[28d]))' % instance.upNamespace,
+      'sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="%s",code!~"4.+"}[28d]))' % instance.upNamespace,
       10
     ) +
     titleRow('API > Rules Read (/rules) > Availability') +

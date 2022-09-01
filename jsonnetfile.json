@@ -4,15 +4,6 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/parca-dev/parca.git",
-          "subdir": "deploy/lib/parca"
-        }
-      },
-      "version": "main"
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/grafana/grafonnet-lib.git",
           "subdir": "grafonnet"
         }
@@ -120,6 +111,24 @@
         }
       },
       "version": "master"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/parca-dev/parca.git",
+          "subdir": "deploy/lib/parca"
+        }
+      },
+      "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/rhobs/obsctl-reloader.git",
+          "subdir": "jsonnet/lib"
+        }
+      },
+      "version": "main"
     },
     {
       "source": {

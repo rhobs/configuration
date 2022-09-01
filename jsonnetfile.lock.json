@@ -322,6 +322,16 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/rhobs/obsctl-reloader.git",
+          "subdir": "jsonnet/lib"
+        }
+      },
+      "version": "a6a0ff74be63dabac0a1562a364a3a1ccc8f985d",
+      "sum": "vdcovQefbNENJcAlNTojsUldmCF0QIBUB5zSwB7wF4s="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/thanos-io/kube-thanos.git",
           "subdir": "jsonnet/kube-thanos"
         }

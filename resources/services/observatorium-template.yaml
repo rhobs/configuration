@@ -162,6 +162,114 @@ objects:
   kind: Deployment
   metadata:
     labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
+    name: rules-obsctl-reloader
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-obsctl-reloader
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-obsctl-reloader
+        app.kubernetes.io/part-of: observatorium
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: rules-obsctl-reloader
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: rules-obsctl-reloader
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
+      spec:
+        containers:
+        - env:
+          - name: NAMESPACE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: OBSERVATORIUM_URL
+            value: ${OBSERVATORIUM_URL}
+          - name: OIDC_AUDIENCE
+            value: ${OIDC_AUDIENCE}
+          - name: OIDC_ISSUER_URL
+            value: ${OIDC_ISSUER_URL}
+          - name: SLEEP_DURATION_SECONDS
+            value: ${SLEEP_DURATION_SECONDS}
+          - name: MANAGED_TENANTS
+            value: ${MANAGED_TENANTS}
+          - name: OIDC_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: ${OBSCTL_RELOADER_SECRET_NAME}
+          - name: OIDC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: ${OBSCTL_RELOADER_SECRET_NAME}
+          image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          name: obsctl-reloader
+          resources: {}
+        serviceAccountName: rules-obsctl-reloader
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
+    name: rules-obsctl-reloader
+  rules:
+  - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - prometheusrules
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
+    name: rules-obsctl-reloader
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rules-obsctl-reloader
+  subjects:
+  - kind: ServiceAccount
+    name: rules-obsctl-reloader
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
+    name: rules-obsctl-reloader
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
       app.kubernetes.io/component: rules-storage
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
@@ -292,6 +400,66 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: rules-objstore
         app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: PrometheusRule
+  metadata:
+    labels:
+      tenant: rhobs
+    name: rules-reloader-slo
+  spec:
+    groups:
+    - interval: 30s
+      name: reloader-slo-alert
+      rules:
+      - alert: AlwaysFiringAlert
+        annotations:
+          description: Firing alert!
+          message: Alert fired.
+        expr: vector(1)
+        for: 1m
+        labels:
+          severity: page
+      - alert: AlwaysFiringAlert2
+        annotations:
+          description: Firing alert 2!
+          message: Alert 2 fired.
+        expr: vector(1)
+        for: 1m
+        labels:
+          severity: page
+      - alert: NeverFiringAlert
+        annotations:
+          description: Does not fire!
+          message: Alert not fired.
+        expr: vector(0)
+        for: 1m
+        labels:
+          severity: page
+    - interval: 30s
+      name: reloader-slo-record
+      rules:
+      - expr: vector(1)
+        labels:
+          test: slo-record
+        record: AlwaysRecord
+      - expr: vector(0)
+        labels:
+          test: slo-record
+        record: NeverRecord
+    - interval: 30s
+      name: reloader-slo-combined
+      rules:
+      - expr: vector(1)
+        labels:
+          test: slo-record
+        record: CombinedRecord
+      - alert: CombinedAlert
+        annotations:
+          description: Combined alert firing!
+          message: Combined alert fired.
+        expr: vector(1)
+        labels:
+          severity: page
 - apiVersion: v1
   data:
     queries.yaml: |-
@@ -1391,3 +1559,19 @@ parameters:
   value: "1"
 - name: AVALANCHE_REPLICAS
   value: "1"
+- name: OBSERVATORIUM_URL
+  value: http://observatorium-observatorium-api.${NAMESPACE}.svc:8080
+- name: OIDC_AUDIENCE
+  value: observatorium
+- name: OIDC_ISSUER_URL
+  value: https://sso.redhat.com/auth/realms/redhat-external
+- name: SLEEP_DURATION_SECONDS
+  value: "15"
+- name: MANAGED_TENANTS
+  value: rhobs
+- name: OBSCTL_RELOADER_SECRET_NAME
+  value: observatorium-observatorium-api
+- name: OBSCTL_RELOADER_IMAGE
+  value: quay.io/app-sre/obsctl-reloader
+- name: OBSCTL_RELOADER_IMAGE_TAG
+  value: a6a0ff7

@@ -84,5 +84,13 @@ local obs = import 'observatorium.libsonnet';
     { name: 'UP_MEMORY_LIMIT', value: '2Gi' },
     { name: 'UP_REPLICAS', value: '1' },
     { name: 'AVALANCHE_REPLICAS', value: '1' },
+    { name: 'OBSERVATORIUM_URL', value: 'http://observatorium-observatorium-api.${NAMESPACE}.svc:8080' },
+    { name: 'OIDC_AUDIENCE', value: 'observatorium' },
+    { name: 'OIDC_ISSUER_URL', value: 'https://sso.redhat.com/auth/realms/redhat-external' },
+    { name: 'SLEEP_DURATION_SECONDS', value: '15' },
+    { name: 'MANAGED_TENANTS', value: 'rhobs' },
+    { name: 'OBSCTL_RELOADER_SECRET_NAME', value: 'observatorium-observatorium-api' },
+    { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
+    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: 'a6a0ff7' },
   ],
 }

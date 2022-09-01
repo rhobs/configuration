@@ -3,6 +3,7 @@ local up = (import 'github.com/observatorium/up/jsonnet/up.libsonnet');
 local gubernator = (import 'github.com/observatorium/observatorium/configuration/components/gubernator.libsonnet');
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/lib/rules-objstore.libsonnet');
+local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obsctl-reloader.libsonnet');
 
 (import 'github.com/observatorium/observatorium/configuration/components/observatorium.libsonnet') +
 (import 'observatorium-metrics.libsonnet') +
@@ -146,6 +147,159 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     },
     serviceAccount+: {
       imagePullSecrets+: [{ name: 'quay.io' }],
+    },
+  },
+
+  obsctlReloader:: obsctlReloader({
+    local cfg = self,
+    name: 'rules-obsctl-reloader',
+    version: '${OBSCTL_RELOADER_IMAGE_TAG}',
+    image: '%s:%s' % ['${OBSCTL_RELOADER_IMAGE}', cfg.version],
+    replicas: 1,
+    commonLabels+:: {
+      'app.kubernetes.io/name': 'rules-obsctl-reloader',
+      'app.kubernetes.io/component': 'rules-obsctl-reloader',
+    } + obs.config.commonLabels,
+    env: {
+      observatoriumURL: '${OBSERVATORIUM_URL}',
+      oidcAudience: '${OIDC_AUDIENCE}',
+      oidcIssuerURL: '${OIDC_ISSUER_URL}',
+      sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
+      managedTenants: '${MANAGED_TENANTS}',
+      obsctlReloaderSecret: '${OBSCTL_RELOADER_SECRET_NAME}',
+    },
+  }) + {
+    deployment+: {
+      spec+: {
+        template+: {
+          spec+: {
+            containers: [
+              if c.name == 'obsctl-reloader' then c {
+                env: [
+                  if e.name == 'OIDC_CLIENT_ID' then e {
+                    valueFrom: {
+                      secretKeyRef: {
+                        key: 'client-id',
+                        name: '${OBSCTL_RELOADER_SECRET_NAME}',
+                      },
+                    },
+                  } else if e.name == 'OIDC_CLIENT_SECRET' then e {
+                    valueFrom: {
+                      secretKeyRef: {
+                        key: 'client-secret',
+                        name: '${OBSCTL_RELOADER_SECRET_NAME}',
+                      },
+                    },
+                  } else e
+                  for e in super.env
+                ],
+              } else c
+              for c in super.containers
+            ],
+          },
+        },
+      },
+    },
+  },
+
+  rulesSLOPrometheusRule: {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'PrometheusRule',
+    metadata: {
+      name: 'rules-reloader-slo',
+      labels: {
+        tenant: 'rhobs',
+      },
+    },
+    spec: {
+      groups: [
+        {
+          interval: '30s',
+          name: 'reloader-slo-alert',
+          rules: [
+            {
+              alert: 'AlwaysFiringAlert',
+              expr: 'vector(1)',
+              'for': '1m',
+              annotations: {
+                description: 'Firing alert!',
+                message: 'Alert fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+            {
+              alert: 'AlwaysFiringAlert2',
+              expr: 'vector(1)',
+              'for': '1m',
+              annotations: {
+                description: 'Firing alert 2!',
+                message: 'Alert 2 fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+            {
+              alert: 'NeverFiringAlert',
+              expr: 'vector(0)',
+              'for': '1m',
+              annotations: {
+                description: 'Does not fire!',
+                message: 'Alert not fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+          ],
+        },
+        {
+          interval: '30s',
+          name: 'reloader-slo-record',
+          rules: [
+            {
+              record: 'AlwaysRecord',
+              expr: 'vector(1)',
+              labels: {
+                test: 'slo-record',
+              },
+            },
+            {
+              record: 'NeverRecord',
+              expr: 'vector(0)',
+              labels: {
+                test: 'slo-record',
+              },
+            },
+          ],
+        },
+        {
+          interval: '30s',
+          name: 'reloader-slo-combined',
+          rules: [
+            {
+              record: 'CombinedRecord',
+              expr: 'vector(1)',
+              labels: {
+                test: 'slo-record',
+              },
+            },
+            {
+              alert: 'CombinedAlert',
+              expr: 'vector(1)',
+              annotations: {
+                description: 'Combined alert firing!',
+                message: 'Combined alert fired.',
+              },
+              labels: {
+                severity: 'page',
+              },
+            },
+          ],
+        },
+      ],
     },
   },
 
@@ -541,5 +695,11 @@ local rulesObjstore = (import 'github.com/observatorium/rules-objstore/jsonnet/l
     ['observatorium-rules-objstore-' + name]: obs.rulesObjstore[name]
     for name in std.objectFields(obs.rulesObjstore)
     if obs.rulesObjstore[name] != null
+  } + {
+    ['observatorium-obsctl-reloader-' + name]: obs.obsctlReloader[name]
+    for name in std.objectFields(obs.obsctlReloader)
+    if obs.obsctlReloader[name] != null
+  } + {
+    'observatorium-rules-slo-prom-rule': obs.rulesSLOPrometheusRule,
   },
 }

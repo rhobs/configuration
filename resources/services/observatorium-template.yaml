@@ -208,12 +208,12 @@ objects:
           - name: OIDC_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                key: client-id
+                key: client_id
                 name: ${OBSCTL_RELOADER_SECRET_NAME}
           - name: OIDC_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                key: client-secret
+                key: client_secret
                 name: ${OBSCTL_RELOADER_SECRET_NAME}
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
@@ -1570,7 +1570,7 @@ parameters:
 - name: MANAGED_TENANTS
   value: rhobs
 - name: OBSCTL_RELOADER_SECRET_NAME
-  value: observatorium-observatorium-api
+  value: rhobs-tenant
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG

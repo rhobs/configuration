@@ -89,7 +89,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OIDC_ISSUER_URL', value: 'https://sso.redhat.com/auth/realms/redhat-external' },
     { name: 'SLEEP_DURATION_SECONDS', value: '15' },
     { name: 'MANAGED_TENANTS', value: 'rhobs' },
-    { name: 'OBSCTL_RELOADER_SECRET_NAME', value: 'observatorium-observatorium-api' },
+    { name: 'OBSCTL_RELOADER_SECRET_NAME', value: 'rhobs-tenant' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
     { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: 'a6a0ff7' },
   ],

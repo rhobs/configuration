@@ -168,39 +168,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       managedTenants: '${MANAGED_TENANTS}',
       obsctlReloaderSecret: '${OBSCTL_RELOADER_SECRET_NAME}',
     },
-  }) + {
-    deployment+: {
-      spec+: {
-        template+: {
-          spec+: {
-            containers: [
-              if c.name == 'obsctl-reloader' then c {
-                env: [
-                  if e.name == 'OIDC_CLIENT_ID' then e {
-                    valueFrom: {
-                      secretKeyRef: {
-                        key: 'client-id',
-                        name: '${OBSCTL_RELOADER_SECRET_NAME}',
-                      },
-                    },
-                  } else if e.name == 'OIDC_CLIENT_SECRET' then e {
-                    valueFrom: {
-                      secretKeyRef: {
-                        key: 'client-secret',
-                        name: '${OBSCTL_RELOADER_SECRET_NAME}',
-                      },
-                    },
-                  } else e
-                  for e in super.env
-                ],
-              } else c
-              for c in super.containers
-            ],
-          },
-        },
-      },
-    },
-  },
+  }),
 
   rulesSLOPrometheusRule: {
     apiVersion: 'monitoring.coreos.com/v1',

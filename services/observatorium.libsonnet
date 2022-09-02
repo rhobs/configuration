@@ -276,6 +276,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     name: 'rules-objstore',
     version: '${RULES_OBJSTORE_IMAGE_TAG}',
     image: '%s:%s' % ['${RULES_OBJSTORE_IMAGE}', cfg.version],
+    logLevel: '${RULES_OBJSTORE_LOG_LEVEL}',
     replicas: 2,
     objectStorageConfig: {
       name: '${RULES_OBJSTORE_SECRET}',

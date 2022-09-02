@@ -77,6 +77,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'RULES_OBJSTORE_IMAGE_TAG', value: 'main-2022-04-01-64cd17e' },
     { name: 'RULES_OBJSTORE_S3_SECRET', value: 'rules-objstore-stage-s3' },
     { name: 'RULES_OBJSTORE_SECRET', value: 'rules-objstore' },
+    { name: 'RULES_OBJSTORE_LOG_LEVEL', value: 'info' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     { name: 'UP_CPU_REQUEST', value: '100m' },
     { name: 'UP_CPU_LIMIT', value: '500m' },

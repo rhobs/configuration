@@ -303,7 +303,7 @@ objects:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
           - --web.healthchecks.url=http://localhost:8080
-          - --log.level=info
+          - --log.level=${RULES_OBJSTORE_LOG_LEVEL}
           - --log.format=logfmt
           - --objstore.config-file=/etc/rules-objstore/objstore.yaml
           env:
@@ -1545,6 +1545,8 @@ parameters:
   value: rules-objstore-stage-s3
 - name: RULES_OBJSTORE_SECRET
   value: rules-objstore
+- name: RULES_OBJSTORE_LOG_LEVEL
+  value: info
 - name: SERVICE_ACCOUNT_NAME
   value: prometheus-telemeter
 - name: UP_CPU_REQUEST

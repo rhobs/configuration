@@ -257,6 +257,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
             {
               alert: 'CombinedAlert',
               expr: 'vector(1)',
+              'for': '1m',
               annotations: {
                 description: 'Combined alert firing!',
                 message: 'Combined alert fired.',

@@ -458,6 +458,7 @@ objects:
           description: Combined alert firing!
           message: Combined alert fired.
         expr: vector(1)
+        for: 1m
         labels:
           severity: page
 - apiVersion: v1

@@ -7,8 +7,8 @@ FROM quay.io/app-sre/ubi8-ubi-minimal
 
 COPY --from=source /usr/bin/up /usr/bin/up
 
-RUN dnf update -y &&\
-    dnf install -y curl jq
+RUN microdnf update -y &&\
+    microdnf install -y curl jq
 
 COPY ./tests/integration_tests/runtest.sh /tests/runtest.sh
 

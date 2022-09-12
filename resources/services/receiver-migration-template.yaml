@@ -1,0 +1,673 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: observatorium-receiver-migration
+objects:
+### Proxy Resources
+- apiVersion: v1
+  data:
+    envoy.yaml: |-
+      "admin":
+        "address":
+          "socket_address":
+            "address": "0.0.0.0"
+            "port_value": 9901
+      "layered_runtime":
+        "layers":
+        - "name": "static_layer_0"
+          "static_layer":
+            "overload":
+              "global_downstream_max_connections": 50000
+      "static_resources":
+        "clusters":
+        - "connect_timeout": "1s"
+          "dns_refresh_rate": "5s"
+          "load_assignment":
+            "cluster_name": "primary"
+            "endpoints":
+            - "lb_endpoints":
+              - "endpoint":
+                  "address":
+                    "socket_address":
+                      "address": "${PRIMARY_UPSTREAM_HOST}"
+                      "port_value": "${{PRIMARY_UPSTREAM_PORT}}"
+          "name": "primary"
+          "type": "STRICT_DNS"
+        - "connect_timeout": "3s"
+          "dns_refresh_rate": "5s"
+          "load_assignment":
+            "cluster_name": "mirror"
+            "endpoints":
+            - "lb_endpoints":
+              - "endpoint":
+                  "address":
+                    "socket_address":
+                      "address": "${MIRROR_HOST}"
+                      "port_value": "${{MIRROR_PORT}}"
+          "name": "mirror"
+          "type": "STRICT_DNS"
+        "listeners":
+        - "address":
+            "socket_address":
+              "address": "0.0.0.0"
+              "port_value": 8080
+          "filter_chains":
+          - "filters":
+            - "name": "envoy.filters.network.http_connection_manager"
+              "typed_config":
+                "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+                "access_log":
+                - "name": "envoy.access_loggers.stdout"
+                  "typed_config":
+                    "@type": "type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog"
+                "codec_type": "AUTO"
+                "http_filters":
+                - "name": "envoy.filters.http.router"
+                  "typed_config":
+                    "@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router"
+                "route_config":
+                  "name": "local_route"
+                  "virtual_hosts":
+                  - "domains":
+                    - "*"
+                    "name": "local_service"
+                    "routes":
+                    - "match":
+                        "prefix": "/"
+                      "route":
+                        "cluster": "primary"
+                        "request_mirror_policies":
+                        - "cluster": "mirror"
+                          "runtime_fraction":
+                            "default_value":
+                              "numerator": 100
+                        "timeout": "30s"
+                "stat_prefix": "ingress_http"
+          "name": "listener"
+  kind: ConfigMap
+  metadata:
+    name: mirror-proxy
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: envoy
+      app.kubernetes.io/instance: mirror-proxy
+      app.kubernetes.io/name: mirror-proxy
+      app.kubernetes.io/version: v1.23.1
+    name: mirror-proxy
+  spec:
+    replicas: "${{MIRROR_PROXY_REPLICAS}}"
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: envoy
+        app.kubernetes.io/instance: mirror-proxy
+        app.kubernetes.io/name: mirror-proxy
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: envoy
+          app.kubernetes.io/instance: mirror-proxy
+          app.kubernetes.io/name: mirror-proxy
+          app.kubernetes.io/version: v1.23.1
+      spec:
+        containers:
+          - env:
+              - name: ENVOY_LB_ALG
+                value: LEAST_REQUEST
+              - name: SERVICE_NAME
+                value: mirror-proxy
+            image: "${MIRROR_PROXY_IMAGE}"
+            imagePullPolicy: IfNotPresent
+            name: mirror-proxy
+            ports:
+              - containerPort: 9901
+                name: admin
+              - containerPort: 8080
+                name: http
+            readinessProbe:
+              httpGet:
+                path: /ready
+                port: 9901
+              initialDelaySeconds: 5
+              periodSeconds: 5
+            resources:
+              limits:
+                cpu: "${MIRROR_PROXY_CPU_LIMIT}"
+                memory: "${MIRROR_PROXY_MEMORY_LIMIT}"
+              requests:
+                cpu: "${MIRROR_PROXY_CPU_REQUEST}"
+                memory: "${MIRROR_PROXY_MEMORY_REQUEST}"
+            terminationMessagePolicy: FallbackToLogsOnError
+            volumeMounts:
+              - mountPath: /etc/envoy
+                name: config
+                readOnly: true
+        volumes:
+          - configMap:
+              name: mirror-proxy
+            name: config
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: envoy
+      app.kubernetes.io/instance: mirror-proxy
+      app.kubernetes.io/name: mirror-proxy
+      app.kubernetes.io/version: v1.23.1
+    name: mirror-proxy
+  spec:
+    ports:
+      - name: admin
+        port: 9901
+        targetPort: 9901
+      - name: http
+        port: 8080
+        targetPort: 8080
+    selector:
+      app.kubernetes.io/component: envoy
+      app.kubernetes.io/instance: mirror-proxy
+      app.kubernetes.io/name: mirror-proxy
+### Controller Resources
+- kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    name: observatorium-thanos-receive-ketama-controller-tenants
+    labels:
+      app.kubernetes.io/component: kubernetes-controller
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-ketama-controller
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2020-02-06-b66e0c8
+  data:
+    hashrings.json: |-
+      [
+        {
+          "hashring": "ketama",
+          "tenants": [
+
+          ]
+        } 
+      ]
+- kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    name: observatorium-thanos-receive-ketama-controller
+    labels:
+      app.kubernetes.io/component: kubernetes-controller
+      app.kubernetes.io/instance: observatorium-migration
+      app.kubernetes.io/name: thanos-receive-ketama-controller
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2020-02-06-b66e0c8
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: kubernetes-controller
+        app.kubernetes.io/instance: observatorium-migration
+        app.kubernetes.io/name: thanos-receive-ketama-controller
+        app.kubernetes.io/part-of: observatorium
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: kubernetes-controller
+          app.kubernetes.io/instance: observatorium-migration
+          app.kubernetes.io/name: thanos-receive-ketama-controller
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: master-2020-02-06-b66e0c8
+      spec:
+        containers:
+          - resources:
+              limits:
+                cpu: 64m
+                memory: 128Mi
+              requests:
+                cpu: 10m
+                memory: 24Mi
+            terminationMessagePath: /dev/termination-log
+            name: thanos-receive-controller
+            env:
+              - name: NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+            securityContext: { }
+            ports:
+              - name: http
+                containerPort: 8080
+                protocol: TCP
+            imagePullPolicy: IfNotPresent
+            terminationMessagePolicy: File
+            image: >-
+              quay.io/observatorium/thanos-receive-controller:master-2020-02-06-b66e0c8
+            args:
+              - '--configmap-name=observatorium-thanos-receive-ketama-controller-tenants'
+              - >-
+                --configmap-generated-name=observatorium-thanos-receive-ketama-controller-tenants-generated
+              - '--file-name=hashrings.json'
+              - '--namespace=$(NAMESPACE)'
+              - '--statefulset-label=controller.receive.thanos.io=thanos-receive-ketama-controller'
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 30
+        dnsPolicy: ClusterFirst
+        serviceAccountName: observatorium-thanos-receive-controller
+        securityContext: { }
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
+    revisionHistoryLimit: 10
+    progressDeadlineSeconds: 600
+  ### RECEIVER RESOURCES
+- kind: StatefulSet
+  apiVersion: apps/v1
+  metadata:
+    name: observatorium-thanos-receive-ketama
+    labels:
+      app.kubernetes.io/component: database-write-hashring
+      app.kubernetes.io/instance: observatorium-migration
+      app.kubernetes.io/name: thanos-receive-ketama
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.28.0
+      controller.receive.thanos.io: thanos-receive-ketama-controller
+      controller.receive.thanos.io/hashring: ketama
+  spec:
+    replicas: "${{RECEIVER_KETAMA_REPLICAS}}"
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring
+        app.kubernetes.io/instance: observatorium-migration
+        app.kubernetes.io/name: thanos-receive-ketama
+        app.kubernetes.io/part-of: observatorium
+        controller.receive.thanos.io/hashring: ketama
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: database-write-hashring
+          app.kubernetes.io/instance: observatorium-migration
+          app.kubernetes.io/name: thanos-receive-ketama
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/tracing: jaeger-agent
+          app.kubernetes.io/version: v0.28.0
+          controller.receive.thanos.io/hashring: ketama
+      spec:
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        serviceAccountName: observatorium-metrics
+        schedulerName: default-scheduler
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values:
+                          - thanos-receive-ketama
+                      - key: app.kubernetes.io/instance
+                        operator: In
+                        values:
+                          - observatorium-migration
+                  topologyKey: kubernetes.io/hostname
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/name
+                        operator: In
+                        values:
+                          - thanos-receive-ketama
+                      - key: app.kubernetes.io/instance
+                        operator: In
+                        values:
+                          - observatorium-migration
+                  namespaces:
+                    - observatorium-metrics-testing
+                  topologyKey: topology.kubernetes.io/zone
+        terminationGracePeriodSeconds: 900
+        securityContext: { }
+        containers:
+          - resources:
+              limits:
+                cpu: "${RECEIVER_KETAMA_CPU_LIMIT}"
+                memory: "${RECEIVER_KETAMA_MEMORY_LIMIT}"
+              requests:
+                cpu: "${RECEIVER_KETAMA_CPU_REQUEST}"
+                memory: "${RECEIVER_KETAMA_MEMORY_REQUEST}"
+            readinessProbe:
+              httpGet:
+                path: /-/ready
+                port: 10902
+                scheme: HTTP
+              timeoutSeconds: 1
+              periodSeconds: 5
+              successThreshold: 1
+              failureThreshold: 20
+            terminationMessagePath: /dev/termination-log
+            name: thanos-receive
+            livenessProbe:
+              httpGet:
+                path: /-/healthy
+                port: 10902
+                scheme: HTTP
+              timeoutSeconds: 1
+              periodSeconds: 30
+              successThreshold: 1
+              failureThreshold: 8
+            env:
+              - name: NAME
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.name
+              - name: NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+              - name: HOST_IP_ADDRESS
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: status.hostIP
+              - name: OBJSTORE_CONFIG
+                valueFrom:
+                  secretKeyRef:
+                    name: "${THANOS_CONFIG_SECRET}"
+                    key: thanos.yaml
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: "${THANOS_S3_SECRET}"
+                    key: aws_access_key_id
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: "${THANOS_S3_SECRET}"
+                    key: aws_secret_access_key
+            ports:
+              - name: grpc
+                containerPort: 10901
+                protocol: TCP
+              - name: http
+                containerPort: 10902
+                protocol: TCP
+              - name: remote-write
+                containerPort: 19291
+                protocol: TCP
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+              - name: data
+                mountPath: /var/thanos/receive
+              - name: hashring-config
+                mountPath: /var/lib/thanos-receive
+            terminationMessagePolicy: FallbackToLogsOnError
+            image: 'quay.io/thanos/thanos:v0.28.0'
+            args:
+              - receive
+              - '--receive.hashrings-algorithm=ketama'
+              - '--log.level=debug'
+              - '--log.format=logfmt'
+              - '--grpc-address=0.0.0.0:10901'
+              - '--http-address=0.0.0.0:10902'
+              - '--remote-write.address=0.0.0.0:19291'
+              - '--receive.replication-factor=3'
+              - '--tsdb.path=/var/thanos/receive'
+              - '--tsdb.retention=1d'
+              - '--label=replica="$(NAME)"'
+              - '--label=receive="true"'
+              - '--objstore.config=$(OBJSTORE_CONFIG)'
+              - >-
+                --receive.local-endpoint=$(NAME).observatorium-thanos-receive-ketama.$(NAMESPACE).svc.cluster.local:10901
+              - '--receive.hashrings-file=/var/lib/thanos-receive/hashrings.json'
+              - |-
+                --tracing.config="config":
+                  "sampler_param": 2
+                  "sampler_type": "ratelimiting"
+                  "service_name": "thanos-receive-ketama"
+                "type": "JAEGER"
+              - '--receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43'
+          - resources:
+              limits:
+                cpu: 128m
+                memory: 128Mi
+              requests:
+                cpu: 32m
+                memory: 64Mi
+            terminationMessagePath: /dev/termination-log
+            name: jaeger-agent
+            livenessProbe:
+              httpGet:
+                path: /
+                port: 14271
+                scheme: HTTP
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 5
+            env:
+              - name: NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+              - name: POD
+                valueFrom:
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.name
+            ports:
+              - name: configs
+                containerPort: 5778
+                protocol: TCP
+              - name: jaeger-thrift
+                containerPort: 6831
+                protocol: TCP
+              - name: metrics
+                containerPort: 14271
+                protocol: TCP
+            imagePullPolicy: IfNotPresent
+            terminationMessagePolicy: File
+            image: 'quay.io/app-sre/jaegertracing-jaeger-agent:1.22.0'
+            args:
+              - >-
+                --reporter.grpc.host-port=dns:///jaeger-collector-headless.$(NAMESPACE).svc:14250
+              - '--reporter.type=grpc'
+              - '--agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)'
+        volumes:
+          - name: hashring-config
+            configMap:
+              name: observatorium-thanos-receive-ketama-controller-tenants-generated
+              defaultMode: 420
+        dnsPolicy: ClusterFirst
+    volumeClaimTemplates:
+      - kind: PersistentVolumeClaim
+        apiVersion: v1
+        metadata:
+          name: data
+          creationTimestamp: null
+          labels:
+            app.kubernetes.io/component: database-write-hashring
+            app.kubernetes.io/instance: observatorium-migration
+            app.kubernetes.io/name: thanos-receive-ketama
+            app.kubernetes.io/part-of: observatorium
+            controller.receive.thanos.io/hashring: ketama
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 100Gi
+          storageClassName: gp2
+          volumeMode: Filesystem
+    serviceName: observatorium-thanos-receive-ketama
+    podManagementPolicy: OrderedReady
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        partition: 0
+    revisionHistoryLimit: 10
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: observatorium-thanos-receive-ketama
+    labels:
+      app.kubernetes.io/component: database-write-hashring
+      app.kubernetes.io/instance: observatorium-migration
+      app.kubernetes.io/name: thanos-receive-ketama
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.28.0
+      controller.receive.thanos.io/hashring: ketama
+  spec:
+    clusterIP: None
+    ipFamilies:
+      - IPv4
+    ports:
+      - name: grpc
+        protocol: TCP
+        port: 10901
+        targetPort: 10901
+      - name: http
+        protocol: TCP
+        port: 10902
+        targetPort: 10902
+      - name: remote-write
+        protocol: TCP
+        port: 19291
+        targetPort: 19291
+    internalTrafficPolicy: Cluster
+    type: ClusterIP
+    ipFamilyPolicy: SingleStack
+    sessionAffinity: None
+    selector:
+      app.kubernetes.io/component: database-write-hashring
+      app.kubernetes.io/instance: observatorium-migration
+      app.kubernetes.io/name: thanos-receive-ketama
+      app.kubernetes.io/part-of: observatorium
+      controller.receive.thanos.io/hashring: ketama
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: observatorium-thanos-receive-router
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive
+      app.kubernetes.io/part-of: observatorium
+  spec:
+    ipFamilies:
+      - IPv4
+    ports:
+      - name: grpc
+        protocol: TCP
+        port: 10901
+        targetPort: 10901
+      - name: http
+        protocol: TCP
+        port: 10902
+        targetPort: 10902
+      - name: remote-write
+        protocol: TCP
+        port: 19291
+        targetPort: 19291
+    internalTrafficPolicy: Cluster
+    type: ClusterIP
+    ipFamilyPolicy: SingleStack
+    sessionAffinity: None
+    selector:
+      app.kubernetes.io/name: thanos-receive-ketama
+### ServiceMonitors
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: mirror-proxy
+    labels:
+      prometheus: app-sre
+  spec:
+    endpoints:
+      - port: admin
+        path: /stats/prometheus
+        relabelings:
+          - separator: /
+            sourceLabels:
+              - namespace
+              - pod
+            targetLabel: instance
+    namespaceSelector:
+      matchNames:
+        - "${NAMESPACE}"
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: envoy
+        app.kubernetes.io/instance: mirror-proxy
+        app.kubernetes.io/name: mirror-proxy
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: observatorium-thanos-receive-ketama
+    labels:
+      app.kubernetes.io/component: database-write-hashring
+      app.kubernetes.io/instance: observatorium-migration
+      app.kubernetes.io/name: thanos-receive-ketama
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+  spec:
+    endpoints:
+      - port: http
+        relabelings:
+          - separator: /
+            sourceLabels:
+              - namespace
+              - pod
+            targetLabel: instance
+    namespaceSelector:
+      matchNames:
+        - "${NAMESPACE}"
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring
+        app.kubernetes.io/instance: observatorium-migration
+        app.kubernetes.io/name: thanos-receive-ketama
+        app.kubernetes.io/part-of: observatorium
+parameters:
+  - name: NAMESPACE
+    value: observatorium
+  - name: MIRROR_PROXY_IMAGE
+    value: "quay.io/philipgough/envoy:v1.23.1"
+  - name: PRIMARY_UPSTREAM_HOST
+    value: ''
+  - name: PRIMARY_UPSTREAM_PORT
+    value: ''
+  - name: MIRROR_HOST
+    value: ''
+  - name: MIRROR_PORT
+    value: ''
+  - name: MIRROR_PROXY_REPLICAS
+    value: '3'
+  - name: MIRROR_PROXY_CPU_REQUEST
+    value: '1'
+  - name: MIRROR_PROXY_CPU_LIMIT
+    value: '1'
+  - name: MIRROR_PROXY_MEMORY_REQUEST
+    value: '2Gi'
+  - name: MIRROR_PROXY_MEMORY_LIMIT
+    value: '2Gi'
+### Receiver params
+  - name: RECEIVER_KETAMA_REPLICAS
+    value: '6'
+  - name: RECEIVER_KETAMA_CPU_REQUEST
+    value: '6'
+  - name: RECEIVER_KETAMA_CPU_LIMIT
+    value: '6'
+  - name: RECEIVER_KETAMA_MEMORY_REQUEST
+    value: '60Gi'
+  - name: RECEIVER_KETAMA_MEMORY_LIMIT
+    value: '60Gi'
+  - name: THANOS_CONFIG_SECRET
+    value: thanos-objectstorage
+  - name: THANOS_S3_SECRET
+    value: telemeter-thanos-stage-s3

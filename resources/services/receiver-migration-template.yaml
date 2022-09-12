@@ -30,7 +30,7 @@ objects:
                   "address":
                     "socket_address":
                       "address": "${PRIMARY_UPSTREAM_HOST}"
-                      "port_value": "${{PRIMARY_UPSTREAM_PORT}}"
+                      "port_value": 19291
           "name": "primary"
           "type": "STRICT_DNS"
         - "connect_timeout": "3s"
@@ -43,7 +43,7 @@ objects:
                   "address":
                     "socket_address":
                       "address": "${MIRROR_HOST}"
-                      "port_value": "${{MIRROR_PORT}}"
+                      "port_value": 19291
           "name": "mirror"
           "type": "STRICT_DNS"
         "listeners":
@@ -640,11 +640,7 @@ parameters:
     value: "quay.io/philipgough/envoy:v1.23.1"
   - name: PRIMARY_UPSTREAM_HOST
     value: ''
-  - name: PRIMARY_UPSTREAM_PORT
-    value: ''
   - name: MIRROR_HOST
-    value: ''
-  - name: MIRROR_PORT
     value: ''
   - name: MIRROR_PROXY_REPLICAS
     value: '3'

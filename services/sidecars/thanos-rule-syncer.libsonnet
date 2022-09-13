@@ -22,27 +22,6 @@ function(params) {
 
   local mountPath = '/etc/thanos-rule-syncer',
 
-  service+: {
-    spec+: {
-      ports+: [
-        {
-          name: 'thanos-rule-syncer-' + name,
-          port: trs.config.ports[name],
-          targetPort: trs.config.ports[name],
-        }
-        for name in std.objectFields(trs.config.ports)
-      ],
-    },
-  },
-
-  serviceMonitor+: {
-    spec+: {
-      endpoints+: [
-        { port: 'thanos-rule-syncer-metrics' },
-      ],
-    },
-  },
-
   local spec = {
     template+: {
       spec+: {
@@ -71,6 +50,27 @@ function(params) {
   },
 
   spec+: spec,
+
+  service+: {
+    spec+: {
+      ports+: [
+        {
+          name: 'thanos-rule-syncer-' + name,
+          port: trs.config.ports[name],
+          targetPort: trs.config.ports[name],
+        }
+        for name in std.objectFields(trs.config.ports)
+      ],
+    },
+  },
+
+  serviceMonitor+: {
+    spec+: {
+      endpoints+: [
+        { port: 'thanos-rule-syncer-metrics' },
+      ],
+    },
+  },
 
   statefulSet+: {
     spec+: spec,

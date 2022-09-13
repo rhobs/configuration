@@ -2154,6 +2154,9 @@ objects:
     - name: reloader
       port: 9533
       targetPort: 9533
+    - name: thanos-rule-syncer-metrics
+      port: 8083
+      targetPort: 8083
     selector:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: observatorium
@@ -2189,6 +2192,7 @@ objects:
         - pod
         targetLabel: instance
     - port: reloader
+    - port: thanos-rule-syncer-metrics
     namespaceSelector:
       matchNames: ${{NAMESPACES}}
     selector:

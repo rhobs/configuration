@@ -9,6 +9,9 @@ local defaults = {
     requests: { cpu: '32m', memory: '64Mi' },
     limits: { cpu: '128m', memory: '128Mi' },
   },
+  ports: {
+    metrics: 8083,
+  },
 };
 
 function(params) {
@@ -18,6 +21,27 @@ function(params) {
   assert std.isNumber(trs.config.interval) && trs.config.interval > 0 : 'interval has to be number > 0',
 
   local mountPath = '/etc/thanos-rule-syncer',
+
+  service+: {
+    spec+: {
+      ports+: [
+        {
+          name: 'thanos-rule-syncer-' + name,
+          port: trs.config.ports[name],
+          targetPort: trs.config.ports[name],
+        }
+        for name in std.objectFields(trs.config.ports)
+      ],
+    },
+  },
+
+  serviceMonitor+: {
+    spec+: {
+      endpoints+: [
+        { port: 'thanos-rule-syncer-metrics' },
+      ],
+    },
+  },
 
   local spec = {
     template+: {

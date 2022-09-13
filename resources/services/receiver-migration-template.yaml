@@ -296,7 +296,7 @@ objects:
         nodeSelector:
           kubernetes.io/os: linux
         restartPolicy: Always
-        serviceAccountName: observatorium-metrics
+        serviceAccountName: "${RECEIVER_SERVICE_ACCOUNT}"
         schedulerName: default-scheduler
         affinity:
           podAntiAffinity:
@@ -667,3 +667,5 @@ parameters:
     value: thanos-objectstorage
   - name: THANOS_S3_SECRET
     value: telemeter-thanos-stage-s3
+  - name: RECEIVER_SERVICE_ACCOUNT
+    value: observatorium-metrics

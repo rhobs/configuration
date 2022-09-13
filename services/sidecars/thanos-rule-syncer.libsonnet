@@ -39,6 +39,13 @@ function(params) {
             mountPath: mountPath,
           }],
           resources: trs.config.resources,
+          ports: [
+            {
+              name: 'thanos-rule-syncer-' + name,
+              containerPort: trs.config.ports[name],
+            }
+            for name in std.objectFields(trs.config.ports)
+          ],
         }],
         volumes+: [{
           name: trs.config.volumeName,

@@ -327,7 +327,7 @@ objects:
                         values:
                           - observatorium-migration
                   namespaces:
-                    - observatorium-metrics-testing
+                    - $(NAMESPACE)
                   topologyKey: topology.kubernetes.io/zone
         terminationGracePeriodSeconds: 900
         securityContext: { }
@@ -598,8 +598,7 @@ objects:
               - pod
             targetLabel: instance
     namespaceSelector:
-      matchNames:
-        - "${NAMESPACE}"
+      matchNames: ${{MONITOR_NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: envoy
@@ -625,8 +624,7 @@ objects:
               - pod
             targetLabel: instance
     namespaceSelector:
-      matchNames:
-        - "${NAMESPACE}"
+      matchNames: ${{MONITOR_NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring
@@ -636,6 +634,8 @@ objects:
 parameters:
   - name: NAMESPACE
     value: observatorium
+  - name: MONITOR_NAMESPACES
+    value: '["observatorium-metrics-stage", "observatorium-mst-stage"]'
   - name: MIRROR_PROXY_IMAGE
     value: "quay.io/philipgough/envoy:v1.23.1"
   - name: PRIMARY_UPSTREAM_HOST

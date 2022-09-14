@@ -331,7 +331,7 @@ objects:
                         values:
                           - observatorium-migration
                   namespaces:
-                    - $(NAMESPACE)
+                    - "${NAMESPACE}"
                   topologyKey: topology.kubernetes.io/zone
         terminationGracePeriodSeconds: 900
         securityContext: { }

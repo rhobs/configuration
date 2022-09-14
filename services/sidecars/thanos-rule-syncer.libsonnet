@@ -9,6 +9,9 @@ local defaults = {
     requests: { cpu: '32m', memory: '64Mi' },
     limits: { cpu: '128m', memory: '128Mi' },
   },
+  ports: {
+    metrics: 8083,
+  },
 };
 
 function(params) {
@@ -36,6 +39,13 @@ function(params) {
             mountPath: mountPath,
           }],
           resources: trs.config.resources,
+          ports: [
+            {
+              name: 'thanos-rule-syncer-' + name,
+              containerPort: trs.config.ports[name],
+            }
+            for name in std.objectFields(trs.config.ports)
+          ],
         }],
         volumes+: [{
           name: trs.config.volumeName,
@@ -47,6 +57,27 @@ function(params) {
   },
 
   spec+: spec,
+
+  service+: {
+    spec+: {
+      ports+: [
+        {
+          name: 'thanos-rule-syncer-' + name,
+          port: trs.config.ports[name],
+          targetPort: trs.config.ports[name],
+        }
+        for name in std.objectFields(trs.config.ports)
+      ],
+    },
+  },
+
+  serviceMonitor+: {
+    spec+: {
+      endpoints+: [
+        { port: 'thanos-rule-syncer-metrics' },
+      ],
+    },
+  },
 
   statefulSet+: {
     spec+: spec,

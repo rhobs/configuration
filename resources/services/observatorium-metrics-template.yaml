@@ -1947,6 +1947,7 @@ objects:
               "service_name": "thanos-receive"
             "type": "JAEGER"
           - --receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+          - --receive.hashrings-algorithm=${THANOS_RECEIVE_HASHRINGS_ALGORITHM}
           env:
           - name: NAME
             valueFrom:
@@ -4324,6 +4325,8 @@ parameters:
   value: 4d
 - name: THANOS_RECEIVE_HASHRING_SERVICE_NAME
   value: observatorium-thanos-receive-default
+- name: THANOS_RECEIVE_HASHRINGS_ALGORITHM
+  value: hashmod
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

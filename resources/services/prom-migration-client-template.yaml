@@ -9,7 +9,6 @@ objects:
     name: prometheus-server-conf
     labels:
       name: prometheus-server-conf
-    namespace: standalone
   data:
     prometheus.yml: |-
       global:
@@ -25,22 +24,6 @@ objects:
         - action: keep
           regex: prometheus_build_info
           source_labels: [__name__]
-- apiVersion: v1
-  kind: Service
-  metadata:
-    name: prometheus-service
-    namespace: standalone
-    annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port:   '9090'
-  spec:
-    selector: 
-      app: prometheus-server
-    type: NodePort  
-    ports:
-      - port: 8080
-        targetPort: 9090 
-        nodePort: 30000
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -105,6 +88,84 @@ objects:
               secretKeyRef:
                 key: issuerURL
                 name: migration-client-secret
+          image: quay.io/observatorium/token-refresher:master-2022-09-09-081bddf
+          name: token-refresher
+          ports:
+          - containerPort: 8081
+            name: internal
+          - containerPort: 8080
+            name: web
+        volumes:
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-conf
+        - name: prometheus-storage-volume
+          emptyDir: {}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: test-prometheus-mst
+      app.kubernetes.io/name: prometheus-mst
+    name: test-prometheus-mst
+  spec:
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: test-prometheus-mst
+        app.kubernetes.io/name: prometheus-mst
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: test-prometheus-mst
+          app.kubernetes.io/name: prometheus-mst
+      spec:
+        containers:
+        - name: prometheus
+          image: quay.io/prometheus/prometheus:v2.38.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - --log.level=debug
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus/
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+            - name: prometheus-storage-volume
+              mountPath: /prometheus/
+        - args:
+          - --log.level=debug
+          - --log.format=logfmt
+          - --web.listen=0.0.0.0:8080
+          - --web.internal.listen=0.0.0.0:8081
+          - --oidc.audience=$(OIDC_AUDIENCE)
+          - --oidc.client-id=$(OIDC_CLIENT_ID)
+          - --oidc.client-secret=$(OIDC_CLIENT_SECRET)
+          - --oidc.issuer-url=$(OIDC_ISSUER_URL)
+          - --url=https://observatorium-mst.api.stage.openshift.com
+          env:
+          - name: OIDC_AUDIENCE
+            valueFrom:
+              secretKeyRef:
+                key: audience
+                name: migration-client-mst-secret
+          - name: OIDC_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: clientID
+                name: migration-client-mst-secret
+          - name: OIDC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: clientSecret
+                name: migration-client-mst-secret
+          - name: OIDC_ISSUER_URL
+            valueFrom:
+              secretKeyRef:
+                key: issuerURL
+                name: migration-client-mst-secret
           image: quay.io/observatorium/token-refresher:master-2022-09-09-081bddf
           name: token-refresher
           ports:

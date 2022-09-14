@@ -647,7 +647,7 @@ objects:
 
           location / {
             proxy_set_header THANOS-TENANT FB870BF3-9F3A-44FF-9BF7-D7A047A52F43;
-            proxy_pass http://${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291;
+            proxy_pass http://${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_PORT};
           }
         }
       }
@@ -937,6 +937,8 @@ parameters:
   value: quay.io/app-sre/observatorium-receive-proxy
 - name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET
   value: observatorium-thanos-receive
+- name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_PORT
+  value: "19291"
 - name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION
   value: 14e844d
 - name: PROMETHEUS_IMAGE

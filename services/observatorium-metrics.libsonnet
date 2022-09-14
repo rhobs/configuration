@@ -566,8 +566,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       stores: [
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
-          [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)] +
-          [thanos.receivers.hashrings[hashring].service for hashring in std.objectFields(thanos.receivers.hashrings)]
+          [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)]
+      ] + [
+        // todo - @pgough revert after https://issues.redhat.com/browse/RHOBS-112
+        'dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local',
       ],
       rules: [
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]

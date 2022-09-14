@@ -1047,7 +1047,7 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-stateless-rule.${NAMESPACE}.svc.cluster.local
           - --web.prefix-header=X-Forwarded-Prefix
@@ -4312,6 +4312,8 @@ parameters:
   value: /var/thanos/receive
 - name: THANOS_RECEIVE_TSDB_RETENTION
   value: 4d
+- name: THANOS_RECEIVE_HASHRING_SERVICE_NAME
+  value: observatorium-thanos-receive-default
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

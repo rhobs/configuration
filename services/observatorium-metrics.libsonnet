@@ -174,10 +174,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         data: {
           [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-              thanos.receiversService.metadata.name,
+            url: 'http://%s.%s.svc.cluster.local:%s/api/v1/receive' % [
+              '${METRICS_WRITE_SERVICE_NAME}',
               thanosSharedConfig.namespace,
-              thanos.receiversService.spec.ports[2].port,
+              '${METRICS_WRITE_SERVICE_PORT}',
             ],
           })),
         },
@@ -311,10 +311,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         data: {
           [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-              thanos.receiversService.metadata.name,
+            url: 'http://%s.%s.svc.cluster.local:%s/api/v1/receive' % [
+              '${METRICS_WRITE_SERVICE_NAME}',
               thanosSharedConfig.namespace,
-              thanos.receiversService.spec.ports[2].port,
+              '${METRICS_WRITE_SERVICE_PORT}',
             ],
           })),
         },

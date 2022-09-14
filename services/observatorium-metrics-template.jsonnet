@@ -124,5 +124,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_STORE_REPLICAS', value: '5' },
     { name: 'CONFIGMAP_RELOADER_IMAGE', value: 'quay.io/openshift/origin-configmap-reloader' },
     { name: 'CONFIGMAP_RELOADER_IMAGE_TAG', value: '4.5.0' },
+    { name: 'METRICS_WRITE_SERVICE_NAME', value: obs.thanos.receiversService.metadata.name },
+    { name: 'METRICS_WRITE_SERVICE_PORT', value: std.toString(obs.thanos.receiversService.spec.ports[2].port) },
   ],
 }

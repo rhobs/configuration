@@ -89,6 +89,8 @@ objects:
   kind: ConfigMap
   metadata:
     name: mirror-proxy
+    annotations:
+      qontract.recycle: "true"
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

@@ -653,6 +653,8 @@ objects:
       }
   kind: ConfigMap
   metadata:
+    annotations:
+      qontract.recycle: "true"
     labels:
       app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy

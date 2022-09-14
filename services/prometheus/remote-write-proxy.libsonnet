@@ -103,6 +103,9 @@ function(params) {
       name: 'prometheus-remote-write-proxy-config',
       namespace: rwp.config.namespace,
       labels: rwp.config.commonLabels,
+      annotations: {
+        'qontract.recycle': 'true',
+      },
     },
     data: {
       local f = importstr 'remote_write_proxy.conf',

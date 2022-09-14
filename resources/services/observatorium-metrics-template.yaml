@@ -942,6 +942,9 @@ objects:
           - -thanos-rule-url=http://localhost:10902
           image: ${THANOS_RULE_SYNCER_IMAGE}:${THANOS_RULE_SYNCER_IMAGE_TAG}
           name: thanos-rule-syncer
+          ports:
+          - containerPort: 8083
+            name: thanos-rule-syncer-metrics
           resources:
             limits:
               cpu: 128m
@@ -1047,7 +1050,7 @@ objects:
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
           - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-stateless-rule.${NAMESPACE}.svc.cluster.local
           - --web.prefix-header=X-Forwarded-Prefix
@@ -2154,6 +2157,9 @@ objects:
     - name: reloader
       port: 9533
       targetPort: 9533
+    - name: thanos-rule-syncer-metrics
+      port: 8083
+      targetPort: 8083
     selector:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: observatorium
@@ -2189,6 +2195,7 @@ objects:
         - pod
         targetLabel: instance
     - port: reloader
+    - port: thanos-rule-syncer-metrics
     namespaceSelector:
       matchNames: ${{NAMESPACES}}
     selector:
@@ -2365,6 +2372,9 @@ objects:
           - -thanos-rule-url=http://localhost:10902
           image: ${THANOS_RULE_SYNCER_IMAGE}:${THANOS_RULE_SYNCER_IMAGE_TAG}
           name: thanos-rule-syncer
+          ports:
+          - containerPort: 8083
+            name: thanos-rule-syncer-metrics
           resources:
             limits:
               cpu: 128m
@@ -4312,6 +4322,8 @@ parameters:
   value: /var/thanos/receive
 - name: THANOS_RECEIVE_TSDB_RETENTION
   value: 4d
+- name: THANOS_RECEIVE_HASHRING_SERVICE_NAME
+  value: observatorium-thanos-receive-default
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

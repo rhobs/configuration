@@ -203,6 +203,7 @@ objects:
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
+          - --whitelist={__name__="ocs_advanced_feature_usage"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
@@ -432,6 +433,7 @@ objects:
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
+          - --whitelist={__name__="ocs_advanced_feature_usage"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
@@ -645,12 +647,14 @@ objects:
 
           location / {
             proxy_set_header THANOS-TENANT FB870BF3-9F3A-44FF-9BF7-D7A047A52F43;
-            proxy_pass http://${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291;
+            proxy_pass http://${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:${PROMETHEUS_AMS_REMOTE_WRITE_PROXY_PORT};
           }
         }
       }
   kind: ConfigMap
   metadata:
+    annotations:
+      qontract.recycle: "true"
     labels:
       app.kubernetes.io/component: prometheus-ams
       app.kubernetes.io/instance: remote-write-proxy
@@ -935,6 +939,8 @@ parameters:
   value: quay.io/app-sre/observatorium-receive-proxy
 - name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_TARGET
   value: observatorium-thanos-receive
+- name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_PORT
+  value: "19291"
 - name: PROMETHEUS_AMS_REMOTE_WRITE_PROXY_VERSION
   value: 14e844d
 - name: PROMETHEUS_IMAGE

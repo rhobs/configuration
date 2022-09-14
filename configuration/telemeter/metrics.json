@@ -109,6 +109,7 @@
   "{__name__=\"noobaa_accounts_num\"}",
   "{__name__=\"noobaa_total_usage\"}",
   "{__name__=\"nto_custom_profiles:count\"}",
+  "{__name__=\"ocs_advanced_feature_usage\"}",
   "{__name__=\"olm_resolution_duration_seconds\"}",
   "{__name__=\"openshift:build_by_strategy:sum\"}",
   "{__name__=\"openshift:cpu_usage_cores:sum\"}",

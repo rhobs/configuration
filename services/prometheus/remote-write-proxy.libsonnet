@@ -8,6 +8,7 @@ local defaults = {
   version: error 'must provide version',
   image: error 'must set image for proxy',
   target: error 'must provide target',
+  targetPort: error 'must provide target port',
   targetNamespace: error 'must provide target namespace',
   tenantID: error 'must provide tenant ID',
   ports: {
@@ -102,16 +103,19 @@ function(params) {
       name: 'prometheus-remote-write-proxy-config',
       namespace: rwp.config.namespace,
       labels: rwp.config.commonLabels,
+      annotations: {
+        'qontract.recycle': 'true',
+      },
     },
     data: {
       local f = importstr 'remote_write_proxy.conf',
 
       'nginx.conf': std.format(f, {
         listen_port: rwp.config.ports.proxy,
-        forward_host: 'http://%s.%s.svc.cluster.local:%d' % [
+        forward_host: 'http://%s.%s.svc.cluster.local:%s' % [
           rwp.config.target,
           rwp.config.targetNamespace,
-          rwp.config.ports.target,
+          rwp.config.targetPort,
         ],
         thanos_tenant: rwp.config.tenantID,
       }),

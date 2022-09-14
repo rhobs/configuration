@@ -29,7 +29,7 @@ objects:
         - args:
           - --metric-count=1
           - --series-count=8333
-          - --remote-url=http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291/api/v1/receive
+          - --remote-url=http://${METRICS_WRITE_SERVICE_NAME}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:${METRICS_WRITE_SERVICE_PORT}/api/v1/receive
           - --remote-write-interval=30s
           - --remote-requests-count=1000000
           - --value-interval=3600
@@ -1014,7 +1014,7 @@ objects:
           - --web.internal.listen=0.0.0.0:8081
           - --log.level=warn
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:9090
-          - --metrics.write.endpoint=http://observatorium-thanos-receive.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:19291
+          - --metrics.write.endpoint=http://${METRICS_WRITE_SERVICE_NAME}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:${METRICS_WRITE_SERVICE_PORT}
           - --metrics.rules.endpoint=http://rules-objstore.${NAMESPACE}.svc.cluster.local:8080
           - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
@@ -1578,3 +1578,7 @@ parameters:
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
   value: a6a0ff7
+- name: METRICS_WRITE_SERVICE_NAME
+  value: observatorium-thanos-receive
+- name: METRICS_WRITE_SERVICE_PORT
+  value: "19291"

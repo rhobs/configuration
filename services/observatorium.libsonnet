@@ -392,10 +392,10 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         obs.config.namespaces.metrics,
         obs.thanos.queryFrontend.service.spec.ports[0].port,
       ],
-      writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.thanos.receiversService.metadata.name,
+      writeEndpoint: 'http://%s.%s.svc.cluster.local:%s' % [
+        '${METRICS_WRITE_SERVICE_NAME}',
         obs.config.namespaces.metrics,
-        obs.thanos.receiversService.spec.ports[2].port,
+        '${METRICS_WRITE_SERVICE_PORT}',
       ],
       rulesEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.rulesObjstore.service.metadata.name,
@@ -629,10 +629,10 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
               args: [
                 '--metric-count=1',  // we only get one metric __name__
                 '--series-count=8333',  // this is set so that we write 1M samples per hour to our test tenant
-                '--remote-url=http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-                  obs.thanos.receiversService.metadata.name,
+                '--remote-url=http://%s.%s.svc.cluster.local:%s/api/v1/receive' % [
+                  '${METRICS_WRITE_SERVICE_NAME}',
                   obs.config.namespaces.metrics,
-                  obs.thanos.receiversService.spec.ports[2].port,
+                  '${METRICS_WRITE_SERVICE_PORT}',
                 ],  // this is the internal cluster url of the thanos receive service
                 '--remote-write-interval=30s',  // how frequently to remote_write data
                 '--remote-requests-count=1000000',  // how many requests we make before exiting - make it a big number

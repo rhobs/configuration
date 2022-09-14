@@ -103,6 +103,8 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
     },
 
     rule+:: {
+      service+: ruleSyncerSidecar.service,
+      serviceMonitor+: ruleSyncerSidecar.serviceMonitor,
       statefulSet+: jaegerAgentSidecar.statefulSet + ruleSyncerSidecar.statefulSet {
         spec+: {
           replicas: '${{THANOS_RULER_REPLICAS}}',

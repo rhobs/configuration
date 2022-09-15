@@ -41,7 +41,7 @@ function(params) {
           resources: trs.config.resources,
           ports: [
             {
-              name: 'thanos-rule-syncer-' + name,
+              name: name,
               containerPort: trs.config.ports[name],
             }
             for name in std.objectFields(trs.config.ports)
@@ -62,7 +62,7 @@ function(params) {
     spec+: {
       ports+: [
         {
-          name: 'thanos-rule-syncer-' + name,
+          name: name,
           port: trs.config.ports[name],
           targetPort: trs.config.ports[name],
         }
@@ -74,7 +74,7 @@ function(params) {
   serviceMonitor+: {
     spec+: {
       endpoints+: [
-        { port: 'thanos-rule-syncer-metrics' },
+        { port: 'metrics' },
       ],
     },
   },

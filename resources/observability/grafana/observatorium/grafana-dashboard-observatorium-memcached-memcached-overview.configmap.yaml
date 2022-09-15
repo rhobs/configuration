@@ -58,7 +58,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(memcached_commands_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\", command=\"get\", status=\"hit\"}[1m])) / sum(rate(memcached_commands_total{cluster=~\"$cluster\", job=~\"$job\", command=\"get\"}[1m]))",
+                  "expr": "sum(rate(memcached_commands_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\", command=\"get\", status=\"hit\"}[1m])) / sum(rate(memcached_commands_total{namespace=~\"$namespace\", job=~\"$job\", command=\"get\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "Hit Rate",
@@ -156,7 +156,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job, instance) (rate(memcached_commands_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
+                  "expr": "sum without (job, instance) (rate(memcached_commands_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{command}} {{status}}",
@@ -242,7 +242,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (rate(memcached_items_evicted_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
+                  "expr": "sum without (job) (rate(memcached_items_evicted_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -328,7 +328,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (rate(memcached_items_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
+                  "expr": "sum without (job) (rate(memcached_items_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -426,7 +426,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (memcached_current_bytes{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum without (job) (memcached_current_bytes{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -512,7 +512,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (memcached_current_items{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum without (job) (memcached_current_items{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -610,7 +610,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (rate(memcached_connections_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
+                  "expr": "sum without (job) (rate(memcached_connections_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}} - Connection Rate",
@@ -618,7 +618,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum without (job) (memcached_current_connections{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum without (job) (memcached_current_connections{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}} - Current Connrections",
@@ -626,7 +626,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "sum without (job) (memcached_max_connections{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum without (job) (memcached_max_connections{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}} - Max Connections",
@@ -712,7 +712,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (rate(memcached_read_bytes_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
+                  "expr": "sum without (job) (rate(memcached_read_bytes_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -798,7 +798,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum without (job) (rate(memcached_written_bytes_total{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
+                  "expr": "sum without (job) (rate(memcached_written_bytes_total{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[1m]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{instance}}",
@@ -1014,7 +1014,7 @@ data:
               ],
               "targets": [
                 {
-                  "expr": "count by (job, instance, version) (memcached_version{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "count by (job, instance, version) (memcached_version{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})",
                   "format": "table",
                   "instant": true,
                   "intervalFactor": 2,
@@ -1023,7 +1023,7 @@ data:
                   "step": 10
                 },
                 {
-                  "expr": "max by (job, instance) (memcached_uptime_seconds{cluster=~\"$cluster\", job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "max by (job, instance) (memcached_uptime_seconds{namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})",
                   "format": "table",
                   "instant": true,
                   "intervalFactor": 2,
@@ -1115,13 +1115,13 @@ data:
             "datasource": "$datasource",
             "hide": 0,
             "includeAll": true,
-            "label": "cluster",
+            "label": "namespace",
             "multi": true,
-            "name": "cluster",
+            "name": "namespace",
             "options": [
 
             ],
-            "query": "label_values(memcached_commands_total, cluster)",
+            "query": "label_values(memcached_commands_total, namespace)",
             "refresh": 1,
             "regex": "",
             "sort": 2,
@@ -1149,7 +1149,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(memcached_commands_total{cluster=~\"$cluster\"}, job)",
+            "query": "label_values(memcached_commands_total{namespace=~\"$namespace\"}, job)",
             "refresh": 1,
             "regex": "",
             "sort": 2,
@@ -1177,7 +1177,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(memcached_commands_total{cluster=~\"$cluster\",job=~\"$job\"}, instance)",
+            "query": "label_values(memcached_commands_total{namespace=~\"$namespace\",job=~\"$job\"}, instance)",
             "refresh": 1,
             "regex": "",
             "sort": 2,

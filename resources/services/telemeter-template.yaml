@@ -179,6 +179,7 @@ objects:
           - --whitelist={__name__="job:noobaa_bucket_count:sum"}
           - --whitelist={__name__="job:noobaa_total_object_count:sum"}
           - --whitelist={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+          - --whitelist={__name__="job:odf_system_pvs:count"}
           - --whitelist={__name__="log_collector_error_count_total"}
           - --whitelist={__name__="log_forwarder_input_info"}
           - --whitelist={__name__="log_forwarder_output_info"}
@@ -204,6 +205,11 @@ objects:
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
           - --whitelist={__name__="ocs_advanced_feature_usage"}
+          - --whitelist={__name__="odf_system_bucket_count", system_type="OCS", system_vendor="Red Hat"}
+          - --whitelist={__name__="odf_system_health_status"}
+          - --whitelist={__name__="odf_system_objects_total", system_type="OCS", system_vendor="Red Hat"}
+          - --whitelist={__name__="odf_system_raw_capacity_total_bytes"}
+          - --whitelist={__name__="odf_system_raw_capacity_used_bytes"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
@@ -409,6 +415,7 @@ objects:
           - --whitelist={__name__="job:noobaa_bucket_count:sum"}
           - --whitelist={__name__="job:noobaa_total_object_count:sum"}
           - --whitelist={__name__="job:noobaa_total_unhealthy_buckets:sum"}
+          - --whitelist={__name__="job:odf_system_pvs:count"}
           - --whitelist={__name__="log_collector_error_count_total"}
           - --whitelist={__name__="log_forwarder_input_info"}
           - --whitelist={__name__="log_forwarder_output_info"}
@@ -434,6 +441,11 @@ objects:
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
           - --whitelist={__name__="ocs_advanced_feature_usage"}
+          - --whitelist={__name__="odf_system_bucket_count", system_type="OCS", system_vendor="Red Hat"}
+          - --whitelist={__name__="odf_system_health_status"}
+          - --whitelist={__name__="odf_system_objects_total", system_type="OCS", system_vendor="Red Hat"}
+          - --whitelist={__name__="odf_system_raw_capacity_total_bytes"}
+          - --whitelist={__name__="odf_system_raw_capacity_used_bytes"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}

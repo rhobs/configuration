@@ -55,7 +55,8 @@ local dashboards =
         name: 'grafana-dashboard-observatorium-memcached-%s' % sanitizeDashboardName(name),
       },
       data: {
-        [name]: std.manifestJsonEx(memcached.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
+        // Replace references to 'cluster' by 'namespace', since we do not have 'cluster' label and use 'namespace' by default.
+        [name]: std.strReplace(std.manifestJsonEx(memcached.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '), 'cluster', 'namespace'),
       },
     }
     for name in std.objectFields(memcached.grafanaDashboards)

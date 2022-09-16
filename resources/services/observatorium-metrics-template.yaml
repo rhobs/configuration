@@ -944,7 +944,7 @@ objects:
           name: thanos-rule-syncer
           ports:
           - containerPort: 8083
-            name: thanos-rule-syncer-metrics
+            name: metrics
           resources:
             limits:
               cpu: 128m
@@ -2158,7 +2158,7 @@ objects:
     - name: reloader
       port: 9533
       targetPort: 9533
-    - name: thanos-rule-syncer-metrics
+    - name: metrics
       port: 8083
       targetPort: 8083
     selector:
@@ -2196,7 +2196,7 @@ objects:
         - pod
         targetLabel: instance
     - port: reloader
-    - port: thanos-rule-syncer-metrics
+    - port: metrics
     namespaceSelector:
       matchNames: ${{NAMESPACES}}
     selector:
@@ -2375,7 +2375,7 @@ objects:
           name: thanos-rule-syncer
           ports:
           - containerPort: 8083
-            name: thanos-rule-syncer-metrics
+            name: metrics
           resources:
             limits:
               cpu: 128m

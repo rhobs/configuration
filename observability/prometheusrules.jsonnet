@@ -288,9 +288,12 @@ local renderAlerts(name, environment, mixin) = {
     },
   ],
 
-  local apiSLOs = function(instance, upNamespace, apiJob) {
+  local apiSLOs = function(instance, upNamespace, metricsNamespace, apiJob) {
     local apiJobSelector = 'job="' + apiJob + '"',
     local upNamespaceSelector = 'namespace="' + upNamespace + '"',
+    local metricsNamespaceSelector = 'namespace="' + metricsNamespace + '"',
+    local instanceNamespace(name) = if instance == 'telemeter' then metricsNamespaceSelector else upNamespaceSelector,
+
     slos: [
       {
         name: 'rhobs-' + instance + '-api-metrics-write-availability.slo',
@@ -390,7 +393,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIRulesSyncAvailabilityErrorBudgetBurning',
             alertMessage: 'API /reload endpoint is burning too much error budget to guarantee availability SLOs',
             metric: 'client_api_requests_total',
-            selectors: ['client="oauth"', 'container="thanos-rule-syncer"', upNamespaceSelector, 'code=~"^(2..|3..|5..)$"'],
+            selectors: ['client="reload"', 'container="thanos-rule-syncer"', instanceNamespace(instance), 'code=~"^(2..|3..|5..)$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),
@@ -430,14 +433,14 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIAlertmanagerAvailabilityErrorBudgetBurning',
             alertMessage: 'API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs',
             metric: 'thanos_alert_sender_alerts_dropped_total',
-            selectors: ['container="thanos-rule"', upNamespaceSelector],
+            selectors: ['container="thanos-rule"', instanceNamespace(instance)],
             target: 0.95,
           }),
           slo.errorburn({
             alertName: 'APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning',
             alertMessage: 'API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs',
             metric: 'alertmanager_notifications_failed_total',
-            selectors: ['service="observatorium-alertmanager"', upNamespaceSelector],
+            selectors: ['service="observatorium-alertmanager"', instanceNamespace(instance)],
             target: 0.95,
           }),
         ],
@@ -445,14 +448,14 @@ local renderAlerts(name, environment, mixin) = {
     ],
   },
 
-  local mstStageSLOs = apiSLOs('mst', 'observatorium-mst-stage', 'observatorium-observatorium-mst-api').slos,
-  local mstProductionSLOs = apiSLOs('mst', 'observatorium-mst-production', 'observatorium-observatorium-mst-api').slos,
+  local mstStageSLOs = apiSLOs('mst', 'observatorium-mst-stage', 'observatorium-mst-stage', 'observatorium-observatorium-mst-api').slos,
+  local mstProductionSLOs = apiSLOs('mst', 'observatorium-mst-production', 'observatorium-mst-production', 'observatorium-observatorium-mst-api').slos,
 
   'rhobs-slos-mst-stage.prometheusrules': renderAlerts('rhobs-slos-mst-stage', 'stage', flatten(mstStageSLOs)),
   'rhobs-slos-mst-production.prometheusrules': renderAlerts('rhobs-slos-mst-production', 'production', flatten(mstProductionSLOs)),
 
-  local telemeterStageSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-stage', 'observatorium-observatorium-api').slos,
-  local telemeterProductionSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-production', 'observatorium-observatorium-api').slos,
+  local telemeterStageSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-stage', 'observatorium-metrics-stage', 'observatorium-observatorium-api').slos,
+  local telemeterProductionSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-production', 'observatorium-metrics-production', 'observatorium-observatorium-api').slos,
 
   'rhobs-slos-telemeter-stage.prometheusrules': renderAlerts('rhobs-slos-telemeter-stage', 'stage', flatten(telemeterStageSLOs)),
   'rhobs-slos-telemeter-production.prometheusrules': renderAlerts('rhobs-slos-telemeter-production', 'production', flatten(telemeterProductionSLOs)),

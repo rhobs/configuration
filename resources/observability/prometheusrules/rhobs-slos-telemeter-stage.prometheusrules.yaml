@@ -1299,15 +1299,15 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate5m{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(client_api_requests_total:burnrate5m{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate1h{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(client_api_requests_total:burnrate1h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: high
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1316,15 +1316,15 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate30m{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate30m{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate6h{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: high
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1333,15 +1333,15 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate2h{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate2h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate1d{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate1d{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: medium
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1350,86 +1350,86 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate6h{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate3d{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate3d{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[1d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[1d]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate1d
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[1h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[1h]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate1h
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[2h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[2h]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate2h
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[30m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[30m]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate30m
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[3d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[3d]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate3d
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[5m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[5m]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate5m
     - expr: |
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
         /
-        sum(rate(client_api_requests_total{client="oauth",container="thanos-rule-syncer",namespace="observatorium-stage",code=~"^(2..|3..|5..)$"}[6h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"^(2..|3..|5..)$"}[6h]))
       labels:
-        client: oauth
+        client: reload
         code: ^(2..|3..|5..)$
         container: thanos-rule-syncer
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate6h
   - name: rhobs-telemeter-api-rules-read-availability.slo
     rules:
@@ -1697,13 +1697,13 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate5m{container="thanos-rule",namespace="observatorium-stage"}) > (14.40 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate5m{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (14.40 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate1h{container="thanos-rule",namespace="observatorium-stage"}) > (14.40 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate1h{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: high
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1712,13 +1712,13 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate30m{container="thanos-rule",namespace="observatorium-stage"}) > (6.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate30m{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (6.00 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-stage"}) > (6.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: high
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1727,13 +1727,13 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate2h{container="thanos-rule",namespace="observatorium-stage"}) > (3.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate2h{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (3.00 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate1d{container="thanos-rule",namespace="observatorium-stage"}) > (3.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate1d{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: medium
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1742,70 +1742,70 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-stage"}) > (1.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (1.00 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate3d{container="thanos-rule",namespace="observatorium-stage"}) > (1.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate3d{container="thanos-rule",namespace="observatorium-metrics-stage"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[1d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[1d]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[1d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[1d]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate1d
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[1h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[1h]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[1h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[1h]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate1h
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[2h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[2h]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[2h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[2h]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate2h
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[30m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[30m]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[30m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[30m]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate30m
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[3d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[3d]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[3d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[3d]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate3d
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[5m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[5m]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[5m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[5m]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate5m
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage",code=~"5.."}[6h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[6h]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-stage"}[6h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[6h]))
       labels:
         container: thanos-rule
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate6h
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
       annotations:
@@ -1813,12 +1813,12 @@ spec:
         message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
       expr: |
-        sum(alertmanager_notifications_failed_total:burnrate5m{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (14.40 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate5m{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (14.40 * (1-0.95000))
         and
-        sum(alertmanager_notifications_failed_total:burnrate1h{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (14.40 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate1h{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: high
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1827,12 +1827,12 @@ spec:
         message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
       expr: |
-        sum(alertmanager_notifications_failed_total:burnrate30m{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (6.00 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate30m{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (6.00 * (1-0.95000))
         and
-        sum(alertmanager_notifications_failed_total:burnrate6h{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (6.00 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate6h{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: high
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1841,12 +1841,12 @@ spec:
         message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
       expr: |
-        sum(alertmanager_notifications_failed_total:burnrate2h{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (3.00 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate2h{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (3.00 * (1-0.95000))
         and
-        sum(alertmanager_notifications_failed_total:burnrate1d{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (3.00 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate1d{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: medium
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1855,67 +1855,67 @@ spec:
         message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
       expr: |
-        sum(alertmanager_notifications_failed_total:burnrate6h{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (1.00 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate6h{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (1.00 * (1-0.95000))
         and
-        sum(alertmanager_notifications_failed_total:burnrate3d{service="observatorium-alertmanager",namespace="observatorium-stage"}) > (1.00 * (1-0.95000))
+        sum(alertmanager_notifications_failed_total:burnrate3d{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[1d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[1d]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[1d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[1d]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate1d
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[1h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[1h]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[1h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[1h]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate1h
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[2h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[2h]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[2h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[2h]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate2h
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[30m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[30m]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[30m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[30m]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate30m
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[3d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[3d]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[3d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[3d]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate3d
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[5m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[5m]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[5m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[5m]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate5m
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage",code=~"5.."}[6h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[6h]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-stage"}[6h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[6h]))
       labels:
-        namespace: observatorium-stage
+        namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate6h

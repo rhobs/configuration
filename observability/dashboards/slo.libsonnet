@@ -1,5 +1,3 @@
-local utils = import '../utils.jsonnet';
-
 function(instanceName, environment, dashboardName) {
   // Validate our inputs.
   assert std.member(['telemeter', 'mst'], instanceName),
@@ -25,17 +23,16 @@ function(instanceName, environment, dashboardName) {
         datasource: 'telemeter-prod-01-prometheus',
         upNamespace: 'observatorium-mst-production',
         apiJob: 'observatorium-observatorium-mst-api',
-        metricsNamespace: 'observatorium-metrics-production',
       },
       stage: {
         datasource: 'app-sre-stage-01-prometheus',
         upNamespace: 'observatorium-mst-stage',
         apiJob: 'observatorium-observatorium-mst-api',
-        metricsNamespace: 'observatorium-metrics-stage',
       },
     },
   },
   local instance = instanceConfig[instanceName][environment],
+  local instanceNamespace(name) = if name == 'telemeter' then instance.metricsNamespace else instance.upNamespace,
   // This is part of a dirty hack because I can't figure out how to do an auto-incrementing counter in Jsonnet.
   // Each grafana dashboard that requests data needs a unique ID, we use the panels per row + a unqiue index per panel
   // to generate a continuous stream of integers from 0...
@@ -485,8 +482,8 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '95% of rules are successfully synced to Thanos Ruler',
       0.95,
-      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code=~"5.+"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
-      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code!~"4.+"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code=~"5.+"}[28d]))' % instanceNamespace(instanceName),
+      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code!~"4.+"}[28d]))' % instanceNamespace(instanceName),
       10
     ) +
     titleRow('API > Rules Read (/rules) > Availability') +
@@ -509,15 +506,15 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '95% of alerts are successfully delivered to Alertmanager',
       0.95,
-      'sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
-      'sum(rate(thanos_alert_sender_alerts_sent_total{container="thanos-rule",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="%s"}[28d]))' % instanceNamespace(instanceName),
+      'sum(rate(thanos_alert_sender_alerts_sent_total{container="thanos-rule",namespace="%s"}[28d]))' % instanceNamespace(instanceName),
       13
     ) +
     availabilityRow(
       '95% of alerts are successfully delivered to upstream targets',
       0.95,
-      'sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
-      'sum(rate(alertmanager_notifications_total{service="observatorium-alertmanager",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="%s"}[28d]))' % instanceNamespace(instanceName),
+      'sum(rate(alertmanager_notifications_total{service="observatorium-alertmanager",namespace="%s"}[28d]))' % instanceNamespace(instanceName),
       14
     ),
   local apiLogsPanels =

@@ -1414,7 +1414,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(client_api_requests_total{client=\"oauth\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(client_api_requests_total{client=\"oauth\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[28d]))\n",
                         "interval": "",
                         "legendFormat": "",
                         "refId": "A"
@@ -1486,7 +1486,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(client_api_requests_total{client=\"oauth\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(client_api_requests_total{client=\"oauth\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[28d]))\n    ) - 0.94999999999999996\n)\n/\n(1 - 0.94999999999999996), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",

@@ -420,7 +420,7 @@ objects:
               - '--grpc-address=0.0.0.0:10901'
               - '--http-address=0.0.0.0:10902'
               - '--remote-write.address=0.0.0.0:19291'
-              - '--receive.replication-factor=3'
+              - '--receive.replication-factor=${RECEIVER_REPLICATION_FACTOR}'
               - '--tsdb.path=/var/thanos/receive'
               - '--tsdb.retention=1d'
               - '--label=replica="$(NAME)"'
@@ -673,3 +673,5 @@ parameters:
     value: telemeter-thanos-stage-s3
   - name: RECEIVER_SERVICE_ACCOUNT
     value: observatorium-metrics
+  - name: RECEIVER_REPLICATION_FACTOR
+    value: '3'

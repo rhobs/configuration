@@ -1052,9 +1052,7 @@ spec:
         sum(client_api_requests_total:burnrate1h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
         service: telemeter
         severity: high
@@ -1069,9 +1067,7 @@ spec:
         sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
         service: telemeter
         severity: high
@@ -1086,9 +1082,7 @@ spec:
         sum(client_api_requests_total:burnrate1d{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
         service: telemeter
         severity: medium
@@ -1103,9 +1097,7 @@ spec:
         sum(client_api_requests_total:burnrate3d{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
         service: telemeter
         severity: medium
@@ -1114,9 +1106,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[1d]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate1d
     - expr: |
@@ -1124,9 +1114,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[1h]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate1h
     - expr: |
@@ -1134,9 +1122,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[2h]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate2h
     - expr: |
@@ -1144,9 +1130,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[30m]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate30m
     - expr: |
@@ -1154,9 +1138,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[3d]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate3d
     - expr: |
@@ -1164,9 +1146,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[5m]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate5m
     - expr: |
@@ -1174,9 +1154,7 @@ spec:
         /
         sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code=~"^(2..|3..|5..)$"}[6h]))
       labels:
-        client: reload
         code: ^(2..|3..|5..)$
-        container: thanos-rule-syncer
         namespace: observatorium-mst-stage
       record: client_api_requests_total:burnrate6h
   - name: rhobs-mst-api-rules-read-availability.slo
@@ -1450,7 +1428,6 @@ spec:
         sum(thanos_alert_sender_alerts_dropped_total:burnrate1h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
         service: telemeter
         severity: high
@@ -1465,7 +1442,6 @@ spec:
         sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
         service: telemeter
         severity: high
@@ -1480,7 +1456,6 @@ spec:
         sum(thanos_alert_sender_alerts_dropped_total:burnrate1d{container="thanos-rule",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
         service: telemeter
         severity: medium
@@ -1495,7 +1470,6 @@ spec:
         sum(thanos_alert_sender_alerts_dropped_total:burnrate3d{container="thanos-rule",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
         service: telemeter
         severity: medium
@@ -1504,7 +1478,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[1d]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate1d
     - expr: |
@@ -1512,7 +1485,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[1h]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate1h
     - expr: |
@@ -1520,7 +1492,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[2h]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate2h
     - expr: |
@@ -1528,7 +1499,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[30m]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate30m
     - expr: |
@@ -1536,7 +1506,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[3d]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate3d
     - expr: |
@@ -1544,7 +1513,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[5m]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate5m
     - expr: |
@@ -1552,7 +1520,6 @@ spec:
         /
         sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage"}[6h]))
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate6h
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning

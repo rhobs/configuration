@@ -40,11 +40,11 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/metalmatze/slo-libsonnet.git",
+          "remote": "https://github.com/saswatamcode/slo-libsonnet.git",
           "subdir": "slo-libsonnet"
         }
       },
-      "version": "master"
+      "version": "special-selector"
     },
     {
       "source": {

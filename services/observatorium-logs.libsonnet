@@ -91,6 +91,58 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       querier: '${{LOKI_QUERIER_REPLICAS}}',
       query_scheduler: '${{LOKI_QUERY_SCHEDULER_REPLICAS}}',
       query_frontend: '${{LOKI_QUERY_FRONTEND_REPLICAS}}',
+      ruler: '${{LOKI_RULER_REPLICAS}}',
+    },
+    rules: {
+      'rhobs-logs-ocm-alerts': {
+        groups: [
+          {
+            interval: '1m',
+            name: 'uhc-stage-logs-based-alerts',
+            rules: [
+              {
+                alert: 'UHC Server Errors',
+                annotations: {
+                  summary: '${labels.kubernetes_labels_app} is returning server-side errors',
+                },
+                expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `returning http 500`  | json  | line_format "{{ .message }}" [1m])) > 0',
+                'for': '5m',
+                labels: {
+                  severity: 'warn',
+                  namespace: 'uhc-stage',
+                  service: '${labels.kubernetes_labels_app}',
+                },
+              },
+              {
+                alert: 'UHC Nil Reference Errors - Stage',
+                annotations: {
+                  summary: '${labels.kubernetes_labels_app} is throwing nil reference errors',
+                },
+                expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `nil reference` | json  | line_format "{{ .message }}" [1m])) > 0',
+                'for': '5m',
+                labels: {
+                  severity: 'warn',
+                  namespace: 'uhc-stage',
+                  service: '${labels.kubernetes_labels_app}',
+                },
+              },
+              {
+                alert: 'UHC Panic Errors - Stage',
+                annotations: {
+                  summary: '${labels.kubernetes_labels_app} is throwing panic errors',
+                },
+                expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `panic` | json  | line_format "{{ .message }}")) > 0',
+                'for': '5m',
+                labels: {
+                  severity: 'warn',
+                  namespace: 'uhc-stage',
+                  service: '${labels.kubernetes_labels_app}',
+                },
+              },
+            ],
+          },
+        ],
+      },
     },
     resources: {
       compactor: {
@@ -163,6 +215,16 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
           memory: '${LOKI_QUERY_FRONTEND_MEMORY_LIMITS}',
         },
       },
+      ruler: {
+        requests: {
+          cpu: '${LOKI_RULER_CPU_REQUESTS}',
+          memory: '${LOKI_RULER_REQUESTS}',
+        },
+        limits: {
+          cpu: '${LOKI_RULER_CPU_LIMITS}',
+          memory: '${LOKI_RULER_MEMORY_LIMITS}',
+        },
+      },
     },
     storeChunkCache: 'dns+%s.%s.svc.cluster.local:%s' % [
       obs.lokiCaches.manifests['chunk-cache-service'].metadata.name,
@@ -198,6 +260,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       querier+: { withServiceMonitor: true },
       query_scheduler+: { withServiceMonitor: true },
       query_frontend+: { withServiceMonitor: true },
+      ruler+: { withServiceMonitor: true },
     },
     config+: {
       limits_config+: {
@@ -207,6 +270,12 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         engine+: {
           timeout: '6m',
         },
+      },
+      ruler+: {
+        enable_alertmanager_discovery: true,
+        enable_alertmanager_v2: true,
+        alertmanager_url: 'http://_web._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
+        alertmanager_refresh_interval: '1m',
       },
       tracing: {
         // TODO(@periklis):

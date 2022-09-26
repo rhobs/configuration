@@ -120,6 +120,9 @@ objects:
             - "routing"
             receivers:
             - "otlp"
+        telemetry:
+          metrics:
+            level: "basic"
     image: ${OPENTELEMETRY_COLLECTOR_IMAGE}:${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}
     mode: deployment
 parameters:

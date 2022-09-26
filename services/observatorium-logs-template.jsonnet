@@ -22,6 +22,8 @@ local obs = import 'observatorium.libsonnet';
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-logs' },
+    { name: 'ALERTMANAGER_NAMESPACE', value: 'observatorium-mst-stage' },
+    { name: 'ALERTMANAGER_EXTERNAL_URL', value: 'https://observatorium-alertmanager-mst.api.stage.openshift.com' },
     { name: 'STORAGE_CLASS', value: 'gp2' },
     { name: 'LOKI_IMAGE_TAG', value: '2.6.1' },
     { name: 'LOKI_IMAGE', value: 'docker.io/grafana/loki' },
@@ -60,6 +62,11 @@ local obs = import 'observatorium.libsonnet';
     { name: 'LOKI_QUERY_FRONTEND_CPU_LIMITS', value: '500m' },
     { name: 'LOKI_QUERY_FRONTEND_MEMORY_REQUESTS', value: '600Mi' },
     { name: 'LOKI_QUERY_FRONTEND_MEMORY_LIMITS', value: '1200Mi' },
+    { name: 'LOKI_RULER_REPLICAS', value: '2' },
+    { name: 'LOKI_RULER_CPU_REQUESTS', value: '1000m' },
+    { name: 'LOKI_RULER_CPU_LIMITS', value: '2000m' },
+    { name: 'LOKI_RULER_MEMORY_REQUESTS', value: '4Gi' },
+    { name: 'LOKI_RULER_MEMORY_LIMITS', value: '6Gi' },
     // This value should be set equal t
     // LOKI_REPLICATION_FACTOR <= LOKI_INGESTER_REPLICAS
     { name: 'LOKI_REPLICATION_FACTOR', value: '2' },
@@ -86,6 +93,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'LOKI_RESULTS_CACHE_MEMORY_LIMITS', value: '1536Mi' },
     { name: 'LOKI_PVC_REQUEST', value: '10Gi' },
     { name: 'LOKI_INGESTER_PVC_REQUEST', value: '150Gi' },
+    { name: 'LOKI_RULER_PVC_REQUEST', value: '10Gi' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: 'observatorium' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.29.0' },

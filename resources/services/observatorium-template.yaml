@@ -190,31 +190,39 @@ objects:
           app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
       spec:
         containers:
-        - env:
+        - args:
+          - --sleep-duration-seconds=${SLEEP_DURATION_SECONDS}
+          - --observatorium-api-url=${OBSERVATORIUM_URL}
+          - --managed-tenants=${MANAGED_TENANTS}
+          - --issuer-url=${OIDC_ISSUER_URL}
+          - --audience=${OIDC_AUDIENCE}
+          env:
           - name: NAMESPACE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: OBSERVATORIUM_URL
-            value: ${OBSERVATORIUM_URL}
-          - name: OIDC_AUDIENCE
-            value: ${OIDC_AUDIENCE}
-          - name: OIDC_ISSUER_URL
-            value: ${OIDC_ISSUER_URL}
-          - name: SLEEP_DURATION_SECONDS
-            value: ${SLEEP_DURATION_SECONDS}
-          - name: MANAGED_TENANTS
-            value: ${MANAGED_TENANTS}
-          - name: OIDC_CLIENT_ID
+          - name: RHOBS_CLIENT_ID
             valueFrom:
               secretKeyRef:
                 key: client_id
-                name: ${OBSCTL_RELOADER_SECRET_NAME}
-          - name: OIDC_CLIENT_SECRET
+                name: ${RHOBS_RELOADER_SECRET_NAME}
+          - name: OSD_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: ${OSD_RELOADER_SECRET_NAME}
+                optional: true
+          - name: RHOBS_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
                 key: client_secret
-                name: ${OBSCTL_RELOADER_SECRET_NAME}
+                name: ${RHOBS_RELOADER_SECRET_NAME}
+          - name: OSD_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: ${OSD_RELOADER_SECRET_NAME}
+                optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: obsctl-reloader
@@ -1571,13 +1579,15 @@ parameters:
 - name: SLEEP_DURATION_SECONDS
   value: "15"
 - name: MANAGED_TENANTS
-  value: rhobs
-- name: OBSCTL_RELOADER_SECRET_NAME
+  value: rhobs,osd
+- name: RHOBS_RELOADER_SECRET_NAME
   value: rhobs-tenant
+- name: OSD_RELOADER_SECRET_NAME
+  value: observatorium-observatorium-mst-api
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
-  value: a6a0ff7
+  value: 17c3d4f
 - name: METRICS_WRITE_SERVICE_NAME
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT

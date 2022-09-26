@@ -203,6 +203,11 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       limits_config+: {
         max_global_streams_per_user: 25000,
       },
+      querier+: {
+        engine+: {
+          timeout: '6m',
+        },
+      },
       tracing: {
         // TODO(@periklis):
         // Re-enable jaeger tracing of Loki once both issues fixed:

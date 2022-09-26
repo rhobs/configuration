@@ -68,51 +68,51 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[1d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[1d]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[1d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[1d]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate1d
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[1h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[1h]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[1h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[1h]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate1h
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[2h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[2h]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[2h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[2h]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate2h
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[30m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[30m]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[30m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[30m]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate30m
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[3d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[3d]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[3d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[3d]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate3d
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[5m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[5m]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[5m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[5m]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate5m
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code="5xx"}[6h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$",code="5xx"}[6h]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload"}[6h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-upload",code!~"^4..$"}[6h]))
       labels:
         route: telemeter-server-upload
       record: haproxy_server_http_responses_total:burnrate6h
@@ -173,51 +173,51 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[1d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[1d]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[1d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[1d]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate1d
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[1h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[1h]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[1h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[1h]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate1h
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[2h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[2h]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[2h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[2h]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate2h
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[30m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[30m]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[30m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[30m]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate30m
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[3d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[3d]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[3d]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[3d]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate3d
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[5m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[5m]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[5m]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[5m]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate5m
     - expr: |
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code="5xx"}[6h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$",code="5xx"}[6h]))
         /
-        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[6h]))
+        sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",code!~"^4..$"}[6h]))
       labels:
         route: telemeter-server-metrics-v1-receive
       record: haproxy_server_http_responses_total:burnrate6h
@@ -226,7 +226,7 @@ spec:
     - alert: TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/080e53f245a15445bdf777ae0e66945d/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=telemeter-server,handler=upload,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=telemeter-server,handler=upload,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricsuploadwritelatencyerrorbudgetburning
       expr: |
         (
@@ -249,7 +249,7 @@ spec:
     - alert: TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/080e53f245a15445bdf777ae0e66945d/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=telemeter-server,handler=upload,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=telemeter-server,handler=upload,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricsuploadwritelatencyerrorbudgetburning
       expr: |
         (
@@ -271,9 +271,9 @@ spec:
         severity: medium
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[5m]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[5m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[5m]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[5m]))
         )
       labels:
         handler: upload
@@ -282,9 +282,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[30m]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[30m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[30m]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[30m]))
         )
       labels:
         handler: upload
@@ -293,9 +293,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[1h]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[1h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[1h]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[1h]))
         )
       labels:
         handler: upload
@@ -304,9 +304,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[2h]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[2h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[2h]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[2h]))
         )
       labels:
         handler: upload
@@ -315,9 +315,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[6h]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[6h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[6h]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[6h]))
         )
       labels:
         handler: upload
@@ -326,9 +326,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[1d]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[1d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[1d]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[1d]))
         )
       labels:
         handler: upload
@@ -337,9 +337,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",le="5",code!~"5.."}[3d]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="upload",code!~"^4..$",le="5",code!~"5.."}[3d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload"}[3d]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="upload",code!~"^4..$"}[3d]))
         )
       labels:
         handler: upload
@@ -349,7 +349,7 @@ spec:
     - alert: TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/080e53f245a15445bdf777ae0e66945d/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=telemeter-server,handler=receive,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=telemeter-server,handler=receive,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricsreceivewritelatencyerrorbudgetburning
       expr: |
         (
@@ -372,7 +372,7 @@ spec:
     - alert: TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/080e53f245a15445bdf777ae0e66945d/rhobs-telemeter-telemeter-server-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=telemeter-server,handler=receive,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=telemeter-server,handler=receive,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#telemeterservermetricsreceivewritelatencyerrorbudgetburning
       expr: |
         (
@@ -394,9 +394,9 @@ spec:
         severity: medium
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[5m]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[5m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[5m]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[5m]))
         )
       labels:
         handler: receive
@@ -405,9 +405,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[30m]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[30m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[30m]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[30m]))
         )
       labels:
         handler: receive
@@ -416,9 +416,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[1h]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[1h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[1h]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[1h]))
         )
       labels:
         handler: receive
@@ -427,9 +427,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[2h]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[2h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[2h]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[2h]))
         )
       labels:
         handler: receive
@@ -438,9 +438,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[6h]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[6h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[6h]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[6h]))
         )
       labels:
         handler: receive
@@ -449,9 +449,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[1d]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[1d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[1d]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[1d]))
         )
       labels:
         handler: receive
@@ -460,9 +460,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",le="5",code!~"5.."}[3d]))
+          sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler="receive",code!~"^4..$",le="5",code!~"5.."}[3d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive"}[3d]))
+          sum(rate(http_request_duration_seconds_count{job="telemeter-server",handler="receive",code!~"^4..$"}[3d]))
         )
       labels:
         handler: receive
@@ -532,57 +532,57 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[1d]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[1h]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[2h]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[30m]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[3d]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[5m]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[6h]))
       labels:
         handler: receive
         job: observatorium-observatorium-api
@@ -592,7 +592,7 @@ spec:
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/080e53f245a15445bdf777ae0e66945d/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
@@ -615,7 +615,7 @@ spec:
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/080e53f245a15445bdf777ae0e66945d/rhobs-telemeter-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=observatorium-observatorium-api,handler=receive,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
@@ -637,9 +637,9 @@ spec:
         severity: medium
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[5m]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[5m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[5m]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[5m]))
         )
       labels:
         handler: receive
@@ -648,9 +648,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[30m]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[30m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[30m]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[30m]))
         )
       labels:
         handler: receive
@@ -659,9 +659,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[1h]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[1h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[1h]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[1h]))
         )
       labels:
         handler: receive
@@ -670,9 +670,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[2h]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[2h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[2h]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[2h]))
         )
       labels:
         handler: receive
@@ -681,9 +681,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[6h]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[6h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[6h]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[6h]))
         )
       labels:
         handler: receive
@@ -692,9 +692,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[1d]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[1d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[1d]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[1d]))
         )
       labels:
         handler: receive
@@ -703,9 +703,9 @@ spec:
       record: latencytarget:http_request_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",le="5",code!~"5.."}[3d]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[3d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive"}[3d]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-api",handler="receive",code!~"^4..$"}[3d]))
         )
       labels:
         handler: receive
@@ -775,57 +775,57 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[1d]))
       labels:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[1h]))
       labels:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[2h]))
       labels:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[30m]))
       labels:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[3d]))
       labels:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[5m]))
       labels:
         handler: query
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query",code!~"^4..$"}[6h]))
       labels:
         handler: query
         job: observatorium-observatorium-api
@@ -891,57 +891,57 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[1d]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[1h]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[2h]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[30m]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[3d]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[5m]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",handler="query_range",code!~"^4..$"}[6h]))
       labels:
         handler: query_range
         job: observatorium-observatorium-api
@@ -1384,63 +1384,63 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[1d]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
         method: PUT
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[1h]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
         method: PUT
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[2h]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
         method: PUT
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[30m]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
         method: PUT
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[3d]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
         method: PUT
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[5m]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
         method: PUT
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[6h]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
@@ -1505,51 +1505,51 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[1d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[1d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[1d]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate1d
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[1h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[1h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[1h]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate1h
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[2h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[2h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[2h]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate2h
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[30m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[30m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[30m]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate30m
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[3d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[3d]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[3d]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate3d
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[5m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[5m]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[5m]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate5m
     - expr: |
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code=~"5.+"}[6h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}[6h]))
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",code!~"^4..$"}[6h]))
       labels:
         namespace: observatorium-metrics-stage
       record: client_api_requests_total:burnrate6h
@@ -1616,57 +1616,57 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[1d]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[1h]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[2h]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[30m]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[3d]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[5m]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules",code!~"^4..$"}[6h]))
       labels:
         handler: rules
         job: observatorium-observatorium-api
@@ -1734,57 +1734,57 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[1d]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[1h]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[2h]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[30m]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[3d]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[5m]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[6h]))
       labels:
         handler: rules-raw
         job: observatorium-observatorium-api
@@ -1848,51 +1848,51 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[1d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[1d]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[1d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[1d]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate1d
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[1h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[1h]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[1h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[1h]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate1h
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[2h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[2h]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[2h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[2h]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate2h
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[30m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[30m]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[30m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[30m]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate30m
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[3d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[3d]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[3d]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[3d]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate3d
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[5m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[5m]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[5m]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[5m]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate5m
     - expr: |
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code=~"5.."}[6h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[6h]))
         /
-        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"}[6h]))
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage",code!~"^4..$"}[6h]))
       labels:
         namespace: observatorium-metrics-stage
       record: thanos_alert_sender_alerts_dropped_total:burnrate6h
@@ -1953,57 +1953,57 @@ spec:
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[1d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[1d]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[1d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[1d]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate1d
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[1h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[1h]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[1h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[1h]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate1h
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[2h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[2h]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[2h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[2h]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate2h
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[30m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[30m]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[30m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[30m]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate30m
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[3d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[3d]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[3d]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[3d]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate3d
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[5m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[5m]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[5m]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[5m]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager
       record: alertmanager_notifications_failed_total:burnrate5m
     - expr: |
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code=~"5.."}[6h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$",code=~"5.."}[6h]))
         /
-        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage"}[6h]))
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-metrics-stage",code!~"^4..$"}[6h]))
       labels:
         namespace: observatorium-metrics-stage
         service: observatorium-alertmanager

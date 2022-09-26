@@ -1,4 +1,8 @@
 local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet');
+// We use a fork of https://github.com/metalmatze/slo-libsonnet to allow for ONLY_BASE_IN selectors,
+// which are selectors, that when specified, are only used with the provided metric names and not
+// the generated recording/alerting rules.
+// This fork also adds support for !~ operator in label selectors.
 local slo = import 'github.com/saswatamcode/slo-libsonnet/slo-libsonnet/slo.libsonnet';
 local lokiTenants = import './observatorium-logs/loki-tenant-alerts.libsonnet';
 local utils = import './utils.jsonnet';

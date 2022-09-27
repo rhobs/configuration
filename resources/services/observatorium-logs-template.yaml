@@ -2144,7 +2144,7 @@ objects:
               memory: ${LOKI_RULER_MEMORY_LIMITS}
             requests:
               cpu: ${LOKI_RULER_CPU_REQUESTS}
-              memory: ${LOKI_RULER_REQUESTS}
+              memory: ${LOKI_RULER_MEMORY_REQUESTS}
           volumeMounts:
           - mountPath: /etc/loki/config/
             name: config

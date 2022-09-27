@@ -218,7 +218,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       ruler: {
         requests: {
           cpu: '${LOKI_RULER_CPU_REQUESTS}',
-          memory: '${LOKI_RULER_REQUESTS}',
+          memory: '${LOKI_RULER_MEMORY_REQUESTS}',
         },
         limits: {
           cpu: '${LOKI_RULER_CPU_LIMITS}',

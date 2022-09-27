@@ -4,6 +4,54 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
 {
   local obs = self,
 
+  local ocmAlerts = [
+    {
+      interval: '1m',
+      name: 'uhc-stage-logs-based-alerts',
+      rules: [
+        {
+          alert: 'UHC Server Errors',
+          annotations: {
+            summary: '${labels.kubernetes_labels_app} is returning server-side errors',
+          },
+          expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `returning http 500`  | json  | line_format "{{ .message }}" [1m])) > 0',
+          'for': '5m',
+          labels: {
+            severity: 'warn',
+            namespace: 'uhc-stage',
+            service: '${labels.kubernetes_labels_app}',
+          },
+        },
+        {
+          alert: 'UHC Nil Reference Errors - Stage',
+          annotations: {
+            summary: '${labels.kubernetes_labels_app} is throwing nil reference errors',
+          },
+          expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `nil reference` | json  | line_format "{{ .message }}" [1m])) > 0',
+          'for': '5m',
+          labels: {
+            severity: 'warn',
+            namespace: 'uhc-stage',
+            service: '${labels.kubernetes_labels_app}',
+          },
+        },
+        {
+          alert: 'UHC Panic Errors - Stage',
+          annotations: {
+            summary: '${labels.kubernetes_labels_app} is throwing panic errors',
+          },
+          expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `panic` | json  | line_format "{{ .message }}" [1m])) > 0',
+          'for': '5m',
+          labels: {
+            severity: 'warn',
+            namespace: 'uhc-stage',
+            service: '${labels.kubernetes_labels_app}',
+          },
+        },
+      ],
+    },
+  ],
+
   lokiCaches:: lokiCaches({
     local cfg = self,
     name: obs.config.name,
@@ -95,53 +143,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     },
     rules: {
       'rhobs-logs-ocm-alerts': {
-        groups: [
-          {
-            interval: '1m',
-            name: 'uhc-stage-logs-based-alerts',
-            rules: [
-              {
-                alert: 'UHC Server Errors',
-                annotations: {
-                  summary: '${labels.kubernetes_labels_app} is returning server-side errors',
-                },
-                expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `returning http 500`  | json  | line_format "{{ .message }}" [1m])) > 0',
-                'for': '5m',
-                labels: {
-                  severity: 'warn',
-                  namespace: 'uhc-stage',
-                  service: '${labels.kubernetes_labels_app}',
-                },
-              },
-              {
-                alert: 'UHC Nil Reference Errors - Stage',
-                annotations: {
-                  summary: '${labels.kubernetes_labels_app} is throwing nil reference errors',
-                },
-                expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `nil reference` | json  | line_format "{{ .message }}" [1m])) > 0',
-                'for': '5m',
-                labels: {
-                  severity: 'warn',
-                  namespace: 'uhc-stage',
-                  service: '${labels.kubernetes_labels_app}',
-                },
-              },
-              {
-                alert: 'UHC Panic Errors - Stage',
-                annotations: {
-                  summary: '${labels.kubernetes_labels_app} is throwing panic errors',
-                },
-                expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `panic` | json  | line_format "{{ .message }}")) > 0',
-                'for': '5m',
-                labels: {
-                  severity: 'warn',
-                  namespace: 'uhc-stage',
-                  service: '${labels.kubernetes_labels_app}',
-                },
-              },
-            ],
-          },
-        ],
+        groups: ocmAlerts,
       },
     },
     resources: {

@@ -2240,7 +2240,7 @@ objects:
         - "alert": "UHC Panic Errors - Stage"
           "annotations":
             "summary": "${labels.kubernetes_labels_app} is throwing panic errors"
-          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `panic` | json  | line_format \"{{ .message }}\")) > 0"
+          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `panic` | json  | line_format \"{{ .message }}\" [1m])) > 0"
           "for": "5m"
           "labels":
             "namespace": "uhc-stage"

@@ -1027,6 +1027,7 @@ objects:
           - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --logs.write.endpoint=http://observatorium-loki-distributor-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
+          - --logs.rules.endpoint=http://observatorium-loki-ruler-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
           - --traces.write.endpoint=observatorium-otel-collector-headless.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:4317
           - --grpc.listen=0.0.0.0:8090
           - --experimental.traces.read.endpoint-template=http://observatorium-jaeger-{tenant}-query.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:16686/

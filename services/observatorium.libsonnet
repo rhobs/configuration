@@ -401,6 +401,11 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         obs.config.namespaces.logs,
         obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
       ],
+      rulesEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.loki.manifests['ruler-http-service'].metadata.name,
+        obs.config.namespaces.logs,
+        obs.loki.manifests['ruler-http-service'].spec.ports[0].port,
+      ],
     },
     metrics: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [

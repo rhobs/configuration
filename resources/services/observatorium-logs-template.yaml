@@ -675,9 +675,9 @@ objects:
         "max_outstanding_requests_per_tenant": 256
       "ruler":
         "alertmanager_refresh_interval": "1m"
-        "alertmanager_url": "http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local"
+        "alertmanager_url": "http://_web._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local"
         "enable_alertmanager_discovery": true
-        "enable_alertmanager_v2": false
+        "enable_alertmanager_v2": true
         "enable_api": true
         "enable_sharding": true
         "ring":
@@ -2144,7 +2144,7 @@ objects:
               memory: ${LOKI_RULER_MEMORY_LIMITS}
             requests:
               cpu: ${LOKI_RULER_CPU_REQUESTS}
-              memory: ${LOKI_RULER_MEMORY_REQUESTS}
+              memory: ${LOKI_RULER_REQUESTS}
           volumeMounts:
           - mountPath: /etc/loki/config/
             name: config
@@ -2240,26 +2240,16 @@ objects:
         - "alert": "UHC Panic Errors - Stage"
           "annotations":
             "summary": "${labels.kubernetes_labels_app} is throwing panic errors"
-          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `panic` | json  | line_format \"{{ .message }}\" [1m])) > 0"
+          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `panic` | json  | line_format \"{{ .message }}\")) > 0"
           "for": "5m"
           "labels":
             "namespace": "uhc-stage"
             "service": "${labels.kubernetes_labels_app}"
             "severity": "warn"
-      - "interval": "1m"
-        "name": "rhobs-logs-stage-alerts"
-        "rules":
-        - "alert": "rhobs-logs-always-firing"
-          "annotations":
-            "summary": "rhobs logs alert that always fires"
-          "expr": "1 > 0"
-          "for": "1m"
-          "labels":
-            "namespace": "observatorium-mst-stage"
-            "service": "observatorium-loki-ruler"
-            "severity": "warn"
   kind: ConfigMap
   metadata:
+    annotations:
+      qontract.recycle: "true"
     labels:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: loki

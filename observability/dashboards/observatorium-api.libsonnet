@@ -137,6 +137,14 @@ function(datasource, namespace) {
         refId: 'C',
       },
     ],
+  local targetsAllQuery =
+    [
+      {
+        expr: 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
+        legendFormat: '{{ code }}',
+        refId: 'A',
+      },
+    ],
 
   local query = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
   local legendQuery = '{{code}}',
@@ -144,16 +152,17 @@ function(datasource, namespace) {
   local errLegendQuery = 'errors',
   local rangeQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
   local rangeQueryErr = 'sum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nsum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
+  local allQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
+  local defaultAliasColors = {
+    '2xx': 'semi-dark-green',
+    '{code="200"}': 'dark-green',
+    '{code="429"}': 'dark-orange',
+    '{code="500"}': 'dark-red',
+  },
 
-
-  local redPanel(gridPos, id, seriesOverrides, stack, targets, title, yaxes, fill=10, lineWidth=0) =
+  local redPanel(gridPos, id, seriesOverrides, stack, targets, title, yaxes, fill=10, lineWidth=0, aliasColors=defaultAliasColors, pointRadius=5, paceLength=true, repeatDirection=true, scopedVars=false) =
     {
-      aliasColors: {
-        '2xx': 'semi-dark-green',
-        '{code="200"}': 'dark-green',
-        '{code="429"}': 'dark-orange',
-        '{code="500"}': 'dark-red',
-      },
+      aliasColors: aliasColors,
       bars: false,
       dashLength: 10,
       dashes: false,
@@ -179,12 +188,19 @@ function(datasource, namespace) {
       options: {
         dataLinks: [],
       },
-      paceLength: 10,
+      [if paceLength then 'paceLength']: 10,
       percentage: false,
-      pointradius: 5,
+      pointradius: pointRadius,
       points: false,
       renderer: 'flot',
-      repeatDirection: 'v',
+      [if scopedVars then 'scopedVars']: {
+        handler: {
+          selected: false,
+          text: 'query_legacy',
+          value: 'query_legacy',
+        },
+      },
+      [if repeatDirection then 'repeatDirection']: 'v',
       seriesOverrides: seriesOverrides,
       spaceLength: 10,
       stack: stack,
@@ -396,6 +412,25 @@ function(datasource, namespace) {
         refId: 'C',
       },
     ],
+  local seriesOverridesAllQuery =
+    [
+      {
+        alias: '/2../i',
+        color: '#56A64B',
+      },
+      {
+        alias: '/3../i',
+        color: '#F2CC0C',
+      },
+      {
+        alias: '/4../i',
+        color: '#3274D9',
+      },
+      {
+        alias: '/5../i',
+        color: '#E02F44',
+      },
+    ],
 
   local panels = [
     titleRow(createGridPos(1, 24, 0, 0), 116, '/query & /query_legacy', false),
@@ -487,117 +522,20 @@ function(datasource, namespace) {
       1,
     ),
     titleRow(createGridPos(1, 24, 0, 24), 130, 'RED for $handler', true),
-    {
-      aliasColors: {},
-      bars: false,
-      dashLength: 10,
-      dashes: false,
-      datasource: '$datasource',
-      fill: 10,
-      fillGradient: 0,
-      gridPos: {
-        h: 6,
-        w: 8,
-        x: 0,
-        y: 25,
-      },
-      hiddenSeries: false,
-      id: 132,
-      legend: {
-        avg: false,
-        current: false,
-        max: false,
-        min: false,
-        show: true,
-        total: false,
-        values: false,
-      },
-      lines: true,
-      linewidth: 0,
-      nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
-      percentage: false,
-      pointradius: 2,
-      points: false,
-      renderer: 'flot',
-      scopedVars: {
-        handler: {
-          selected: false,
-          text: 'query_legacy',
-          value: 'query_legacy',
-        },
-      },
-      seriesOverrides: [
-        {
-          alias: '/2../i',
-          color: '#56A64B',
-        },
-        {
-          alias: '/3../i',
-          color: '#F2CC0C',
-        },
-        {
-          alias: '/4../i',
-          color: '#3274D9',
-        },
-        {
-          alias: '/5../i',
-          color: '#E02F44',
-        },
-      ],
-      spaceLength: 10,
-      stack: true,
-      steppedLine: false,
-      targets: [
-        {
-          expr: 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
-          legendFormat: '{{ code }}',
-          refId: 'A',
-        },
-      ],
-      thresholds: [],
-      timeFrom: null,
-      timeRegions: [],
-      timeShift: null,
-      title: 'Requests',
-      tooltip: {
-        shared: true,
-        sort: 0,
-        value_type: 'individual',
-      },
-      type: 'graph',
-      xaxis: {
-        buckets: null,
-        mode: 'time',
-        name: null,
-        show: true,
-        values: [],
-      },
-      yaxes: [
-        {
-          format: 'reqps',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: true,
-        },
-        {
-          format: 'short',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: false,
-        },
-      ],
-      yaxis: {
-        align: false,
-        alignLevel: null,
-      },
-    },
+    redPanel(
+      createGridPos(6, 8, 0, 25),
+      132,
+      seriesOverridesAllQuery,
+      true,
+      targetsAllQuery,
+      'Requests',
+      yaxesQuery,
+      aliasColors={},
+      pointRadius=2,
+      paceLength=false,
+      repeatDirection=false,
+      scopedVars=true,
+    ),
     {
       aliasColors: {},
       bars: false,

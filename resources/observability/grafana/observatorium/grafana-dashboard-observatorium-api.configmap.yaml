@@ -1215,6 +1215,9 @@ data:
           },
           "lines": true,
           "linewidth": 0,
+          "links": [
+
+          ],
           "nullPointMode": "null",
           "options": {
             "dataLinks": [

@@ -104,7 +104,6 @@ function(datasource, namespace) {
       ],
       valueName: 'current',
     },
-
   local targetsQuery(query, legendFormat) = [
     {
       expr: query,
@@ -143,8 +142,11 @@ function(datasource, namespace) {
   local legendQuery = '{{code}}',
   local errQuery = 'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy",code=~"5.."}[5m]))\n/\nsum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
   local errLegendQuery = 'errors',
+  local rangeQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
+  local rangeQueryErr = 'sum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nsum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
 
-  local redPanel(gridPos, id, seriesOverrides, stack, targets, query, legendFormat, title, yaxes, fill=10, lineWidth=0) =
+
+  local redPanel(gridPos, id, seriesOverrides, stack, targets, title, yaxes, fill=10, lineWidth=0) =
     {
       aliasColors: {
         '2xx': 'semi-dark-green',
@@ -212,7 +214,6 @@ function(datasource, namespace) {
         alignLevel: null,
       },
     },
-
   local seriesOverridesQuery = [
     {
       alias: '/2../i',
@@ -250,7 +251,6 @@ function(datasource, namespace) {
         show: false,
       },
     ],
-
   local seriesOverridesQueryErrs =
     [
       {
@@ -278,7 +278,6 @@ function(datasource, namespace) {
         show: true,
       },
     ],
-
   local seriesOverridesQueryDuration =
     [
       {
@@ -296,7 +295,6 @@ function(datasource, namespace) {
         linewidth: 0,
       },
     ],
-
   local yaxesQueryDuration =
     [
       {
@@ -316,7 +314,88 @@ function(datasource, namespace) {
         show: true,
       },
     ],
-
+  local seriesOverridesQueryRange =
+    [
+      {
+        alias: '1xx',
+        color: '#FADE2A',
+      },
+      {
+        alias: '2xx',
+        color: '#56A64B',
+      },
+      {
+        alias: '3xx',
+        color: '#5794F2',
+      },
+      {
+        alias: '4xx',
+        color: '#FF9830',
+      },
+      {
+        alias: '5xx',
+        color: '#C4162A',
+      },
+    ],
+  local yaxesQueryRange = [
+    {
+      format: 'reqps',
+      label: null,
+      logBase: 1,
+      max: null,
+      min: null,
+      show: true,
+    },
+    {
+      format: 'short',
+      label: null,
+      logBase: 1,
+      max: null,
+      min: null,
+      show: true,
+    },
+  ],
+  local seriesOverridesQueryRangeDuration =
+    [
+      {
+        alias: '95th',
+        color: '#FA6400',
+      },
+      {
+        alias: '90th',
+        color: '#E0B400',
+      },
+      {
+        alias: '50th',
+        color: '#37872D',
+        fill: 10,
+        linewidth: 0,
+      },
+    ],
+  local targetsQueryRangeDuration =
+    [
+      {
+        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query",code!~"5..",handler="query_range"}[5m])))',
+        format: 'time_series',
+        intervalFactor: 1,
+        legendFormat: '99th',
+        refId: 'A',
+      },
+      {
+        expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query",code!~"5..",handler="query_range"}[5m])))',
+        format: 'time_series',
+        intervalFactor: 1,
+        legendFormat: '90th',
+        refId: 'B',
+      },
+      {
+        expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query",code!~"5..",handler="query_range"}[5m])))',
+        format: 'time_series',
+        intervalFactor: 1,
+        legendFormat: '50th',
+        refId: 'C',
+      },
+    ],
 
   local panels = [
     titleRow(createGridPos(1, 24, 0, 0), 116, '/query & /query_legacy', false),
@@ -340,8 +419,6 @@ function(datasource, namespace) {
       seriesOverridesQuery,
       true,
       targetsQuery(query, legendQuery),
-      query,
-      legendQuery,
       'Requests',
       yaxesQuery,
     ),
@@ -351,8 +428,6 @@ function(datasource, namespace) {
       seriesOverridesQueryErrs,
       false,
       targetsQuery(errQuery, errLegendQuery),
-      errQuery,
-      errLegendQuery,
       'Errors',
       yaxesQueryErr,
     ),
@@ -362,534 +437,55 @@ function(datasource, namespace) {
       seriesOverridesQueryDuration,
       false,
       targetsQueryDuration,
-      'sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy",code=~"5.."}[5m]))\n/\nsum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
-      'errors',
       'Duration',
       yaxesQueryDuration,
       0,
       1,
     ),
-    // /query_range
     titleRow(createGridPos(1, 24, 0, 12), 122, '/query_range', false),
-    {
-      cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#d44a3a',
-        'rgba(237, 129, 40, 0.89)',
-        '#299c46',
-      ],
-      datasource: '$datasource',
-      decimals: 3,
-      description: '',  // unique
-      format: 'percentunit',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
-      },
-      gridPos: {
-        h: 3,
-        w: 12,
-        x: 0,
-        y: 13,
-      },
-      id: 118,
-      interval: null,
-      links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
-      maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      options: {},
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
-        },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
-      },
-      tableColumn: '',
-      targets: [
-        {  // unique
-          expr: 'sum(rate(http_request_duration_seconds_bucket{handler="query_range",le="60",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{handler="query_range"}[28d]))',
-          instant: true,
-          refId: 'A',
-        },
-      ],
-      thresholds: '0.90,0.92',  // unique
-      timeFrom: null,
-      timeShift: null,
-      title: 'Availability 60s [28d] > 90%',  // unique
-      type: 'singlestat',
-      valueFontSize: '120%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
-    },
-    {
-      cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#d44a3a',
-        'rgba(237, 129, 40, 0.89)',
-        '#299c46',
-      ],
-      datasource: '$datasource',
-      decimals: 3,
-      description: '',
-      format: 'percentunit',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
-      },
-      gridPos: {
-        h: 3,
-        w: 12,
-        x: 12,
-        y: 13,
-      },
-      id: 119,
-      interval: null,
-      links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
-      maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      options: {},
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
-        },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
-      },
-      tableColumn: '',
-      targets: [
-        {
-          expr: 'sum(increase(http_request_duration_seconds_bucket{handler="query_range",le="120",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{handler="query_range"}[28d]))',
-          instant: true,
-          refId: 'A',
-        },
-      ],
-      thresholds: '0.99,0.992',
-      timeFrom: null,
-      timeShift: null,
-      title: 'Availability 120s [28d] > 99%',
-      type: 'singlestat',
-      valueFontSize: '120%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
-    },
-    {
-      aliasColors: {
-        '2xx': 'semi-dark-green',
-        '{code="200"}': 'dark-green',
-        '{code="429"}': 'dark-orange',
-        '{code="500"}': 'dark-red',
-      },
-      bars: false,
-      dashLength: 10,
-      dashes: false,
-      datasource: '$datasource',
-      fill: 10,
-      fillGradient: 0,
-      gridPos: {
-        h: 8,
-        w: 8,
-        x: 0,
-        y: 16,
-      },
-      hiddenSeries: false,
-      id: 125,
-      legend: {
-        avg: false,
-        current: false,
-        max: false,
-        min: false,
-        show: true,
-        total: false,
-        values: false,
-      },
-      lines: true,
-      linewidth: 0,
-      links: [],
-      nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
-      paceLength: 10,
-      percentage: false,
-      pointradius: 5,
-      points: false,
-      renderer: 'flot',
-      repeatDirection: 'v',
-      seriesOverrides: [
-        {
-          alias: '1xx',
-          color: '#FADE2A',
-        },
-        {
-          alias: '2xx',
-          color: '#56A64B',
-        },
-        {
-          alias: '3xx',
-          color: '#5794F2',
-        },
-        {
-          alias: '4xx',
-          color: '#FF9830',
-        },
-        {
-          alias: '5xx',
-          color: '#C4162A',
-        },
-      ],
-      spaceLength: 10,
-      stack: true,
-      steppedLine: false,
-      targets: [
-        {
-          expr: 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
-          format: 'time_series',
-          intervalFactor: 1,
-          legendFormat: '{{code}}',
-          refId: 'A',
-        },
-      ],
-      thresholds: [],
-      timeFrom: null,
-      timeRegions: [],
-      timeShift: null,
-      title: 'Requests',
-      tooltip: {
-        shared: true,
-        sort: 0,
-        value_type: 'individual',
-      },
-      type: 'graph',
-      xaxis: {
-        buckets: null,
-        mode: 'time',
-        name: null,
-        show: true,
-        values: [],
-      },
-      yaxes: [
-        {
-          format: 'reqps',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: true,
-        },
-        {
-          format: 'short',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: true,
-        },
-      ],
-      yaxis: {
-        align: false,
-        alignLevel: null,
-      },
-    },
-    {
-      aliasColors: {
-        '2xx': 'semi-dark-green',
-        '{code="200"}': 'dark-green',
-        '{code="429"}': 'dark-orange',
-        '{code="500"}': 'dark-red',
-      },
-      bars: false,
-      dashLength: 10,
-      dashes: false,
-      datasource: '$datasource',
-      fill: 10,
-      fillGradient: 0,
-      gridPos: {
-        h: 8,
-        w: 8,
-        x: 8,
-        y: 16,
-      },
-      hiddenSeries: false,
-      id: 126,
-      legend: {
-        avg: false,
-        current: false,
-        max: false,
-        min: false,
-        show: true,
-        total: false,
-        values: false,
-      },
-      lines: true,
-      linewidth: 0,
-      links: [],
-      nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
-      paceLength: 10,
-      percentage: false,
-      pointradius: 5,
-      points: false,
-      renderer: 'flot',
-      repeatDirection: 'v',
-      seriesOverrides: [
-        {
-          alias: 'errors',
-          color: '#C4162A',
-        },
-      ],
-      spaceLength: 10,
-      stack: false,
-      steppedLine: false,
-      targets: [
-        {
-          expr: 'sum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nsum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
-          format: 'time_series',
-          intervalFactor: 1,
-          legendFormat: 'errors',
-          refId: 'A',
-        },
-      ],
-      thresholds: [],
-      timeFrom: null,
-      timeRegions: [],
-      timeShift: null,
-      title: 'Errors',
-      tooltip: {
-        shared: true,
-        sort: 0,
-        value_type: 'individual',
-      },
-      type: 'graph',
-      xaxis: {
-        buckets: null,
-        mode: 'time',
-        name: null,
-        show: true,
-        values: [],
-      },
-      yaxes: [
-        {
-          decimals: null,
-          format: 'percentunit',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: '0',
-          show: true,
-        },
-        {
-          format: 'short',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: true,
-        },
-      ],
-      yaxis: {
-        align: false,
-        alignLevel: null,
-      },
-    },
-    {
-      aliasColors: {
-        '2xx': 'semi-dark-green',
-        '{code="200"}': 'dark-green',
-        '{code="429"}': 'dark-orange',
-        '{code="500"}': 'dark-red',
-      },
-      bars: false,
-      dashLength: 10,
-      dashes: false,
-      datasource: '$datasource',
-      fill: 0,
-      fillGradient: 0,
-      gridPos: {
-        h: 8,
-        w: 8,
-        x: 16,
-        y: 16,
-      },
-      hiddenSeries: false,
-      id: 127,
-      legend: {
-        avg: false,
-        current: false,
-        max: false,
-        min: false,
-        show: true,
-        total: false,
-        values: false,
-      },
-      lines: true,
-      linewidth: 1,
-      links: [],
-      nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
-      paceLength: 10,
-      percentage: false,
-      pointradius: 5,
-      points: false,
-      renderer: 'flot',
-      repeatDirection: 'v',
-      seriesOverrides: [
-        {
-          alias: '95th',
-          color: '#FA6400',
-        },
-        {
-          alias: '90th',
-          color: '#E0B400',
-        },
-        {
-          alias: '50th',
-          color: '#37872D',
-          fill: 10,
-          linewidth: 0,
-        },
-      ],
-      spaceLength: 10,
-      stack: false,
-      steppedLine: false,
-      targets: [
-        {
-          expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query",code!~"5..",handler="query_range"}[5m])))',
-          format: 'time_series',
-          intervalFactor: 1,
-          legendFormat: '99th',
-          refId: 'A',
-        },
-        {
-          expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query",code!~"5..",handler="query_range"}[5m])))',
-          format: 'time_series',
-          intervalFactor: 1,
-          legendFormat: '90th',
-          refId: 'B',
-        },
-        {
-          expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query",code!~"5..",handler="query_range"}[5m])))',
-          format: 'time_series',
-          intervalFactor: 1,
-          legendFormat: '50th',
-          refId: 'C',
-        },
-      ],
-      thresholds: [],
-      timeFrom: null,
-      timeRegions: [],
-      timeShift: null,
-      title: 'Duration',
-      tooltip: {
-        shared: true,
-        sort: 0,
-        value_type: 'individual',
-      },
-      type: 'graph',
-      xaxis: {
-        buckets: null,
-        mode: 'time',
-        name: null,
-        show: true,
-        values: [],
-      },
-      yaxes: [
-        {
-          format: 's',
-          label: null,
-          logBase: 10,
-          max: null,
-          min: null,
-          show: true,
-        },
-        {
-          format: 'short',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: true,
-        },
-      ],
-      yaxis: {
-        align: false,
-        alignLevel: null,
-      },
-    },
+    availabilityPanel(
+      createGridPos(3, 12, 0, 13),
+      118,
+      'sum(rate(http_request_duration_seconds_bucket{handler="query_range",le="60",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{handler="query_range"}[28d]))',
+      '0.90,0.92',
+      'Availability 60s [28d] > 90%',
+    ),
+    availabilityPanel(
+      createGridPos(3, 12, 12, 13),
+      119,
+      'sum(increase(http_request_duration_seconds_bucket{handler="query_range",le="120",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{handler="query_range"}[28d]))',
+      '0.99,0.992',
+      'Availability 120s [28d] > 99%',
+    ),
+    redPanel(
+      createGridPos(8, 8, 0, 16),
+      125,
+      seriesOverridesQueryRange,
+      true,
+      targetsQuery(rangeQuery, legendQuery),
+      'Requests',
+      yaxesQueryRange,
+    ),
+    redPanel(
+      createGridPos(8, 8, 8, 16),
+      126,
+      seriesOverridesQueryErrs,
+      false,
+      targetsQuery(rangeQueryErr, errLegendQuery),
+      'Errors',
+      yaxesQueryErr,
+    ),
+    redPanel(
+      createGridPos(8, 8, 16, 16),
+      127,
+      seriesOverridesQueryRangeDuration,
+      false,
+      targetsQueryRangeDuration,
+      'Duration',
+      yaxesQueryDuration,
+      0,
+      1,
+    ),
     titleRow(createGridPos(1, 24, 0, 24), 130, 'RED for $handler', true),
     {
       aliasColors: {},

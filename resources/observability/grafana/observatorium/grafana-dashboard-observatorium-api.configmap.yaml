@@ -618,7 +618,6 @@ data:
           ],
           "datasource": "$datasource",
           "decimals": 3,
-          "description": "",
           "format": "percentunit",
           "gauge": {
             "maxValue": 100,
@@ -708,7 +707,6 @@ data:
           ],
           "datasource": "$datasource",
           "decimals": 3,
-          "description": "",
           "format": "percentunit",
           "gauge": {
             "maxValue": 100,

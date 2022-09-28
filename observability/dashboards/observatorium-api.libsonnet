@@ -153,6 +153,24 @@ function(datasource, namespace) {
         refId: 'A',
       },
     ],
+  local targetsAllQueryDuration =
+    [
+      {
+        expr: 'histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code!~"5.."}[5m])))',
+        legendFormat: 'p50',
+        refId: 'C',
+      },
+      {
+        expr: 'histogram_quantile(0.90, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code!~"5.."}[5m])))',
+        legendFormat: 'p90',
+        refId: 'B',
+      },
+      {
+        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code!~"5.."}[5m])))',
+        legendFormat: 'p99',
+        refId: 'A',
+      },
+    ],
 
   local query = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
   local legendQuery = '{{code}}',
@@ -319,7 +337,7 @@ function(datasource, namespace) {
         linewidth: 0,
       },
     ],
-  local yaxesQueryDuration =
+  local yaxesQueryDuration(show) =
     [
       {
         format: 's',
@@ -335,7 +353,7 @@ function(datasource, namespace) {
         logBase: 1,
         max: null,
         min: null,
-        show: true,
+        show: show,
       },
     ],
   local seriesOverridesQueryRange =
@@ -446,6 +464,23 @@ function(datasource, namespace) {
         color: '#E02F44',
       },
     ],
+  local seriesOverridesAllQueryDuration =
+    [
+      {
+        alias: 'p99',
+        color: '#E02F44',
+      },
+      {
+        alias: 'p90',
+        color: '#F2CC0C',
+      },
+      {
+        alias: 'p50',
+        color: '#56A64B',
+        fill: 10,
+        linewidth: 0,
+      },
+    ],
 
   local panels = [
     titleRow(createGridPos(1, 24, 0, 0), 116, '/query & /query_legacy', false),
@@ -488,7 +523,7 @@ function(datasource, namespace) {
       false,
       targetsQueryDuration,
       'Duration',
-      yaxesQueryDuration,
+      yaxesQueryDuration(true),
       0,
       1,
     ),
@@ -532,7 +567,7 @@ function(datasource, namespace) {
       false,
       targetsQueryRangeDuration,
       'Duration',
-      yaxesQueryDuration,
+      yaxesQueryDuration(true),
       0,
       1,
     ),
@@ -565,125 +600,23 @@ function(datasource, namespace) {
       repeatDirection=false,
       scopedVars=true,
     ),
-    {
-      aliasColors: {},
-      bars: false,
-      dashLength: 10,
-      dashes: false,
-      datasource: '$datasource',
-      fill: 0,
-      fillGradient: 0,
-      gridPos: {
-        h: 6,
-        w: 8,
-        x: 16,
-        y: 25,
-      },
-      hiddenSeries: false,
-      id: 134,
-      legend: {
-        avg: false,
-        current: false,
-        max: false,
-        min: false,
-        show: true,
-        total: false,
-        values: false,
-      },
-      lines: true,
-      linewidth: 1,
-      nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
-      percentage: false,
-      pointradius: 2,
-      points: false,
-      renderer: 'flot',
-      scopedVars: {
-        handler: {
-          selected: false,
-          text: 'query_legacy',
-          value: 'query_legacy',
-        },
-      },
-      seriesOverrides: [
-        {
-          alias: 'p99',
-          color: '#E02F44',
-        },
-        {
-          alias: 'p90',
-          color: '#F2CC0C',
-        },
-        {
-          alias: 'p50',
-          color: '#56A64B',
-          fill: 10,
-          linewidth: 0,
-        },
-      ],
-      spaceLength: 10,
-      stack: false,
-      steppedLine: false,
-      targets: [
-        {
-          expr: 'histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code!~"5.."}[5m])))',
-          legendFormat: 'p50',
-          refId: 'C',
-        },
-        {
-          expr: 'histogram_quantile(0.90, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code!~"5.."}[5m])))',
-          legendFormat: 'p90',
-          refId: 'B',
-        },
-        {
-          expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code!~"5.."}[5m])))',
-          legendFormat: 'p99',
-          refId: 'A',
-        },
-      ],
-      thresholds: [],
-      timeFrom: null,
-      timeRegions: [],
-      timeShift: null,
-      title: 'Duration',
-      tooltip: {
-        shared: true,
-        sort: 0,
-        value_type: 'individual',
-      },
-      type: 'graph',
-      xaxis: {
-        buckets: null,
-        mode: 'time',
-        name: null,
-        show: true,
-        values: [],
-      },
-      yaxes: [
-        {
-          format: 's',
-          label: null,
-          logBase: 10,
-          max: null,
-          min: null,
-          show: true,
-        },
-        {
-          format: 'short',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: false,
-        },
-      ],
-      yaxis: {
-        align: false,
-        alignLevel: null,
-      },
-    },
+    redPanel(
+      createGridPos(6, 8, 16, 25),
+      134,
+      seriesOverridesAllQueryDuration,
+      false,
+      targetsAllQueryDuration,
+      'Duration',
+      //      yaxesQueryErr(null, decimals=false, showPercent=true, showShort=false),
+      yaxesQueryDuration(false),
+      fill=0,
+      lineWidth=1,
+      aliasColors={},
+      pointRadius=2,
+      paceLength=false,
+      repeatDirection=false,
+      scopedVars=true,
+    ),
     {
       collapsed: false,
       datasource: null,

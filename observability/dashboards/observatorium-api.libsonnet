@@ -145,6 +145,14 @@ function(datasource, namespace) {
         refId: 'A',
       },
     ],
+  local targetsAllQueryErr =
+    [
+      {
+        expr: 'sum(rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code=~"5.."}[5m]))\n/\nsum(rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
+        legendFormat: 'errors',
+        refId: 'A',
+      },
+    ],
 
   local query = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
   local legendQuery = '{{code}}',
@@ -274,16 +282,16 @@ function(datasource, namespace) {
         color: '#C4162A',
       },
     ],
-  local yaxesQueryErr =
+  local yaxesQueryErr(min, decimals=true, showPercent=true, showShort=false) =
     [
       {
-        decimals: null,
+        [if decimals then 'decimals']: null,
         format: 'percentunit',
         label: null,
         logBase: 1,
         max: null,
-        min: '0',
-        show: true,
+        min: min,
+        show: showPercent,
       },
       {
         format: 'short',
@@ -291,7 +299,7 @@ function(datasource, namespace) {
         logBase: 1,
         max: null,
         min: null,
-        show: true,
+        show: showShort,
       },
     ],
   local seriesOverridesQueryDuration =
@@ -431,6 +439,13 @@ function(datasource, namespace) {
         color: '#E02F44',
       },
     ],
+  local seriesOverridesAllQueryErrs =
+    [
+      {
+        alias: 'errors',
+        color: '#E02F44',
+      },
+    ],
 
   local panels = [
     titleRow(createGridPos(1, 24, 0, 0), 116, '/query & /query_legacy', false),
@@ -464,7 +479,7 @@ function(datasource, namespace) {
       false,
       targetsQuery(errQuery, errLegendQuery),
       'Errors',
-      yaxesQueryErr,
+      yaxesQueryErr('0', showShort=true),
     ),
     redPanel(
       createGridPos(8, 8, 16, 4),
@@ -508,7 +523,7 @@ function(datasource, namespace) {
       false,
       targetsQuery(rangeQueryErr, errLegendQuery),
       'Errors',
-      yaxesQueryErr,
+      yaxesQueryErr('0', showShort=true),
     ),
     redPanel(
       createGridPos(8, 8, 16, 16),
@@ -536,105 +551,20 @@ function(datasource, namespace) {
       repeatDirection=false,
       scopedVars=true,
     ),
-    {
-      aliasColors: {},
-      bars: false,
-      dashLength: 10,
-      dashes: false,
-      datasource: '$datasource',
-      fill: 10,
-      fillGradient: 0,
-      gridPos: {
-        h: 6,
-        w: 8,
-        x: 8,
-        y: 25,
-      },
-      hiddenSeries: false,
-      id: 133,
-      legend: {
-        avg: false,
-        current: false,
-        max: false,
-        min: false,
-        show: true,
-        total: false,
-        values: false,
-      },
-      lines: true,
-      linewidth: 0,
-      nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
-      percentage: false,
-      pointradius: 2,
-      points: false,
-      renderer: 'flot',
-      scopedVars: {
-        handler: {
-          selected: false,
-          text: 'query_legacy',
-          value: 'query_legacy',
-        },
-      },
-      seriesOverrides: [
-        {
-          alias: 'errors',
-          color: '#E02F44',
-        },
-      ],
-      spaceLength: 10,
-      stack: true,
-      steppedLine: false,
-      targets: [
-        {
-          expr: 'sum(rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code=~"5.."}[5m]))\n/\nsum(rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
-          legendFormat: 'errors',
-          refId: 'A',
-        },
-      ],
-      thresholds: [],
-      timeFrom: null,
-      timeRegions: [],
-      timeShift: null,
-      title: 'Errors',
-      tooltip: {
-        shared: true,
-        sort: 0,
-        value_type: 'individual',
-      },
-      type: 'graph',
-      xaxis: {
-        buckets: null,
-        mode: 'time',
-        name: null,
-        show: true,
-        values: [],
-      },
-      yaxes: [
-        {
-          format: 'percentunit',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: true,
-        },
-        {
-          format: 'short',
-          label: null,
-          logBase: 1,
-          max: null,
-          min: null,
-          show: false,
-        },
-      ],
-      yaxis: {
-        align: false,
-        alignLevel: null,
-      },
-    },
+    redPanel(
+      createGridPos(6, 8, 8, 25),
+      133,
+      seriesOverridesAllQueryErrs,
+      true,
+      targetsAllQueryErr,
+      'Errors',
+      yaxesQueryErr(null, decimals=false, showPercent=true, showShort=false),
+      aliasColors={},
+      pointRadius=2,
+      paceLength=false,
+      repeatDirection=false,
+      scopedVars=true,
+    ),
     {
       aliasColors: {},
       bars: false,

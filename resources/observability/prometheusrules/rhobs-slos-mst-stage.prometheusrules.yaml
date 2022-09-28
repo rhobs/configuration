@@ -865,9 +865,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (14.40 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
         handler: rules-raw
@@ -881,9 +881,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (6.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
         handler: rules-raw
@@ -897,9 +897,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (3.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
         handler: rules-raw
@@ -913,9 +913,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (1.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="rules-raw",method="PUT"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
         handler: rules-raw
@@ -994,9 +994,9 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate5m{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        sum(client_api_requests_total:burnrate5m{namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate1h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        sum(client_api_requests_total:burnrate1h{namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
         namespace: observatorium-mst-stage
@@ -1008,9 +1008,9 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate30m{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate30m{namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate6h{namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
         namespace: observatorium-mst-stage
@@ -1022,9 +1022,9 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate2h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate2h{namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate1d{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate1d{namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
         namespace: observatorium-mst-stage
@@ -1036,9 +1036,9 @@ spec:
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
       expr: |
-        sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate6h{namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
         and
-        sum(client_api_requests_total:burnrate3d{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        sum(client_api_requests_total:burnrate3d{namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
         namespace: observatorium-mst-stage
@@ -1101,9 +1101,9 @@ spec:
         message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (14.40 * (1-0.90000))
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="rules"}) > (14.40 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (14.40 * (1-0.90000))
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="rules"}) > (14.40 * (1-0.90000))
       for: 2m
       labels:
         handler: rules
@@ -1116,9 +1116,9 @@ spec:
         message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (6.00 * (1-0.90000))
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="rules"}) > (6.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (6.00 * (1-0.90000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="rules"}) > (6.00 * (1-0.90000))
       for: 15m
       labels:
         handler: rules
@@ -1131,9 +1131,9 @@ spec:
         message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (3.00 * (1-0.90000))
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="rules"}) > (3.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (3.00 * (1-0.90000))
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="rules"}) > (3.00 * (1-0.90000))
       for: 1h
       labels:
         handler: rules
@@ -1146,9 +1146,9 @@ spec:
         message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (1.00 * (1-0.90000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="rules"}) > (1.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (1.00 * (1-0.90000))
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="rules"}) > (1.00 * (1-0.90000))
       for: 3h
       labels:
         handler: rules
@@ -1219,9 +1219,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (14.40 * (1-0.90000))
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (14.40 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (14.40 * (1-0.90000))
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (14.40 * (1-0.90000))
       for: 2m
       labels:
         handler: rules-raw
@@ -1234,9 +1234,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (6.00 * (1-0.90000))
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (6.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (6.00 * (1-0.90000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (6.00 * (1-0.90000))
       for: 15m
       labels:
         handler: rules-raw
@@ -1249,9 +1249,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (3.00 * (1-0.90000))
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (3.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (3.00 * (1-0.90000))
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (3.00 * (1-0.90000))
       for: 1h
       labels:
         handler: rules-raw
@@ -1264,9 +1264,9 @@ spec:
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (1.00 * (1-0.90000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (1.00 * (1-0.90000))
         and
-        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (1.00 * (1-0.90000))
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="rules-raw"}) > (1.00 * (1-0.90000))
       for: 3h
       labels:
         handler: rules-raw
@@ -1337,9 +1337,9 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate5m{container="thanos-rule",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate5m{namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate1h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate1h{namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
         namespace: observatorium-mst-stage
@@ -1351,9 +1351,9 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate30m{container="thanos-rule",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate30m{namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
         namespace: observatorium-mst-stage
@@ -1365,9 +1365,9 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate2h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate2h{namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate1d{container="thanos-rule",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate1d{namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
         namespace: observatorium-mst-stage
@@ -1379,9 +1379,9 @@ spec:
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
       expr: |
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
         and
-        sum(thanos_alert_sender_alerts_dropped_total:burnrate3d{container="thanos-rule",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate3d{namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
         namespace: observatorium-mst-stage

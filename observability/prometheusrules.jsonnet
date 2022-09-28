@@ -128,11 +128,13 @@ local appSREOverwrites(environment) = {
 
   local pruneUnsupportedLabels = function(labels) {
     // Prune selector label because not allowed by AppSRE
+    // If you are pruning labels, ensure the ONLY_IN_BASE_ is prefixed
+    // Pruned labels will not exist on generated queries.
     labels: std.prune(labels {
-      group: null,
-      container: null,
-      client: null,
-      code: null,
+      group: null,  // Only exists for logs.
+      ONLY_IN_BASE_client: null,
+      ONLY_IN_BASE_container: null,
+      ONLY_IN_BASE_group: null,
       ONLY_IN_BASE_code: null,
     }),
   },
@@ -407,7 +409,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIRulesRawWriteAvailabilityErrorBudgetBurning',
             alertMessage: 'API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
-            selectors: [apiJobSelector, 'group="metricsv1"', 'handler="rules-raw"', 'method="PUT"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            selectors: [apiJobSelector, 'ONLY_IN_BASE_group="metricsv1"', 'handler="rules-raw"', 'method="PUT"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),
@@ -420,7 +422,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIRulesSyncAvailabilityErrorBudgetBurning',
             alertMessage: 'API /reload endpoint is burning too much error budget to guarantee availability SLOs',
             metric: 'client_api_requests_total',
-            selectors: ['client="reload"', 'container="thanos-rule-syncer"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            selectors: ['ONLY_IN_BASE_client="reload"', 'ONLY_IN_BASE_container="thanos-rule-syncer"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),
@@ -433,7 +435,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIRulesReadAvailabilityErrorBudgetBurning',
             alertMessage: 'API /rules endpoint is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
-            selectors: [apiJobSelector, 'group="metricsv1"', 'handler="rules"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            selectors: [apiJobSelector, 'ONLY_IN_BASE_group="metricsv1"', 'handler="rules"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.90,
           }),
@@ -447,7 +449,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIRulesRawReadAvailabilityErrorBudgetBurning',
             alertMessage: 'API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
-            selectors: [apiJobSelector, 'group="metricsv1"', 'handler="rules-raw"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            selectors: [apiJobSelector, 'ONLY_IN_BASE_group="metricsv1"', 'handler="rules-raw"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.90,
           }),
@@ -461,7 +463,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIAlertmanagerAvailabilityErrorBudgetBurning',
             alertMessage: 'API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs',
             metric: 'thanos_alert_sender_alerts_dropped_total',
-            selectors: ['container="thanos-rule"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            selectors: ['ONLY_IN_BASE_container="thanos-rule"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
             target: 0.95,
           }),
           slo.errorburn({
@@ -511,16 +513,16 @@ local renderAlerts(name, environment, mixin) = {
     // local metricLatency = 'http_request_duration_seconds',
     local metricError = 'http_requests_total',
     local writeMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
+      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
     },
     local queryLegacyMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="query_legacy"', 'job="%s"' % name],
+      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="query_legacy"', 'job="%s"' % name],
     },
     local queryMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="query"', 'job="%s"' % name],
+      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="query"', 'job="%s"' % name],
     },
     local queryRangeMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
+      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
     },
     local pushLogsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % name],

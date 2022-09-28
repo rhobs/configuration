@@ -1,0 +1,239 @@
+---
+$schema: /app-interface/prometheus-rule-test-1.yml
+
+rule_files:
+- /observability/prometheusrules/rhobs-slos-mst-stage.prometheusrules.yaml
+
+evaluation_interval: 1m
+
+tests:
+- interval: 1m
+  input_series:
+  - series: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  - series: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:up_custom_query_duration_seconds:rate5m{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="10"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:up_custom_query_duration_seconds:rate1h{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="10"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:up_custom_query_duration_seconds:rate6h{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="10"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: latencytarget:up_custom_query_duration_seconds:rate30m{query="query-path-sli-1M-samples",namespace="observatorium-mst-stage",latency="10"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  - series: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  - series: client_api_requests_total:burnrate5m{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: client_api_requests_total:burnrate1h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  - series: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}
+    values: '0 0 0 0 0 0 1 1 5'
+  - series: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}
+    values: '0 0 0 0 0 0 1 1 5'
+
+  - series: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  - series: thanos_alert_sender_alerts_dropped_total:burnrate5m{container="thanos-rule",namespace="observatorium-mst-stage"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: thanos_alert_sender_alerts_dropped_total:burnrate1h{container="thanos-rule",namespace="observatorium-mst-stage"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  - series: alertmanager_notifications_failed_total:burnrate5m{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}
+    values: '0 0 0 0 0 0 1 1 1'
+  - series: alertmanager_notifications_failed_total:burnrate1h{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}
+    values: '0 0 0 0 0 0 1 1 1'
+
+  alert_rule_test:
+
+  - eval_time: 4m
+    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API /receive handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIMetricsWriteLatencyErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIMetricsWriteLatencyErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIMetricsWriteLatencyErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        handler: receive
+        job: observatorium-observatorium-mst-api
+        latency: "5"
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: 1)'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIMetricsReadAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIMetricsReadAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIMetricsReadAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        handler: query
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API /query handler is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIMetricsReadLatencyErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIMetricsReadLatencyErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIMetricsReadLatencyErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        latency: "10"
+        namespace: observatorium-mst-stage
+        query: query-path-sli-1M-samples
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=observatorium-mst-stage&var-job=All&var-pod=All&var-interval=5m
+        message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-stage,latency=10 (current value: 1)'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIRulesSyncAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIRulesSyncAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIRulesSyncAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-sync-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIRulesReadAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIRulesReadAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIRulesReadAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
+
+  - eval_time: 4m
+    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+  - eval_time: 5m
+    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+  - eval_time: 10m
+    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+    exp_alerts:
+    - exp_labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high # critical for production
+      exp_annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+        message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
+

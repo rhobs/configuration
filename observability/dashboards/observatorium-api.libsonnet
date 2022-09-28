@@ -5,7 +5,14 @@ function(datasource, namespace) {
     x: x,
     y: y,
   },
-  local titleRow(gridPos, id, title, redPanel) =
+  local scopedVars(text='query_legacy', value='query_legacy') = {
+    handler: {
+      selected: false,
+      text: text,
+      value: value,
+    },
+  },
+  local titleRow(gridPos, id, title, redPanel, repeat='handler', text='query_legacy', value='query_legacy', redHandler=false) =
     {
       collapsed: false,
       datasource: null,
@@ -13,14 +20,10 @@ function(datasource, namespace) {
       id: id,
       panels: [],
       title: title,
-      [if redPanel then 'repeat']: 'handler',
-      [if redPanel then 'scopedVars']: {
-        handler: {
-          selected: false,
-          text: 'query_legacy',
-          value: 'query_legacy',
-        },
-      },
+      [if redPanel then 'repeat']: repeat,
+      [if redHandler then 'repeatIteration']: 1587637883569,
+      [if redHandler then 'repeatPanelId']: 130,
+      [if redPanel then 'scopedVars']: scopedVars(text, value),
       type: 'row',
     },
   local availabilityPanel(gridPos, id, query, thresholds, title) =
@@ -607,7 +610,6 @@ function(datasource, namespace) {
       false,
       targetsAllQueryDuration,
       'Duration',
-      //      yaxesQueryErr(null, decimals=false, showPercent=true, showShort=false),
       yaxesQueryDuration(false),
       fill=0,
       lineWidth=1,
@@ -617,30 +619,7 @@ function(datasource, namespace) {
       repeatDirection=false,
       scopedVars=true,
     ),
-    {
-      collapsed: false,
-      datasource: null,
-      gridPos: {
-        h: 1,
-        w: 24,
-        x: 0,
-        y: 31,
-      },
-      id: 135,
-      panels: [],
-      repeat: null,
-      repeatIteration: 1587637883569,
-      repeatPanelId: 130,
-      scopedVars: {
-        handler: {
-          selected: false,
-          text: 'write',
-          value: 'write',
-        },
-      },
-      title: 'RED for $handler',
-      type: 'row',
-    },
+    titleRow(createGridPos(1, 24, 0, 31), 135, 'RED for $handler', true, repeat=null, text='write', value='write', redHandler=true),
     {
       aliasColors: {},
       bars: false,

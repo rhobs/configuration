@@ -2248,8 +2248,6 @@ objects:
             "severity": "warn"
   kind: ConfigMap
   metadata:
-    annotations:
-      qontract.recycle: "true"
     labels:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: loki

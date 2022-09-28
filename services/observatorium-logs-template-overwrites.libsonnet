@@ -59,7 +59,7 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
     manifests+:: {
       [name]+:
         local m = super[name];
-        if m.kind == 'ConfigMap' then
+        if m.kind == 'ConfigMap' && std.length(std.findSubstr('rules', name)) == 0 then
           m {
             metadata+: {
               annotations+: {

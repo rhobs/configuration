@@ -2246,6 +2246,18 @@ objects:
             "namespace": "uhc-stage"
             "service": "${labels.kubernetes_labels_app}"
             "severity": "warn"
+      - "interval": "1m"
+        "name": "rhobs-logs-stage-alerts"
+        "rules":
+        - "alert": "rhobs-logs-always-firing"
+          "annotations":
+            "summary": "rhobs logs alert that always fires"
+          "expr": "1 > 0"
+          "for": "1m"
+          "labels":
+            "namespace": "observatorium-mst-stage"
+            "service": "observatorium-loki-ruler"
+            "severity": "warn"
   kind: ConfigMap
   metadata:
     labels:

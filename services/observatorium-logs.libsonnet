@@ -4,6 +4,28 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
 {
   local obs = self,
 
+  local stageTestAlerts = [
+    {
+      interval: '1m',
+      name: 'rhobs-logs-stage-alerts',
+      rules: [
+        {
+          alert: 'rhobs-logs-always-firing',
+          annotations: {
+            summary: 'rhobs logs alert that always fires',
+          },
+          expr: '1 > 0',
+          'for': '1m',
+          labels: {
+            severity: 'warn',
+            namespace: 'observatorium-mst-stage',
+            service: 'observatorium-loki-ruler',
+          },
+        },
+      ],
+    },
+  ],
+
   local ocmAlerts = [
     {
       interval: '1m',
@@ -143,7 +165,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     },
     rules: {
       'rhobs-logs-ocm-alerts': {
-        groups: ocmAlerts,
+        groups: ocmAlerts + stageTestAlerts,
       },
     },
     resources: {

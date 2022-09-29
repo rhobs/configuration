@@ -366,7 +366,6 @@ function(datasource, namespace) {
   local errLegendQuery = 'errors',
   local rangeQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
   local rangeQueryErr = 'sum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nsum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
-  local allQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
   local defaultAliasColors = {
     '2xx': 'semi-dark-green',
     '{code="200"}': 'dark-green',

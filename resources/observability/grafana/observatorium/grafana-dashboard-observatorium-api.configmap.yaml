@@ -1183,9 +1183,9 @@ data:
             "h": 3,
             "w": 12,
             "x": 0,
-            "y": 13
+            "y": 25
           },
-          "id": 148,
+          "id": 138,
           "interval": null,
           "links": [
 
@@ -1229,7 +1229,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(rate(http_request_duration_seconds_bucket{handler=\"rules-raw\",le=\"60\",method=\"PUT\",code!~\"5..\"}[28d]))\n       /\n       sum(rate(http_request_duration_seconds_count{handler=\"rules-raw\"}[28d]))",
+              "expr": "sum(rate(http_request_duration_seconds_bucket{handler=\"rules-raw\",le=\"60\",method=\"PUT\",code!~\"5..\"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{handler=\"rules-raw\"}[28d]))",
               "instant": true,
               "refId": "A"
             }
@@ -1274,7 +1274,7 @@ data:
             "x": 12,
             "y": 25
           },
-          "id": 150,
+          "id": 140,
           "interval": null,
           "links": [
 
@@ -1318,7 +1318,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(increase(http_request_duration_seconds_bucket{handler=\"rules-raw\",method=\"GET\",le=\"60\",code!~\"5..\"}[28d]))\n       /\n       sum(increase(http_request_duration_seconds_count{handler=\"rules-raw\"}[28d]))",
+              "expr": "sum(increase(http_request_duration_seconds_bucket{handler=\"rules-raw\",method=\"GET\",le=\"60\",code!~\"5..\"}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{handler=\"rules-raw\"}[28d]))",
               "instant": true,
               "refId": "A"
             }
@@ -1358,7 +1358,7 @@ data:
             "y": 28
           },
           "hiddenSeries": false,
-          "id": 138,
+          "id": 142,
           "legend": {
             "avg": false,
             "current": false,
@@ -1483,7 +1483,7 @@ data:
             "y": 28
           },
           "hiddenSeries": false,
-          "id": 140,
+          "id": 144,
           "legend": {
             "avg": false,
             "current": false,
@@ -1593,7 +1593,7 @@ data:
             "y": 28
           },
           "hiddenSeries": false,
-          "id": 142,
+          "id": 146,
           "legend": {
             "avg": false,
             "current": false,
@@ -1713,7 +1713,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 36
           },
           "id": 130,
           "panels": [
@@ -1744,7 +1744,7 @@ data:
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 25
+            "y": 37
           },
           "hiddenSeries": false,
           "id": 132,
@@ -1865,7 +1865,7 @@ data:
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 25
+            "y": 37
           },
           "hiddenSeries": false,
           "id": 133,
@@ -1974,7 +1974,7 @@ data:
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 25
+            "y": 37
           },
           "hiddenSeries": false,
           "id": 134,
@@ -2004,400 +2004,6 @@ data:
               "selected": false,
               "text": "query_legacy",
               "value": "query_legacy"
-            }
-          },
-          "seriesOverrides": [
-            {
-              "alias": "p99",
-              "color": "#E02F44"
-            },
-            {
-              "alias": "p90",
-              "color": "#F2CC0C"
-            },
-            {
-              "alias": "p50",
-              "color": "#56A64B",
-              "fill": 10,
-              "linewidth": 0
-            }
-          ],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\",code!~\"5..\"}[5m])))",
-              "legendFormat": "p50",
-              "refId": "C"
-            },
-            {
-              "expr": "histogram_quantile(0.90, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\",code!~\"5..\"}[5m])))",
-              "legendFormat": "p90",
-              "refId": "B"
-            },
-            {
-              "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\",code!~\"5..\"}[5m])))",
-              "legendFormat": "p99",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [
-
-          ],
-          "timeFrom": null,
-          "timeRegions": [
-
-          ],
-          "timeShift": null,
-          "title": "Duration",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": [
-
-            ]
-          },
-          "yaxes": [
-            {
-              "format": "s",
-              "label": null,
-              "logBase": 10,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "collapsed": false,
-          "datasource": null,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 31
-          },
-          "id": 135,
-          "panels": [
-
-          ],
-          "repeat": null,
-          "repeatIteration": 1587637883569,
-          "repeatPanelId": 130,
-          "scopedVars": {
-            "handler": {
-              "selected": false,
-              "text": "write",
-              "value": "write"
-            }
-          },
-          "title": "RED for $handler",
-          "type": "row"
-        },
-        {
-          "aliasColors": {
-
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "$datasource",
-          "fill": 10,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 6,
-            "w": 8,
-            "x": 0,
-            "y": 32
-          },
-          "hiddenSeries": false,
-          "id": 136,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 0,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": [
-
-            ]
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "repeatIteration": 1587637883569,
-          "repeatPanelId": 132,
-          "repeatedByRow": true,
-          "scopedVars": {
-            "handler": {
-              "selected": false,
-              "text": "write",
-              "value": "write"
-            }
-          },
-          "seriesOverrides": [
-            {
-              "alias": "/2../i",
-              "color": "#56A64B"
-            },
-            {
-              "alias": "/3../i",
-              "color": "#F2CC0C"
-            },
-            {
-              "alias": "/4../i",
-              "color": "#3274D9"
-            },
-            {
-              "alias": "/5../i",
-              "color": "#E02F44"
-            }
-          ],
-          "spaceLength": 10,
-          "stack": true,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum by (code) (rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\"}[5m]))",
-              "legendFormat": "{{ code }}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [
-
-          ],
-          "timeFrom": null,
-          "timeRegions": [
-
-          ],
-          "timeShift": null,
-          "title": "Requests",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": [
-
-            ]
-          },
-          "yaxes": [
-            {
-              "format": "reqps",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {
-
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "$datasource",
-          "fill": 10,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 6,
-            "w": 8,
-            "x": 8,
-            "y": 32
-          },
-          "hiddenSeries": false,
-          "id": 137,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 0,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": [
-
-            ]
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "repeatIteration": 1587637883569,
-          "repeatPanelId": 133,
-          "repeatedByRow": true,
-          "scopedVars": {
-            "handler": {
-              "selected": false,
-              "text": "write",
-              "value": "write"
-            }
-          },
-          "seriesOverrides": [
-            {
-              "alias": "errors",
-              "color": "#E02F44"
-            }
-          ],
-          "spaceLength": 10,
-          "stack": true,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "sum(rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\",code=~\"5..\"}[5m]))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\"}[5m]))",
-              "legendFormat": "errors",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [
-
-          ],
-          "timeFrom": null,
-          "timeRegions": [
-
-          ],
-          "timeShift": null,
-          "title": "Errors",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": [
-
-            ]
-          },
-          "yaxes": [
-            {
-              "format": "percentunit",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {
-
-          },
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "$datasource",
-          "fill": 0,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 6,
-            "w": 8,
-            "x": 16,
-            "y": 32
-          },
-          "hiddenSeries": false,
-          "id": 138,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": [
-
-            ]
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "repeatIteration": 1587637883569,
-          "repeatPanelId": 134,
-          "repeatedByRow": true,
-          "scopedVars": {
-            "handler": {
-              "selected": false,
-              "text": "write",
-              "value": "write"
             }
           },
           "seriesOverrides": [

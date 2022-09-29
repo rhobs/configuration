@@ -297,7 +297,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       },
       ruler+: {
         enable_alertmanager_discovery: true,
-        enable_alertmanager_v2: true,
+        enable_alertmanager_v2: false,
         alertmanager_url: 'http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
         alertmanager_refresh_interval: '1m',
       },

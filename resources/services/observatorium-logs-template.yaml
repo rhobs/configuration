@@ -677,7 +677,7 @@ objects:
         "alertmanager_refresh_interval": "1m"
         "alertmanager_url": "http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local"
         "enable_alertmanager_discovery": true
-        "enable_alertmanager_v2": true
+        "enable_alertmanager_v2": false
         "enable_api": true
         "enable_sharding": true
         "ring":

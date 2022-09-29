@@ -675,7 +675,7 @@ objects:
         "max_outstanding_requests_per_tenant": 256
       "ruler":
         "alertmanager_refresh_interval": "1m"
-        "alertmanager_url": "http://_web._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local"
+        "alertmanager_url": "http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local"
         "enable_alertmanager_discovery": true
         "enable_alertmanager_v2": true
         "enable_api": true

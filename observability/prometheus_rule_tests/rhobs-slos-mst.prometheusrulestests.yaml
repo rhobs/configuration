@@ -68,11 +68,11 @@ tests:
   alert_rule_test:
 
   - eval_time: 4m
-    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning
+    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning
+    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning
+    alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         handler: receive
@@ -82,14 +82,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIMetricsWriteLatencyErrorBudgetBurning
+    alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
   - eval_time: 5m
-    alertname: APIMetricsWriteLatencyErrorBudgetBurning
+    alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
   - eval_time: 10m
-    alertname: APIMetricsWriteLatencyErrorBudgetBurning
+    alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
     exp_alerts:
     - exp_labels:
         handler: receive
@@ -100,14 +100,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: 1)'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning1h
 
   - eval_time: 4m
-    alertname: APIMetricsReadAvailabilityErrorBudgetBurning
+    alertname: APIMetricsReadAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIMetricsReadAvailabilityErrorBudgetBurning
+    alertname: APIMetricsReadAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIMetricsReadAvailabilityErrorBudgetBurning
+    alertname: APIMetricsReadAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         handler: query
@@ -117,14 +117,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIMetricsReadLatencyErrorBudgetBurning
+    alertname: APIMetricsReadLatencyErrorBudgetBurning1h
   - eval_time: 5m
-    alertname: APIMetricsReadLatencyErrorBudgetBurning
+    alertname: APIMetricsReadLatencyErrorBudgetBurning1h
   - eval_time: 10m
-    alertname: APIMetricsReadLatencyErrorBudgetBurning
+    alertname: APIMetricsReadLatencyErrorBudgetBurning1h
     exp_alerts:
     - exp_labels:
         latency: "10"
@@ -135,14 +135,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-read-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=observatorium-mst-stage&var-job=All&var-pod=All&var-interval=5m
         message: 'High requests latency budget burn for query=query-path-sli-1M-samples,namespace=observatorium-mst-stage,latency=10 (current value: 1)'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadlatencyerrorbudgetburning1h
 
   - eval_time: 4m
-    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning
+    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning
+    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning
+    alertname: APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         handler: rules-raw
@@ -153,14 +153,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIRulesSyncAvailabilityErrorBudgetBurning
+    alertname: APIRulesSyncAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIRulesSyncAvailabilityErrorBudgetBurning
+    alertname: APIRulesSyncAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIRulesSyncAvailabilityErrorBudgetBurning
+    alertname: APIRulesSyncAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         namespace: observatorium-mst-stage
@@ -169,14 +169,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-sync-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIRulesReadAvailabilityErrorBudgetBurning
+    alertname: APIRulesReadAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIRulesReadAvailabilityErrorBudgetBurning
+    alertname: APIRulesReadAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIRulesReadAvailabilityErrorBudgetBurning
+    alertname: APIRulesReadAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         handler: rules
@@ -186,14 +186,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning
+    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning
+    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning
+    alertname: APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         handler: rules-raw
@@ -203,14 +203,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning
+    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning
+    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning
+    alertname: APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         namespace: observatorium-mst-stage
@@ -219,14 +219,14 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning5mand1h
 
   - eval_time: 4m
-    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 5m
-    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h
   - eval_time: 10m
-    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+    alertname: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h
     exp_alerts:
     - exp_labels:
         namespace: observatorium-mst-stage
@@ -235,5 +235,5 @@ tests:
       exp_annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
         message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning5mand1h
 

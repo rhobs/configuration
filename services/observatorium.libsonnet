@@ -166,8 +166,24 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       oidcIssuerURL: '${OIDC_ISSUER_URL}',
       sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
       managedTenants: '${MANAGED_TENANTS}',
-      obsctlReloaderSecret: '${OBSCTL_RELOADER_SECRET_NAME}',
     },
+    tenantSecretMap: [
+      {
+        tenant: 'RHOBS',
+        secret: '${RHOBS_RELOADER_SECRET_NAME}',
+        idKey: 'client_id',
+        secretKey: 'client_secret',
+      },
+      {
+        tenant: 'OSD',
+        secret: '${OSD_RELOADER_SECRET_NAME}',
+        idKey: 'client-id',
+        secretKey: 'client-secret',
+        // Marking as optional here, as OSD only exists on mst,
+        // so this should not block pod start.
+        optional: true,
+      },
+    ],
   }),
 
   rulesSLOPrometheusRule: {
@@ -384,6 +400,11 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         obs.loki.manifests['distributor-http-service'].metadata.name,
         obs.config.namespaces.logs,
         obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
+      ],
+      rulesEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
+        obs.loki.manifests['ruler-http-service'].metadata.name,
+        obs.config.namespaces.logs,
+        obs.loki.manifests['ruler-http-service'].spec.ports[0].port,
       ],
     },
     metrics: {

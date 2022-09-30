@@ -652,7 +652,7 @@ objects:
       "querier":
         "engine":
           "max_look_back_period": "30s"
-          "timeout": "3m"
+          "timeout": "6m"
         "extra_query_delay": "0s"
         "max_concurrent": 2
         "query_ingesters_within": "3h"
@@ -673,6 +673,26 @@ objects:
               "update_interval": "1m"
       "query_scheduler":
         "max_outstanding_requests_per_tenant": 256
+      "ruler":
+        "alertmanager_refresh_interval": "1m"
+        "alertmanager_url": "http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local"
+        "enable_alertmanager_discovery": true
+        "enable_alertmanager_v2": false
+        "enable_api": true
+        "enable_sharding": true
+        "ring":
+          "kvstore":
+            "store": "memberlist"
+        "rule_path": "/data"
+        "storage":
+          "local":
+            "directory": "/tmp/rules"
+          "type": "local"
+        "wal":
+          "dir": "/data/loki/wal"
+          "max_age": "4h"
+          "min_age": "5m"
+          "truncate_frequency": "60m"
       "schema_config":
         "configs":
         - "from": "2020-10-01"
@@ -1969,9 +1989,290 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: loki
         app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-ruler-grpc
+  spec:
+    clusterIP: None
+    ports:
+    - name: grpc
+      port: 9095
+      targetPort: 9095
+    selector:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-ruler-http
+  spec:
+    ports:
+    - name: metrics
+      port: 3100
+      targetPort: 3100
+    selector:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-loki-ruler
+  spec:
+    endpoints:
+    - port: metrics
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: ruler
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-ruler
+  spec:
+    replicas: ${{LOKI_RULER_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: ruler
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: observatorium
+        loki.grafana.com/gossip: "true"
+    serviceName: observatorium-loki-ruler-grpc
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: ruler
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: loki
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/tracing: jaeger-agent
+          loki.grafana.com/gossip: "true"
+      spec:
+        containers:
+        - args:
+          - -target=ruler
+          - -config.file=/etc/loki/config/config.yaml
+          - -limits.per-user-override-config=/etc/loki/config/overrides.yaml
+          - -log.level=error
+          - -s3.buckets=$(S3_BUCKETS)
+          - -s3.region=$(S3_REGION)
+          - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
+          - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -distributor.replication-factor=1
+          - -ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"
+          env:
+          - name: S3_BUCKETS
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: ${LOKI_S3_SECRET}
+          - name: S3_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: ${LOKI_S3_SECRET}
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: ${LOKI_S3_SECRET}
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: ${LOKI_S3_SECRET}
+          image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
+          name: observatorium-loki-ruler
+          ports:
+          - containerPort: 3100
+            name: metrics
+          - containerPort: 9095
+            name: grpc
+          - containerPort: 7946
+            name: gossip-ring
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+              scheme: HTTP
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: ${LOKI_RULER_CPU_LIMITS}
+              memory: ${LOKI_RULER_MEMORY_LIMITS}
+            requests:
+              cpu: ${LOKI_RULER_CPU_REQUESTS}
+              memory: ${LOKI_RULER_MEMORY_REQUESTS}
+          volumeMounts:
+          - mountPath: /etc/loki/config/
+            name: config
+            readOnly: false
+          - mountPath: /data
+            name: storage
+            readOnly: false
+          - mountPath: /tmp/rules
+            name: rules
+            readOnly: false
+        - args:
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
+          - containerPort: 14271
+            name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
+        volumes:
+        - configMap:
+            name: observatorium-loki
+          name: config
+        - configMap:
+            name: observatorium-loki-rules
+          name: rules
+    volumeClaimTemplates:
+    - metadata:
+        labels:
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: loki
+          app.kubernetes.io/part-of: observatorium
+        name: storage
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: ${LOKI_RULER_PVC_REQUEST}
+        storageClassName: ${STORAGE_CLASS}
+- apiVersion: v1
+  data:
+    rhobs-logs-ocm-alerts: |-
+      "groups":
+      - "interval": "1m"
+        "name": "uhc-stage-logs-based-alerts"
+        "rules":
+        - "alert": "UHC Server Errors"
+          "annotations":
+            "summary": "${labels.kubernetes_labels_app} is returning server-side errors"
+          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `returning http 500`  | json  | line_format \"{{ .message }}\" [1m])) > 0"
+          "for": "5m"
+          "labels":
+            "namespace": "uhc-stage"
+            "service": "${labels.kubernetes_labels_app}"
+            "severity": "warn"
+        - "alert": "UHC Nil Reference Errors - Stage"
+          "annotations":
+            "summary": "${labels.kubernetes_labels_app} is throwing nil reference errors"
+          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `nil reference` | json  | line_format \"{{ .message }}\" [1m])) > 0"
+          "for": "5m"
+          "labels":
+            "namespace": "uhc-stage"
+            "service": "${labels.kubernetes_labels_app}"
+            "severity": "warn"
+        - "alert": "UHC Panic Errors - Stage"
+          "annotations":
+            "summary": "${labels.kubernetes_labels_app} is throwing panic errors"
+          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `panic` | json  | line_format \"{{ .message }}\" [1m])) > 0"
+          "for": "5m"
+          "labels":
+            "namespace": "uhc-stage"
+            "service": "${labels.kubernetes_labels_app}"
+            "severity": "warn"
+      - "interval": "1m"
+        "name": "rhobs-logs-stage-alerts"
+        "rules":
+        - "alert": "rhobs-logs-always-firing"
+          "annotations":
+            "summary": "rhobs logs alert that always fires"
+          "expr": "1 > 0"
+          "for": "1m"
+          "labels":
+            "namespace": "observatorium-mst-stage"
+            "service": "observatorium-loki-ruler"
+            "severity": "warn"
+  kind: ConfigMap
+  metadata:
+    labels:
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-rules
 parameters:
 - name: NAMESPACE
   value: observatorium-logs
+- name: ALERTMANAGER_NAMESPACE
+  value: observatorium-mst-stage
+- name: ALERTMANAGER_EXTERNAL_URL
+  value: https://observatorium-alertmanager-mst.api.stage.openshift.com
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
@@ -2048,6 +2349,16 @@ parameters:
   value: 600Mi
 - name: LOKI_QUERY_FRONTEND_MEMORY_LIMITS
   value: 1200Mi
+- name: LOKI_RULER_REPLICAS
+  value: "2"
+- name: LOKI_RULER_CPU_REQUESTS
+  value: 1000m
+- name: LOKI_RULER_CPU_LIMITS
+  value: 2000m
+- name: LOKI_RULER_MEMORY_REQUESTS
+  value: 4Gi
+- name: LOKI_RULER_MEMORY_LIMITS
+  value: 6Gi
 - name: LOKI_REPLICATION_FACTOR
   value: "2"
 - name: LOKI_QUERIER_MAX_CONCURRENCY
@@ -2088,6 +2399,8 @@ parameters:
   value: 10Gi
 - name: LOKI_INGESTER_PVC_REQUEST
   value: 150Gi
+- name: LOKI_RULER_PVC_REQUEST
+  value: 10Gi
 - name: JAEGER_COLLECTOR_NAMESPACE
   value: observatorium
 - name: JAEGER_AGENT_IMAGE

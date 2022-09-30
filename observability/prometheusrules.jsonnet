@@ -1,6 +1,11 @@
 local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libsonnet');
-local slo = import 'github.com/metalmatze/slo-libsonnet/slo-libsonnet/slo.libsonnet';
+// We use a fork of https://github.com/metalmatze/slo-libsonnet to allow for ONLY_BASE_IN selectors,
+// which are selectors, that when specified, are only used with the provided metric names and not
+// the generated recording/alerting rules.
+// This fork also adds support for !~ operator in label selectors.
+local slo = import 'github.com/saswatamcode/slo-libsonnet/slo-libsonnet/slo.libsonnet';
 local lokiTenants = import './observatorium-logs/loki-tenant-alerts.libsonnet';
+local utils = import './utils.jsonnet';
 
 local config = (import 'config.libsonnet') {
   thanos+: {
@@ -125,6 +130,10 @@ local appSREOverwrites(environment) = {
     // Prune selector label because not allowed by AppSRE
     labels: std.prune(labels {
       group: null,
+      container: null,
+      client: null,
+      code: null,
+      ONLY_IN_BASE_code: null,
     }),
   },
 
@@ -263,24 +272,44 @@ local renderAlerts(name, environment, mixin) = {
       name: 'rhobs-telemeter-telemeter-server-metrics-write-availability.slo',
       slos: [
         slo.errorburn({
-          alertName: 'TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning',
-          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to guarantee availability SLOs',
+          alertName: 'TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /upload is burning too much error budget to guarantee availability SLOs',
           metric: 'haproxy_server_http_responses_total',
-          selectors: ['route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive"', 'code=~"^(2..|3..|5..)$"'],
+          // Error case is 5xx, success in 2xx or 3xx. We do not consider 4xx for these rules.
+          selectors: ['route="telemeter-server-upload"', 'ONLY_IN_BASE_code!~"^4..$"'],
           errorSelectors: ['code="5xx"'],
           target: 0.95,
         }),
+        slo.errorburn({
+          alertName: 'TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /receive is burning too much error budget to guarantee availability SLOs',
+          metric: 'haproxy_server_http_responses_total',
+          selectors: ['route="telemeter-server-metrics-v1-receive"', 'ONLY_IN_BASE_code!~"^4..$"'],
+          errorSelectors: ['code="5xx"'],
+          target: 0.95,
+        }),
+
       ],
     },
     {
       name: 'rhobs-telemeter-telemeter-server-metrics-write-latency.slo',
       slos: [
         slo.latencyburn({
-          alertName: 'TelemeterServerMetricsWriteLatencyErrorBudgetBurning',
-          alertMessage: 'Telemeter Server /upload or /receive is burning too much error budget to guarantee latency SLOs',
+          alertName: 'TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /upload is burning too much error budget to guarantee latency SLOs',
+          metric: 'http_request_duration_seconds',
+          // This lib internally adds code!~"5.." as a notErrorSelector, so we need to calculate latencies of
+          // 2xx and 3xx requests.
+          selectors: ['job="telemeter-server"', 'handler="upload"', 'ONLY_IN_BASE_code!~"^4..$"'],
+          latencyTarget: 5,
+          latencyBudget: 0.1,  // The budget is 1 - SLO
+        }),
+        slo.latencyburn({
+          alertName: 'TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning',
+          alertMessage: 'Telemeter Server /receive is burning too much error budget to guarantee latency SLOs',
           metric: 'http_request_duration_seconds',
           // We can't use !~ operator in these selectors
-          selectors: ['job="telemeter-server"', 'handler=~"upload|receive"', 'code=~"^(2..|3..|5..)$"'],
+          selectors: ['job="telemeter-server"', 'handler="receive"', 'ONLY_IN_BASE_code!~"^4..$"'],
           latencyTarget: 5,
           latencyBudget: 0.1,  // The budget is 1 - SLO
         }),
@@ -288,9 +317,10 @@ local renderAlerts(name, environment, mixin) = {
     },
   ],
 
-  local apiSLOs = function(instance, upNamespace, apiJob) {
+  local apiSLOs = function(instance, upNamespace, metricsNamespace, apiJob) {
     local apiJobSelector = 'job="' + apiJob + '"',
     local upNamespaceSelector = 'namespace="' + upNamespace + '"',
+
     slos: [
       {
         name: 'rhobs-' + instance + '-api-metrics-write-availability.slo',
@@ -299,7 +329,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIMetricsWriteAvailabilityErrorBudgetBurning',
             alertMessage: 'API /receive handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
-            selectors: [apiJobSelector, 'handler=~"receive"', 'code=~"^(2..|3..|5..)$"'],
+            selectors: [apiJobSelector, 'handler="receive"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),
@@ -313,7 +343,7 @@ local renderAlerts(name, environment, mixin) = {
             alertMessage: 'API /receive handler is burning too much error budget to guarantee latency SLOs',
             metric: 'http_request_duration_seconds',
             // We can't use !~ operator in these selectors
-            selectors: [apiJobSelector, 'handler="receive"', 'code=~"^(2..|3..|5..)$"'],
+            selectors: [apiJobSelector, 'handler="receive"', 'ONLY_IN_BASE_code!~"^4..$"'],
             latencyTarget: 5,
             latencyBudget: 0.1,  // The budget is 1 - SLO
           }),
@@ -326,7 +356,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIMetricsReadAvailabilityErrorBudgetBurning',
             alertMessage: 'API /query handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
-            selectors: [apiJobSelector, 'handler="query"', 'code=~"^(2..|3..|5..)$"'],
+            selectors: [apiJobSelector, 'handler="query"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),
@@ -334,7 +364,7 @@ local renderAlerts(name, environment, mixin) = {
             alertName: 'APIMetricsReadAvailabilityErrorBudgetBurning',
             alertMessage: 'API /query_range handler is burning too much error budget to guarantee availability SLOs',
             metric: 'http_requests_total',
-            selectors: [apiJobSelector, 'handler="query_range"', 'code=~"^(2..|3..|5..)$"'],
+            selectors: [apiJobSelector, 'handler="query_range"', 'ONLY_IN_BASE_code!~"^4..$"'],
             errorSelectors: ['code=~"5.+"'],
             target: 0.95,
           }),
@@ -370,17 +400,90 @@ local renderAlerts(name, environment, mixin) = {
           }),
         ],
       },
+      {
+        name: 'rhobs-' + instance + '-api-rules-raw-write-availability.slo',
+        slos: [
+          slo.errorburn({
+            alertName: 'APIRulesRawWriteAvailabilityErrorBudgetBurning',
+            alertMessage: 'API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs',
+            metric: 'http_requests_total',
+            selectors: [apiJobSelector, 'group="metricsv1"', 'handler="rules-raw"', 'method="PUT"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            errorSelectors: ['code=~"5.+"'],
+            target: 0.95,
+          }),
+        ],
+      },
+      {
+        name: 'rhobs-' + instance + '-api-rules-sync-availability.slo',
+        slos: [
+          slo.errorburn({
+            alertName: 'APIRulesSyncAvailabilityErrorBudgetBurning',
+            alertMessage: 'API /reload endpoint is burning too much error budget to guarantee availability SLOs',
+            metric: 'client_api_requests_total',
+            selectors: ['client="reload"', 'container="thanos-rule-syncer"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            errorSelectors: ['code=~"5.+"'],
+            target: 0.95,
+          }),
+        ],
+      },
+      {
+        name: 'rhobs-' + instance + '-api-rules-read-availability.slo',
+        slos: [
+          slo.errorburn({
+            alertName: 'APIRulesReadAvailabilityErrorBudgetBurning',
+            alertMessage: 'API /rules endpoint is burning too much error budget to guarantee availability SLOs',
+            metric: 'http_requests_total',
+            selectors: [apiJobSelector, 'group="metricsv1"', 'handler="rules"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            errorSelectors: ['code=~"5.+"'],
+            target: 0.90,
+          }),
+        ],
+      },
+      {
+
+        name: 'rhobs-' + instance + '-api-rules-raw-read-availability.slo',
+        slos: [
+          slo.errorburn({
+            alertName: 'APIRulesRawReadAvailabilityErrorBudgetBurning',
+            alertMessage: 'API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs',
+            metric: 'http_requests_total',
+            selectors: [apiJobSelector, 'group="metricsv1"', 'handler="rules-raw"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            errorSelectors: ['code=~"5.+"'],
+            target: 0.90,
+          }),
+        ],
+      },
+      {
+        name: 'rhobs-' + instance + '-api-alerting-availability.slo',
+        // Default errorSelector here is code=~"5.."
+        slos: [
+          slo.errorburn({
+            alertName: 'APIAlertmanagerAvailabilityErrorBudgetBurning',
+            alertMessage: 'API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs',
+            metric: 'thanos_alert_sender_alerts_dropped_total',
+            selectors: ['container="thanos-rule"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            target: 0.95,
+          }),
+          slo.errorburn({
+            alertName: 'APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning',
+            alertMessage: 'API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs',
+            metric: 'alertmanager_notifications_failed_total',
+            selectors: ['service="observatorium-alertmanager"', 'namespace="' + utils.instanceNamespace(instance, metricsNamespace, upNamespace) + '"', 'ONLY_IN_BASE_code!~"^4..$"'],
+            target: 0.95,
+          }),
+        ],
+      },
     ],
   },
 
-  local mstStageSLOs = apiSLOs('mst', 'observatorium-mst-stage', 'observatorium-observatorium-mst-api').slos,
-  local mstProductionSLOs = apiSLOs('mst', 'observatorium-mst-production', 'observatorium-observatorium-mst-api').slos,
+  local mstStageSLOs = apiSLOs('mst', 'observatorium-mst-stage', 'observatorium-mst-stage', 'observatorium-observatorium-mst-api').slos,
+  local mstProductionSLOs = apiSLOs('mst', 'observatorium-mst-production', 'observatorium-mst-production', 'observatorium-observatorium-mst-api').slos,
 
   'rhobs-slos-mst-stage.prometheusrules': renderAlerts('rhobs-slos-mst-stage', 'stage', flatten(mstStageSLOs)),
   'rhobs-slos-mst-production.prometheusrules': renderAlerts('rhobs-slos-mst-production', 'production', flatten(mstProductionSLOs)),
 
-  local telemeterStageSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-stage', 'observatorium-observatorium-api').slos,
-  local telemeterProductionSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-production', 'observatorium-observatorium-api').slos,
+  local telemeterStageSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-stage', 'observatorium-metrics-stage', 'observatorium-observatorium-api').slos,
+  local telemeterProductionSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-production', 'observatorium-metrics-production', 'observatorium-observatorium-api').slos,
 
   'rhobs-slos-telemeter-stage.prometheusrules': renderAlerts('rhobs-slos-telemeter-stage', 'stage', flatten(telemeterStageSLOs)),
   'rhobs-slos-telemeter-production.prometheusrules': renderAlerts('rhobs-slos-telemeter-production', 'production', flatten(telemeterProductionSLOs)),
@@ -410,8 +513,11 @@ local renderAlerts(name, environment, mixin) = {
     local writeMetricsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
     },
+    local queryLegacyMetricsSelector(group) = {
+      selectors: ['group="%s"' % group, 'handler="query_legacy"', 'job="%s"' % name],
+    },
     local queryMetricsSelector(group) = {
-      selectors: ['group="%s"' % group, 'handler=~"query|query_legacy"', 'job="%s"' % name],
+      selectors: ['group="%s"' % group, 'handler="query"', 'job="%s"' % name],
     },
     local queryRangeMetricsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
@@ -445,6 +551,14 @@ local renderAlerts(name, environment, mixin) = {
       {
         name: 'observatorium-api-query-metrics-errors.slo',
         config: queryMetricsSelector(metricsGroup) {
+          alertName: alertNameMetricsErrors,
+          metric: metricError,
+          target: 0.95,
+        },
+      },
+      {
+        name: 'observatorium-api-query-legacy-metrics-errors.slo',
+        config: queryLegacyMetricsSelector(metricsGroup) {
           alertName: alertNameMetricsErrors,
           metric: metricError,
           target: 0.95,

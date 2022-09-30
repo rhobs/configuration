@@ -59,7 +59,7 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
     manifests+:: {
       [name]+:
         local m = super[name];
-        if m.kind == 'ConfigMap' then
+        if m.kind == 'ConfigMap' && std.length(std.findSubstr('rules', name)) == 0 then
           m {
             metadata+: {
               annotations+: {
@@ -120,6 +120,37 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                     resources: {
                       requests: {
                         storage: '${LOKI_INGESTER_PVC_REQUEST}',
+                      },
+                    },
+                    storageClassName: '${STORAGE_CLASS}',
+                  },
+                }
+                for t in super.volumeClaimTemplates
+              ],
+            } + jaegerAgentSidecar.spec,
+          }
+        else if m.kind == 'StatefulSet' && std.length(std.findSubstr('ruler', name)) != 0 then
+          m {
+            spec+: {
+              template+: {
+                spec+: {
+                  containers: [
+                    c {
+                      args+: [
+                        '-ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"',
+                      ],
+                    }
+                    for c in super.containers
+                  ],
+                },
+              },
+              volumeClaimTemplates: [
+                t {
+                  spec: {
+                    accessModes: ['ReadWriteOnce'],
+                    resources: {
+                      requests: {
+                        storage: '${LOKI_RULER_PVC_REQUEST}',
                       },
                     },
                     storageClassName: '${STORAGE_CLASS}',

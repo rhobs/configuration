@@ -145,22 +145,12 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/metalmatze/slo-libsonnet.git",
-          "subdir": "slo-libsonnet"
-        }
-      },
-      "version": "e238df4fac957357d78a405966c51523ef151cbc",
-      "sum": "5XrxbGgMFMHnKGeE++fiduDlDEiDunM2ZMTYCmPbWgA="
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/observatorium/api.git",
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "4d5fe09aaab876288355a1fbe5e3eed43734a0d0",
-      "sum": "o0dOrsTJx4Lt/F0TA/4Pg/wipWPWOwhtxCJ6lHxzvjY=",
+      "version": "a5834effa711ab261558f489407223e4b3e166cb",
+      "sum": "ZJlzUf7NGTHUr2RtytxG3i8z7DfQJ3gPtV89hnDNjGE=",
       "name": "observatorium-api"
     },
     {
@@ -170,8 +160,8 @@
           "subdir": "configuration"
         }
       },
-      "version": "39bd3b6e85614d09607c41c575a477b9cfd78569",
-      "sum": "uiddp3srcX6NncnnYYNY6lYEy7oyRBz6Izf8qGfUKnY="
+      "version": "36071db2f584b7cfb7932946dc9336873c363f09",
+      "sum": "xKdQFAsNSYo1lK+2HVOSVcyG9sjEduHVbWhxIe5eJ6o="
     },
     {
       "source": {
@@ -233,8 +223,8 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "dbfc19afe778f1311860dfe9ebf0e94b403de9de",
-      "sum": "jPX3JQZndZSVPDmkW2HZEib7/oeuVpxGOB/rXSgyOcI="
+      "version": "8e8125ea5d66d71b4fdd1b75a45268128b4d36d3",
+      "sum": "VlXNOw0i2l5GD8UDfNX647jaiVxRlA1leACAxFw15WQ="
     },
     {
       "source": {
@@ -326,8 +316,18 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "a6a0ff74be63dabac0a1562a364a3a1ccc8f985d",
-      "sum": "vdcovQefbNENJcAlNTojsUldmCF0QIBUB5zSwB7wF4s="
+      "version": "17c3d4f4da79c22a4caf752601010ab2ffcf6f35",
+      "sum": "oQRPgrGDsD1m3JDjrcUFuceXhDY8zmQ9rsvc7ECiHm8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/saswatamcode/slo-libsonnet.git",
+          "subdir": "slo-libsonnet"
+        }
+      },
+      "version": "1c00866cc4a5d26139f7a7fcccd1752e9d5ea87e",
+      "sum": "vF3rkKtymiGbpH2r+vinAdp1RsLCUdgBNhsacZjFgQY="
     },
     {
       "source": {

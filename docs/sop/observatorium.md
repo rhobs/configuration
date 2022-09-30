@@ -11,6 +11,12 @@
   - [APIMetricsWriteLatencyErrorBudgetBurning](#apimetricswritelatencyerrorbudgetburning)
   - [APIMetricsReadAvailabilityErrorBudgetBurning](#apimetricsreadavailabilityerrorbudgetburning)
   - [APIMetricsReadLatencyErrorBudgetBurning](#apimetricsreadlatencyerrorbudgetburning)
+  - [APIRulesRawWriteAvailabilityErrorBudgetBurning](#apirulesrawwriteavailabilityerrorbudgetburning)
+  - [APIRulesSyncAvailabilityErrorBudgetBurning](#apirulessyncavailabilityerrorbudgetburning)
+  - [APIRulesReadAvailabilityErrorBudgetBurning](#apirulesreadavailabilityerrorbudgetburning)
+  - [APIRulesRawReadAvailabilityErrorBudgetBurning](#apirulesrawreadavailabilityerrorbudgetburning)
+  - [APIAlertmanagerAvailabilityErrorBudgetBurning](#apialertmanageravailabilityerrorbudgetburning)
+  - [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning](#apialertmanagernotificationsavailabilityerrorbudgetburning)
 - Observatorium Proactive Monitoring
   - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
   - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
@@ -286,6 +292,172 @@ API is returning a high-enough level of slow responses to read requests that we 
   * Check the Thanos Store [dashboard](https://grafana.app-sre.devshift.net/d/e832e8f26403d95fac0ea1c59837588b/thanos-store)
   * Check the logs of the Thanos Store pods.
 * Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
+## APIRulesRawWriteAvailabilityErrorBudgetBurning
+
+### Impact
+
+API /rules/raw is currently failing to ingest rules.
+
+### Summary
+
+API /rules/raw is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
+## APIRulesSyncAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to sync rules that were ingested via /rules/raw endpoint to Thanos Rule.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses of the /reload endpoint that we are depleting our SLO error budget.
+
+### Severity
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check health of Thanos Rule and Thanos Rule Syncer sidecar container.
+  * Check the Thanos Rule [dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule)
+  * Check the logs on the Thanos Rule pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
+## APIRulesReadAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to respond to rules read requests.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses that we are depleting our SLO error budget.
+
+### Severity
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Rule.
+  * Check the Thanos Rule [dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule)
+  * Check the logs of the Thanos Rule pods.
+* Check on the health of Thanos Query Frontend.
+  * Check the Thanos Query Frontend [dashboard](https://grafana.app-sre.devshift.net/d/303c4e660a475c4c8cf6aee97da3a24a/thanos-query-frontend)
+  * Check the logs of the Thanos Query Frontend pods.
+* Check on the health of Thanos Query.
+  * Check the Thanos Query [dashboard](https://grafana.app-sre.devshift.net/d/af36c91291a603f1d9fbdabdd127ac4a/thanos-query)
+  * Check the logs of the Thanos Query pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
+## APIRulesRawReadAvailabilityErrorBudgetBurning
+
+### Impact
+
+API is currently failing to respond to rules read requests to the /rules/raw endpoint.
+
+### Summary
+
+API is returning a high-enough level of 5XX responses that we are depleting our SLO error budget.
+
+### Severity
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
+## APIAlertmanagerAvailabilityErrorBudgetBurning
+
+### Impact
+
+Alerts triggered by Thanos Rule are not being sent to Observatorium Alertmanager.
+
+### Summary
+
+Thanos Rule is returning a high-enough level of dropped alerts that are depleting our SLO error budget.
+
+### Severity
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of Thanos Rule.
+  * Check the Thanos Rule [dashboard](https://grafana.app-sre.devshift.net/d/35da848f5f92b2dc612e0c3a0577b8a1/thanos-rule) especially the `Alert Sent` and `Alert Queue` panels.
+  * Check the logs on the Thanos Rule pods.
+* Check on the health of Observatorium Alertmanager.
+  * Check the Observatorium Alertmanager configuration and status: 
+    * [MST](https://observatorium-alertmanager-mst.api.openshift.com/#/status)
+    * [Telemeter](https://observatorium-alertmanager.api.openshift.com/#/status)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+---
+## APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+
+### Impact
+
+Notifications to specified receivers are failing to be sent by Observatorium Alertmanager.
+
+### Summary
+
+Observatorium Alertmanager is returning a high-enough level of failed notifications that are depleting our SLO error budget.
+
+### Severity
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of Observatorium Alertmanager.
+  * Check the logs on the Observatorium Alertmanager pods.
+* Check on the health of Observatorium Alertmanager.
+  * Check the Observatorium Alertmanager configuration and status:
+    * [MST](https://observatorium-alertmanager-mst.api.openshift.com/#/status)
+    * [Telemeter](https://observatorium-alertmanager.api.openshift.com/#/status)
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
 ---

@@ -536,6 +536,16 @@ objects:
           "labels":
             "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
           "record": "acm_top500_mcs:acm_managed_cluster_info"
+        - "expr": |
+            max by(_id) (sum_over_time(cluster:usage:workload:capacity_physical_cpu_cores:max:5m[1h:5m]) / scalar(count_over_time(vector(1)[1h:5m])))
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "cluster:usage:workload:capacity_physical_cpu_hours"
+        - "expr": |
+            max by(_id) (count_over_time(cluster:usage:workload:capacity_physical_cpu_cores:max:5m[1h:5m])) / scalar(count_over_time(vector(1)[1h:5m]))
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "cluster:usage:workload:capacity_physical_instance_hours"
   kind: ConfigMap
   metadata:
     annotations:

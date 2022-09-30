@@ -17,12 +17,11 @@ spec:
         message: API /receive handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}) > (14.40 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -33,12 +32,11 @@ spec:
         message: API /receive handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="receive"}) > (6.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="receive"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -49,12 +47,11 @@ spec:
         message: API /receive handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="receive"}) > (3.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="receive"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -65,76 +62,68 @@ spec:
         message: API /receive handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="receive"}) > (1.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="receive"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[1d]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[1h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[2h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[30m]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[3d]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[5m]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler=~"receive",code=~"^(2..|3..|5..)$"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[6h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate6h
@@ -143,22 +132,21 @@ spec:
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
+          latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (14.4*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (14.4*0.100000)
+          latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (14.4*0.100000)
         )
         or
         (
-          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (6*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (6*0.100000)
+          latencytarget:http_request_duration_seconds:rate30m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (6*0.100000)
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
@@ -167,22 +155,21 @@ spec:
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code=~^(2..|3..|5..)$,latency=5 (current value: {{ $value }})'
+        message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: {{ $value }})'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning
       expr: |
         (
-          latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
+          latencytarget:http_request_duration_seconds:rate1d{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (3*0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate2h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (3*0.100000)
+          latencytarget:http_request_duration_seconds:rate2h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (3*0.100000)
         )
         or
         (
-          latencytarget:http_request_duration_seconds:rate3d{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
+          latencytarget:http_request_duration_seconds:rate3d{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (0.100000)
           and
-          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",latency="5"} > (0.100000)
+          latencytarget:http_request_duration_seconds:rate6h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"} > (0.100000)
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
@@ -190,84 +177,77 @@ spec:
         severity: medium
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[5m]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[5m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[5m]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[5m]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate5m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[30m]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[30m]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[30m]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[30m]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate30m
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1h]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[1h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[1h]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[1h]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate1h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[2h]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[2h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[2h]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[2h]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate2h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[6h]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[6h]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[6h]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[6h]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate6h
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[1d]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[1d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[1d]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[1d]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
       record: latencytarget:http_request_duration_seconds:rate1d
     - expr: |
         1 - (
-          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$",le="5",code!~"5.."}[3d]))
+          sum(rate(http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$",le="5",code!~"5.."}[3d]))
           /
-          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code=~"^(2..|3..|5..)$"}[3d]))
+          sum(rate(http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code!~"^4..$"}[3d]))
         )
       labels:
-        code: ^(2..|3..|5..)$
         handler: receive
         job: observatorium-observatorium-mst-api
         latency: "5"
@@ -280,12 +260,11 @@ spec:
         message: API /query handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query"}) > (14.40 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -296,12 +275,11 @@ spec:
         message: API /query handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="query"}) > (6.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -312,12 +290,11 @@ spec:
         message: API /query handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="query"}) > (3.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="query"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -328,76 +305,68 @@ spec:
         message: API /query handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query"}) > (1.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="query"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[1d]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[1h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[2h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[30m]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[3d]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[5m]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code=~"^(2..|3..|5..)$"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query",code!~"^4..$"}[6h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate6h
@@ -407,12 +376,11 @@ spec:
         message: API /query_range handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="query_range"}) > (14.40 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (14.40 * (1-0.95000))
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="query_range"}) > (14.40 * (1-0.95000))
       for: 2m
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -423,12 +391,11 @@ spec:
         message: API /query_range handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",handler="query_range"}) > (6.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (6.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query_range"}) > (6.00 * (1-0.95000))
       for: 15m
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -439,12 +406,11 @@ spec:
         message: API /query_range handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",handler="query_range"}) > (3.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (3.00 * (1-0.95000))
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",handler="query_range"}) > (3.00 * (1-0.95000))
       for: 1h
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
         service: telemeter
@@ -455,76 +421,68 @@ spec:
         message: API /query_range handler is burning too much error budget to guarantee availability SLOs
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricsreadavailabilityerrorbudgetburning
       expr: |
-        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",handler="query_range"}) > (1.00 * (1-0.95000))
         and
-        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}) > (1.00 * (1-0.95000))
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",handler="query_range"}) > (1.00 * (1-0.95000))
       for: 3h
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
         service: telemeter
         severity: medium
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[1d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[1d]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate1d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[1h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[1h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[1h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate1h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[2h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[2h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[2h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate2h
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[30m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[30m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[30m]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate30m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[3d]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[3d]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[3d]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate3d
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[5m]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[5m]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[5m]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate5m
     - expr: |
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$",code=~"5.+"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$",code=~"5.+"}[6h]))
         /
-        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code=~"^(2..|3..|5..)$"}[6h]))
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",handler="query_range",code!~"^4..$"}[6h]))
       labels:
-        code: ^(2..|3..|5..)$
         handler: query_range
         job: observatorium-observatorium-mst-api
       record: http_requests_total:burnrate6h
@@ -899,3 +857,694 @@ spec:
         namespace: observatorium-mst-stage
         query: query-path-sli-100M-samples
       record: latencytarget:up_custom_query_duration_seconds:rate3d
+  - name: rhobs-mst-api-rules-raw-write-availability.slo
+    rules:
+    - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (14.40 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+        service: telemeter
+        severity: high
+    - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (6.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+        service: telemeter
+        severity: high
+    - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (3.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+        service: telemeter
+        severity: medium
+    - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawwriteavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (1.00 * (1-0.95000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[1d]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[1h]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[2h]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[30m]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[3d]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[5m]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",method="PUT",code!~"^4..$"}[6h]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        method: PUT
+      record: http_requests_total:burnrate6h
+  - name: rhobs-mst-api-rules-sync-availability.slo
+    rules:
+    - alert: APIRulesSyncAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-sync-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
+      expr: |
+        sum(client_api_requests_total:burnrate5m{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        and
+        sum(client_api_requests_total:burnrate1h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high
+    - alert: APIRulesSyncAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-sync-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
+      expr: |
+        sum(client_api_requests_total:burnrate30m{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        and
+        sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high
+    - alert: APIRulesSyncAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-sync-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
+      expr: |
+        sum(client_api_requests_total:burnrate2h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        and
+        sum(client_api_requests_total:burnrate1d{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: medium
+    - alert: APIRulesSyncAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-sync-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /reload endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulessyncavailabilityerrorbudgetburning
+      expr: |
+        sum(client_api_requests_total:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        and
+        sum(client_api_requests_total:burnrate3d{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[1d]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[1d]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate1d
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[1h]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[1h]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate1h
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[2h]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[2h]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate2h
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[30m]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[30m]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate30m
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[3d]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[3d]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate3d
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[5m]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[5m]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate5m
+    - expr: |
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.+"}[6h]))
+        /
+        sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-mst-stage",code!~"^4..$"}[6h]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: client_api_requests_total:burnrate6h
+  - name: rhobs-mst-api-rules-read-availability.slo
+    rules:
+    - alert: APIRulesReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (14.40 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (14.40 * (1-0.90000))
+      for: 2m
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIRulesReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (6.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (6.00 * (1-0.90000))
+      for: 15m
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIRulesReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (3.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (3.00 * (1-0.90000))
+      for: 1h
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - alert: APIRulesReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (1.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules"}) > (1.00 * (1-0.90000))
+      for: 3h
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[1d]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[1h]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[2h]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[30m]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[3d]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[5m]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules",code!~"^4..$"}[6h]))
+      labels:
+        handler: rules
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate6h
+  - name: rhobs-mst-api-rules-raw-read-availability.slo
+    rules:
+    - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (14.40 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (14.40 * (1-0.90000))
+      for: 2m
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate30m{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (6.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (6.00 * (1-0.90000))
+      for: 15m
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: high
+    - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate2h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (3.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate1d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (3.00 * (1-0.90000))
+      for: 1h
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-rules-raw-read-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /rules/raw endpoint is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apirulesrawreadavailabilityerrorbudgetburning
+      expr: |
+        sum(http_requests_total:burnrate6h{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (1.00 * (1-0.90000))
+        and
+        sum(http_requests_total:burnrate3d{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw"}) > (1.00 * (1-0.90000))
+      for: 3h
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[1d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[1d]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[1h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[1h]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate1h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[2h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[2h]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate2h
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[30m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[30m]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate30m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[3d]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[3d]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate3d
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[5m]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[5m]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate5m
+    - expr: |
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$",code=~"5.+"}[6h]))
+        /
+        sum(rate(http_requests_total{job="observatorium-observatorium-mst-api",group="metricsv1",handler="rules-raw",code!~"^4..$"}[6h]))
+      labels:
+        handler: rules-raw
+        job: observatorium-observatorium-mst-api
+      record: http_requests_total:burnrate6h
+  - name: rhobs-mst-api-alerting-availability.slo
+    rules:
+    - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
+      expr: |
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate5m{container="thanos-rule",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        and
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate1h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high
+    - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
+      expr: |
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate30m{container="thanos-rule",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        and
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high
+    - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
+      expr: |
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate2h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        and
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate1d{container="thanos-rule",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: medium
+    - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanageravailabilityerrorbudgetburning
+      expr: |
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate6h{container="thanos-rule",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        and
+        sum(thanos_alert_sender_alerts_dropped_total:burnrate3d{container="thanos-rule",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[1d]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[1d]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate1d
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[1h]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[1h]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate1h
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[2h]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[2h]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate2h
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[30m]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[30m]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate30m
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[3d]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[3d]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate3d
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[5m]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[5m]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate5m
+    - expr: |
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[6h]))
+        /
+        sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-mst-stage",code!~"^4..$"}[6h]))
+      labels:
+        namespace: observatorium-mst-stage
+      record: thanos_alert_sender_alerts_dropped_total:burnrate6h
+    - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
+      expr: |
+        sum(alertmanager_notifications_failed_total:burnrate5m{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+        and
+        sum(alertmanager_notifications_failed_total:burnrate1h{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (14.40 * (1-0.95000))
+      for: 2m
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high
+    - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
+      expr: |
+        sum(alertmanager_notifications_failed_total:burnrate30m{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+        and
+        sum(alertmanager_notifications_failed_total:burnrate6h{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (6.00 * (1-0.95000))
+      for: 15m
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: high
+    - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
+      expr: |
+        sum(alertmanager_notifications_failed_total:burnrate2h{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+        and
+        sum(alertmanager_notifications_failed_total:burnrate1d{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (3.00 * (1-0.95000))
+      for: 1h
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: medium
+    - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-alerting-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apialertmanagernotificationsavailabilityerrorbudgetburning
+      expr: |
+        sum(alertmanager_notifications_failed_total:burnrate6h{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+        and
+        sum(alertmanager_notifications_failed_total:burnrate3d{service="observatorium-alertmanager",namespace="observatorium-mst-stage"}) > (1.00 * (1-0.95000))
+      for: 3h
+      labels:
+        namespace: observatorium-mst-stage
+        service: telemeter
+        severity: medium
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[1d]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[1d]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate1d
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[1h]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[1h]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate1h
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[2h]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[2h]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate2h
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[30m]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[30m]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate30m
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[3d]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[3d]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate3d
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[5m]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[5m]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate5m
+    - expr: |
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$",code=~"5.."}[6h]))
+        /
+        sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="observatorium-mst-stage",code!~"^4..$"}[6h]))
+      labels:
+        namespace: observatorium-mst-stage
+        service: observatorium-alertmanager
+      record: alertmanager_notifications_failed_total:burnrate6h

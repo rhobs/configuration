@@ -40,15 +40,6 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/saswatamcode/slo-libsonnet.git",
-          "subdir": "slo-libsonnet"
-        }
-      },
-      "version": "special-selector"
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/observatorium/api.git",
           "subdir": "jsonnet/lib"
         }
@@ -129,6 +120,15 @@
         }
       },
       "version": "main"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/saswatamcode/slo-libsonnet.git",
+          "subdir": "slo-libsonnet"
+        }
+      },
+      "version": "special-selector"
     },
     {
       "source": {

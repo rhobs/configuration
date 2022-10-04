@@ -8,6 +8,13 @@ See our [website](https://rhobs-handbook.netlify.app/) for more information abou
 
 * Go 1.17+
 
+### macOS
+
+* findutils (for GNU xargs)
+* gnu-sed
+
+Both can be installed using Homebrew: `brew install gnu-sed findutils`. Afterwards, update the `SED` and `XARGS` variables in the Makefile to use `gsed` and `gxargs` or replace them in your environment.
+
 ## Usage
 
 This repository contains [Jsonnet](https://jsonnet.org/) configuration that allows generating Kubernetes objects that compose RHOBS service and its observability.
@@ -16,9 +23,9 @@ This repository contains [Jsonnet](https://jsonnet.org/) configuration that allo
 
 The jsonnet files for RHOBS service can be found in [services](./services) directory. In order to compose *RHOBS Service* we import many Jsonnet libraries from different open source repositories including [kube-thanos](https://github.com/thanos-io/kube-thanos) for Thanos components, [Observatorium](https://github.com/observatorium/observatorium) for Observatorium, Minio, Memcached, Gubernator, Dex components, [thanos-receive-controller](https://github.com/observatorium/thanos-receive-controller) for Thanos receive controller component, [parca](https://github.com/parca-dev/parca) for Parca component, [observatorium api](https://github.com/observatorium/api) for API component, [observatorium up](https://github.com/observatorium/up) for up component,  [rules-objstore](https://github.com/observatorium/rules-objstore) for rules-objstore component.
 
-Currently, RHOBS components are rendered as [OpenShift Templates](https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html) that allows parameters. This is how we deploy to multiple clusters, sharing the same configuration core, but having different details like resources or names. 
+Currently, RHOBS components are rendered as [OpenShift Templates](https://docs.openshift.com/container-platform/latest/openshift_images/using-templates.html) that allows parameters. This is how we deploy to multiple clusters, sharing the same configuration core, but having different details like resources or names.
 
-> This is why there might be a gap between vanilla [Observatorium](https://github.com/observatorium/observatorium) and RHOBS. We have plans to resolve this gap in the future. 
+> This is why there might be a gap between vanilla [Observatorium](https://github.com/observatorium/observatorium) and RHOBS. We have plans to resolve this gap in the future.
 
 Running `make manifests` generates all required files into [resources/services](./resources/services) directory.
 
@@ -30,13 +37,13 @@ Running `make prometheusrules grafana` generates all required files into [resour
 
 ### Updating Dependencies
 
-Up-to-date list of jsonnet dependencies can be found in [jsonnetfile.json](./jsonnetfile.json). Fetching all deps is done through `make vendor` utility.
+Up-to-date list of jsonnet dependencies can be found in [jsonnetfile.json](./jsonnetfile.json). Fetching all deps is done through `make vendor_jsonnet` utility.
 
 To update a dependency, normally the process would be:
 
 ```console
-make vendor # This installs dependencies like `jb` thanks to bingo project.
-JB=`ls .bin/jb-* -t | head -1`
+make vendor_jsonnet # This installs dependencies like `jb` thanks to Bingo project.
+JB=`ls $(go env GOPATH)/bin/jb-* -t | head -1`
 
 # Updates `kube-thanos` to master and sets the new hash in `jsonnetfile.lock.json`.
 $JB update https://github.com/thanos-io/kube-thanos/jsonnet/kube-thanos@main

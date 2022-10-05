@@ -402,6 +402,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                       args+: [
                         '--receive.default-tenant-id=FB870BF3-9F3A-44FF-9BF7-D7A047A52F43',
                         '--receive.hashrings-algorithm=${THANOS_RECEIVE_HASHRINGS_ALGORITHM}',
+                        '--receive.grpc-compression=none',
                       ],
                       env+: s3EnvVars + [{
                         name: 'DEBUG',

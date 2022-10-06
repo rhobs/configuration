@@ -394,10 +394,10 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query|query_legacy\",code=~\"5..\"}[5m]))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query|query_legacy\"}[5m]))",
+              "expr": "sum by (code) (rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query|query_legacy\",code=~\"5..\"}[5m]))\n/\nsum by (code) (rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=~\"query|query_legacy\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "errors",
+              "legendFormat": "{{code}}",
               "refId": "A"
             }
           ],
@@ -956,10 +956,10 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(http_requests_total{job=\"observatorium-thanos-query\",handler=\"query_range\",code=~\"5..\"}[5m])) / \nsum(rate(http_requests_total{job=\"observatorium-thanos-query\",handler=\"query_range\"}[5m]))",
+              "expr": "sum by (code) (rate(http_requests_total{job=\"observatorium-thanos-query\",handler=\"query_range\",code=~\"5..\"}[5m])) / \nsum by (code) (rate(http_requests_total{job=\"observatorium-thanos-query\",handler=\"query_range\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "errors",
+              "legendFormat": "{{code}}",
               "refId": "A"
             }
           ],
@@ -1518,10 +1518,10 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=\"rules-raw\",code=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"observatorium-thanos-query\",handler=\"rules-raw\"}[5m]))",
+              "expr": "sum by (code) (rate(http_requests_total{job=\"observatorium-observatorium-api\",handler=\"rules-raw\",code=~\"5..\"}[5m])) / sum by (code) (rate(http_requests_total{job=\"observatorium-thanos-query\",handler=\"rules-raw\"}[5m]))",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "errors",
+              "legendFormat": "{{code}}",
               "refId": "A"
             }
           ],
@@ -1908,8 +1908,8 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\",code=~\"5..\"}[5m]))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\"}[5m]))",
-              "legendFormat": "errors",
+              "expr": "sum by (code) (rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\",code=~\"5..\"}[5m]))\n/\nsum by (code) (rate(http_requests_total{job=\"observatorium-observatorium-api\", namespace=\"$namespace\", handler=~\"$handler\"}[5m]))",
+              "legendFormat": "{{ code }}",
               "refId": "A"
             }
           ],

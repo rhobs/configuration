@@ -220,6 +220,7 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="os_image_url_override:sum"}
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
@@ -456,6 +457,7 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="os_image_url_override:sum"}
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}

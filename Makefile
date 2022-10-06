@@ -3,6 +3,7 @@ include .bingo/Variables.mk
 SED ?= sed
 XARGS ?= xargs
 
+CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
 BIN_DIR ?= $(TMP_DIR)/bin
 OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
@@ -38,6 +39,12 @@ lint: $(JSONNET_LINT) $(JSONNET_VENDOR_DIR)
 validate: $(OC)
 	@echo ">>>>> Validating OpenShift Templates"
 	find . -type f \( -name '*template.yaml' \) | $(XARGS) -I{} $(OC) process -f {} --local -o yaml > /dev/null
+
+.PHONE: sync-crds
+sync-crds: $(YQ) $(GOJQ)
+	@curl --no-progress-meter https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/manifests/loki.grafana.com_alertingrules.yaml | $(YQ) eval -j > $(CRD_DIR)/loki.grafana.com_alertingrules.libsonnet
+	@curl --no-progress-meter https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/manifests/loki.grafana.com_recordingrules.yaml | $(YQ) eval -j > $(CRD_DIR)/loki.grafana.com_recordingrules.libsonnet
+	$(MAKE) format
 
 .PHONY: prometheusrules
 prometheusrules: resources/observability/prometheusrules
@@ -88,13 +95,13 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
 
 .PHONY: migrate-vendor
 migrate-vendor:
-	@# Remove old jsonnet vendor. If vendor is present Go module tools are confused (e.g Goland). It's not needed for normal operations.
+	@# Remove old jsonnet vendor. If vendor is present Go module tools are confused (e.g Goland). It\'s not needed for normal operations.
 	@rm -rf "./vendor"
 
 .PHONY: manifests
 manifests: migrate-vendor format $(JSONNET_VENDOR_DIR)
 manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
-manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml
+manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml resources/crds/observatorium-logs-crds-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml
 	$(MAKE) clean
 
@@ -147,8 +154,13 @@ resources/services/metric-federation-rule-template.yaml: $(wildcard services/met
 	@echo ">>>>> Running metric-federation-rule templates"
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/metric-federation-rule-template.jsonnet | $(GOJSONTOYAML) > $@
 
+resources/crds/observatorium-logs-crds-template.yaml: $(wildcard crds/loki*) sync-crds $(JSONNET) $(GOJSONTOYAML)
+	@echo ">>>>> Running obsevatorium-logs-crds template"
+	$(JSONNET) crds/observatorium-logs-crds-template.jsonnet | $(GOJSONTOYAML) > $@
+
 .PHONY: clean
 clean:
+	find resources/crds -type f ! -name '*.yaml' -delete
 	find resources/services -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete

@@ -74,9 +74,9 @@ Our deployments our managed by our Red Hat AppSRE team.
 
 ### Updating Dashboards
 
-**Staging**: Update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
+**Staging**: Once the PR containing the dashboard changes is merged to `main` it goes directly to stage environment - because the `telemeter-dashboards` resourceTemplate refers the `main` branch [here](https://gitlab.cee.redhat.com/service/app-interface/-/blob/master/data/services/rhobs/telemeter/cicd/saas.yaml).
 
-**Production**: Update the commit hash ref in [`https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml`](https://gitlab.cee.redhat.com/service/app-interface/blob/master/data/services/observability/cicd/saas/saas-grafana.yaml)
+**Production**: Update the commit hash ref in [the saas file](https://gitlab.cee.redhat.com/service/app-interface/-/blob/master/data/services/rhobs/telemeter/cicd/saas.yaml) in the `telemeterDashboards` resourceTemplate, for production environment.
 
 ### Prometheus Rules and Alerts
 

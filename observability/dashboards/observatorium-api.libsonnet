@@ -335,7 +335,7 @@ function(datasource, namespace) {
   local targetsAllQueryErr =
     [
       {
-        expr: 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code=~"5.."}[5m]))\n/\nsum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m]))',
+        expr: 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler",code=~"5.."}[5m]))\n/\nscalar(sum(rate(http_requests_total{job="observatorium-observatorium-api", namespace="$namespace", handler=~"$handler"}[5m])))',
         legendFormat: '{{ code }}',
         refId: 'A',
       },
@@ -361,10 +361,10 @@ function(datasource, namespace) {
 
   local query = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
   local legendQuery = '{{code}}',
-  local errQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy",code=~"5.."}[5m]))\n/\nsum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m]))',
+  local errQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy",code=~"5.."}[5m]))\n/\nscalar(sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m])))',
   local errLegendQuery = '{{code}}',
   local rangeQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
-  local rangeQueryErr = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nsum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
+  local rangeQueryErr = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nscalar(sum(rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m])))',
   local defaultAliasColors = {
     '200': 'dark-green',
     '429': 'dark-orange',
@@ -375,7 +375,7 @@ function(datasource, namespace) {
     '5xx': 'semi-dark-red',
   },
   local rulesQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler="rules-raw"}[5m]))',
-  local rulesQueryErr = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler="rules-raw",code=~"5.."}[5m])) / sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="rules-raw"}[5m]))',
+  local rulesQueryErr = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler="rules-raw",code=~"5.."}[5m])) / scalar(sum(rate(http_requests_total{job="observatorium-thanos-query",handler="rules-raw"}[5m])))',
 
   local redPanel(gridPos, id, seriesOverrides, stack, targets, title, yaxes, fill=10, lineWidth=0, aliasColors=defaultAliasColors, pointRadius=5, paceLength=true, repeatDirection=true, sVars=false, allHandler=false, text='query_legacy', value='query_legacy', repeatPanelId=132) =
     {

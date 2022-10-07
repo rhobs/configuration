@@ -220,10 +220,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -341,10 +344,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -451,10 +457,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -499,8 +508,12 @@ data:
               "color": "#FA6400"
             },
             {
-              "alias": "90th",
+              "alias": "95th",
               "color": "#E0B400"
+            },
+            {
+              "alias": "90th",
+              "color": "#DDC700"
             },
             {
               "alias": "50th",
@@ -778,10 +791,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -903,10 +919,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -1013,10 +1032,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -1057,12 +1079,16 @@ data:
           "repeatDirection": "v",
           "seriesOverrides": [
             {
-              "alias": "95th",
+              "alias": "99th",
               "color": "#FA6400"
             },
             {
-              "alias": "90th",
+              "alias": "95th",
               "color": "#E0B400"
+            },
+            {
+              "alias": "90th",
+              "color": "#DDC700"
             },
             {
               "alias": "50th",
@@ -1340,10 +1366,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -1465,10 +1494,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -1575,10 +1607,13 @@ data:
         },
         {
           "aliasColors": {
+            "200": "dark-green",
             "2xx": "semi-dark-green",
-            "{code=\"200\"}": "dark-green",
-            "{code=\"429\"}": "dark-orange",
-            "{code=\"500\"}": "dark-red"
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,
@@ -1619,12 +1654,16 @@ data:
           "repeatDirection": "v",
           "seriesOverrides": [
             {
-              "alias": "95th",
+              "alias": "99th",
               "color": "#FA6400"
             },
             {
-              "alias": "90th",
+              "alias": "95th",
               "color": "#E0B400"
+            },
+            {
+              "alias": "90th",
+              "color": "#DDC700"
             },
             {
               "alias": "50th",
@@ -1853,7 +1892,13 @@ data:
         },
         {
           "aliasColors": {
-
+            "200": "dark-green",
+            "2xx": "semi-dark-green",
+            "429": "dark-orange",
+            "500": "dark-red",
+            "502": "semi-dark-red",
+            "503": "red",
+            "5xx": "semi-dark-red"
           },
           "bars": false,
           "dashLength": 10,

@@ -82,7 +82,7 @@ function(datasource, namespace) {
     redPanel(
       createGridPos(8, 8, 16, 16),
       127,
-      seriesOverridesQueryRangeDuration,
+      seriesOverridesQueryDuration,
       false,
       targetsQueryRangeDuration,
       'Duration',
@@ -127,7 +127,7 @@ function(datasource, namespace) {
     redPanel(
       createGridPos(8, 8, 16, 28),
       146,
-      seriesOverridesQueryRangeDuration,
+      seriesOverridesQueryDuration,
       false,
       targetsRulesRawDuration,
       'Duration',
@@ -159,7 +159,6 @@ function(datasource, namespace) {
       targetsAllQueryErr,
       'Errors',
       yaxesQueryErr(null, decimals=false, showPercent=true, showShort=false),
-      aliasColors={},
       pointRadius=2,
       paceLength=false,
       repeatDirection=false,
@@ -367,10 +366,13 @@ function(datasource, namespace) {
   local rangeQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
   local rangeQueryErr = 'sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range",code=~"5.."}[5m])) / \nsum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="query_range"}[5m]))',
   local defaultAliasColors = {
+    '200': 'dark-green',
+    '429': 'dark-orange',
+    '500': 'dark-red',
+    '502': 'semi-dark-red',
+    '503': 'red',
     '2xx': 'semi-dark-green',
-    '{code="200"}': 'dark-green',
-    '{code="429"}': 'dark-orange',
-    '{code="500"}': 'dark-red',
+    '5xx': 'semi-dark-red',
   },
   local rulesQuery = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler="rules-raw"}[5m]))',
   local rulesQueryErr = 'sum by (code) (rate(http_requests_total{job="observatorium-observatorium-api",handler="rules-raw",code=~"5.."}[5m])) / sum by (code) (rate(http_requests_total{job="observatorium-thanos-query",handler="rules-raw"}[5m]))',
@@ -512,8 +514,12 @@ function(datasource, namespace) {
         color: '#FA6400',
       },
       {
-        alias: '90th',
+        alias: '95th',
         color: '#E0B400',
+      },
+      {
+        alias: '90th',
+        color: '#DDC700',
       },
       {
         alias: '50th',
@@ -582,23 +588,6 @@ function(datasource, namespace) {
       show: true,
     },
   ],
-  local seriesOverridesQueryRangeDuration =
-    [
-      {
-        alias: '95th',
-        color: '#FA6400',
-      },
-      {
-        alias: '90th',
-        color: '#E0B400',
-      },
-      {
-        alias: '50th',
-        color: '#37872D',
-        fill: 10,
-        linewidth: 0,
-      },
-    ],
   local targetsQueryRangeDuration =
     [
       {

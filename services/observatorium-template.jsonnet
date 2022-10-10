@@ -93,7 +93,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'RHOBS_RELOADER_SECRET_NAME', value: 'rhobs-tenant' },
     { name: 'OSD_RELOADER_SECRET_NAME', value: 'observatorium-observatorium-mst-api' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
-    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: '17c3d4f' },
+    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: 'f021479' },
     { name: 'METRICS_WRITE_SERVICE_NAME', value: obs.thanos.receiversService.metadata.name },
     { name: 'METRICS_WRITE_SERVICE_PORT', value: std.toString(obs.thanos.receiversService.spec.ports[2].port) },
   ],

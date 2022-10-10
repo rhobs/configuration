@@ -1,4 +1,4 @@
-# Auto generated binary variables helper managed by https://github.com/bwplotka/bingo v0.5.2. DO NOT EDIT.
+# Auto generated binary variables helper managed by https://github.com/bwplotka/bingo v0.6. DO NOT EDIT.
 # All tools are designed to be build inside $GOBIN.
 BINGO_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 GOPATH ?= $(shell go env GOPATH)
@@ -17,17 +17,17 @@ GO     ?= $(shell which go)
 #	@echo "Running bingo"
 #	@$(BINGO) <flags/args..>
 #
-BINGO := $(GOBIN)/bingo-v0.4.3
+BINGO := $(GOBIN)/bingo-v0.6.0
 $(BINGO): $(BINGO_DIR)/bingo.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/bingo-v0.4.3"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=bingo.mod -o=$(GOBIN)/bingo-v0.4.3 "github.com/bwplotka/bingo"
+	@echo "(re)installing $(GOBIN)/bingo-v0.6.0"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=bingo.mod -o=$(GOBIN)/bingo-v0.6.0 "github.com/bwplotka/bingo"
 
-GOJQ := $(GOBIN)/gojq-v0.10.2
+GOJQ := $(GOBIN)/gojq-v0.12.9
 $(GOJQ): $(BINGO_DIR)/gojq.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/gojq-v0.10.2"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=gojq.mod -o=$(GOBIN)/gojq-v0.10.2 "github.com/itchyny/gojq/cmd/gojq"
+	@echo "(re)installing $(GOBIN)/gojq-v0.12.9"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=gojq.mod -o=$(GOBIN)/gojq-v0.12.9 "github.com/itchyny/gojq/cmd/gojq"
 
 GOJSONTOYAML := $(GOBIN)/gojsontoyaml-v0.0.0-20200602132005-3697ded27e8c
 $(GOJSONTOYAML): $(BINGO_DIR)/gojsontoyaml.mod
@@ -53,17 +53,17 @@ $(JSONNET_LINT): $(BINGO_DIR)/jsonnet-lint.mod
 	@echo "(re)installing $(GOBIN)/jsonnet-lint-v0.18.0"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet-lint.mod -o=$(GOBIN)/jsonnet-lint-v0.18.0 "github.com/google/go-jsonnet/cmd/jsonnet-lint"
 
-JSONNET := $(GOBIN)/jsonnet-v0.18.0
+JSONNET := $(GOBIN)/jsonnet-v0.18.1-0.20220927204637-b82fd4c7f546
 $(JSONNET): $(BINGO_DIR)/jsonnet.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/jsonnet-v0.18.0"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet.mod -o=$(GOBIN)/jsonnet-v0.18.0 "github.com/google/go-jsonnet/cmd/jsonnet"
+	@echo "(re)installing $(GOBIN)/jsonnet-v0.18.1-0.20220927204637-b82fd4c7f546"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnet.mod -o=$(GOBIN)/jsonnet-v0.18.1-0.20220927204637-b82fd4c7f546 "github.com/google/go-jsonnet/cmd/jsonnet"
 
-JSONNETFMT := $(GOBIN)/jsonnetfmt-v0.18.0
+JSONNETFMT := $(GOBIN)/jsonnetfmt-v0.18.1-0.20220927204637-b82fd4c7f546
 $(JSONNETFMT): $(BINGO_DIR)/jsonnetfmt.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
-	@echo "(re)installing $(GOBIN)/jsonnetfmt-v0.18.0"
-	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnetfmt.mod -o=$(GOBIN)/jsonnetfmt-v0.18.0 "github.com/google/go-jsonnet/cmd/jsonnetfmt"
+	@echo "(re)installing $(GOBIN)/jsonnetfmt-v0.18.1-0.20220927204637-b82fd4c7f546"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnetfmt.mod -o=$(GOBIN)/jsonnetfmt-v0.18.1-0.20220927204637-b82fd4c7f546 "github.com/google/go-jsonnet/cmd/jsonnetfmt"
 
 PROMTOOL := $(GOBIN)/promtool-v1.8.2-0.20200522113006-f4dd45609a05
 $(PROMTOOL): $(BINGO_DIR)/promtool.mod

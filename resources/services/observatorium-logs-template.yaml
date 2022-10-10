@@ -685,9 +685,7 @@ objects:
             "store": "memberlist"
         "rule_path": "/data"
         "storage":
-          "local":
-            "directory": "/tmp/rules"
-          "type": "local"
+          "type": "s3"
         "wal":
           "dir": "/data/loki/wal"
           "max_age": "4h"
@@ -2091,6 +2089,10 @@ objects:
           - -s3.region=$(S3_REGION)
           - -s3.access-key-id=$(AWS_ACCESS_KEY_ID)
           - -s3.secret-access-key=$(AWS_SECRET_ACCESS_KEY)
+          - -ruler.storage.s3.buckets=$(RULER_S3_BUCKETS)
+          - -ruler.storage.s3.region=$(RULER_S3_REGION)
+          - -ruler.storage.s3.access-key-id=$(RULER_AWS_ACCESS_KEY_ID)
+          - -ruler.storage.s3.secret-access-key=$(RULER_AWS_SECRET_ACCESS_KEY)
           - -distributor.replication-factor=1
           - -ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"
           env:
@@ -2114,6 +2116,26 @@ objects:
               secretKeyRef:
                 key: aws_secret_access_key
                 name: ${LOKI_S3_SECRET}
+          - name: RULER_S3_BUCKETS
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          - name: RULER_S3_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          - name: RULER_AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: ${RULES_OBJSTORE_S3_SECRET}
+          - name: RULER_AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: ${RULES_OBJSTORE_S3_SECRET}
           image: ${LOKI_IMAGE}:${LOKI_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -2151,9 +2173,6 @@ objects:
             readOnly: false
           - mountPath: /data
             name: storage
-            readOnly: false
-          - mountPath: /tmp/rules
-            name: rules
             readOnly: false
         - args:
           - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
@@ -2195,9 +2214,6 @@ objects:
         - configMap:
             name: observatorium-loki
           name: config
-        - configMap:
-            name: observatorium-loki-rules
-          name: rules
     volumeClaimTemplates:
     - metadata:
         labels:
@@ -2213,51 +2229,7 @@ objects:
             storage: ${LOKI_RULER_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
-  data:
-    rhobs-logs-ocm-alerts: |-
-      "groups":
-      - "interval": "1m"
-        "name": "uhc-stage-logs-based-alerts"
-        "rules":
-        - "alert": "UHC Server Errors"
-          "annotations":
-            "summary": "${labels.kubernetes_labels_app} is returning server-side errors"
-          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `returning http 500`  | json  | line_format \"{{ .message }}\" [1m])) > 0"
-          "for": "5m"
-          "labels":
-            "namespace": "uhc-stage"
-            "service": "${labels.kubernetes_labels_app}"
-            "severity": "warn"
-        - "alert": "UHC Nil Reference Errors - Stage"
-          "annotations":
-            "summary": "${labels.kubernetes_labels_app} is throwing nil reference errors"
-          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `nil reference` | json  | line_format \"{{ .message }}\" [1m])) > 0"
-          "for": "5m"
-          "labels":
-            "namespace": "uhc-stage"
-            "service": "${labels.kubernetes_labels_app}"
-            "severity": "warn"
-        - "alert": "UHC Panic Errors - Stage"
-          "annotations":
-            "summary": "${labels.kubernetes_labels_app} is throwing panic errors"
-          "expr": "sum(rate({kubernetes_namespace_name=\"uhc-stage\"} |= `panic` | json  | line_format \"{{ .message }}\" [1m])) > 0"
-          "for": "5m"
-          "labels":
-            "namespace": "uhc-stage"
-            "service": "${labels.kubernetes_labels_app}"
-            "severity": "warn"
-      - "interval": "1m"
-        "name": "rhobs-logs-stage-alerts"
-        "rules":
-        - "alert": "rhobs-logs-always-firing"
-          "annotations":
-            "summary": "rhobs logs alert that always fires"
-          "expr": "1 > 0"
-          "for": "1m"
-          "labels":
-            "namespace": "observatorium-mst-stage"
-            "service": "observatorium-loki-ruler"
-            "severity": "warn"
+  data: {}
   kind: ConfigMap
   metadata:
     labels:
@@ -2273,6 +2245,8 @@ parameters:
   value: observatorium-mst-stage
 - name: ALERTMANAGER_EXTERNAL_URL
   value: https://observatorium-alertmanager-mst.api.stage.openshift.com
+- name: RULES_OBJSTORE_S3_SECRET
+  value: rules-objstore-stage-s3
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG

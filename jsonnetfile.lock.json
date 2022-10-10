@@ -160,8 +160,8 @@
           "subdir": "configuration"
         }
       },
-      "version": "36071db2f584b7cfb7932946dc9336873c363f09",
-      "sum": "xKdQFAsNSYo1lK+2HVOSVcyG9sjEduHVbWhxIe5eJ6o="
+      "version": "66634451d91d8872acae19eb15f7377670e6dadc",
+      "sum": "LyJurWxkxdUWx7TDDGSKfQvMaJMBMDpJmkyt3WfgdfE="
     },
     {
       "source": {
@@ -316,8 +316,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "17c3d4f4da79c22a4caf752601010ab2ffcf6f35",
-      "sum": "oQRPgrGDsD1m3JDjrcUFuceXhDY8zmQ9rsvc7ECiHm8="
+      "version": "819b95df1e7be5c0c86978076850ac70bf527db2",
+      "sum": "z6EsX6r3DvqkKa0SgJ6ef2YKgD6yqt4uqsImkKvLJnE="
     },
     {
       "source": {

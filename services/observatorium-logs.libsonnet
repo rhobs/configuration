@@ -4,76 +4,6 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
 {
   local obs = self,
 
-  local stageTestAlerts = [
-    {
-      interval: '1m',
-      name: 'rhobs-logs-stage-alerts',
-      rules: [
-        {
-          alert: 'rhobs-logs-always-firing',
-          annotations: {
-            summary: 'rhobs logs alert that always fires',
-          },
-          expr: '1 > 0',
-          'for': '1m',
-          labels: {
-            severity: 'warn',
-            namespace: 'observatorium-mst-stage',
-            service: 'observatorium-loki-ruler',
-          },
-        },
-      ],
-    },
-  ],
-
-  local ocmAlerts = [
-    {
-      interval: '1m',
-      name: 'uhc-stage-logs-based-alerts',
-      rules: [
-        {
-          alert: 'UHC Server Errors',
-          annotations: {
-            summary: '${labels.kubernetes_labels_app} is returning server-side errors',
-          },
-          expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `returning http 500`  | json  | line_format "{{ .message }}" [1m])) > 0',
-          'for': '5m',
-          labels: {
-            severity: 'warn',
-            namespace: 'uhc-stage',
-            service: '${labels.kubernetes_labels_app}',
-          },
-        },
-        {
-          alert: 'UHC Nil Reference Errors - Stage',
-          annotations: {
-            summary: '${labels.kubernetes_labels_app} is throwing nil reference errors',
-          },
-          expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `nil reference` | json  | line_format "{{ .message }}" [1m])) > 0',
-          'for': '5m',
-          labels: {
-            severity: 'warn',
-            namespace: 'uhc-stage',
-            service: '${labels.kubernetes_labels_app}',
-          },
-        },
-        {
-          alert: 'UHC Panic Errors - Stage',
-          annotations: {
-            summary: '${labels.kubernetes_labels_app} is throwing panic errors',
-          },
-          expr: 'sum(rate({kubernetes_namespace_name="uhc-stage"} |= `panic` | json  | line_format "{{ .message }}" [1m])) > 0',
-          'for': '5m',
-          labels: {
-            severity: 'warn',
-            namespace: 'uhc-stage',
-            service: '${labels.kubernetes_labels_app}',
-          },
-        },
-      ],
-    },
-  ],
-
   lokiCaches:: lokiCaches({
     local cfg = self,
     name: obs.config.name,
@@ -147,6 +77,14 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       accessKeyIdKey: 'aws_access_key_id',
       secretAccessKeyKey: 'aws_secret_access_key',
     },
+    rulesStorageConfig: {
+      type: 's3',
+      secretName: '${RULES_OBJSTORE_S3_SECRET}',
+      bucketsKey: 'bucket',
+      regionKey: 'aws_region',
+      accessKeyIdKey: 'aws_access_key_id',
+      secretAccessKeyKey: 'aws_secret_access_key',
+    },
     memberlist: {
       ringName: 'gossip-ring',
     },
@@ -162,11 +100,6 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       query_scheduler: '${{LOKI_QUERY_SCHEDULER_REPLICAS}}',
       query_frontend: '${{LOKI_QUERY_FRONTEND_REPLICAS}}',
       ruler: '${{LOKI_RULER_REPLICAS}}',
-    },
-    rules: {
-      'rhobs-logs-ocm-alerts': {
-        groups: ocmAlerts + stageTestAlerts,
-      },
     },
     resources: {
       compactor: {

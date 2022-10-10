@@ -4,7 +4,7 @@
     kind: 'ClusterRole',
     metadata: {
       name: 'observatorium-logs-edit',
-      annotations: {
+      labels: {
         'managed.openshift.io/aggregate-to-dedicated-admins': 'cluster',
       },
     },

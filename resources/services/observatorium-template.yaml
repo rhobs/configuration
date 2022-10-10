@@ -247,6 +247,15 @@ objects:
     - get
     - list
     - watch
+  - apiGroups:
+    - loki.grafana.com
+    resources:
+    - alertingrules
+    - recordingrules
+    verbs:
+    - get
+    - list
+    - watch
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: RoleBinding
   metadata:
@@ -1588,7 +1597,7 @@ parameters:
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
-  value: 17c3d4f
+  value: f021479
 - name: METRICS_WRITE_SERVICE_NAME
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT

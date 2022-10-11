@@ -288,6 +288,105 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     },
   },
 
+  rulesSLOAlertingRule: {
+    apiVersion: 'loki.grafana.com/v1beta1',
+    kind: 'AlertingRule',
+    metadata: {
+      name: 'observatorium-loki-alerting-rules-reloader-slo',
+      labels: {
+        tenant: 'rhobs',
+      },
+    },
+    spec: {
+      tenantID: 'rhobs',
+      groups: [
+        {
+          interval: '30s',
+          name: 'reloader-slo-alert',
+          rules: [
+            {
+              alert: 'AlwaysFiringAlert',
+              expr: '1 > 0',
+              'for': '1m',
+              annotations: {
+                description: 'Firing alert!',
+                message: 'Alert fired.',
+              },
+              labels: {
+                severity: 'page',
+                source: 'alertingrule.loki.grafana.com',
+              },
+            },
+            {
+              alert: 'AlwaysFiringAlert2',
+              expr: '1 > 0',
+              'for': '1m',
+              annotations: {
+                description: 'Firing alert 2!',
+                message: 'Alert 2 fired.',
+              },
+              labels: {
+                severity: 'page',
+                source: 'alertingrule.loki.grafana.com',
+              },
+            },
+            {
+              alert: 'NeverFiringAlert',
+              expr: '1 < 0',
+              'for': '1m',
+              annotations: {
+                description: 'Does not fire!',
+                message: 'Alert not fired.',
+              },
+              labels: {
+                severity: 'page',
+                source: 'alertingrule.loki.grafana.com',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  rulesSLORecordingRule: {
+    apiVersion: 'loki.grafana.com/v1beta1',
+    kind: 'RecordingRule',
+    metadata: {
+      name: 'observatorium-loki-recording-rules-reloader-slo',
+      labels: {
+        tenant: 'rhobs',
+      },
+    },
+    spec: {
+      tenantID: 'rhobs',
+      groups: [
+        {
+          interval: '30s',
+          name: 'reloader-slo-record',
+          rules: [
+            {
+              record: 'AlwaysRecord',
+              expr: '1',
+              labels: {
+                test: 'slo-record',
+                source: 'recordingrule.loki.grafana.com',
+              },
+            },
+            {
+              record: 'NeverRecord',
+              expr: '0',
+              labels: {
+                test: 'slo-record',
+                source: 'recordingrule.loki.grafana.com',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   rulesObjstore:: rulesObjstore({
     local cfg = self,
     name: 'rules-objstore',
@@ -692,5 +791,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     if obs.obsctlReloader[name] != null
   } + {
     'observatorium-rules-slo-prom-rule': obs.rulesSLOPrometheusRule,
+    'observatorium-logs-rules-slo-alerting-rule': obs.rulesSLOAlertingRule,
+    'observatorium-logs-rules-slo-recording-rule': obs.rulesSLORecordingRule,
   },
 }

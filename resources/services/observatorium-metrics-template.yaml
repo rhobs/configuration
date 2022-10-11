@@ -45,6 +45,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: database-compactor
       app.kubernetes.io/instance: observatorium
@@ -749,6 +750,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: observatorium
@@ -1547,6 +1549,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
@@ -1625,6 +1628,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: query-layer
       app.kubernetes.io/instance: observatorium
@@ -1826,7 +1830,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-receive-controller
         app.kubernetes.io/part-of: observatorium
-- apiVersion: policy/v1beta1
+- apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:
     name: observatorium-thanos-receive-default
@@ -2112,6 +2116,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: database-write-hashring
       app.kubernetes.io/instance: observatorium
@@ -2179,6 +2184,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: observatorium
@@ -2662,6 +2668,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: object-store-gateway
       app.kubernetes.io/instance: observatorium

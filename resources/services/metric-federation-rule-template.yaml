@@ -33,6 +33,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation
@@ -496,6 +497,7 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
       app.kubernetes.io/instance: metric-federation

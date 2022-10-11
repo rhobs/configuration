@@ -137,7 +137,7 @@
           "subdir": "jsonnet/kube-thanos"
         }
       },
-      "version": "2d975ec1b26cd60e861dd464a06b64b079d6b19b"
+      "version": "main"
     },
     {
       "source": {

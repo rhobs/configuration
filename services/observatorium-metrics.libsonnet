@@ -1093,9 +1093,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     } + {
       ['observatorium-alertmanager-' + name]: thanos.alertmanager[name]
       for name in std.objectFields(thanos.alertmanager)
-    } + {
-      ['observatorium-volcano-' + name]: thanos.volcanoQuery[name]
-      for name in std.objectFields(thanos.volcanoQuery)
     },
   },
 }

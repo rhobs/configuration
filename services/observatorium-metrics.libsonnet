@@ -650,6 +650,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       commonLabels+:: {
         'app.kubernetes.io/instance': 'observatorium',
         'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/name': 'thanos-volcano-query',
       },
       replicas: 2,
       logLevel: '${THANOS_VOLCANO_LOG_LEVEL}',
@@ -1093,6 +1094,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     } + {
       ['observatorium-alertmanager-' + name]: thanos.alertmanager[name]
       for name in std.objectFields(thanos.alertmanager)
+    } + {
+      ['observatorium-volcano-' + name]: thanos.volcanoQuery[name]
+      for name in std.objectFields(thanos.volcanoQuery)
     },
   },
 }

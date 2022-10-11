@@ -9,25 +9,125 @@ evaluation_interval: 1m
 tests:
 - interval: 1m
   input_series:
-  - series: http_requests_total:burnrate5m{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}
-    values: '0 0 0 0 0 0 1 1 1'
-  - series: http_requests_total:burnrate1h{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}
-    values: '0 0 0 0 0 0 1 1 1'
+  # We test receive alerts here, but other paths have the exact same recording and alerting rules as well. So can be skipped.
+  # We also only test 1h and 5m windows here.
+  # Series for availability SLO alerts.
+  - series: http_requests_total{group="metricsv1",job="observatorium-observatorium-api",handler="receive",code="500"}
+    values: 2+0x20 2+2.3x130
+  - series: http_requests_total{group="metricsv1",job="observatorium-observatorium-api",handler="receive",code="200"}
+    values: 1+1.1x20 1+0x130
+  
+
+  # Check recording rules.
+  promql_expr_test:
+    # Availability recording rules.
+    # 5m.
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 5m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-api",handler="receive"}'
+        value: 0
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 10m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-api",handler="receive"}'
+        value: 0
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 30m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 60m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 90m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 120m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-api",handler="receive"}'
+        value: 1
+
+    # 1h.
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 5m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-api",handler="receive"}'
+        value: 0
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 10m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-api",handler="receive"}'
+        value: 0
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 30m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-api",handler="receive"}'
+        value: 4.736842105263158E-01
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 60m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-api",handler="receive"}'
+        value: 7.959183673469385E-01
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 90m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-api",handler="receive"}
+      eval_time: 120m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-api",handler="receive"}'
+        value: 1
+
+
+  # Check alerting rules.
   alert_rule_test:
-    # Alert is the same, but fired across various time ranges.
-  - eval_time: 4m
-    alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
-  - eval_time: 5m
-    alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
-  - eval_time: 10m
-    alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
-    exp_alerts:
-    - exp_labels:
-        handler: receive
-        job: observatorium-observatorium-api
-        service: telemeter
-        severity: high # critical for production
-      exp_annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
-        message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: 1)'
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn5mand1h
+    # Availability alerting rule.
+    - eval_time: 5m
+      alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
+    - eval_time: 10m
+      alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
+    - eval_time: 30m
+      alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-api
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: 1)'
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn5mand1h
+    - eval_time: 60m
+      alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-api
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: 1)'
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn5mand1h
+    - eval_time: 90m
+      alertname: ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-api
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/observatorium-api-write-metrics-errors.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: 'High error budget burn for group=metricsv1,handler=receive,job=observatorium-observatorium-api (current value: 1)'
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumapimetricserrorsslobudgetburn5mand1h
+
+  

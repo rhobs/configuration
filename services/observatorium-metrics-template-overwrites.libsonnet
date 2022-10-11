@@ -314,6 +314,45 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
       },
     },
 
+    volcanoQuery+:: {
+      local query = self,
+      local oauth = oauthProxy({
+        name: 'query',
+        image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
+        upstream: 'http://localhost:9090',
+        ports: { https: 9091 },
+        serviceAccountName: thanos.config.serviceAccountName,
+        sessionSecretName: 'query-proxy',
+        resources: {
+          requests: {
+            cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+            memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+            memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
+          },
+        },
+      }),
+
+      proxySecret: oauth.proxySecret {
+        metadata+: { labels+: query.config.commonLabels },
+      },
+
+      service+: oauth.service,
+
+      deployment+: oauth.deployment + jaegerAgentSidecar.deployment {
+        spec+: {
+          securityContext: {},
+          template+: {
+            spec+: {
+              securityContext: {},
+            },
+          },
+        },
+      },
+    },
+
     queryFrontendCache+:: {
       statefulSet+: {
         spec+: {

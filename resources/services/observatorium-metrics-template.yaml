@@ -1004,6 +1004,7 @@ objects:
     name: observatorium-volcano-query
   spec:
     replicas: 2
+    securityContext: {}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-layer
@@ -1017,6 +1018,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-query
           app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/tracing: jaeger-agent
           app.kubernetes.io/version: ${THANOS_VOLCANO_IMAGE_TAG}
       spec:
         affinity:
@@ -1084,6 +1086,8 @@ objects:
             name: grpc
           - containerPort: 9090
             name: http
+          - containerPort: 9091
+            name: https
           readinessProbe:
             failureThreshold: 20
             httpGet:
@@ -1102,20 +1106,108 @@ objects:
           volumeMounts:
           - mountPath: /etc/thanos/sd
             name: file-sd
+        - args:
+          - -provider=openshift
+          - -https-address=:9091
+          - -http-address=
+          - -email-domain=*
+          - -upstream=http://localhost:9090
+          - -openshift-service-account=${SERVICE_ACCOUNT_NAME}
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
+          - -tls-cert=/etc/tls/private/tls.crt
+          - -tls-key=/etc/tls/private/tls.key
+          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret-file=/etc/proxy/secrets/session_secret
+          - -openshift-ca=/etc/pki/tls/cert.pem
+          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          image: ${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}
+          name: oauth-proxy
+          ports:
+          - containerPort: 9091
+            name: https
+          resources:
+            limits:
+              cpu: ${OAUTH_PROXY_CPU_LIMITS}
+              memory: ${OAUTH_PROXY_MEMORY_LIMITS}
+            requests:
+              cpu: ${OAUTH_PROXY_CPU_REQUEST}
+              memory: ${OAUTH_PROXY_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: query-tls
+            readOnly: false
+          - mountPath: /etc/proxy/secrets
+            name: query-proxy
+            readOnly: false
+        - args:
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: ${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+          - containerPort: 6831
+            name: jaeger-thrift
+          - containerPort: 14271
+            name: metrics
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
-        serviceAccountName: observatorium-volcano-query
+        securityContext: {}
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         terminationGracePeriodSeconds: 120
         volumes:
         - configMap:
             name: thanos-query-file-sd
           name: file-sd
+        - name: query-tls
+          secret:
+            secretName: query-tls
+        - name: query-proxy
+          secret:
+            secretName: query-proxy
+- apiVersion: v1
+  data:
+    session_secret: c2VjcmV0
+  kind: Secret
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_VOLCANO_IMAGE_TAG}
+    name: query-proxy
+  type: Opaque
 - apiVersion: v1
   kind: Service
   metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: query-tls
     labels:
       app.kubernetes.io/component: query-layer
       app.kubernetes.io/instance: observatorium
@@ -1131,6 +1223,9 @@ objects:
     - name: http
       port: 9090
       targetPort: 9090
+    - name: https
+      port: 9091
+      targetPort: 9091
     selector:
       app.kubernetes.io/component: query-layer
       app.kubernetes.io/instance: observatorium

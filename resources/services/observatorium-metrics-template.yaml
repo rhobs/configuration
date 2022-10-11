@@ -992,6 +992,188 @@ objects:
           requests:
             storage: ${THANOS_RULER_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_VOLCANO_IMAGE_TAG}
+    name: observatorium-volcano-query
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/part-of: observatorium
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: query-layer
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: thanos-query
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ${THANOS_VOLCANO_IMAGE_TAG}
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-query
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - query
+          - --grpc-address=0.0.0.0:10901
+          - --http-address=0.0.0.0:9090
+          - --log.level=${THANOS_VOLCANO_LOG_LEVEL}
+          - --log.format=logfmt
+          - --query.replica-label=replica
+          - --query.replica-label=rule_replica
+          - --query.replica-label=prometheus_replica
+          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
+          - --store=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
+          - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
+          - --rule=dnssrv+_grpc._tcp.observatorium-thanos-stateless-rule.${NAMESPACE}.svc.cluster.local
+          - --web.prefix-header=X-Forwarded-Prefix
+          - --query.timeout=15m
+          - --query.lookback-delta=15m
+          - |-
+            --tracing.config="config":
+              "sampler_param": 2
+              "sampler_type": "ratelimiting"
+              "service_name": "thanos-query"
+            "type": "JAEGER"
+          - --query.auto-downsampling
+          - --query.promql-engine=thanos
+          - --store.sd-files=/etc/thanos/sd/file_sd.yaml
+          env:
+          - name: HOST_IP_ADDRESS
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          image: ${THANOS_VOLCANO_IMAGE}:${THANOS_VOLCANO_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 4
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            periodSeconds: 30
+          name: thanos-query
+          ports:
+          - containerPort: 10901
+            name: grpc
+          - containerPort: 9090
+            name: http
+          readinessProbe:
+            failureThreshold: 20
+            httpGet:
+              path: /-/ready
+              port: 9090
+              scheme: HTTP
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: ${THANOS_VOLCANO_CPU_LIMIT}
+              memory: ${THANOS_VOLCANO_MEMORY_LIMIT}
+            requests:
+              cpu: ${THANOS_VOLCANO_CPU_REQUEST}
+              memory: ${THANOS_VOLCANO_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/thanos/sd
+            name: file-sd
+        nodeSelector:
+          kubernetes.io/os: linux
+        securityContext:
+          fsGroup: 65534
+          runAsUser: 65534
+        serviceAccountName: observatorium-volcano-query
+        terminationGracePeriodSeconds: 120
+        volumes:
+        - configMap:
+            name: thanos-query-file-sd
+          name: file-sd
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_VOLCANO_IMAGE_TAG}
+    name: observatorium-volcano-query
+  spec:
+    ports:
+    - name: grpc
+      port: 10901
+      targetPort: 10901
+    - name: http
+      port: 9090
+      targetPort: 9090
+    selector:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    annotations: {}
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${THANOS_VOLCANO_IMAGE_TAG}
+    name: observatorium-volcano-query
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: observatorium-volcano-query
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     file_sd.yaml: '- targets: ${THANOS_QUERIER_FILE_SD_TARGETS}'
@@ -4406,3 +4588,17 @@ parameters:
   value: quay.io/openshift/origin-configmap-reloader
 - name: CONFIGMAP_RELOADER_IMAGE_TAG
   value: 4.5.0
+- name: THANOS_VOLCANO_IMAGE_TAG
+  value: main-2022-10-07-a4e33415
+- name: THANOS_VOLCANO_IMAGE
+  value: quay.io/thanos/thanos
+- name: THANOS_VOLCANO_CPU_LIMIT
+  value: "1"
+- name: THANOS_VOLCANO_CPU_REQUEST
+  value: 100m
+- name: THANOS_VOLCANO_LOG_LEVEL
+  value: debug
+- name: THANOS_VOLCANO_MEMORY_LIMIT
+  value: 1Gi
+- name: THANOS_VOLCANO_MEMORY_REQUEST
+  value: 256Mi

@@ -124,5 +124,12 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_STORE_REPLICAS', value: '5' },
     { name: 'CONFIGMAP_RELOADER_IMAGE', value: 'quay.io/openshift/origin-configmap-reloader' },
     { name: 'CONFIGMAP_RELOADER_IMAGE_TAG', value: '4.5.0' },
+    { name: 'THANOS_VOLCANO_IMAGE_TAG', value: 'main-2022-10-07-a4e33415' },
+    { name: 'THANOS_VOLCANO_IMAGE', value: 'quay.io/thanos/thanos' },
+    { name: 'THANOS_VOLCANO_CPU_LIMIT', value: '1' },
+    { name: 'THANOS_VOLCANO_CPU_REQUEST', value: '100m' },
+    { name: 'THANOS_VOLCANO_LOG_LEVEL', value: 'debug' },
+    { name: 'THANOS_VOLCANO_MEMORY_LIMIT', value: '1Gi' },
+    { name: 'THANOS_VOLCANO_MEMORY_REQUEST', value: '256Mi' },
   ],
 }

@@ -1000,13 +1000,6 @@ objects:
         - "metrics"
         "tenants":
         - "reference-addon"
-      - "name": "hypershift-platform-metrics-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "hypershift-platform"
       - "name": "hypershift-platform-metrics-read"
         "permissions":
         - "read"

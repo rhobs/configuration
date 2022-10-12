@@ -802,7 +802,6 @@ objects:
           "name": "service-account-observatorium-reference-addon"
       - "name": "observatorium-hypershift-platform"
         "roles":
-        - "hypershift-platform-metrics-write"
         - "hypershift-platform-metrics-read"
         "subjects":
         - "kind": "user"

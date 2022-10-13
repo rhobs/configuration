@@ -356,6 +356,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       namespace: '${NAMESPACE}',
       commonLabels+:: thanos.config.commonLabels,
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      livenessProbe+: {
+        timeoutSeconds: 30,
+      },
       ignoreDeletionMarksDelay: '24h',
       volumeClaimTemplate: {
         spec: {

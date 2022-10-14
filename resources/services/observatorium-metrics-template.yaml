@@ -3119,6 +3119,7 @@ objects:
               port: 10902
               scheme: HTTP
             periodSeconds: 30
+            timeoutSeconds: 30
           name: thanos-store
           ports:
           - containerPort: 10901
@@ -3366,6 +3367,7 @@ objects:
               port: 10902
               scheme: HTTP
             periodSeconds: 30
+            timeoutSeconds: 30
           name: thanos-store
           ports:
           - containerPort: 10901
@@ -3613,6 +3615,7 @@ objects:
               port: 10902
               scheme: HTTP
             periodSeconds: 30
+            timeoutSeconds: 30
           name: thanos-store
           ports:
           - containerPort: 10901
@@ -3860,6 +3863,7 @@ objects:
               port: 10902
               scheme: HTTP
             periodSeconds: 30
+            timeoutSeconds: 30
           name: thanos-store
           ports:
           - containerPort: 10901
@@ -4107,6 +4111,7 @@ objects:
               port: 10902
               scheme: HTTP
             periodSeconds: 30
+            timeoutSeconds: 30
           name: thanos-store
           ports:
           - containerPort: 10901
@@ -4354,6 +4359,7 @@ objects:
               port: 10902
               scheme: HTTP
             periodSeconds: 30
+            timeoutSeconds: 30
           name: thanos-store
           ports:
           - containerPort: 10901

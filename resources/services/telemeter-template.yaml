@@ -126,7 +126,12 @@ objects:
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
+          - --whitelist={__name__="cluster:openshift_route_info:tls_termination:sum"}
           - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:avg"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:max"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:median"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:min"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:velero_backup_total:max"}
           - --whitelist={__name__="cluster:velero_restore_total:max"}
@@ -363,7 +368,12 @@ objects:
           - --whitelist={__name__="cluster:network_attachment_definition_enabled_instance_up:max"}
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
+          - --whitelist={__name__="cluster:openshift_route_info:tls_termination:sum"}
           - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:avg"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:max"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:median"}
+          - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:min"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
           - --whitelist={__name__="cluster:velero_backup_total:max"}
           - --whitelist={__name__="cluster:velero_restore_total:max"}

@@ -126,6 +126,7 @@
   "{__name__=\"openshift_csi_share_mount_failures_total\"}",
   "{__name__=\"openshift_csi_share_mount_requests_total\"}",
   "{__name__=\"openshift_csi_share_secret\"}",
+  "{__name__=\"os_image_url_override:sum\"}",
   "{__name__=\"platform:hypershift_hostedclusters:max\"}",
   "{__name__=\"platform:hypershift_nodepools:max\"}",
   "{__name__=\"pod:eo_es_shards_total:max\"}",

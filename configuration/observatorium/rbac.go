@@ -208,7 +208,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		name:    "observatorium-hypershift-platform",
 		tenant:  hypershiftTenant,
 		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Read}, // Read only.
+		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
 	})
 

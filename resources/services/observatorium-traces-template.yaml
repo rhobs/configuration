@@ -31,6 +31,44 @@ objects:
       - data
       storage: {}
     redundancyPolicy: ${ELASTICSEARCH_REDUNDANCY_POLICY}
+- apiVersion: monitoring.coreos.com/v1
+  kind: PodMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: rhobs
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-jaeger-rhobs-admin
+    namespace: ${NAMESPACE}
+  spec:
+    namespaceSelector: {}
+    podMetricsEndpoints:
+    - interval: 2s
+      port: admin-http
+    selector:
+      matchLabels:
+        app: jaeger
+        app.kubernetes.io/instance: observatorium-jaeger-rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: PodMonitor
+  metadata:
+    labels:
+      app.kubernetes.io/component: telemeter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: otelcol
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-jaeger-telemeter-admin
+    namespace: ${NAMESPACE}
+  spec:
+    namespaceSelector: {}
+    podMetricsEndpoints:
+    - interval: 2s
+      port: admin-http
+    selector:
+      matchLabels:
+        app: jaeger
+        app.kubernetes.io/instance: observatorium-jaeger-telemeter
 - apiVersion: jaegertracing.io/v1
   kind: Jaeger
   metadata:
@@ -125,6 +163,19 @@ objects:
             level: "basic"
     image: ${OPENTELEMETRY_COLLECTOR_IMAGE}:${OPENTELEMETRY_COLLECTOR_IMAGE_TAG}
     mode: deployment
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: otel-observatorium
+    namespace: ${NAMESPACE}
+  spec:
+    endpoints:
+    - port: monitoring
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: opentelemetry-collector
+        app.kubernetes.io/instance: ${NAMESPACE}.observatorium-otel
+        app.kubernetes.io/name: observatorium-otel-collector-monitoring
 parameters:
 - name: NAMESPACE
   value: observatorium-traces

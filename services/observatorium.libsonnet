@@ -167,6 +167,8 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
       managedTenants: '${MANAGED_TENANTS}',
     },
+    // Tenants normally follows a lower-case format.
+    // However tenant attribute in below map items need to be uppercase to be the proper prefix for the env variable to create.
     tenantSecretMap: [
       {
         tenant: 'RHOBS',
@@ -179,7 +181,16 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         secret: '${OSD_RELOADER_SECRET_NAME}',
         idKey: 'client-id',
         secretKey: 'client-secret',
-        // Marking as optional here, as OSD only exists on mst,
+        // Marking as optional here, as osd tenant only exists on mst,
+        // so this should not block pod start.
+        optional: true,
+      },
+      {
+        tenant: 'HYPERSHIFT-PLATFORM',
+        secret: '${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}',
+        idKey: 'client-id',
+        secretKey: 'client-secret',
+        // Marking as optional here, as hypershift-platform tenant only exists on mst,
         // so this should not block pod start.
         optional: true,
       },

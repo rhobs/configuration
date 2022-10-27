@@ -273,6 +273,12 @@ objects:
                 key: client-id
                 name: ${OSD_RELOADER_SECRET_NAME}
                 optional: true
+          - name: HYPERSHIFT-PLATFORM_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: ${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}
+                optional: true
           - name: RHOBS_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
@@ -283,6 +289,12 @@ objects:
               secretKeyRef:
                 key: client-secret
                 name: ${OSD_RELOADER_SECRET_NAME}
+                optional: true
+          - name: HYPERSHIFT-PLATFORM_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: ${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}
                 optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
@@ -1655,6 +1667,8 @@ parameters:
   value: rhobs-tenant
 - name: OSD_RELOADER_SECRET_NAME
   value: observatorium-observatorium-mst-api
+- name: HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME
+  value: rhobs-hypershift-platform-tenant
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG

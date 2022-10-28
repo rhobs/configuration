@@ -308,6 +308,14 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
           template+: {
             spec+: {
               securityContext: {},
+              containers: [
+                if c.name == 'thanos-query' then c {
+                  args+: [
+                    '--grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}',
+                  ],
+                } else c
+                for c in super.containers
+              ],
             },
           },
         },

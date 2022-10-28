@@ -42,8 +42,8 @@ validate: $(OC)
 
 .PHONE: sync-crds
 sync-crds: $(YQ) $(GOJQ)
-	@curl --no-progress-meter https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/manifests/loki.grafana.com_alertingrules.yaml | $(YQ) eval -j > $(CRD_DIR)/loki.grafana.com_alertingrules.libsonnet
-	@curl --no-progress-meter https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/manifests/loki.grafana.com_recordingrules.yaml | $(YQ) eval -j > $(CRD_DIR)/loki.grafana.com_recordingrules.libsonnet
+	@curl https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/manifests/loki.grafana.com_alertingrules.yaml | $(YQ) eval -j > $(CRD_DIR)/loki.grafana.com_alertingrules.libsonnet
+	@curl https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/manifests/loki.grafana.com_recordingrules.yaml | $(YQ) eval -j > $(CRD_DIR)/loki.grafana.com_recordingrules.libsonnet
 	$(MAKE) format
 
 .PHONY: prometheusrules

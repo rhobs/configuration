@@ -1,0 +1,236 @@
+---
+$schema: /app-interface/prometheus-rule-test-1.yml
+
+rule_files:
+- /observability/prometheusrules/rhobs-slos-mst-stage.prometheusrules.yaml
+
+evaluation_interval: 1m
+
+tests:
+- interval: 1m
+  input_series:
+  # We test receive alerts here, but other paths have the exact same recording and alerting rules as well. So can be skipped.
+  # We also only test 1h and 5m windows here.
+  # Series for availability SLO alerts.
+  - series: http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code="500"}
+    values: 2+2.3x150
+  - series: http_requests_total{job="observatorium-observatorium-mst-api",handler="receive",code="200"}
+    values: 1+1.1x20 1+0x130
+  
+  # Series for latency SLO alerts.
+  - series: http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",handler="receive",le="5",code="200"}
+    values: 1+0x20 1+1.1x130
+  - series: http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",handler="receive",code="200"}
+    values: 2+2.3x150
+
+
+  # Check recording rules.
+  promql_expr_test:
+    # Availability recording rules.
+    # 5m.
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 5m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 6.76470588235294E-01
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 10m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 6.764705882352943E-01
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 30m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 60m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 90m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate5m{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 120m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate5m", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 1
+
+    # 1h.
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 5m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 6.749999999999999E-01
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 10m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 6.756756756756758E-01
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 30m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 7.522514568250043E-01
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 60m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 8.571428571428571E-01
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 90m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 1
+    - expr: http_requests_total:burnrate1h{job="observatorium-observatorium-mst-api",handler="receive"}
+      eval_time: 120m
+      exp_samples:
+      - labels: '{__name__="http_requests_total:burnrate1h", job="observatorium-observatorium-mst-api",handler="receive"}'
+        value: 1
+
+    # Latency recording rules.
+    # 5m.
+    - expr: latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 5m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate5m", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 1
+    - expr: latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 10m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate5m", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 1
+    - expr: latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 30m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate5m", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 5.217391304347823E-01
+    - expr: latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 90m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate5m", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 5.217391304347874E-01
+    - expr: latencytarget:http_request_duration_seconds:rate5m{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 120m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate5m", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 5.217391304347874E-01
+
+    # 1h.
+    - expr: latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 5m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate1h", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 1
+    - expr: latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 10m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate1h", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 1
+    - expr: latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 30m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate1h", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 8.582394366197182E-01
+    - expr: latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 90m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate1h", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 5.217391304347838E-01
+    - expr: latencytarget:http_request_duration_seconds:rate1h{job="observatorium-observatorium-mst-api",handler="receive",latency="5"}
+      eval_time: 120m
+      exp_samples:
+      - labels: '{__name__="latencytarget:http_request_duration_seconds:rate1h", job="observatorium-observatorium-mst-api",handler="receive",latency="5"}'
+        value: 5.217391304347865E-01
+
+  # Check alerting rules.
+  alert_rule_test:
+    # Availability alerting rule.
+    - eval_time: 5m
+      alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
+    - eval_time: 10m
+      alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
+    - eval_time: 30m
+      alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-mst-api
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: API /receive handler is burning too much error budget to guarantee availability SLOs
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning5mand1h
+    - eval_time: 60m
+      alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-mst-api
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: API /receive handler is burning too much error budget to guarantee availability SLOs
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning5mand1h
+    - eval_time: 90m
+      alertname: APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-mst-api
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-availability.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: API /receive handler is burning too much error budget to guarantee availability SLOs
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswriteavailabilityerrorbudgetburning5mand1h
+
+    # Latency alerting rule.
+    - eval_time: 5m
+      alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-mst-api
+          latency: "5"
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: 1)'
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning1h
+    - eval_time: 10m
+      alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-mst-api
+          latency: "5"
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: 1)'
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning1h
+    - eval_time: 30m
+      alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
+      exp_alerts:
+      - exp_labels:
+          handler: receive
+          job: observatorium-observatorium-mst-api
+          latency: "5"
+          service: telemeter
+          severity: high # critical for production
+        exp_annotations:
+          dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/rhobs-mst-api-metrics-write-latency.slo?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace=&var-job=All&var-pod=All&var-interval=5m
+          message: 'High requests latency budget burn for job=observatorium-observatorium-mst-api,handler=receive,code!~^4..$,latency=5 (current value: 0.8696983386036239)'
+          runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#apimetricswritelatencyerrorbudgetburning1h
+    - eval_time: 60m
+      alertname: APIMetricsWriteLatencyErrorBudgetBurning1h
+    - eval_time: 90m
+      alertname: APIMetricsWriteLatencyErrorBudgetBurning1h

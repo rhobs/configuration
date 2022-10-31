@@ -5,18 +5,54 @@
 - Observatorium
   - [Verify components are running](#verify-components-are-running)
 - Observatorium Service Level Objectives
-  - [TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning](#telemeterservermetricswriteavailabilityerrorbudgetburning)
-  - [TelemeterServerMetricsWriteLatencyErrorBudgetBurning](#telemeterservermetricswritelatencyerrorbudgetburning)
-  - [APIMetricsWriteAvailabilityErrorBudgetBurning](#apimetricswriteavailabilityerrorbudgetburning)
-  - [APIMetricsWriteLatencyErrorBudgetBurning](#apimetricswritelatencyerrorbudgetburning)
-  - [APIMetricsReadAvailabilityErrorBudgetBurning](#apimetricsreadavailabilityerrorbudgetburning)
-  - [APIMetricsReadLatencyErrorBudgetBurning](#apimetricsreadlatencyerrorbudgetburning)
-  - [APIRulesRawWriteAvailabilityErrorBudgetBurning](#apirulesrawwriteavailabilityerrorbudgetburning)
-  - [APIRulesSyncAvailabilityErrorBudgetBurning](#apirulessyncavailabilityerrorbudgetburning)
-  - [APIRulesReadAvailabilityErrorBudgetBurning](#apirulesreadavailabilityerrorbudgetburning)
-  - [APIRulesRawReadAvailabilityErrorBudgetBurning](#apirulesrawreadavailabilityerrorbudgetburning)
-  - [APIAlertmanagerAvailabilityErrorBudgetBurning](#apialertmanageravailabilityerrorbudgetburning)
-  - [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning](#apialertmanagernotificationsavailabilityerrorbudgetburning)
+  - [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning5mand1h)
+  - [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning30mand6h](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning30mand6h)
+  - [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning2hand1d](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning2hand1d)
+  - [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning6hand3d](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning6hand3d)
+  - [TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning1h](#telemeterservermetricsuploadwritelatencyerrorbudgetburning1h)
+  - [TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning3d](#telemeterservermetricsuploadwritelatencyerrorbudgetburning3d)
+  - [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning5mand1h)
+  - [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning30mand6h](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning30mand6h)
+  - [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning2hand1d](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning2hand1d)
+  - [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning6hand3d](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning6hand3d)
+  - [TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning1h](#telemeterservermetricsreceivewritelatencyerrorbudgetburning1h)
+  - [TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning3d](#telemeterservermetricsreceivewritelatencyerrorbudgetburning3d)
+  - [APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h](#apimetricswriteavailabilityerrorbudgetburning5mand1h)
+  - [APIMetricsWriteAvailabilityErrorBudgetBurning30mand6h](#apimetricswriteavailabilityerrorbudgetburning30mand6h)
+  - [APIMetricsWriteAvailabilityErrorBudgetBurning2hand1d](#apimetricswriteavailabilityerrorbudgetburning2hand1d)
+  - [APIMetricsWriteAvailabilityErrorBudgetBurning6hand3d](#apimetricswriteavailabilityerrorbudgetburning6hand3d)
+  - [APIMetricsWriteLatencyErrorBudgetBurning1h](#apimetricswritelatencyerrorbudgetburning1h)
+  - [APIMetricsWriteLatencyErrorBudgetBurning3d](#apimetricswritelatencyerrorbudgetburning3d)
+  - [APIMetricsReadAvailabilityErrorBudgetBurning5mand1h](#apimetricsreadavailabilityerrorbudgetburning5mand1h)
+  - [APIMetricsReadAvailabilityErrorBudgetBurning30mand6h](#apimetricsreadavailabilityerrorbudgetburning30mand6h)
+  - [APIMetricsReadAvailabilityErrorBudgetBurning2hand1d](#apimetricsreadavailabilityerrorbudgetburning2hand1d)
+  - [APIMetricsReadAvailabilityErrorBudgetBurning6hand3d](#apimetricsreadavailabilityerrorbudgetburning6hand3d)
+  - [APIMetricsReadLatencyErrorBudgetBurning1h](#apimetricsreadlatencyerrorbudgetburning1h)
+  - [APIMetricsReadLatencyErrorBudgetBurning3d](#apimetricsreadlatencyerrorbudgetburning3d)
+  - [APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h](#apirulesrawwriteavailabilityerrorbudgetburning5mand1h)
+  - [APIRulesRawWriteAvailabilityErrorBudgetBurning30mand6h](#apirulesrawwriteavailabilityerrorbudgetburning30mand6h)
+  - [APIRulesRawWriteAvailabilityErrorBudgetBurning2hand1d](#apirulesrawwriteavailabilityerrorbudgetburning2hand1d)
+  - [APIRulesRawWriteAvailabilityErrorBudgetBurning6hand3d](#apirulesrawwriteavailabilityerrorbudgetburning6hand3d)
+  - [APIRulesSyncAvailabilityErrorBudgetBurning5mand1h](#apirulessyncavailabilityerrorbudgetburning5mand1h)
+  - [APIRulesSyncAvailabilityErrorBudgetBurning30mand6h](#apirulessyncavailabilityerrorbudgetburning30mand6h)
+  - [APIRulesSyncAvailabilityErrorBudgetBurning2hand1d](#apirulessyncavailabilityerrorbudgetburning2hand1d)
+  - [APIRulesSyncAvailabilityErrorBudgetBurning6hand3d](#apirulessyncavailabilityerrorbudgetburning6hand3d)
+  - [APIRulesReadAvailabilityErrorBudgetBurning5mand1h](#apirulesreadavailabilityerrorbudgetburning5mand1h)
+  - [APIRulesReadAvailabilityErrorBudgetBurning30mand6h](#apirulesreadavailabilityerrorbudgetburning30mand6h)
+  - [APIRulesReadAvailabilityErrorBudgetBurning2hand1d](#apirulesreadavailabilityerrorbudgetburning2hand1d)
+  - [APIRulesReadAvailabilityErrorBudgetBurning6hand3d](#apirulesreadavailabilityerrorbudgetburning6hand3d)
+  - [APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h](#apirulesrawreadavailabilityerrorbudgetburning5mand1h)
+  - [APIRulesRawReadAvailabilityErrorBudgetBurning30mand6h](#apirulesrawreadavailabilityerrorbudgetburning30mand6h)
+  - [APIRulesRawReadAvailabilityErrorBudgetBurning2hand1d](#apirulesrawreadavailabilityerrorbudgetburning2hand1d)
+  - [APIRulesRawReadAvailabilityErrorBudgetBurning6hand3d](#apirulesrawreadavailabilityerrorbudgetburning6hand3d)
+  - [APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h](#apialertmanageravailabilityerrorbudgetburning5mand1h)
+  - [APIAlertmanagerAvailabilityErrorBudgetBurning30mand6h](#apialertmanageravailabilityerrorbudgetburning30mand6h)
+  - [APIAlertmanagerAvailabilityErrorBudgetBurning2hand1d](#apialertmanageravailabilityerrorbudgetburning2hand1d)
+  - [APIAlertmanagerAvailabilityErrorBudgetBurning6hand3d](#apialertmanageravailabilityerrorbudgetburning6hand3d)
+  - [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h](#apialertmanagernotificationsavailabilityerrorbudgetburning5mand1h)
+  - [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning30mand6h](#apialertmanagernotificationsavailabilityerrorbudgetburning30mand6h)
+  - [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning2hand1d](#apialertmanagernotificationsavailabilityerrorbudgetburning2hand1d)
+  - [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning6hand3d](#apialertmanagernotificationsavailabilityerrorbudgetburning6hand3d)
 - Observatorium Proactive Monitoring
   - [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
   - [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
@@ -102,15 +138,15 @@ Check targets are UP in app-sre Prometheus:
 - `thanos-compactor`: <https://prometheus.telemeter-prod-01.devshift.net/targets#job-app-sre-observability-production%2fobservatorium-thanos-compactor-production%2f0>
 
 ---
-## TelemeterServerMetricsWriteAvailabilityErrorBudgetBurning
+## TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-Telemeter Server is currently failing to ingest metrics data. 
+Telemeter Server is currently failing to ingest metrics data via /upload endpoint over given time window. 
 
 ### Summary
 
-Telemeter Server is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget.
+Telemeter Server is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget when ingesting metrics via /upload path.
 
 ### Severity
 
@@ -128,6 +164,7 @@ This alert indicates there is a problem on the metrics write path, so we need to
   * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
   * Check the logs of Telemeter Server pods.
     * Telemeter Server should log any 5XX requests.
+  * Check authentication failures if any.
 * Check on the health of the API.
   * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
   * Check the logs on the API pods.
@@ -136,15 +173,74 @@ This alert indicates there is a problem on the metrics write path, so we need to
   * Check the logs of the Thanos Receive pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
-## TelemeterServerMetricsWriteLatencyErrorBudgetBurning
+## TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning30mand6h
+
+See [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning5mand1h).
+
+## TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning2hand1d
+
+See [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning5mand1h).
+
+## TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning6hand3d
+
+See [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning5mand1h).
+
+## TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-Telemeter Server is taking longer than expected to ingest metrics data.
+Telemeter Server is currently failing to ingest metrics data via /metrics/v1/receive endpoint over given time window. 
 
 ### Summary
 
-Telemeter Server is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
+Telemeter Server is returning a high-enough level of 5XX responses to write requests that we are depleting our SLO error budget when ingesting metrics via /metrics/v1/receive path.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+This alert indicates there is a problem on the metrics write path, so we need to verify the health of each of the involved components.
+
+* Check on the health of Telemeter Server
+  * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
+  * Check the logs of Telemeter Server pods.
+    * Telemeter Server should log any 5XX requests.
+  * Telemeter relays requests only in case of /metrics/v1/receive endpoint. Check [docs](https://github.com/openshift/telemeter/blob/master/README.md).
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning30mand6h
+
+See [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning5mand1h).
+
+## TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning2hand1d
+
+See [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning5mand1h).
+
+## TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning6hand3d
+
+See [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning5mand1h](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning5mand1h).
+
+## TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning1h
+
+### Impact
+
+Telemeter Server /upload endpoint is taking longer than expected to ingest metrics data over given time window.
+
+### Summary
+
+Telemeter Server /upload is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
 
 ### Severity
 
@@ -169,11 +265,53 @@ Telemeter Server is returning a high-enough level of slow responses to write req
 * Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
-## APIMetricsWriteAvailabilityErrorBudgetBurning
+## TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning3d
+
+See [TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning1h](#telemeterservermetricsuploadwritelatencyerrorbudgetburning1h).
+
+## TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning1h
 
 ### Impact
 
-API is currently failing to ingest metrics data.
+Telemeter Server /metrics/v1/receive endpoint is taking longer than expected to ingest metrics data over given time window.
+
+### Summary
+
+Telemeter Server /metrics/v1/receive is returning a high-enough level of slow responses to write requests that we are depleting our SLO error budget.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
+
+### Steps
+
+* Check on the health of Telemeter Server
+  * Check the Telemeter [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADJ/telemeter)
+  * Check the logs of Telemeter Server pods.
+    * Telemeter Server should log any 5XX requests.
+  * Telemeter relays requests only in case of /metrics/v1/receive endpoint. Check [docs](https://github.com/openshift/telemeter/blob/master/README.md).
+* Check on the health of the API.
+  * Check the API [dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api)
+  * Check the logs on the API pods.
+* Check on the health of Thanos Receive.
+  * Check the Thanos Receive [dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive)
+  * Check the logs of the Thanos Receive pods.
+* Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
+* Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning3d
+
+See [TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning1h](#telemeterservermetricsreceivewritelatencyerrorbudgetburning1h).
+
+## APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h
+
+### Impact
+
+API is currently failing to ingest metrics data across given time window.
 
 ### Summary
 
@@ -197,7 +335,19 @@ API is returning a high-enough level of 5XX responses to write requests that we 
   * Check the logs of the Thanos Receive pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
-## APIMetricsWriteLatencyErrorBudgetBurning
+## APIMetricsWriteAvailabilityErrorBudgetBurning30mand6h
+
+See [APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h](#apimetricswriteavailabilityerrorbudgetburning5mand1h).
+
+## APIMetricsWriteAvailabilityErrorBudgetBurning2hand1d
+
+See [APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h](#apimetricswriteavailabilityerrorbudgetburning5mand1h).
+
+## APIMetricsWriteAvailabilityErrorBudgetBurning6hand3d
+
+See [APIMetricsWriteAvailabilityErrorBudgetBurning5mand1h](#apimetricswriteavailabilityerrorbudgetburning5mand1h).
+
+## APIMetricsWriteLatencyErrorBudgetBurning1h
 
 ### Impact
 
@@ -225,11 +375,15 @@ API is returning a high-enough level of slow responses to write requests that we
   * Check the logs of the Thanos Receive pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
-## APIMetricsReadAvailabilityErrorBudgetBurning
+## APIMetricsWriteLatencyErrorBudgetBurning3d
+
+See [APIMetricsWriteLatencyErrorBudgetBurning1h](#apimetricswritelatencyerrorbudgetburning1h).
+
+## APIMetricsReadAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-API is currently failing to respond to metrics read requests.
+API is currently failing to respond to metrics read requests in given time window.
 
 ### Summary
 
@@ -259,7 +413,19 @@ API is returning a high-enough level of 5XX responses that we are depleting our 
   * Check the logs of the Thanos Store pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
-## APIMetricsReadLatencyErrorBudgetBurning
+## APIMetricsReadAvailabilityErrorBudgetBurning30mand6h
+
+See [APIMetricsReadAvailabilityErrorBudgetBurning5mand1h](#apimetricsreadavailabilityerrorbudgetburning5mand1h).
+
+## APIMetricsReadAvailabilityErrorBudgetBurning2hand1d
+
+See [APIMetricsReadAvailabilityErrorBudgetBurning5mand1h](#apimetricsreadavailabilityerrorbudgetburning5mand1h).
+
+## APIMetricsReadAvailabilityErrorBudgetBurning6hand3d
+
+See [APIMetricsReadAvailabilityErrorBudgetBurning5mand1h](#apimetricsreadavailabilityerrorbudgetburning5mand1h).
+
+## APIMetricsReadLatencyErrorBudgetBurning1h
 
 ### Impact
 
@@ -294,12 +460,16 @@ API is returning a high-enough level of slow responses to read requests that we 
 * Find and inspect a slow query in [Jaeger](https://observatorium-jaeger.api.openshift.com/search)
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
+## APIMetricsReadLatencyErrorBudgetBurning3d
+
+See [APIMetricsReadLatencyErrorBudgetBurning1h](#apimetricsreadlatencyerrorbudgetburning1h).
+
 ---
-## APIRulesRawWriteAvailabilityErrorBudgetBurning
+## APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-API /rules/raw is currently failing to ingest rules.
+API /rules/raw is currently failing to ingest rules in given time window.
 
 ### Summary
 
@@ -319,12 +489,24 @@ API /rules/raw is returning a high-enough level of 5XX responses to write reques
   * Check the logs on the API pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
+## APIRulesRawWriteAvailabilityErrorBudgetBurning30mand6h
+
+See [APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h](#apirulesrawwriteavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesRawWriteAvailabilityErrorBudgetBurning2hand1d
+
+See [APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h](#apirulesrawwriteavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesRawWriteAvailabilityErrorBudgetBurning6hand3d
+
+See [APIRulesRawWriteAvailabilityErrorBudgetBurning5mand1h](#apirulesrawwriteavailabilityerrorbudgetburning5mand1h).
+
 ---
-## APIRulesSyncAvailabilityErrorBudgetBurning
+## APIRulesSyncAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-API is currently failing to sync rules that were ingested via /rules/raw endpoint to Thanos Rule.
+API is currently failing to sync rules that were ingested via /rules/raw endpoint to Thanos Rule in given time window.
 
 ### Summary
 
@@ -344,12 +526,24 @@ API is returning a high-enough level of 5XX responses of the /reload endpoint th
   * Check the logs on the Thanos Rule pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
+## APIRulesSyncAvailabilityErrorBudgetBurning30mand6h
+
+See [APIRulesSyncAvailabilityErrorBudgetBurning5mand1h](#apirulessyncavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesSyncAvailabilityErrorBudgetBurning2hand1d
+
+See [APIRulesSyncAvailabilityErrorBudgetBurning5mand1h](#apirulessyncavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesSyncAvailabilityErrorBudgetBurning6hand3d
+
+See [APIRulesSyncAvailabilityErrorBudgetBurning5mand1h](#apirulessyncavailabilityerrorbudgetburning5mand1h).
+
 ---
-## APIRulesReadAvailabilityErrorBudgetBurning
+## APIRulesReadAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-API is currently failing to respond to rules read requests.
+API is currently failing to respond to rules read requests in given time window.
 
 ### Summary
 
@@ -378,12 +572,24 @@ API is returning a high-enough level of 5XX responses that we are depleting our 
   * Check the logs of the Thanos Query pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
+## APIRulesReadAvailabilityErrorBudgetBurning30mand6h
+
+See [APIRulesReadAvailabilityErrorBudgetBurning5mand1h](#apirulesreadavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesReadAvailabilityErrorBudgetBurning2hand1d
+
+See [APIRulesReadAvailabilityErrorBudgetBurning5mand1h](#apirulesreadavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesReadAvailabilityErrorBudgetBurning6hand3d
+
+See [APIRulesReadAvailabilityErrorBudgetBurning5mand1h](#apirulesreadavailabilityerrorbudgetburning5mand1h).
+
 ---
-## APIRulesRawReadAvailabilityErrorBudgetBurning
+## APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-API is currently failing to respond to rules read requests to the /rules/raw endpoint.
+API is currently failing to respond to rules read requests to the /rules/raw endpoint in given time window.
 
 ### Summary
 
@@ -403,12 +609,24 @@ API is returning a high-enough level of 5XX responses that we are depleting our 
   * Check the logs on the API pods.
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
+## APIRulesRawReadAvailabilityErrorBudgetBurning30mand6h
+
+See [APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h](#apirulesrawreadavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesRawReadAvailabilityErrorBudgetBurning2hand1d
+
+See [APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h](#apirulesrawreadavailabilityerrorbudgetburning5mand1h).
+
+## APIRulesRawReadAvailabilityErrorBudgetBurning6hand3d
+
+See [APIRulesRawReadAvailabilityErrorBudgetBurning5mand1h](#apirulesrawreadavailabilityerrorbudgetburning5mand1h).
+
 ---
-## APIAlertmanagerAvailabilityErrorBudgetBurning
+## APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-Alerts triggered by Thanos Rule are not being sent to Observatorium Alertmanager.
+Alerts triggered by Thanos Rule are not being sent to Observatorium Alertmanager in given time window.
 
 ### Summary
 
@@ -432,12 +650,24 @@ Thanos Rule is returning a high-enough level of dropped alerts that are depletin
     * [Telemeter](https://observatorium-alertmanager.api.openshift.com/#/status)
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
 
+## APIAlertmanagerAvailabilityErrorBudgetBurning30mand6h
+
+See [APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h](#apialertmanageravailabilityerrorbudgetburning5mand1h).
+
+## APIAlertmanagerAvailabilityErrorBudgetBurning2hand1d
+
+See [APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h](#apialertmanageravailabilityerrorbudgetburning5mand1h).
+
+## APIAlertmanagerAvailabilityErrorBudgetBurning6hand3d
+
+See [APIAlertmanagerAvailabilityErrorBudgetBurning5mand1h](#apialertmanageravailabilityerrorbudgetburning5mand1h).
+
 ---
-## APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
+## APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h
 
 ### Impact
 
-Notifications to specified receivers are failing to be sent by Observatorium Alertmanager.
+Notifications to specified receivers are failing to be sent by Observatorium Alertmanager in given time window.
 
 ### Summary
 
@@ -459,6 +689,18 @@ Observatorium Alertmanager is returning a high-enough level of failed notificati
     * [MST](https://observatorium-alertmanager-mst.api.openshift.com/#/status)
     * [Telemeter](https://observatorium-alertmanager.api.openshift.com/#/status)
 * Reach out to @observatorium-oncall or @observatorium-support in #forum-observatorium for help.
+
+## APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning30mand6h
+
+See [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h](#apialertmanagernotificationsavailabilityerrorbudgetburning5mand1h).
+
+## APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning2hand1d
+
+See [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h](#apialertmanagernotificationsavailabilityerrorbudgetburning5mand1h).
+
+## APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning6hand3d
+
+See [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning5mand1h](#apialertmanagernotificationsavailabilityerrorbudgetburning5mand1h).
 
 ---
 ## ObservatoriumHttpTrafficErrorRateHigh

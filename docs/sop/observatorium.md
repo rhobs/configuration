@@ -101,7 +101,10 @@
   - [ThanosRuleRuleEvaluationLatencyHigh](#thanosruleruleevaluationlatencyhigh)
   - [ThanosRuleTSDBNotIngestingSamples](#thanosruletsdbnotingestingsamples)
   - [ThanosRuleIsDown](#thanosruleisdown)
-  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn](#observatoriumapimetricserrorsslobudgetburn)
+  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h](#observatoriumapimetricserrorsslobudgetburn5mand1h)
+  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn30mand6h](#observatoriumapimetricserrorsslobudgetburn30mand6h)
+  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn2hand1d](#observatoriumapimetricserrorsslobudgetburn2hand1d)
+  - [ObservatoriumAPIMetricsErrorsSLOBudgetBurn6hand3d](#observatoriumapimetricserrorsslobudgetburn6hand3d)
   - [GubernatorIsDown](#gubernatorisdown)
   - [Escalations](#escalations)
 
@@ -1812,11 +1815,11 @@ Respective component that is supposed to be running is not running.
 
 ---
 
-## ObservatoriumAPIMetricsErrorsSLOBudgetBurn
+## ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h
 
 ### Impact
 
-SLO breach or complete outage for ingesting and/or querying metrics data.
+SLO breach or complete outage for ingesting and/or querying metrics data across time window.
 For users this is means that the service as being unavailable due to returning too many errors.
 
 ### Summary
@@ -1842,6 +1845,18 @@ For the set availability guarantees the observatorium api or the thanos receiver
 - Inspect the metrics for the api [dashboards](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m)
 - Inspect the metrics for the thanos querier [dashboards](https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-querier?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus)
 - Inspect the metrics for the thanos receiver [dashboards](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus)
+
+## ObservatoriumAPIMetricsErrorsSLOBudgetBurn30mand6h
+
+See [ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h](#observatoriumapimetricserrorsslobudgetburn5mand1h).
+
+## ObservatoriumAPIMetricsErrorsSLOBudgetBurn2hand1d
+
+See [ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h](#observatoriumapimetricserrorsslobudgetburn5mand1h).
+
+## ObservatoriumAPIMetricsErrorsSLOBudgetBurn6hand3d
+
+See [ObservatoriumAPIMetricsErrorsSLOBudgetBurn5mand1h](#observatoriumapimetricserrorsslobudgetburn5mand1h).
 
 ---
 

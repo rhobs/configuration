@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  query_frontend.json: |-
+  query-frontend.json: |-
     {
       "annotations": {
         "list": [
@@ -238,7 +238,7 @@ data:
               "dashLength": 10,
               "dashes": false,
               "datasource": "$datasource",
-              "description": "Shows ratio of errors compared to the the total number of handled requests against Query Frontend.",
+              "description": "Shows ratio of errors compared to the total number of handled requests against Query Frontend.",
               "fill": 10,
               "id": 3,
               "legend": {
@@ -675,7 +675,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job, tripperware) (rate(cortex_cache_fetched_keys{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job, tripperware) (rate(cortex_cache_fetched_keys_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{tripperware}}",
@@ -762,7 +762,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job, tripperware) (rate(cortex_cache_hits{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job, tripperware) (rate(cortex_cache_hits_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{job}} {{tripperware}}",
@@ -1269,7 +1269,7 @@ data:
       },
       "timezone": "UTC",
       "title": "Thanos / Query Frontend",
-      "uid": "303c4e660a475c4c8cf6aee97da3a24a",
+      "uid": "7c68ed2ef2355474f058dd27f0471f7a",
       "version": 0
     }
 kind: ConfigMap

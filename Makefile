@@ -23,7 +23,7 @@ $(JSONNET_VENDOR_DIR): $(JB) jsonnetfile.json jsonnetfile.lock.json
 
 .PHONY: update
 update: $(JB) jsonnetfile.json jsonnetfile.lock.json
-	@$(JB) update --jsonnetpkg-home="$(JSONNET_VENDOR_DIR)" https://github.com/saswatamcode/slo-libsonnet/slo-libsonnet@special-selector
+	@$(JB) update --jsonnetpkg-home="$(JSONNET_VENDOR_DIR)" https://github.com/openshift/telemeter/jsonnet/telemeter@master
 
 .PHONY: format
 format: $(JSONNET_SRC) $(JSONNETFMT)

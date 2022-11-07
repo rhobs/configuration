@@ -547,6 +547,11 @@ objects:
           "labels":
             "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
           "record": "cluster:usage:workload:capacity_physical_instance_hours"
+        - "expr": |
+            sum(sum_over_time(cluster:capacity_cpu_cores:sum{label_node_role_kubernetes_io = ''}[1h:5m])) by (_id) / scalar(count_over_time(vector(1)[1h:5m]))
+          "labels":
+            "tenant_id": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"
+          "record": "cluster:usage:workload:capacity_virtual_cpu_hours"
   kind: ConfigMap
   metadata:
     annotations:

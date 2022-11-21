@@ -3,7 +3,7 @@ local utils = import '../utils.jsonnet';
 function(instanceName, environment, dashboardName) {
   // Validate our inputs.
   assert std.member(['telemeter', 'mst'], instanceName),
-  assert std.member(['production', 'stage'], environment),
+  assert std.member(['production', 'stage', 'rhobsp02ue1'], environment),
 
   local instanceConfig = {
     telemeter: {
@@ -23,6 +23,12 @@ function(instanceName, environment, dashboardName) {
     mst: {
       production: {
         datasource: 'telemeter-prod-01-prometheus',
+        upNamespace: 'observatorium-mst-production',
+        apiJob: 'observatorium-observatorium-mst-api',
+        metricsNamespace: 'observatorium-metrics-production',
+      },
+      rhobsp02ue1: {
+        datasource: 'rhobsp02ue1-prometheus',
         upNamespace: 'observatorium-mst-production',
         apiJob: 'observatorium-observatorium-mst-api',
         metricsNamespace: 'observatorium-metrics-production',

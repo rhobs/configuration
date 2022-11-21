@@ -68,6 +68,7 @@ local dashboards =
   { 'grafana-dashboard-slo-telemeter-production.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'production', 'Telemeter Production SLOs') } +
   { 'grafana-dashboard-slo-telemeter-stage.configmap': (import 'dashboards/slo.libsonnet')('telemeter', 'stage', 'Telemeter Staging SLOs') } +
   { 'grafana-dashboard-slo-mst-production.configmap': (import 'dashboards/slo.libsonnet')('mst', 'production', 'MST Production SLOs') } +
+  { 'grafana-dashboard-slo-rhobsp02ue1-production.configmap': (import 'dashboards/slo.libsonnet')('mst', 'rhobsp02ue1', 'rhobsp02ue1 Production SLOs') } +
   { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo.libsonnet')('mst', 'stage', 'MST Stage SLOs') } +
   { 'grafana-dashboard-tracing-otel.configmap': (import 'dashboards/opentelemetry.libsonnet')(obsDatasource, obsTraces) } +
   { 'grafana-dashboard-tracing-jaeger.configmap': (import 'dashboards/tracing.libsonnet')(obsDatasource, obsTraces) };

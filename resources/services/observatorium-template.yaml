@@ -257,6 +257,7 @@ objects:
           - --managed-tenants=${MANAGED_TENANTS}
           - --issuer-url=${OIDC_ISSUER_URL}
           - --audience=${OIDC_AUDIENCE}
+          - --log-rules-enabled=${LOG_RULES_ENABLED}
           env:
           - name: NAMESPACE_NAME
             valueFrom:
@@ -1683,10 +1684,12 @@ parameters:
   value: rhobs-hypershift-platform-tenant
 - name: APPSRE_RELOADER_SECRET_NAME
   value: observatorium-appsre
+- name: LOG_RULES_ENABLED
+  value: "true"
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
-  value: f021479
+  value: a39316a
 - name: METRICS_WRITE_SERVICE_NAME
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT

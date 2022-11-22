@@ -166,6 +166,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       oidcIssuerURL: '${OIDC_ISSUER_URL}',
       sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
       managedTenants: '${MANAGED_TENANTS}',
+      logRulesEnabled: '${LOG_RULES_ENABLED}',
     },
     // Tenants normally follows a lower-case format.
     // However tenant attribute in below map items need to be uppercase to be the proper prefix for the env variable to create.

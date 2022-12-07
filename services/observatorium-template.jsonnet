@@ -94,7 +94,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OSD_RELOADER_SECRET_NAME', value: 'observatorium-observatorium-mst-api' },
     { name: 'HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME', value: 'rhobs-hypershift-platform-tenant' },
     { name: 'APPSRE_RELOADER_SECRET_NAME', value: 'observatorium-appsre' },
-    { name: 'RHOC_RELOADER_SECRET_NAME', value: 'service-account-stage' },
+    { name: 'RHOC_RELOADER_SECRET_NAME', value: 'observatorium-rhoc-staging' },
     { name: 'LOG_RULES_ENABLED', value: 'true' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
     { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: 'a39316a' },

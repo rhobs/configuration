@@ -289,7 +289,7 @@ objects:
           - name: RHOC_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                key: service_account
+                key: client-id
                 name: ${RHOC_RELOADER_SECRET_NAME}
                 optional: true
           - name: RHOBS_CLIENT_SECRET
@@ -318,7 +318,7 @@ objects:
           - name: RHOC_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                key: secret
+                key: client-secret
                 name: ${RHOC_RELOADER_SECRET_NAME}
                 optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
@@ -1697,7 +1697,7 @@ parameters:
 - name: APPSRE_RELOADER_SECRET_NAME
   value: observatorium-appsre
 - name: RHOC_RELOADER_SECRET_NAME
-  value: service-account-stage
+  value: observatorium-rhoc-staging
 - name: LOG_RULES_ENABLED
   value: "true"
 - name: OBSCTL_RELOADER_IMAGE

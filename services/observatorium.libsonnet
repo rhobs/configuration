@@ -200,7 +200,16 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         secret: '${APPSRE_RELOADER_SECRET_NAME}',
         idKey: 'client-id',
         secretKey: 'client-secret',
-        // Marking as optional here, as hypershift-platform tenant only exists on mst,
+        // Marking as optional here, as appsre tenant only exists on mst,
+        // so this should not block pod start.
+        optional: true,
+      },
+      {
+        tenant: 'RHOC',
+        secret: '${RHOC_RELOADER_SECRET_NAME}',
+        idKey: 'service_account',
+        secretKey: 'secret',
+        // Marking as optional here, as rhoc tenant only exists on mst,
         // so this should not block pod start.
         optional: true,
       },

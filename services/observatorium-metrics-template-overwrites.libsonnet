@@ -456,6 +456,11 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                         name: 'DEBUG',
                         value: '${THANOS_RECEIVE_DEBUG_ENV}',
                       }],
+                      readinessProbe+: {
+                        failureThreshold: 20,
+                        periodSeconds: 30,
+                        initialDelaySeconds: 60,
+                      },
                     } + {
                       args: [
                         if std.startsWith(a, '--tsdb.path') then '--tsdb.path=${THANOS_RECEIVE_TSDB_PATH}'

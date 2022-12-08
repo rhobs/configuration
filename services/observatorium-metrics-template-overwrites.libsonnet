@@ -440,6 +440,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
         std.mapWithKey(function(hashring, obj) obj {  // loops over each [hashring]:obj
           statefulSet+: jaegerAgentSidecar.statefulSet {
             spec+: {
+              podManagementPolicy: 'Parallel',
               replicas: '${{THANOS_RECEIVE_REPLICAS}}',
               template+: {
                 spec+: {

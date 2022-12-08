@@ -2168,6 +2168,7 @@ objects:
       controller.receive.thanos.io/hashring: default
     name: observatorium-thanos-receive-default
   spec:
+    podManagementPolicy: Parallel
     replicas: ${{THANOS_RECEIVE_REPLICAS}}
     selector:
       matchLabels:

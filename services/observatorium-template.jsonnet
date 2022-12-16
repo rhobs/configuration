@@ -72,6 +72,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OPA_AMS_MEMCACHED_EXPIRE', value: '300' },
     { name: 'OPA_AMS_MEMORY_LIMIT', value: '200Mi' },
     { name: 'OPA_AMS_MEMORY_REQUEST', value: '100Mi' },
+    { name: 'OPA_AMS_LOG_LEVEL', value: 'warn' },
     { name: 'OSD_ORGANIZATION_ID', value: '' },
     { name: 'RULES_OBJSTORE_IMAGE', value: 'quay.io/observatorium/rules-objstore' },
     { name: 'RULES_OBJSTORE_IMAGE_TAG', value: 'main-2022-04-01-64cd17e' },

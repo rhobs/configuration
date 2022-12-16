@@ -1186,7 +1186,7 @@ objects:
           - --web.listen=127.0.0.1:8082
           - --web.internal.listen=0.0.0.0:8083
           - --web.healthchecks.url=http://127.0.0.1:8082
-          - --log.level=warn
+          - --log.level=${OPA_AMS_LOG_LEVEL}
           - --ams.url=${AMS_URL}
           - --resource-type-prefix=observatorium
           - --oidc.client-id=$(CLIENT_ID)
@@ -1652,6 +1652,8 @@ parameters:
   value: 200Mi
 - name: OPA_AMS_MEMORY_REQUEST
   value: 100Mi
+- name: OPA_AMS_LOG_LEVEL
+  value: warn
 - name: OSD_ORGANIZATION_ID
   value: ""
 - name: RULES_OBJSTORE_IMAGE

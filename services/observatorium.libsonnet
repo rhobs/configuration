@@ -623,6 +623,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       ],
       memcachedExpire: '${OPA_AMS_MEMCACHED_EXPIRE}',
       opaPackage: 'observatorium',
+      logLevel: '${OPA_AMS_LOG_LEVEL}',
       resourceTypePrefix: 'observatorium',
       resources: {
         requests: {

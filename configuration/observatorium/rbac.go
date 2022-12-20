@@ -299,10 +299,28 @@ func getOrCreateRoleName(o *observatoriumRBAC, tenant tenantID, s signal, p rbac
 	return n
 }
 
+func tenantNameFollowsConvention(name string) (string, bool) {
+	var envs = []env{stagingEnv, productionEnv, testingEnv}
+
+	for _, e := range envs {
+		if strings.HasSuffix(name, string(e)) {
+			err := fmt.Sprintf(
+				"found name breaking conventions with environment suffix: %s, should be: %s",
+				name,
+				strings.TrimRight(strings.TrimSuffix(name, string(e)), "-"),
+			)
+			return err, false
+		}
+	}
+
+	return "", true
+}
+
 func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 	for _, b := range o.RoleBindings {
 		if b.Name == opts.name {
 			mimic.Panicf("found duplicate binding name", opts.name)
+
 		}
 	}
 
@@ -316,9 +334,17 @@ func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 
 	var subs []rbac.Subject
 	for _, e := range opts.envs {
-		n := fmt.Sprintf("service-account-%s", opts.name)
-		if !strings.HasSuffix(opts.name, string(e)) && e != productionEnv {
-			n = fmt.Sprintf("service-account-%s-%s", opts.name, e)
+		// observatorium-hypershift-platform-staging is the only tenant that does not
+		// follow conventions, due to the being present in a unique environment alongside
+		// their production tenant on rhobsp02ue1.
+		errMsg, ok := tenantNameFollowsConvention(opts.name)
+		if !ok && opts.name != "observatorium-hypershift-platform-staging" {
+			mimic.Panicf(errMsg)
+		}
+
+		n := fmt.Sprintf("service-account-%s-%s", opts.name, e)
+		if e == productionEnv {
+			n = fmt.Sprintf("service-account-%s", opts.name)
 		}
 
 		subs = append(subs, rbac.Subject{Name: n, Kind: rbac.User})

@@ -843,9 +843,14 @@ objects:
         - "hypershift-platform-metrics-read"
         "subjects":
         - "kind": "user"
-          "name": "service-account-observatorium-hypershift-platform-staging"
-        - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform"
+      - "name": "observatorium-hypershift-platform-staging"
+        "roles":
+        - "hypershift-platform-staging-metrics-write"
+        - "hypershift-platform-staging-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift-platform-staging"
       - "name": "observatorium-dptp-reader"
         "roles":
         - "dptp-logs-read"
@@ -1052,6 +1057,20 @@ objects:
         - "metrics"
         "tenants":
         - "hypershift-platform"
+      - "name": "hypershift-platform-staging-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "hypershift-platform-staging"
+      - "name": "hypershift-platform-staging-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "hypershift-platform-staging"
       - "name": "dptp-logs-read"
         "permissions":
         - "read"

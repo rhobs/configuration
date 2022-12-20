@@ -12,18 +12,19 @@ import (
 type tenantID string
 
 const (
-	appsreTenant     tenantID = "appsre"
-	cnvqeTenant      tenantID = "cnvqe"
-	dptpTenant       tenantID = "dptp"
-	telemeterTenant  tenantID = "telemeter"
-	rhobsTenant      tenantID = "rhobs"
-	psiocpTenant     tenantID = "psiocp"
-	rhodsTenant      tenantID = "rhods"
-	rhacsTenant      tenantID = "rhacs"
-	rhocTenant       tenantID = "rhoc"
-	odfmsTenant      tenantID = "odfms"
-	refAddonTenant   tenantID = "reference-addon"
-	hypershiftTenant tenantID = "hypershift-platform"
+	appsreTenant            tenantID = "appsre"
+	cnvqeTenant             tenantID = "cnvqe"
+	dptpTenant              tenantID = "dptp"
+	telemeterTenant         tenantID = "telemeter"
+	rhobsTenant             tenantID = "rhobs"
+	psiocpTenant            tenantID = "psiocp"
+	rhodsTenant             tenantID = "rhods"
+	rhacsTenant             tenantID = "rhacs"
+	rhocTenant              tenantID = "rhoc"
+	odfmsTenant             tenantID = "odfms"
+	refAddonTenant          tenantID = "reference-addon"
+	hypershiftTenant        tenantID = "hypershift-platform"
+	hypershiftStagingTenant tenantID = "hypershift-platform-staging"
 )
 
 type signal string
@@ -209,7 +210,16 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  hypershiftTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
+		envs:    []env{productionEnv},
+	})
+
+	// hypershift staging
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-hypershift-platform-staging",
+		tenant:  hypershiftStagingTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write, rbac.Read},
+		envs:    []env{productionEnv},
 	})
 
 	// RHOBS Logs only tenants
@@ -306,18 +316,11 @@ func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 
 	var subs []rbac.Subject
 	for _, e := range opts.envs {
-		if strings.HasSuffix(opts.name, string(e)) {
-			err := fmt.Sprintf(
-				"found name breaking conventions with environment suffix: %s, should be: %s",
-				opts.name,
-				strings.TrimRight(strings.TrimSuffix(opts.name, string(e)), "-"),
-			)
-			mimic.Panicf(err)
+		n := fmt.Sprintf("service-account-%s", opts.name)
+		if !strings.HasSuffix(opts.name, string(e)) && e != productionEnv {
+			n = fmt.Sprintf("service-account-%s-%s", opts.name, e)
 		}
-		n := fmt.Sprintf("service-account-%s-%s", opts.name, e)
-		if e == productionEnv {
-			n = fmt.Sprintf("service-account-%s", opts.name)
-		}
+
 		subs = append(subs, rbac.Subject{Name: n, Kind: rbac.User})
 	}
 

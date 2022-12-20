@@ -12,18 +12,19 @@ import (
 type tenantID string
 
 const (
-	appsreTenant     tenantID = "appsre"
-	cnvqeTenant      tenantID = "cnvqe"
-	dptpTenant       tenantID = "dptp"
-	telemeterTenant  tenantID = "telemeter"
-	rhobsTenant      tenantID = "rhobs"
-	psiocpTenant     tenantID = "psiocp"
-	rhodsTenant      tenantID = "rhods"
-	rhacsTenant      tenantID = "rhacs"
-	rhocTenant       tenantID = "rhoc"
-	odfmsTenant      tenantID = "odfms"
-	refAddonTenant   tenantID = "reference-addon"
-	hypershiftTenant tenantID = "hypershift-platform"
+	appsreTenant            tenantID = "appsre"
+	cnvqeTenant             tenantID = "cnvqe"
+	dptpTenant              tenantID = "dptp"
+	telemeterTenant         tenantID = "telemeter"
+	rhobsTenant             tenantID = "rhobs"
+	psiocpTenant            tenantID = "psiocp"
+	rhodsTenant             tenantID = "rhods"
+	rhacsTenant             tenantID = "rhacs"
+	rhocTenant              tenantID = "rhoc"
+	odfmsTenant             tenantID = "odfms"
+	refAddonTenant          tenantID = "reference-addon"
+	hypershiftTenant        tenantID = "hypershift-platform"
+	hypershiftStagingTenant tenantID = "hypershift-platform-staging"
 )
 
 type signal string
@@ -209,7 +210,20 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  hypershiftTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
+		envs:    []env{productionEnv},
+	})
+
+	// hypershift staging
+	// observatorium-hypershift-platform-staging is the only tenant that does not
+	// follow conventions, due to them being present in an unique environment alongside
+	// their production tenant on rhobsp02ue1.
+	attachBinding(&obsRBAC, bindingOpts{
+		name:                "observatorium-hypershift-platform-staging",
+		tenant:              hypershiftStagingTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Write, rbac.Read},
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
 	})
 
 	// RHOBS Logs only tenants
@@ -265,11 +279,12 @@ type observatoriumRBAC struct {
 type bindingOpts struct {
 	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account username (it has to match it)/
 	// Any change, require changes on tenant side, so be careful.
-	name    string
-	tenant  tenantID
-	signals []signal
-	perms   []rbac.Permission
-	envs    []env
+	name                string
+	tenant              tenantID
+	signals             []signal
+	perms               []rbac.Permission
+	envs                []env
+	skipConventionCheck bool
 }
 
 func getOrCreateRoleName(o *observatoriumRBAC, tenant tenantID, s signal, p rbac.Permission) string {
@@ -289,10 +304,28 @@ func getOrCreateRoleName(o *observatoriumRBAC, tenant tenantID, s signal, p rbac
 	return n
 }
 
+func tenantNameFollowsConvention(name string) (string, bool) {
+	var envs = []env{stagingEnv, productionEnv, testingEnv}
+
+	for _, e := range envs {
+		if strings.HasSuffix(name, string(e)) {
+			err := fmt.Sprintf(
+				"found name breaking conventions with environment suffix: %s, should be: %s",
+				name,
+				strings.TrimRight(strings.TrimSuffix(name, string(e)), "-"),
+			)
+			return err, false
+		}
+	}
+
+	return "", true
+}
+
 func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 	for _, b := range o.RoleBindings {
 		if b.Name == opts.name {
 			mimic.Panicf("found duplicate binding name", opts.name)
+
 		}
 	}
 
@@ -306,18 +339,16 @@ func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 
 	var subs []rbac.Subject
 	for _, e := range opts.envs {
-		if strings.HasSuffix(opts.name, string(e)) {
-			err := fmt.Sprintf(
-				"found name breaking conventions with environment suffix: %s, should be: %s",
-				opts.name,
-				strings.TrimRight(strings.TrimSuffix(opts.name, string(e)), "-"),
-			)
-			mimic.Panicf(err)
+		errMsg, ok := tenantNameFollowsConvention(opts.name)
+		if !ok && !opts.skipConventionCheck {
+			mimic.Panicf(errMsg)
 		}
+
 		n := fmt.Sprintf("service-account-%s-%s", opts.name, e)
 		if e == productionEnv {
 			n = fmt.Sprintf("service-account-%s", opts.name)
 		}
+
 		subs = append(subs, rbac.Subject{Name: n, Kind: rbac.User})
 	}
 

@@ -214,12 +214,16 @@ func GenerateRBAC(gen *mimic.Generator) {
 	})
 
 	// hypershift staging
+	// observatorium-hypershift-platform-staging is the only tenant that does not
+	// follow conventions, due to them being present in an unique environment alongside
+	// their production tenant on rhobsp02ue1.
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-hypershift-platform-staging",
-		tenant:  hypershiftStagingTenant,
-		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{productionEnv},
+		name:                "observatorium-hypershift-platform-staging",
+		tenant:              hypershiftStagingTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Write, rbac.Read},
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
 	})
 
 	// RHOBS Logs only tenants
@@ -275,11 +279,12 @@ type observatoriumRBAC struct {
 type bindingOpts struct {
 	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account username (it has to match it)/
 	// Any change, require changes on tenant side, so be careful.
-	name    string
-	tenant  tenantID
-	signals []signal
-	perms   []rbac.Permission
-	envs    []env
+	name                string
+	tenant              tenantID
+	signals             []signal
+	perms               []rbac.Permission
+	envs                []env
+	skipConventionCheck bool
 }
 
 func getOrCreateRoleName(o *observatoriumRBAC, tenant tenantID, s signal, p rbac.Permission) string {
@@ -334,11 +339,8 @@ func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 
 	var subs []rbac.Subject
 	for _, e := range opts.envs {
-		// observatorium-hypershift-platform-staging is the only tenant that does not
-		// follow conventions, due to them being present in an unique environment alongside
-		// their production tenant on rhobsp02ue1.
 		errMsg, ok := tenantNameFollowsConvention(opts.name)
-		if !ok && opts.name != "observatorium-hypershift-platform-staging" {
+		if !ok && !opts.skipConventionCheck {
 			mimic.Panicf(errMsg)
 		}
 

@@ -335,7 +335,7 @@ func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
 	var subs []rbac.Subject
 	for _, e := range opts.envs {
 		// observatorium-hypershift-platform-staging is the only tenant that does not
-		// follow conventions, due to the being present in a unique environment alongside
+		// follow conventions, due to them being present in an unique environment alongside
 		// their production tenant on rhobsp02ue1.
 		errMsg, ok := tenantNameFollowsConvention(opts.name)
 		if !ok && opts.name != "observatorium-hypershift-platform-staging" {

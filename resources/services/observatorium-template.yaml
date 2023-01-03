@@ -274,6 +274,12 @@ objects:
                 key: client-id
                 name: ${OSD_RELOADER_SECRET_NAME}
                 optional: true
+          - name: HYPERSHIFT-PLATFORM-STAGING_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: ${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}
+                optional: true
           - name: HYPERSHIFT-PLATFORM_CLIENT_ID
             valueFrom:
               secretKeyRef:
@@ -302,6 +308,12 @@ objects:
               secretKeyRef:
                 key: client-secret
                 name: ${OSD_RELOADER_SECRET_NAME}
+                optional: true
+          - name: HYPERSHIFT-PLATFORM-STAGING_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: ${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}
                 optional: true
           - name: HYPERSHIFT-PLATFORM_CLIENT_SECRET
             valueFrom:
@@ -1713,6 +1725,8 @@ parameters:
   value: rhobs-tenant
 - name: OSD_RELOADER_SECRET_NAME
   value: observatorium-observatorium-mst-api
+- name: HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME
+  value: rhobs-hypershift-platform-staging-tenant
 - name: HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME
   value: rhobs-hypershift-platform-tenant
 - name: APPSRE_RELOADER_SECRET_NAME

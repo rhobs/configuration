@@ -93,6 +93,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'MANAGED_TENANTS', value: 'rhobs,osd,appsre,rhoc' },
     { name: 'RHOBS_RELOADER_SECRET_NAME', value: 'rhobs-tenant' },
     { name: 'OSD_RELOADER_SECRET_NAME', value: 'observatorium-observatorium-mst-api' },
+    { name: 'HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME', value: 'rhobs-hypershift-platform-staging-tenant' },
     { name: 'HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME', value: 'rhobs-hypershift-platform-tenant' },
     { name: 'APPSRE_RELOADER_SECRET_NAME', value: 'observatorium-appsre' },
     { name: 'RHOC_RELOADER_SECRET_NAME', value: 'observatorium-rhoc-staging' },

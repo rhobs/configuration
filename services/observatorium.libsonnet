@@ -187,6 +187,15 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         optional: true,
       },
       {
+        tenant: 'HYPERSHIFT-PLATFORM-STAGING',
+        secret: '${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}',
+        idKey: 'client-id',
+        secretKey: 'client-secret',
+        // Marking as optional here, as hypershift-platform-staging tenant only exists on mst,
+        // so this should not block pod start.
+        optional: true,
+      },
+      {
         tenant: 'HYPERSHIFT-PLATFORM',
         secret: '${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}',
         idKey: 'client-id',

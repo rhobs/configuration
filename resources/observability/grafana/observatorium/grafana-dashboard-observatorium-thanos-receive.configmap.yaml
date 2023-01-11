@@ -1099,7 +1099,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_write_samples_bucket{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code=~\"2..\"}[$interval])) by (namespace, job, tenant) ",
+                  "expr": "sum(rate(thanos_receive_write_samples_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code=~\"2..\"}[$interval])) by (namespace, job, tenant) ",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{tenant}}",
@@ -1185,7 +1185,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_write_samples_bucket{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code!~\"2..\"}[$interval])) by (tenant, code) ",
+                  "expr": "sum(rate(thanos_receive_write_samples_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code!~\"2..\"}[$interval])) by (tenant, code) ",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{code}} - {{tenant}}",

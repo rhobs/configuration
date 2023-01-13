@@ -103,8 +103,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code=\"5xx\"}[28d])) or vector(0))\n/\nsum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code!=\"4xx\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -437,8 +439,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -771,8 +775,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -930,8 +936,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -1582,8 +1590,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -1749,8 +1759,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-metrics-production\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-metrics-production\",code!~\"4.+\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -1916,8 +1928,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"rules\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"rules\",code!~\"4.+\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -2083,8 +2097,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -2250,8 +2266,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-metrics-production\"}[28d])) or vector(0))\n/\nsum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-metrics-production\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -2409,8 +2427,10 @@ data:
                     {
                         "exemplar": true,
                         "expr": "1-\n(sum(rate(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-metrics-production\"}[28d])) or vector(0))\n/\nsum(rate(alertmanager_notifications_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-metrics-production\"}[28d]))\n",
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],

@@ -272,8 +272,10 @@ data:
                         "exemplar": true,
                         "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"telemeter-server\",code!~\"4..\",handler=~\"upload|receive\"}[28d]) ))\n",
                         "hide": false,
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -608,8 +610,10 @@ data:
                         "exemplar": true,
                         "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\"}[28d]) ))\n",
                         "hide": false,
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -1105,8 +1109,10 @@ data:
                         "exemplar": true,
                         "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-stage\",query=\"query-path-sli-1M-samples\"}[1d]) ))\n",
                         "hide": false,
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -1264,8 +1270,10 @@ data:
                         "exemplar": true,
                         "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-stage\",query=\"query-path-sli-10M-samples\"}[1d]) ))\n",
                         "hide": false,
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],
@@ -1423,8 +1431,10 @@ data:
                         "exemplar": true,
                         "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-stage\",query=\"query-path-sli-100M-samples\"}[1d]) ))\n",
                         "hide": false,
+                        "instant": true,
                         "interval": "",
                         "legendFormat": "",
+                        "range": false,
                         "refId": "A"
                     }
                 ],

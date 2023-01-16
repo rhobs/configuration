@@ -13,25 +13,25 @@ evaluation_interval: 1m
 tests:
 - interval: 1m
   input_series:
-  - series: observatorium_api_tenants_skipped_invalid_configuration{namespace="observatorium-metrics", tenant="test"}
+  - series: observatorium_api_tenants_skipped_invalid_configuration_total{namespace="observatorium-metrics", tenant="test"}
     values: '0 0 0 0 1 1'
   promql_expr_test:
-    - expr: observatorium_api_tenants_skipped_invalid_configuration{tenant="test"}
+    - expr: observatorium_api_tenants_skipped_invalid_configuration_total{tenant="test"}
       eval_time: 1m
       exp_samples:
-        - labels: '{__name__="observatorium_api_tenants_skipped_invalid_configuration", namespace="observatorium-metrics", tenant="test"}'
+        - labels: '{__name__="observatorium_api_tenants_skipped_invalid_configuration_total", namespace="observatorium-metrics", tenant="test"}'
           value: 0
-    - expr: observatorium_api_tenants_skipped_invalid_configuration{tenant="test"}
+    - expr: observatorium_api_tenants_skipped_invalid_configuration_total{tenant="test"}
       eval_time: 5m
       exp_samples:
-        - labels: '{__name__="observatorium_api_tenants_skipped_invalid_configuration", namespace="observatorium-metrics", tenant="test"}'
+        - labels: '{__name__="observatorium_api_tenants_skipped_invalid_configuration_total", namespace="observatorium-metrics", tenant="test"}'
           value: 1
-    - expr: sum(increase(observatorium_api_tenants_skipped_invalid_configuration[5m])) by (tenant)
+    - expr: sum(increase(observatorium_api_tenants_skipped_invalid_configuration_total[5m])) by (tenant)
       eval_time: 1m
       exp_samples:
         - labels: '{tenant="test"}'
           value: 0
-    - expr: sum(increase(observatorium_api_tenants_skipped_invalid_configuration[5m])) by (tenant)
+    - expr: sum(increase(observatorium_api_tenants_skipped_invalid_configuration_total[5m])) by (tenant)
       eval_time: 5m
       exp_samples:
         - labels: '{tenant="test"}'

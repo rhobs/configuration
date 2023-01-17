@@ -1359,6 +1359,7 @@ objects:
           - --query.auto-downsampling
           - --store.sd-files=/etc/thanos/sd/file_sd.yaml
           - --grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}
+          - --query.promql-engine=${THANOS_QUERIER_ENGINE}
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
@@ -4582,6 +4583,8 @@ parameters:
   value: '[]'
 - name: THANOS_QUERIER_PROXY_STRATEGY
   value: eager
+- name: THANOS_QUERIER_ENGINE
+  value: prometheus
 - name: THANOS_QUERY_FRONTEND_CPU_LIMIT
   value: "1"
 - name: THANOS_QUERY_FRONTEND_CPU_REQUEST

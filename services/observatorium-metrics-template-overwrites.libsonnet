@@ -312,6 +312,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                 if c.name == 'thanos-query' then c {
                   args+: [
                     '--grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}',
+                    '--query.promql-engine=${THANOS_QUERIER_ENGINE}',
                   ],
                 } else c
                 for c in super.containers

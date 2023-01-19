@@ -797,6 +797,12 @@ objects:
           "name": "service-account-telemeter-service-staging"
         - "kind": "user"
           "name": "service-account-telemeter-service"
+      - "name": "observatorium-ccx-processing"
+        "roles":
+        - "telemeter-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-ccx-processing-staging"
       - "name": "observatorium-subwatch"
         "roles":
         - "telemeter-metrics-read"

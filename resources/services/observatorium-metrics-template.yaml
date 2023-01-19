@@ -2715,244 +2715,6 @@ objects:
             storage: ${THANOS_RULER_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-bucket-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-bucket-cache-memcached
-  spec:
-    clusterIP: None
-    ports:
-    - name: client
-      port: 11211
-      targetPort: 11211
-    - name: metrics
-      port: 9150
-      targetPort: 9150
-    selector:
-      app.kubernetes.io/component: store-bucket-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  imagePullSecrets:
-  - name: quay.io
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-bucket-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-bucket-cache-memcached
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      prometheus: app-sre
-    name: observatorium-thanos-store-bucket-cache-memcached
-  spec:
-    endpoints:
-    - port: metrics
-    namespaceSelector:
-      matchNames: ${{NAMESPACES}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-bucket-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: apps/v1
-  kind: StatefulSet
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-bucket-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-bucket-cache-memcached
-  spec:
-    replicas: ${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-bucket-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-thanos-store-bucket-cache-memcached
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: store-bucket-cache
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: memcached
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-      spec:
-        containers:
-        - args:
-          - -m ${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}
-          - -I 1m
-          - -c ${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}
-          - -v
-          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: memcached
-          ports:
-          - containerPort: 11211
-            name: client
-          resources:
-            limits:
-              cpu: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}
-              memory: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}
-            requests:
-              cpu: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}
-              memory: ${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}
-          terminationMessagePolicy: FallbackToLogsOnError
-        - args:
-          - --memcached.address=localhost:11211
-          - --web.listen-address=0.0.0.0:9150
-          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: exporter
-          ports:
-          - containerPort: 9150
-            name: metrics
-          resources:
-            limits:
-              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
-            requests:
-              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-        securityContext: {}
-        serviceAccountName: observatorium-thanos-store-bucket-cache-memcached
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-index-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-index-cache-memcached
-  spec:
-    clusterIP: None
-    ports:
-    - name: client
-      port: 11211
-      targetPort: 11211
-    - name: metrics
-      port: 9150
-      targetPort: 9150
-    selector:
-      app.kubernetes.io/component: store-index-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  imagePullSecrets:
-  - name: quay.io
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-index-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-index-cache-memcached
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    labels:
-      prometheus: app-sre
-    name: observatorium-thanos-store-index-cache-memcached
-  spec:
-    endpoints:
-    - port: metrics
-    namespaceSelector:
-      matchNames: ${{NAMESPACES}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-index-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: apps/v1
-  kind: StatefulSet
-  metadata:
-    labels:
-      app.kubernetes.io/component: store-index-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-    name: observatorium-thanos-store-index-cache-memcached
-  spec:
-    replicas: ${{THANOS_STORE_INDEX_CACHE_REPLICAS}}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-index-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-thanos-store-index-cache-memcached
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: store-index-cache
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: memcached
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ${MEMCACHED_IMAGE_TAG}
-      spec:
-        containers:
-        - args:
-          - -m ${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}
-          - -I 5m
-          - -c ${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}
-          - -v
-          image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: memcached
-          ports:
-          - containerPort: 11211
-            name: client
-          resources:
-            limits:
-              cpu: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}
-              memory: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}
-            requests:
-              cpu: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}
-              memory: ${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}
-          terminationMessagePolicy: FallbackToLogsOnError
-        - args:
-          - --memcached.address=localhost:11211
-          - --web.listen-address=0.0.0.0:9150
-          image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
-          imagePullPolicy: IfNotPresent
-          name: exporter
-          ports:
-          - containerPort: 9150
-            name: metrics
-          resources:
-            limits:
-              cpu: ${MEMCACHED_EXPORTER_CPU_LIMIT}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_LIMIT}
-            requests:
-              cpu: ${MEMCACHED_EXPORTER_CPU_REQUEST}
-              memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
-        securityContext: {}
-        serviceAccountName: observatorium-thanos-store-index-cache-memcached
-- apiVersion: v1
   kind: ServiceAccount
   metadata:
     annotations: {}
@@ -3051,39 +2813,13 @@ objects:
           - --ignore-deletion-marks-delay=24h
           - |-
             --index-cache.config="config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 2500000
-              "max_async_concurrency": 1000
-              "max_get_multi_batch_size": 100000
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 2500
               "max_item_size": "5MiB"
-              "timeout": "2s"
-            "type": "memcached"
+              "max_size": "${THANOS_STORE_INDEX_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
-            --store.caching-bucket.config="blocks_iter_ttl": "5m"
-            "chunk_object_attrs_ttl": "24h"
-            "chunk_subrange_size": 16000
-            "chunk_subrange_ttl": "24h"
-            "config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 25000
-              "max_async_concurrency": 50
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1100
-              "max_item_size": "1MiB"
-              "timeout": "2s"
-            "max_chunks_get_range_requests": 3
-            "metafile_content_ttl": "24h"
-            "metafile_doesnt_exist_ttl": "15m"
-            "metafile_exists_ttl": "2h"
-            "metafile_max_size": "1MiB"
-            "type": "memcached"
+            --store.caching-bucket.config="config":
+              "max_size": "${THANOS_STORE_BUCKET_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -3299,39 +3035,13 @@ objects:
           - --ignore-deletion-marks-delay=24h
           - |-
             --index-cache.config="config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 2500000
-              "max_async_concurrency": 1000
-              "max_get_multi_batch_size": 100000
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 2500
               "max_item_size": "5MiB"
-              "timeout": "2s"
-            "type": "memcached"
+              "max_size": "${THANOS_STORE_INDEX_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
-            --store.caching-bucket.config="blocks_iter_ttl": "5m"
-            "chunk_object_attrs_ttl": "24h"
-            "chunk_subrange_size": 16000
-            "chunk_subrange_ttl": "24h"
-            "config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 25000
-              "max_async_concurrency": 50
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1100
-              "max_item_size": "1MiB"
-              "timeout": "2s"
-            "max_chunks_get_range_requests": 3
-            "metafile_content_ttl": "24h"
-            "metafile_doesnt_exist_ttl": "15m"
-            "metafile_exists_ttl": "2h"
-            "metafile_max_size": "1MiB"
-            "type": "memcached"
+            --store.caching-bucket.config="config":
+              "max_size": "${THANOS_STORE_BUCKET_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -3547,39 +3257,13 @@ objects:
           - --ignore-deletion-marks-delay=24h
           - |-
             --index-cache.config="config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 2500000
-              "max_async_concurrency": 1000
-              "max_get_multi_batch_size": 100000
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 2500
               "max_item_size": "5MiB"
-              "timeout": "2s"
-            "type": "memcached"
+              "max_size": "${THANOS_STORE_INDEX_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
-            --store.caching-bucket.config="blocks_iter_ttl": "5m"
-            "chunk_object_attrs_ttl": "24h"
-            "chunk_subrange_size": 16000
-            "chunk_subrange_ttl": "24h"
-            "config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 25000
-              "max_async_concurrency": 50
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1100
-              "max_item_size": "1MiB"
-              "timeout": "2s"
-            "max_chunks_get_range_requests": 3
-            "metafile_content_ttl": "24h"
-            "metafile_doesnt_exist_ttl": "15m"
-            "metafile_exists_ttl": "2h"
-            "metafile_max_size": "1MiB"
-            "type": "memcached"
+            --store.caching-bucket.config="config":
+              "max_size": "${THANOS_STORE_BUCKET_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -3795,39 +3479,13 @@ objects:
           - --ignore-deletion-marks-delay=24h
           - |-
             --index-cache.config="config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 2500000
-              "max_async_concurrency": 1000
-              "max_get_multi_batch_size": 100000
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 2500
               "max_item_size": "5MiB"
-              "timeout": "2s"
-            "type": "memcached"
+              "max_size": "${THANOS_STORE_INDEX_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
-            --store.caching-bucket.config="blocks_iter_ttl": "5m"
-            "chunk_object_attrs_ttl": "24h"
-            "chunk_subrange_size": 16000
-            "chunk_subrange_ttl": "24h"
-            "config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 25000
-              "max_async_concurrency": 50
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1100
-              "max_item_size": "1MiB"
-              "timeout": "2s"
-            "max_chunks_get_range_requests": 3
-            "metafile_content_ttl": "24h"
-            "metafile_doesnt_exist_ttl": "15m"
-            "metafile_exists_ttl": "2h"
-            "metafile_max_size": "1MiB"
-            "type": "memcached"
+            --store.caching-bucket.config="config":
+              "max_size": "${THANOS_STORE_BUCKET_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -4043,39 +3701,13 @@ objects:
           - --ignore-deletion-marks-delay=24h
           - |-
             --index-cache.config="config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 2500000
-              "max_async_concurrency": 1000
-              "max_get_multi_batch_size": 100000
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 2500
               "max_item_size": "5MiB"
-              "timeout": "2s"
-            "type": "memcached"
+              "max_size": "${THANOS_STORE_INDEX_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
-            --store.caching-bucket.config="blocks_iter_ttl": "5m"
-            "chunk_object_attrs_ttl": "24h"
-            "chunk_subrange_size": 16000
-            "chunk_subrange_ttl": "24h"
-            "config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 25000
-              "max_async_concurrency": 50
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1100
-              "max_item_size": "1MiB"
-              "timeout": "2s"
-            "max_chunks_get_range_requests": 3
-            "metafile_content_ttl": "24h"
-            "metafile_doesnt_exist_ttl": "15m"
-            "metafile_exists_ttl": "2h"
-            "metafile_max_size": "1MiB"
-            "type": "memcached"
+            --store.caching-bucket.config="config":
+              "max_size": "${THANOS_STORE_BUCKET_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -4291,39 +3923,13 @@ objects:
           - --ignore-deletion-marks-delay=24h
           - |-
             --index-cache.config="config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 2500000
-              "max_async_concurrency": 1000
-              "max_get_multi_batch_size": 100000
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 2500
               "max_item_size": "5MiB"
-              "timeout": "2s"
-            "type": "memcached"
+              "max_size": "${THANOS_STORE_INDEX_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
-            --store.caching-bucket.config="blocks_iter_ttl": "5m"
-            "chunk_object_attrs_ttl": "24h"
-            "chunk_subrange_size": 16000
-            "chunk_subrange_ttl": "24h"
-            "config":
-              "addresses":
-              - "dnssrv+_client._tcp.observatorium-thanos-store-bucket-cache-memcached.${NAMESPACE}.svc"
-              "dns_provider_update_interval": "10s"
-              "max_async_buffer_size": 25000
-              "max_async_concurrency": 50
-              "max_get_multi_batch_size": 100
-              "max_get_multi_concurrency": 1000
-              "max_idle_connections": 1100
-              "max_item_size": "1MiB"
-              "timeout": "2s"
-            "max_chunks_get_range_requests": 3
-            "metafile_content_ttl": "24h"
-            "metafile_doesnt_exist_ttl": "15m"
-            "metafile_exists_ttl": "2h"
-            "metafile_max_size": "1MiB"
-            "type": "memcached"
+            --store.caching-bucket.config="config":
+              "max_size": "${THANOS_STORE_BUCKET_CACHE_SIZE}"
+            "type": "in-memory"
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -4661,38 +4267,10 @@ parameters:
   value: "2"
 - name: THANOS_S3_SECRET
   value: telemeter-thanos-stage-s3
-- name: THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT
-  value: "3072"
-- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT
-  value: "3"
-- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST
-  value: 500m
-- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT
-  value: 3Gi
-- name: THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST
-  value: 2558Mi
-- name: THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB
-  value: "2048"
-- name: THANOS_STORE_BUCKET_CACHE_REPLICAS
-  value: "3"
 - name: THANOS_STORE_CPU_LIMIT
   value: "2"
 - name: THANOS_STORE_CPU_REQUEST
   value: 500m
-- name: THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT
-  value: "3072"
-- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT
-  value: "3"
-- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST
-  value: 500m
-- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT
-  value: 3Gi
-- name: THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST
-  value: 2558Mi
-- name: THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB
-  value: "2048"
-- name: THANOS_STORE_INDEX_CACHE_REPLICAS
-  value: "3"
 - name: THANOS_STORE_LOG_LEVEL
   value: info
 - name: THANOS_STORE_MEMORY_LIMIT

@@ -372,39 +372,17 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
       },
       logLevel: '${THANOS_STORE_LOG_LEVEL}',
-      local memcachedDefaults = {
-        timeout: '2s',
-        max_idle_connections: 1000,
-        max_async_concurrency: 100,
-        max_async_buffer_size: 100000,
-        max_get_multi_concurrency: 900,
-        max_get_multi_batch_size: 1000,
-      },
       indexCache: {
-        type: 'memcached',
-        config+: memcachedDefaults {
-          addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeIndexCache.service.metadata.name, thanos.storeIndexCache.service.metadata.namespace]],
-          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
-          max_idle_connections: 2500,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '2s',  // default: 500ms
-          max_async_buffer_size: 2500000,  // default: 10_000
-          max_async_concurrency: 1000,  // default: 20
-          max_get_multi_batch_size: 100000,  // default: 0 - No batching.
-          max_get_multi_concurrency: 1000,  // default: 100
+        type: 'in-memory',
+        config+: {
           max_item_size: '5MiB',  // default: 1Mb
+          max_size: '${THANOS_STORE_INDEX_CACHE_SIZE}',
         },
       },
       bucketCache: {
-        type: 'memcached',
-        config+: memcachedDefaults {
-          addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeBucketCache.service.metadata.name, thanos.storeBucketCache.service.metadata.namespace]],
-          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
-          max_idle_connections: 1100,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '2s',  // default: 500ms
-          max_async_buffer_size: 25000,  // default: 10_000
-          max_async_concurrency: 50,  // default: 20
-          max_get_multi_batch_size: 100,  // default: 0 - No batching.
-          max_get_multi_concurrency: 1000,  // default: 100
+        type: 'in-memory',
+        config+: {
+          max_size: '${THANOS_STORE_BUCKET_CACHE_SIZE}',
         },
       },
       resources: {
@@ -453,107 +431,8 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
-    // We use separated memcached instances for index and bucket cache, so disable default.
+    // We use in-memory cache for the Thanos Store, so disable this.
     storeCache:: {},
-
-    storeIndexCache:: memcached({
-      local cfg = self,
-      serviceMonitor: true,
-      name: 'observatorium-thanos-store-index-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
-      namespace: thanosSharedConfig.namespace,
-      commonLabels:: {
-        'app.kubernetes.io/component': 'store-index-cache',
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/name': 'memcached',
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/version': cfg.version,
-      },
-
-      version: '${MEMCACHED_IMAGE_TAG}',
-      image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
-      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
-      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
-      connectionLimit: '${THANOS_STORE_INDEX_CACHE_CONNECTION_LIMIT}',
-      memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
-      maxItemSize: '5m',
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      resources: {
-        memcached: {
-          requests: {
-            cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_REQUEST}',
-            memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_CPU_LIMIT}',
-            memory: '${THANOS_STORE_INDEX_CACHE_MEMCACHED_MEMORY_LIMIT}',
-          },
-        },
-
-        exporter: {
-          requests: {
-            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
-            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
-            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
-          },
-        },
-      },
-    }) {
-      serviceAccount+: {
-        imagePullSecrets+: [{ name: 'quay.io' }],
-      },
-    },
-
-    storeBucketCache:: memcached({
-      local cfg = self,
-      name: 'observatorium-thanos-store-bucket-cache-' + cfg.commonLabels['app.kubernetes.io/name'],
-      namespace: thanosSharedConfig.namespace,
-      commonLabels:: {
-        'app.kubernetes.io/component': 'store-bucket-cache',
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/name': 'memcached',
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/version': cfg.version,
-      },
-
-      serviceMonitor: true,
-      version: '${MEMCACHED_IMAGE_TAG}',
-      image: '%s:%s' % ['${MEMCACHED_IMAGE}', cfg.version],
-      exporterVersion: '${MEMCACHED_EXPORTER_IMAGE_TAG}',
-      exporterImage: '%s:%s' % ['${MEMCACHED_EXPORTER_IMAGE}', cfg.exporterVersion],
-      connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
-      memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      resources: {
-        memcached: {
-          requests: {
-            cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_REQUEST}',
-            memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_CPU_LIMIT}',
-            memory: '${THANOS_STORE_BUCKET_CACHE_MEMCACHED_MEMORY_LIMIT}',
-          },
-        },
-
-        exporter: {
-          requests: {
-            cpu: '${MEMCACHED_EXPORTER_CPU_REQUEST}',
-            memory: '${MEMCACHED_EXPORTER_MEMORY_REQUEST}',
-          },
-          limits: {
-            cpu: '${MEMCACHED_EXPORTER_CPU_LIMIT}',
-            memory: '${MEMCACHED_EXPORTER_MEMORY_LIMIT}',
-          },
-        },
-      },
-    }) {
-      serviceAccount+: {
-        imagePullSecrets+: [{ name: 'quay.io' }],
-      },
-    },
 
     query:: t.query(thanosSharedConfig {
       name: 'observatorium-thanos-query',
@@ -1079,12 +958,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     manifests+: {
       'stores-service-monitor': thanos.storesServiceMonitor,
       'receivers-service-monitor': thanos.receiversServiceMonitor,
-    } + {
-      ['store-index-cache-' + name]: thanos.storeIndexCache[name]
-      for name in std.objectFields(thanos.storeIndexCache)
-    } + {
-      ['store-bucket-cache-' + name]: thanos.storeBucketCache[name]
-      for name in std.objectFields(thanos.storeBucketCache)
     } + {
       ['metric-federation-rule-' + name]: thanos.metricFederationRule[name]
       for name in std.objectFields(thanos.metricFederationRule)

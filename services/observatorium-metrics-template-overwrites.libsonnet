@@ -246,34 +246,6 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
       },
     },
 
-    storeIndexCache+:: {
-      statefulSet+: {
-        spec+: {
-          template+: {
-            spec+: {
-              securityContext: {},
-            },
-          },
-          replicas: '${{THANOS_STORE_INDEX_CACHE_REPLICAS}}',
-          volumeClaimTemplates:: null,
-        },
-      },
-    },
-
-    storeBucketCache+:: {
-      statefulSet+: {
-        spec+: {
-          template+: {
-            spec+: {
-              securityContext: {},
-            },
-          },
-          replicas: '${{THANOS_STORE_BUCKET_CACHE_REPLICAS}}',
-          volumeClaimTemplates:: null,
-        },
-      },
-    },
-
     query+:: {
       local query = self,
       local oauth = oauthProxy({

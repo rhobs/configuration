@@ -141,6 +141,15 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{stagingEnv, productionEnv},
 	})
 
+	// CCX Processing
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-ccx-processing",
+		tenant:  telemeterTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv},
+	})
+
 	// Subwatch
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-subwatch",

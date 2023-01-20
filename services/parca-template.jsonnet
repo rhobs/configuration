@@ -8,10 +8,6 @@ local config = {
   version: '${IMAGE_TAG}',
   replicas: 1,  // RUNTIME ERROR: parca replicas has to be number >= 0
 
-
-  // Don't change this, parca default is 7070, otherwise change args in container or fix parca.libsonnet to
-  // do so.
-  port: 7070,
   portTLS: 10902,
   serviceAccountName: '${SERVICE_ACCOUNT_NAME}',
   serviceMonitor: true,
@@ -26,21 +22,19 @@ local config = {
   },
 
   rawconfig+:: {
-    debug_info: {
+    object_storage: {
       bucket: {
+        config: {
+          directory: '/parca',
+        },
         type: 'FILESYSTEM',
-        config: { directory: '/parca' },
-      },
-      cache: {
-        type: 'FILESYSTEM',
-        config: { directory: '/parca' },
       },
     },
     scrape_configs: [
       {
         job_name: 'parca',
-        scrape_interval: '1m',
-        scrape_timeout: '30s',
+        scrape_interval: '30s',
+        scrape_timeout: '1m',
         static_configs: [
           {
             targets: ['localhost:7070'],
@@ -91,8 +85,8 @@ local config = {
             target_label: 'container',
           },
         ],
-        scrape_interval: '1m',
-        scrape_timeout: '30s',
+        scrape_interval: '30s',
+        scrape_timeout: '1m',
       },
       {
         job_name: 'loki',
@@ -129,8 +123,8 @@ local config = {
             target_label: 'container',
           },
         ],
-        scrape_interval: '1m',
-        scrape_timeout: '30s',
+        scrape_interval: '30s',
+        scrape_timeout: '1m',
       },
       {
         job_name: 'telemeter',
@@ -162,8 +156,8 @@ local config = {
             target_label: 'container',
           },
         ],
-        scrape_interval: '1m',
-        scrape_timeout: '30s',
+        scrape_interval: '30s',
+        scrape_timeout: '1m',
         scheme: 'https',
         tls_config: {
           insecure_skip_verify: true,
@@ -199,7 +193,7 @@ local proxyContainer = {
     '-https-address=:%d' % config.portTLS,
     '-http-address=',
     '-email-domain=*',
-    '-upstream=http://localhost:%d' % config.port,
+    '-upstream=http://localhost:%d' % parca.config.port,
     '-openshift-service-account=' + config.serviceAccountName,
     '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}',
     '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}',
@@ -237,7 +231,7 @@ local proxyContainer = {
       name: 'parca',
     },
     objects: [
-      parca.configmap {
+      parca.configMap {
         metadata+: {
           namespace:: 'hidden',
           annotations+: {
@@ -288,7 +282,7 @@ local proxyContainer = {
         spec+: {
           ports: [
             { name: 'https', port: 10902, targetPort: config.portTLS },
-            { name: 'http', port: 8443, targetPort: config.port },
+            { name: 'http', port: 8443, targetPort: parca.config.port },
           ],
         },
       },
@@ -307,14 +301,14 @@ local proxyContainer = {
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'TELEMETER_NAMESPACE', value: 'telemeter' },
       { name: 'IMAGE', value: 'ghcr.io/parca-dev/parca' },
-      { name: 'IMAGE_TAG', value: 'v0.12.0' },
+      { name: 'IMAGE_TAG', value: 'v0.15.0' },
       { name: 'PARCA_REPLICAS', value: '1' },
       { name: 'PARCA_CPU_REQUEST', value: '1' },
       { name: 'PARCA_MEMORY_REQUEST', value: '4Gi' },
       { name: 'PARCA_CPU_LIMITS', value: '2' },
       { name: 'PARCA_MEMORY_LIMITS', value: '8Gi' },
       { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
-      { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
+      { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.13.0' },
       { name: 'PARCA_PROXY_CPU_REQUEST', value: '100m' },
       { name: 'PARCA_PROXY_MEMORY_REQUEST', value: '100Mi' },
       { name: 'PARCA_PROXY_CPU_LIMITS', value: '200m' },
@@ -362,7 +356,7 @@ local proxyContainer = {
       },
     ],
     parameters: [
-      { name: 'IMAGE_TAG', value: 'v0.12.0' },
+      { name: 'IMAGE_TAG', value: 'v0.15.0' },
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
       { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },

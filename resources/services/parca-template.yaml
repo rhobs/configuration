@@ -6,19 +6,15 @@ objects:
 - apiVersion: v1
   data:
     parca.yaml: |-
-      "debug_info":
+      "object_storage":
         "bucket":
-          "config":
-            "directory": "/parca"
-          "type": "FILESYSTEM"
-        "cache":
           "config":
             "directory": "/parca"
           "type": "FILESYSTEM"
       "scrape_configs":
       - "job_name": "parca"
-        "scrape_interval": "1m"
-        "scrape_timeout": "30s"
+        "scrape_interval": "30s"
+        "scrape_timeout": "1m"
         "static_configs":
         - "labels":
             "instance": "parca"
@@ -55,8 +51,8 @@ objects:
         - "source_labels":
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
-        "scrape_interval": "1m"
-        "scrape_timeout": "30s"
+        "scrape_interval": "30s"
+        "scrape_timeout": "1m"
       - "job_name": "loki"
         "kubernetes_sd_configs":
         - "namespaces":
@@ -85,8 +81,8 @@ objects:
         - "source_labels":
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
-        "scrape_interval": "1m"
-        "scrape_timeout": "30s"
+        "scrape_interval": "30s"
+        "scrape_timeout": "1m"
       - "job_name": "telemeter"
         "kubernetes_sd_configs":
         - "namespaces":
@@ -112,15 +108,20 @@ objects:
           - "__meta_kubernetes_pod_container_name"
           "target_label": "container"
         "scheme": "https"
-        "scrape_interval": "1m"
-        "scrape_timeout": "30s"
+        "scrape_interval": "30s"
+        "scrape_timeout": "1m"
         "tls_config":
           "insecure_skip_verify": true
   kind: ConfigMap
   metadata:
     annotations:
       qontract.recycle: "true"
-    name: parca-config
+    labels:
+      app.kubernetes.io/component: observability
+      app.kubernetes.io/instance: parca
+      app.kubernetes.io/name: parca
+      app.kubernetes.io/version: ${IMAGE_TAG}
+    name: parca
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -148,25 +149,28 @@ objects:
         containers:
         - args:
           - /parca
-          - --config-path=/var/parca/parca.yaml
+          - --http-address=:7070
+          - --config-path=/etc/parca/parca.yaml
           - --log-level=info
+          - --debug-infod-upstream-servers=https://debuginfod.systemtap.org
+          - --debug-infod-http-request-timeout=5m
           - --storage-active-memory=${STORAGE_ACTIVE_MEMORY}
           image: ${IMAGE}:${IMAGE_TAG}
           livenessProbe:
             exec:
               command:
-              - /grpc-health-probe
+              - /grpc_health_probe
               - -v
               - -addr=:7070
             initialDelaySeconds: 5
           name: parca
           ports:
           - containerPort: 7070
-            name: all
+            name: http
           readinessProbe:
             exec:
               command:
-              - /grpc-health-probe
+              - /grpc_health_probe
               - -v
               - -addr=:7070
             initialDelaySeconds: 10
@@ -179,8 +183,10 @@ objects:
               memory: ${PARCA_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
-          - mountPath: /var/parca
-            name: parca-config
+          - mountPath: /etc/parca
+            name: config
+          - mountPath: /var/lib/parca
+            name: data
         - args:
           - -provider=openshift
           - -https-address=:10902
@@ -222,8 +228,10 @@ objects:
         terminationGracePeriodSeconds: 120
         volumes:
         - configMap:
-            name: parca-config
-          name: parca-config
+            name: parca
+          name: config
+        - emptyDir: {}
+          name: data
         - name: secret-parca-tls
           secret:
             secretName: conprof-tls
@@ -328,7 +336,7 @@ parameters:
 - name: IMAGE
   value: ghcr.io/parca-dev/parca
 - name: IMAGE_TAG
-  value: v0.12.0
+  value: v0.15.0
 - name: PARCA_REPLICAS
   value: "1"
 - name: PARCA_CPU_REQUEST
@@ -342,7 +350,7 @@ parameters:
 - name: OAUTH_PROXY_IMAGE
   value: quay.io/openshift/origin-oauth-proxy
 - name: OAUTH_PROXY_IMAGE_TAG
-  value: 4.7.0
+  value: 4.13.0
 - name: PARCA_PROXY_CPU_REQUEST
   value: 100m
 - name: PARCA_PROXY_MEMORY_REQUEST

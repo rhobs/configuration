@@ -230,13 +230,13 @@ objects:
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
-          - --whitelist={__name__="status:upgrading:version:rhoam_state:max"}
-          - --whitelist={__name__="state:rhoam_critical_alerts:max"}
-          - --whitelist={__name__="state:rhoam_warning_alerts:max"}
           - --whitelist={__name__="rhoam_7d_slo_percentile:max"}
           - --whitelist={__name__="rhoam_7d_slo_remaining_error_budget:max"}
           - --whitelist={__name__="rhods_aggregate_availability"}
           - --whitelist={__name__="rhods_total_users"}
+          - --whitelist={__name__="state:rhoam_critical_alerts:max"}
+          - --whitelist={__name__="state:rhoam_warning_alerts:max"}
+          - --whitelist={__name__="status:upgrading:version:rhoam_state:max"}
           - --whitelist={__name__="subscription_sync_total"}
           - --whitelist={__name__="up"}
           - --whitelist={__name__="visual_web_terminal_sessions_total"}
@@ -477,13 +477,13 @@ objects:
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="rhmi_status"}
-          - --whitelist={__name__="status:upgrading:version:rhoam_state:max"}
-          - --whitelist={__name__="state:rhoam_critical_alerts:max"}
-          - --whitelist={__name__="state:rhoam_warning_alerts:max"}
           - --whitelist={__name__="rhoam_7d_slo_percentile:max"}
           - --whitelist={__name__="rhoam_7d_slo_remaining_error_budget:max"}
           - --whitelist={__name__="rhods_aggregate_availability"}
           - --whitelist={__name__="rhods_total_users"}
+          - --whitelist={__name__="state:rhoam_critical_alerts:max"}
+          - --whitelist={__name__="state:rhoam_warning_alerts:max"}
+          - --whitelist={__name__="status:upgrading:version:rhoam_state:max"}
           - --whitelist={__name__="subscription_sync_total"}
           - --whitelist={__name__="up"}
           - --whitelist={__name__="visual_web_terminal_sessions_total"}

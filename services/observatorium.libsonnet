@@ -512,6 +512,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     version: '${OBSERVATORIUM_API_IMAGE_TAG}',
     image: '%s:%s' % ['${OBSERVATORIUM_API_IMAGE}', cfg.version],
     replicas: 1,
+    logLevel: '${OBSERVATORIUM_API_LOG_LEVEL}',
     serviceMonitor: true,
     traces: {
       writeEndpoint: '%s-collector-headless.%s.svc.cluster.local:%d' % [

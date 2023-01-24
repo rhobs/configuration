@@ -1164,7 +1164,7 @@ objects:
         - args:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
-          - --log.level=warn
+          - --log.level=${OBSERVATORIUM_API_LOG_LEVEL}
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:9090
           - --metrics.write.endpoint=http://${METRICS_WRITE_SERVICE_NAME}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:${METRICS_WRITE_SERVICE_PORT}
           - --metrics.rules.endpoint=http://rules-objstore.${NAMESPACE}.svc.cluster.local:8080
@@ -1675,6 +1675,8 @@ parameters:
   value: "3"
 - name: OBSERVATORIUM_API_PER_POD_CONCURRENT_REQUETST_LIMIT
   value: "50"
+- name: OBSERVATORIUM_API_LOG_LEVEL
+  value: warn
 - name: OPA_AMS_CPU_LIMIT
   value: 200m
 - name: OPA_AMS_CPU_REQUEST

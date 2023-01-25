@@ -262,7 +262,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  appsreTenant,
 		signals: []signal{logsSignal},
 		perms:   []rbac.Permission{rbac.Read, rbac.Write},
-		envs:    []env{stagingEnv},
+		envs:    []env{stagingEnv, productionEnv},
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.

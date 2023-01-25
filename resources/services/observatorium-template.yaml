@@ -892,6 +892,8 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-appsre-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-appsre"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":

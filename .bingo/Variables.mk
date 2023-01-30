@@ -65,6 +65,12 @@ $(JSONNETFMT): $(BINGO_DIR)/jsonnetfmt.mod
 	@echo "(re)installing $(GOBIN)/jsonnetfmt-v0.18.1-0.20220927204637-b82fd4c7f546"
 	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=jsonnetfmt.mod -o=$(GOBIN)/jsonnetfmt-v0.18.1-0.20220927204637-b82fd4c7f546 "github.com/google/go-jsonnet/cmd/jsonnetfmt"
 
+OBSCTL := $(GOBIN)/obsctl-v0.0.0-20220427121052-da6d568fb711
+$(OBSCTL): $(BINGO_DIR)/obsctl.mod
+	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.
+	@echo "(re)installing $(GOBIN)/obsctl-v0.0.0-20220427121052-da6d568fb711"
+	@cd $(BINGO_DIR) && $(GO) build -mod=mod -modfile=obsctl.mod -o=$(GOBIN)/obsctl-v0.0.0-20220427121052-da6d568fb711 "github.com/observatorium/obsctl"
+
 PROMTOOL := $(GOBIN)/promtool-v1.8.2-0.20200522113006-f4dd45609a05
 $(PROMTOOL): $(BINGO_DIR)/promtool.mod
 	@# Install binary/ries using Go 1.14+ build command. This is using bwplotka/bingo-controlled, separate go module with pinned dependencies.

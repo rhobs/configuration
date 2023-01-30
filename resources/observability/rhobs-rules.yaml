@@ -1,0 +1,6 @@
+groups:
+- interval: 30s
+  name: test-recording-rule-via-ci
+  rules:
+  - expr: vector(1)
+    record: TestRecordingRuleCI

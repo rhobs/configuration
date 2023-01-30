@@ -158,10 +158,23 @@ resources/crds/observatorium-logs-crds-template.yaml: $(wildcard crds/loki*) syn
 	@echo ">>>>> Running obsevatorium-logs-crds template"
 	$(JSONNET) crds/observatorium-logs-crds-template.jsonnet | $(GOJSONTOYAML) > $@
 
+resources/observability/rhobs-rules.yaml: format observability/rhobs-rules.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running rhobs rules"
+	rm -f resources/observability/*.yaml
+	$(JSONNET) -J vendor observability/rhobs-rules.jsonnet | $(GOJSONTOYAML) > $@
+
+.PHONY: set-rules-stage
+set-rules-stage: resources/observability/rhobs-rules.yaml $(OBSCTL)
+	$(OBSCTL) context api add --name='staging-api' --url=${API_URL} --log.level='debug'
+	$(OBSCTL) login --api='staging-api' --oidc.audience=${OIDC_AUDIENCE} --oidc.client-id=${OIDC_CLIENT_ID} --oidc.client-secret=${OIDC_CLIENT_SECRET} --oidc.issuer-url=${OIDC_ISSUER_URL} --tenant='rhobs' --log.level='debug'
+	$(OBSCTL) metrics set --rule.file=resources/observability/rhobs-rules.yaml
+	$(OBSCTL) metrics get rules.raw
+
 .PHONY: clean
 clean:
 	find resources/crds -type f ! -name '*.yaml' -delete
 	find resources/services -type f ! -name '*.yaml' -delete
+	find resources/observability -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium-logs -type f ! -name '*.yaml' -delete

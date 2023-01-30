@@ -4,3 +4,4 @@ vendor_jsonnet/
 .idea
 .envrc
 resources/.tmp/
+tmp/

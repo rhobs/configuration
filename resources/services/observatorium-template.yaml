@@ -1234,9 +1234,10 @@ objects:
           - --opa.package=observatorium
           - --memcached=observatorium-api-cache-memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
-          - --ams.mappings=cnvqe=${CNVQE_ORGANIZATION_ID}
-          - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
+          - --ams.mappings=osd=${SD_OPS_ORGANIZATION_ID}
+          - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
+          - --ams.mappings=cnvqe=${CNVQE_ORGANIZATION_ID}
           - --internal.tracing.endpoint=localhost:6831
           env:
           - name: ISSUER_URL
@@ -1595,8 +1596,6 @@ parameters:
   value: observatorium-traces
 - name: AMS_URL
   value: https://api.openshift.com
-- name: CNVQE_ORGANIZATION_ID
-  value: ""
 - name: GUBERNATOR_CPU_LIMIT
   value: 200m
 - name: GUBERNATOR_CPU_REQUEST
@@ -1617,8 +1616,6 @@ parameters:
   value: jaegertracing/jaeger-agent
 - name: JAEGER_COLLECTOR_NAMESPACE
   value: $(NAMESPACE)
-- name: MANAGEDKAFKA_ORGANIZATION_ID
-  value: ""
 - name: MEMCACHED_CONNECTION_LIMIT
   value: "3072"
 - name: MEMCACHED_CPU_LIMIT
@@ -1695,8 +1692,6 @@ parameters:
   value: 100Mi
 - name: OPA_AMS_LOG_LEVEL
   value: warn
-- name: OSD_ORGANIZATION_ID
-  value: ""
 - name: RULES_OBJSTORE_IMAGE
   value: quay.io/observatorium/rules-objstore
 - name: RULES_OBJSTORE_IMAGE_TAG
@@ -1753,3 +1748,11 @@ parameters:
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT
   value: "19291"
+- name: CNVQE_ORGANIZATION_ID
+  value: ""
+- name: MANAGEDKAFKA_ORGANIZATION_ID
+  value: ""
+- name: OSD_ORGANIZATION_ID
+  value: ""
+- name: SD_OPS_ORGANIZATION_ID
+  value: ""

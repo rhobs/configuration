@@ -14,10 +14,10 @@ local defaults = {
     api: 8082,
     metrics: 8083,
   },
-  mappings: {
-    // A map from Observatorium tenant names to AMS organization IDs, e.g.:
-    // tenant: 'organizationID',
-  },
+  mappings: [
+    // A list of Observatorium tenant names to AMS organization IDs
+    // Should take the format tenant-name=some-id
+  ],
 };
 
 function(params) {
@@ -74,8 +74,8 @@ function(params) {
           ) + (
             if std.objectHas(opa.config, 'mappings') then
               [
-                '--ams.mappings=%s=%s' % [tenant, opa.config.mappings[tenant]]
-                for tenant in std.objectFields(opa.config.mappings)
+                std.strReplace(mapping, mapping, '--ams.mappings=' + mapping)
+                for mapping in opa.config.mappings
               ]
             else []
           ) + (

@@ -94,6 +94,15 @@ local config = {
           namespaces: { names: ['${OBSERVATORIUM_LOGS_NAMESPACE}'] },
           role: 'pod',
         }],
+        profiling_config: {
+          pprof_config: {
+            fgprof: {
+              enabled: true,
+              path: '/debug/fgprof',
+              delta: true,
+            },
+          },
+        },
         relabel_configs: [
           {
             action: 'keep',

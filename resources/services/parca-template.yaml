@@ -59,6 +59,12 @@ objects:
             "names":
             - "${OBSERVATORIUM_LOGS_NAMESPACE}"
           "role": "pod"
+        "profiling_config":
+          "pprof_config":
+            "fgprof":
+              "delta": true
+              "enabled": true
+              "path": "/debug/fgprof"
         "relabel_configs":
         - "action": "keep"
           "regex": "observatorium-loki-.+"

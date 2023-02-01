@@ -233,14 +233,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         alertmanager_refresh_interval: '1m',
       },
       tracing: {
-        // TODO(@periklis):
-        // Re-enable jaeger tracing of Loki once both issues fixed:
-        // - https://github.com/grafana/loki/issues/6667
-        // - https://github.com/weaveworks/common/pull/246
-        // Currently collecting the user id and org id in exemplar
-        // when Loki is sampled by jaeger fails with a golang panic:
-        // `http: panic serving : exemplar labels have 87 runes, exceeding the limit of 64`
-        enabled: false,
+        enabled: true,
       },
     },
   }),

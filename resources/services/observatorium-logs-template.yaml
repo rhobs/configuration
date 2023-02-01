@@ -730,7 +730,7 @@ objects:
             "addresses": "dns+observatorium-loki-index-query-cache.${NAMESPACE}.svc.cluster.local:11211"
             "consistent_hash": true
       "tracing":
-        "enabled": false
+        "enabled": true
     overrides.yaml: '{}'
   kind: ConfigMap
   metadata:

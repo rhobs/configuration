@@ -621,11 +621,12 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       secretName: obs.api.config.name,
       issuerURLKey: 'issuer-url',
       amsURL: '${AMS_URL}',
-      mappings: {
-        osd: '${OSD_ORGANIZATION_ID}',
-        managedkafka: '${MANAGEDKAFKA_ORGANIZATION_ID}',
-        cnvqe: '${CNVQE_ORGANIZATION_ID}',
-      },
+      mappings: [
+        'osd=${OSD_ORGANIZATION_ID}',
+        'osd=${SD_OPS_ORGANIZATION_ID}',
+        'managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}',
+        'cnvqe=${CNVQE_ORGANIZATION_ID}',
+      ],
       memcached: '%s.%s.svc.cluster.local:%d' % [
         obs.memcached.service.metadata.name,
         obs.config.namespaces.default,

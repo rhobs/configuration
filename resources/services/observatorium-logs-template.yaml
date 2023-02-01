@@ -575,6 +575,8 @@ objects:
             "timeout": "100ms"
             "update_interval": "1m"
         "max_look_back_period": "0s"
+      "common":
+        "compactor_grpc_address": "observatorium-loki-compactor-grpc.${NAMESPACE}.svc.cluster.local:9095"
       "compactor":
         "compaction_interval": "2h"
         "shared_store": "s3"
@@ -620,6 +622,7 @@ objects:
       "limits_config":
         "cardinality_limit": 100000
         "creation_grace_period": "10m"
+        "deletion_mode": "disabled"
         "enforce_metric_name": false
         "ingestion_burst_size_mb": 20
         "ingestion_rate_mb": 10
@@ -652,11 +655,10 @@ objects:
       "querier":
         "engine":
           "max_look_back_period": "30s"
-          "timeout": "6m"
         "extra_query_delay": "0s"
         "max_concurrent": 2
         "query_ingesters_within": "3h"
-        "query_timeout": "1h"
+        "query_timeout": "6m"
         "tail_max_duration": "1h"
       "query_range":
         "align_queries_with_step": true
@@ -2250,7 +2252,7 @@ parameters:
 - name: STORAGE_CLASS
   value: gp2
 - name: LOKI_IMAGE_TAG
-  value: 2.6.1
+  value: 2.7.2
 - name: LOKI_IMAGE
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET

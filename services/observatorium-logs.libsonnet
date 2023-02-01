@@ -224,9 +224,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         max_global_streams_per_user: 25000,
       },
       querier+: {
-        engine+: {
-          timeout: '6m',
-        },
+        query_timeout: '6m',
       },
       ruler+: {
         enable_alertmanager_discovery: true,

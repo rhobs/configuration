@@ -3086,7 +3086,7 @@ objects:
         },
         "timezone": "utc",
         "title": "Loki / Chunks",
-        "uid": "",
+        "uid": "GtCujSHzC8gd9i5fck9a3v9n2EvTzA",
         "version": 0
       }
   kind: ConfigMap
@@ -4285,7 +4285,7 @@ objects:
         },
         "timezone": "",
         "title": "Logs",
-        "uid": "a7e130cb82be229d6f3edbfd0a438001",
+        "uid": "nEhbhXRHDQQBSSWMt9WCpkwyxbwpu4",
         "version": 1
       }
   kind: ConfigMap
@@ -11945,7 +11945,7 @@ objects:
         },
         "timezone": "",
         "title": "Loki Operational",
-        "uid": "f6fe30815b172c9da7e813c15ddfe607",
+        "uid": "E2CAJBcLcg3NNfd2jLKe4fhQpf2LaU",
         "version": 1
       }
   kind: ConfigMap
@@ -15295,7 +15295,7 @@ objects:
         },
         "timezone": "utc",
         "title": "Loki / Reads",
-        "uid": "",
+        "uid": "62q5jjYwhVSaz4Mcrm8tV3My3gcKED",
         "version": 0
       }
   kind: ConfigMap
@@ -16438,7 +16438,7 @@ objects:
         },
         "timezone": "utc",
         "title": "Loki / Writes",
-        "uid": "",
+        "uid": "F6nRYKuXmFVpVSFQmXr7cgXy5j7UNr",
         "version": 0
       }
   kind: ConfigMap

@@ -4,6 +4,14 @@ local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libson
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'observatorium-mst-production';
 
+local dashboardUIDs = {
+  'loki-chunks.json': 'GtCujSHzC8gd9i5fck9a3v9n2EvTzA',
+  'loki-logs.json': 'nEhbhXRHDQQBSSWMt9WCpkwyxbwpu4',
+  'loki-operational.json': 'E2CAJBcLcg3NNfd2jLKe4fhQpf2LaU',
+  'loki-reads.json': '62q5jjYwhVSaz4Mcrm8tV3My3gcKED',
+  'loki-writes.json': 'F6nRYKuXmFVpVSFQmXr7cgXy5j7UNr',
+};
+
 local dashboards = {
   ['grafana-dashboard-observatorium-logs-%s.configmap' % std.split(name, '.')[0]]: {
     apiVersion: 'v1',
@@ -12,7 +20,10 @@ local dashboards = {
       name: 'grafana-dashboard-observatorium-logs-%s' % std.split(name, '.')[0],
     },
     data: {
-      [name]: std.manifestJsonEx(loki.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium', 'observatorium-logs']) }, '  '),
+      [name]: std.manifestJsonEx(loki.grafanaDashboards[name] {
+        tags: std.uniq(super.tags + ['observatorium', 'observatorium-logs']),
+        uid: dashboardUIDs[name],
+      }, '  '),
     },
   }
   for name in std.objectFields(loki.grafanaDashboards)

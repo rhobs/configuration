@@ -658,7 +658,7 @@ objects:
         "extra_query_delay": "0s"
         "max_concurrent": 2
         "query_ingesters_within": "3h"
-        "query_timeout": "1h"
+        "query_timeout": "6m"
         "tail_max_duration": "1h"
       "query_range":
         "align_queries_with_step": true

@@ -221,7 +221,9 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     },
     config+: {
       limits_config+: {
+        ingestion_rate_mb: 50,
         max_global_streams_per_user: 25000,
+        per_stream_rate_limit: '5MB',
       },
       querier+: {
         query_timeout: '6m',

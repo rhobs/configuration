@@ -12,7 +12,6 @@ local thanos =
   (import 'github.com/observatorium/thanos-receive-controller/jsonnet/thanos-receive-controller-mixin/mixin.libsonnet') +
   config.thanos;
 
-local jaeger = (import 'github.com/jaegertracing/jaeger/monitoring/jaeger-mixin/mixin.libsonnet');
 local memcached = (import 'github.com/grafana/jsonnet-libs/memcached-mixin/mixin.libsonnet');
 
 local obsDatasource = 'telemeter-prod-01-prometheus';
@@ -34,19 +33,6 @@ local dashboards =
       },
     }
     for name in std.objectFields(thanos.grafanaDashboards)
-  } +
-  {
-    ['grafana-dashboard-observatorium-jaeger-%s.configmap' % sanitizeDashboardName(name)]: {
-      apiVersion: 'v1',
-      kind: 'ConfigMap',
-      metadata: {
-        name: 'grafana-dashboard-observatorium-jaeger-%s' % sanitizeDashboardName(name),
-      },
-      data: {
-        [name]: std.manifestJsonEx(jaeger.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '),
-      },
-    }
-    for name in std.objectFields(jaeger.grafanaDashboards)
   } +
   {
     ['grafana-dashboard-observatorium-memcached-%s.configmap' % sanitizeDashboardName(name)]: {

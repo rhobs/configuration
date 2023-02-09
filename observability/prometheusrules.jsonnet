@@ -96,6 +96,8 @@ local appSREOverwrites(environment) = {
       else if
         std.startsWith(name, 'rhobs-mst') && environment == 'production' then '283e7002d85c08126681241df2fdb22b'
       else if
+        std.startsWith(name, 'rhobs-rhobsp02ue1') && environment == 'production' then '7f4df1c2d5518d5c3f2876ca9bb874a8'
+      else if
         std.startsWith(name, 'rhobs-mst') && environment == 'stage' then '92520ea4d6976f30d1618164e186ef9b'
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
@@ -470,6 +472,10 @@ local renderAlerts(name, environment, mixin) = {
 
   'rhobs-slos-mst-stage.prometheusrules': renderAlerts('rhobs-slos-mst-stage', 'stage', flatten(mstStageSLOs)),
   'rhobs-slos-mst-production.prometheusrules': renderAlerts('rhobs-slos-mst-production', 'production', flatten(mstProductionSLOs)),
+
+  local rhobsp02ue1ProductionSLOs = apiSLOs('rhobsp02ue1', 'observatorium-mst-production', 'observatorium-mst-production', 'observatorium-observatorium-mst-api').slos,
+
+  'rhobs-slos-rhobsp02ue1.prometheusrules': renderAlerts('rhobs-slos-rhobsp02ue1', 'production', flatten(rhobsp02ue1ProductionSLOs)),
 
   local telemeterStageSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-stage', 'observatorium-metrics-stage', 'observatorium-observatorium-api').slos,
   local telemeterProductionSLOs = telemeterServerSLOs + apiSLOs('telemeter', 'observatorium-production', 'observatorium-metrics-production', 'observatorium-observatorium-api').slos,

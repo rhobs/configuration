@@ -316,6 +316,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                   args+: [
                     '--grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}',
                     '--query.promql-engine=${THANOS_QUERIER_ENGINE}',
+                    '--query.max-concurrent=${THANOS_QUERIER_MAX_CONCURRENT}',
                   ],
                 } else c
                 for c in super.containers

@@ -217,19 +217,6 @@ local appSREOverwrites(environment) = {
   ],
 };
 
-local renderRules(name, mixin) = {
-  apiVersion: 'monitoring.coreos.com/v1',
-  kind: 'PrometheusRule',
-  metadata: {
-    name: name,
-    labels: {
-      prometheus: 'app-sre',
-      role: 'recording-rules',
-    },
-  },
-  spec: mixin.prometheusRules,
-};
-
 local renderAlerts(name, environment, mixin) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PrometheusRule',
@@ -701,8 +688,6 @@ local renderAlerts(name, environment, mixin) = {
 }
 
 {
-  'observatorium-logs-recording-rules.prometheusrules': renderRules('observatorium-logs-recording-rules', loki),
-
   local obsLogsStageEnv = 'observatorium-mst-stage',
   local obsLogsStage = loki + lokiTenants(obsLogsStageEnv),
   'rhobs-logs-mst-stage.prometheusrules': renderAlerts(obsLogsStageEnv, 'stage', obsLogsStage),

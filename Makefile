@@ -65,18 +65,18 @@ test-rules: prometheusrules $(PROMTOOL) $(YQ) $(wildcard observability/prometheu
 	find resources/observability/prometheusrules -type f -name '*.test' -delete
 
 .PHONY: grafana
-grafana: resources/observability/grafana/observatorium resources/observability/grafana/observatorium-logs/grafana-dashboards-template.yaml $(JSONNET_VENDOR_DIR)
+grafana: resources/observability/grafana/observatorium resources/observability/grafana/observatorium-logs $(JSONNET_VENDOR_DIR)
 	$(MAKE) clean
 
 resources/observability/grafana/observatorium: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running grafana"
+	@echo ">>>>> Running grafana observatorium"
 	rm -f resources/observability/grafana/observatorium/*.yaml
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -m resources/observability/grafana/observatorium observability/grafana.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
-resources/observability/grafana/observatorium-logs/grafana-dashboards-template.yaml: format observability/grafana.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running grafana"
+resources/observability/grafana/observatorium-logs: format observability/grafana-obs-logs.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running grafana observatorium-logs"
 	rm -f resources/observability/grafana/observatorium-logs/*.yaml
-	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" observability/grafana-obs-logs.jsonnet | $(GOJSONTOYAML) > $@
+	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -m resources/observability/grafana/observatorium-logs observability/grafana-obs-logs.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 .PHONY: whitelisted_metrics
 whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)

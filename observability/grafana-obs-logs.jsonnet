@@ -20,10 +20,36 @@ local dashboards = {
       name: 'grafana-dashboard-observatorium-logs-%s' % std.split(name, '.')[0],
     },
     data: {
-      [name]: std.manifestJsonEx(loki.grafanaDashboards[name] {
-        tags: std.uniq(super.tags + ['observatorium', 'observatorium-logs']),
-        uid: dashboardUIDs[name],
-      }, '  '),
+      // TODO(@periklis): Remove all the string replaces once we update the dahboards mixin dependencies.
+      //                  This is currently needed because we use Loki 2.7.x and on out-of-date mixin
+      //                  for dashboards from 2020.
+      [name]: std.strReplace(
+        std.strReplace(
+          std.strReplace(
+            std.strReplace(
+              std.strReplace(
+                std.manifestJsonEx(
+                  loki.grafanaDashboards[name] {
+                    tags: std.uniq(super.tags + ['observatorium', 'observatorium-logs']),
+                    uid: dashboardUIDs[name],
+                  },
+                  '  '
+                ),
+                'cortex_',
+                'loki_',
+              ),
+              'loki_gw',
+              'api',
+            ),
+            '"distributor.*',
+            '".*distributor.*',
+          ),
+          '"ingester.*',
+          '".*ingester.*',
+        ),
+        '"querier.*',
+        '".*querier.*',
+      ),
     },
   }
   for name in std.objectFields(loki.grafanaDashboards)
@@ -32,7 +58,7 @@ local dashboards = {
   'grafana-dashboard-observatorium-logs-loki-overview.configmap': (import 'observatorium-logs/loki-overview.libsonnet')(obsDatasource, obsNamespace),
 };
 
-{
+local dashboardsTemplate = {
   apiVersion: 'template.openshift.io/v1',
   kind: 'Template',
   metadata: {
@@ -56,4 +82,32 @@ local dashboards = {
     { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'observatorium-mst-production' },
     { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-mst-production' },
   ],
+};
+
+local recordingRulesTemplate = {
+  apiVersion: 'template.openshift.io/v1',
+  kind: 'Template',
+  metadata: {
+    name: 'observatorium-logs-dahboards-rules-templates',
+  },
+  objects: [
+    {
+      apiVersion: 'monitoring.coreos.com/v1',
+      kind: 'PrometheusRule',
+      metadata: {
+        name: 'observatorium-logs-recording-rules',
+        labels: {
+          prometheus: 'app-sre',
+          role: 'recording-rules',
+        },
+      },
+      spec: loki.prometheusRules,
+    },
+  ],
+  parameters: [],
+};
+
+{
+  'grafana-dashboards-template': dashboardsTemplate,
+  'grafana-dashboards-rules-template': recordingRulesTemplate,
 }

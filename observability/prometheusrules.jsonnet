@@ -688,12 +688,31 @@ local renderAlerts(name, environment, mixin) = {
 }
 
 {
+  local patchedLoki = loki {
+    prometheusAlerts+: {
+      groups: [
+        group {
+          name: 'loki_alerts',
+          rules: [
+            rule {
+              expr: if rule.alert == 'LokiRequestLatency'
+              then 'namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*|debug_.+prof"} > 1'
+              else rule.expr,
+            }
+            for rule in group.rules
+          ],
+        }
+        for group in loki.prometheusAlerts.groups
+      ],
+    },
+  },
+
   local obsLogsStageEnv = 'observatorium-mst-stage',
-  local obsLogsStage = loki + lokiTenants(obsLogsStageEnv),
+  local obsLogsStage = patchedLoki + lokiTenants(obsLogsStageEnv),
   'rhobs-logs-mst-stage.prometheusrules': renderAlerts(obsLogsStageEnv, 'stage', obsLogsStage),
 
   local obsLogsProdEnv = 'observatorium-mst-production',
-  local obsLogsProd = loki + lokiTenants(obsLogsProdEnv),
+  local obsLogsProd = patchedLoki + lokiTenants(obsLogsProdEnv),
   'rhobs-logs-mst-production.prometheusrules': renderAlerts(obsLogsProdEnv, 'production', obsLogsProd),
 }
 

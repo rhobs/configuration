@@ -43,8 +43,7 @@ spec:
         message: |
           {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequestlatency
-      expr: |
-        namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*"} > 1
+      expr: namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*|metrics|ready|debug_.+prof"} > 1
       for: 15m
       labels:
         service: observatorium-logs

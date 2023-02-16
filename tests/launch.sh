@@ -38,6 +38,10 @@ telemeter() {
     oc apply --namespace telemeter -f telemeter-token-refersher-oidc-secret.yaml
     oc process --param-file=telemeter.test.env -f ../resources/services/telemeter-template.yaml | oc apply --namespace telemeter -f -
 }
+loki_crds(){
+    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_recordingrules.yaml
+    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_alertingrules.yaml
+}
 
 teardown() {
     oc delete ns telemeter || true
@@ -45,12 +49,15 @@ teardown() {
     oc delete ns observatorium || true
     oc delete ns minio || true
     oc delete ns dex || true
+    oc delete crds recordingrules.loki.grafana.com || true
+    oc delete crds alertingrules.loki.grafana.com || true
 }
 
 case $1 in
 deploy)
     minio
     dex
+    loki_crds
     observatorium
     observatorium_metrics
     telemeter

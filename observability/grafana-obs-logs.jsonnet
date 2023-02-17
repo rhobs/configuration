@@ -42,7 +42,6 @@ local dashboardsTemplate = {
     { name: 'OBSERVATORIUM_API_DATASOURCE', value: 'telemeter-prod-01-prometheus' },
     { name: 'OBSERVATORIUM_API_NAMESPACE', value: 'observatorium-mst-production' },
     { name: 'OBSERVATORIUM_DATASOURCE_REGEX', value: '(app-sre-stage-01|rhobs-testing|rhobsp02ue1|telemeter-prod-01)-prometheus' },
-    { name: 'OBSERVATORIUM_NAMESPACE_OPTIONS', value: 'observatorium-logs-testing,observatorium-mst-stage,observatorium-mst-production' },
   ],
 };
 

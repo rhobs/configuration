@@ -3034,7 +3034,11 @@ objects:
                 "text": "${OBSERVATORIUM_API_NAMESPACE}",
                 "value": "${OBSERVATORIUM_API_NAMESPACE}"
               },
-              "datasource": "$datasource",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "definition": "label_values(kube_pod_info, namespace)",
               "hide": 0,
               "includeAll": false,
               "label": "namespace",
@@ -3043,16 +3047,19 @@ objects:
               "options": [
 
               ],
-              "query": "${OBSERVATORIUM_NAMESPACE_OPTIONS}",
+              "query": {
+                "query": "label_values(kube_pod_info, namespace)",
+                "refId": "StandardVariableQuery"
+              },
               "refresh": 1,
-              "regex": "",
+              "regex": "observatorium-logs|mst-.+",
               "sort": 2,
               "tagValuesQuery": "",
               "tags": [
 
               ],
               "tagsQuery": "",
-              "type": "custom",
+              "type": "query",
               "useTags": false
             }
           ]
@@ -8345,7 +8352,11 @@ objects:
                 "text": "${OBSERVATORIUM_API_NAMESPACE}",
                 "value": "${OBSERVATORIUM_API_NAMESPACE}"
               },
-              "datasource": "$metrics",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${metrics}"
+              },
+              "definition": "label_values(kube_pod_info, namespace)",
               "hide": 0,
               "includeAll": false,
               "label": "namespace",
@@ -8354,16 +8365,19 @@ objects:
               "options": [
 
               ],
-              "query": "${OBSERVATORIUM_NAMESPACE_OPTIONS}",
+              "query": {
+                "query": "label_values(kube_pod_info, namespace)",
+                "refId": "StandardVariableQuery"
+              },
               "refresh": 1,
-              "regex": "",
+              "regex": "observatorium-logs|mst-.+",
               "sort": 2,
               "tagValuesQuery": "",
               "tags": [
 
               ],
               "tagsQuery": "",
-              "type": "custom",
+              "type": "query",
               "useTags": false
             }
           ]
@@ -11479,7 +11493,11 @@ objects:
                 "text": "${OBSERVATORIUM_API_NAMESPACE}",
                 "value": "${OBSERVATORIUM_API_NAMESPACE}"
               },
-              "datasource": "$datasource",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "definition": "label_values(kube_pod_info, namespace)",
               "hide": 0,
               "includeAll": false,
               "label": "namespace",
@@ -11488,16 +11506,19 @@ objects:
               "options": [
 
               ],
-              "query": "${OBSERVATORIUM_NAMESPACE_OPTIONS}",
+              "query": {
+                "query": "label_values(kube_pod_info, namespace)",
+                "refId": "StandardVariableQuery"
+              },
               "refresh": 1,
-              "regex": "",
+              "regex": "observatorium-logs|mst-.+",
               "sort": 2,
               "tagValuesQuery": "",
               "tags": [
 
               ],
               "tagsQuery": "",
-              "type": "custom",
+              "type": "query",
               "useTags": false
             }
           ]
@@ -12418,7 +12439,11 @@ objects:
                 "text": "${OBSERVATORIUM_API_NAMESPACE}",
                 "value": "${OBSERVATORIUM_API_NAMESPACE}"
               },
-              "datasource": "$datasource",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "definition": "label_values(kube_pod_info, namespace)",
               "hide": 0,
               "includeAll": false,
               "label": "namespace",
@@ -12427,16 +12452,19 @@ objects:
               "options": [
 
               ],
-              "query": "${OBSERVATORIUM_NAMESPACE_OPTIONS}",
+              "query": {
+                "query": "label_values(kube_pod_info, namespace)",
+                "refId": "StandardVariableQuery"
+              },
               "refresh": 1,
-              "regex": "",
+              "regex": "observatorium-logs|mst-.+",
               "sort": 2,
               "tagValuesQuery": "",
               "tags": [
 
               ],
               "tagsQuery": "",
-              "type": "custom",
+              "type": "query",
               "useTags": false
             }
           ]
@@ -12489,5 +12517,3 @@ parameters:
   value: observatorium-mst-production
 - name: OBSERVATORIUM_DATASOURCE_REGEX
   value: (app-sre-stage-01|rhobs-testing|rhobsp02ue1|telemeter-prod-01)-prometheus
-- name: OBSERVATORIUM_NAMESPACE_OPTIONS
-  value: observatorium-logs-testing,observatorium-mst-stage,observatorium-mst-production

@@ -48,12 +48,14 @@ local absent(name, job) = {
 // Add dashboards and runbook anntotations.
 // Overwrite severity to medium and high.
 local appSREOverwrites(environment) = {
-  local dashboardDatasource = function(environment) {
+  local dashboardDatasource = function(name, environment) {
     datasource:
       if
         environment == 'stage' then 'app-sre-stage-01-prometheus'
       else if
-        environment == 'production' then 'telemeter-prod-01-prometheus'
+        !std.startsWith(name, 'rhobs-rhobsp02ue1') && environment == 'production' then 'telemeter-prod-01-prometheus'
+      else if
+        std.startsWith(name, 'rhobs-rhobsp02ue1') && environment == 'production' then 'rhobsp02ue1-prometheus'
       else error 'no datasource for environment %s' % environment,
   },
 
@@ -156,7 +158,7 @@ local appSREOverwrites(environment) = {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource=%s&var-namespace={{$labels.namespace}}' % [
                     dashboardID('loki', environment).id,
-                    dashboardDatasource(environment).datasource,
+                    dashboardDatasource('loki', environment).datasource,
                   ],
                 }
               else if std.startsWith(g.name, 'telemeter') then
@@ -164,7 +166,7 @@ local appSREOverwrites(environment) = {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource=%s' % [
                     dashboardID(g.name, environment).id,
-                    dashboardDatasource(environment).datasource,
+                    dashboardDatasource(g.name, environment).datasource,
                   ],
                 }
               else if std.startsWith(g.name, 'loki_tenant') then
@@ -173,7 +175,7 @@ local appSREOverwrites(environment) = {
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-metrics=%s&var-namespace={{$labels.namespace}}' % [
                     dashboardID(g.name, environment).id,
                     g.name,
-                    dashboardDatasource(environment).datasource,
+                    dashboardDatasource(g.name, environment).datasource,
                   ],
                 }
               else
@@ -182,7 +184,7 @@ local appSREOverwrites(environment) = {
                   dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource=%s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
                     dashboardID(g.name, environment).id,
                     g.name,
-                    dashboardDatasource(environment).datasource,
+                    dashboardDatasource(g.name, environment).datasource,
                   ],
                 },
             labels: pruneUnsupportedLabels(r.labels {

@@ -44,14 +44,23 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     } else {}
   ),
 
-  local withLokiMetricsNamespace = function(ns, value) ns + (
+  local withLokiMetricsNamespace = function(ns, ds, value) ns + (
     if ns.label == value then {
-      query: '${OBSERVATORIUM_NAMESPACE_OPTIONS}',
+      datasource: {
+        type: 'prometheus',
+        uid: '${%s}' % ds,
+      },
       current: {
         selected: true,
         text: '${OBSERVATORIUM_API_NAMESPACE}',
         value: '${OBSERVATORIUM_API_NAMESPACE}',
       },
+      definition: 'label_values(kube_pod_info, namespace)',
+      query: {
+        query: 'label_values(kube_pod_info, namespace)',
+        refId: 'StandardVariableQuery',
+      },
+      regex: 'observatorium-logs|mst-.+',
     } else {}
   ),
 
@@ -64,8 +73,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         uid: 'GtCujSHzC8gd9i5fck9a3v9n2EvTzA',
         tags: defaultLokiTags(super.tags),
         showMultiCluster:: false,
-        namespaceQuery:: '${OBSERVATORIUM_API_NAMESPACE}',
-        namespaceType:: 'custom',
+        namespaceQuery:: 'label_values(kube_pod_info, namespace)',
+        namespaceType:: 'query',
         matchers:: {
           ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
         },
@@ -93,7 +102,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
             std.map(
               function(e) withLokiMetricsDatasource(e, 'datasource'),
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'namespace'),
+                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
                 super.list
               )
             ),
@@ -105,8 +114,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         showAnnotations:: false,
         showLinks:: false,
         showMultiCluster:: false,
-        namespaceQuery:: '${OBSERVATORIUM_API_NAMESPACE}',
-        namespaceType:: 'custom',
+        namespaceQuery:: 'label_values(kube_pod_info, namespace)',
+        namespaceType:: 'query',
         matchers:: {
           cortexgateway:: [],
           distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor-http')],
@@ -169,7 +178,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
             std.map(
               function(e) withLokiMetricsDatasource(e, 'metrics'),
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'namespace'),
+                function(e) withLokiMetricsNamespace(e, 'metrics', 'namespace'),
                 super.list
               )
             ),
@@ -179,8 +188,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         uid: '62q5jjYwhVSaz4Mcrm8tV3My3gcKED',
         tags: defaultLokiTags(super.tags),
         showMultiCluster:: false,
-        namespaceQuery:: '${OBSERVATORIUM_API_NAMESPACE}',
-        namespaceType:: 'custom',
+        namespaceQuery:: 'label_values(kube_pod_info, namespace)',
+        namespaceType:: 'query',
         matchers:: {
           cortexgateway:: [],
           queryFrontend:: [utils.selector.eq('job', 'observatorium-loki-query-frontend-http')],
@@ -199,7 +208,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
             std.map(
               function(e) withLokiMetricsDatasource(e, 'datasource'),
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'namespace'),
+                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
                 super.list
               )
             ),
@@ -209,8 +218,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         uid: 'F6nRYKuXmFVpVSFQmXr7cgXy5j7UNr',
         tags: defaultLokiTags(super.tags),
         showMultiCluster:: false,
-        namespaceQuery:: '${OBSERVATORIUM_API_NAMESPACE}',
-        namespaceType:: 'custom',
+        namespaceQuery:: 'label_values(kube_pod_info, namespace)',
+        namespaceType:: 'query',
         matchers:: {
           cortexgateway:: [],
           distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor-http')],
@@ -228,7 +237,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
             std.map(
               function(e) withLokiMetricsDatasource(e, 'datasource'),
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'namespace'),
+                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
                 super.list
               )
             ),

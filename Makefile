@@ -6,6 +6,7 @@ XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
 CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
 BIN_DIR ?= $(TMP_DIR)/bin
+PYRRA_DIR := $(shell pwd)/resources/.tmp2
 OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
 OC_VERSION ?= 4.10.6
 OC ?= $(BIN_DIR)/oc
@@ -172,7 +173,12 @@ resources/.tmp/tenants/rbac.json: configuration/observatorium/rbac.go
 
 .PHONY: mimic
 mimic:
-	GOFLAGS="-mod=mod" go run ./mimic.go generate -o resources/.tmp
+	GOFLAGS="-mod=mod" go run ./mimic.go generate -o resources
+
+.PHONY: docker-pyrra
+docker-pyrra:
+	@chmod -R 777 $(PYRRA_DIR)
+	docker run -v $(PYRRA_DIR):/shared -i ghcr.io/pyrra-dev/pyrra:main generate --config-files=/shared/test/*.yaml --prometheus-folder=/shared/output --generic-rules
 
 # Tools
 $(TMP_DIR):

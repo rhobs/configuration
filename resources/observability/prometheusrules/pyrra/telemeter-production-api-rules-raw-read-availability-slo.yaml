@@ -1,0 +1,30 @@
+apiVersion: v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  annotations:
+    pyrra.dev/dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+    pyrra.dev/message: API /rules/raw endpoint for reads is burning too much error
+      budget to guarantee availability SLOs.
+    pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawReadAvailabilityErrorBudgetBurning
+  creationTimestamp: null
+  labels:
+    instance: telemeter-production
+    service: observatorium-api
+  name: api-rules-raw-read-availability-slo
+spec:
+  alerting:
+    name: APIRulesRawReadAvailabilityErrorBudgetBurning
+  description: API /rules/raw endpoint for reads is burning too much error budget
+    to guarantee availability SLOs.
+  indicator:
+    ratio:
+      errors:
+        metric: http_requests_total{job="observatorium-observatorium-api", handler="rules-raw",
+          method="GET", code=~"^5..$"}
+      grouping: null
+      total:
+        metric: http_requests_total{job="observatorium-observatorium-api", handler="rules-raw",
+          method="GET", code!~"^4..$"}
+  target: "99"
+  window: 28d
+status: {}

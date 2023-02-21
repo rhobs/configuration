@@ -473,12 +473,10 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 }
 
 func envSLOs(envName string, objs []pyrrav1alpha1.ServiceLevelObjective, ruleFilename string, isStage bool, genPyrra, genRules *mimic.Generator) {
-	// We can generate objective files if we wish to.
-
-	// for _, obj := range objs {
-	// 	name := envName + "-" + obj.ObjectMeta.Name + ".yaml"
-	// 	genPyrra.Add(name, encoding.GhodssYAML(obj))
-	// }
+	for _, obj := range objs {
+		name := envName + "-" + obj.ObjectMeta.Name + ".yaml"
+		genPyrra.Add(name, encoding.GhodssYAML(obj))
+	}
 
 	genRules.Add(ruleFilename, encoding.GhodssYAML("", makePrometheusRule(objs, strings.TrimSuffix(ruleFilename, ".prometheusrules.yaml"), isStage)))
 }

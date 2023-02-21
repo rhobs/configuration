@@ -14,11 +14,34 @@ import (
 )
 
 const (
-	window             = "28d" // Window over which our SLOs are calculated.
-	availabilityTarget = "99"  // Availability SLO target, currently at 99%.
-	latencyTarget      = "90"  // Latency SLO percentile target.
-	latencySeconds     = "5"   // Latency request duration to measure percentile target (this is diff for query SLOs).
+	globalSLOWindowDuration            = "28d"
+	globalSLOAvailabilityTargetPercent = "99"
+	globalSLOLatencyTargetPercent      = "90"
+	genericSLOLatencySeconds           = "5" // Latency request duration to measure percentile target (this is diff for query SLOs).
 )
+
+// rhobsInstanceEnv represents a particular RHOBS Instance environment.
+type rhobsInstanceEnv string
+
+const (
+	telemeterProduction   rhobsInstanceEnv = "telemeter-production"
+	telemeterStaging      rhobsInstanceEnv = "telemeter-staging"
+	mstProduction         rhobsInstanceEnv = "mst-production"
+	mstStage              rhobsInstanceEnv = "mst-stage"
+	rhobsp02ue1Production rhobsInstanceEnv = "rhobsp02ue1-production"
+)
+
+// isStage as the name suggests returns if the rhobsInstanceEnv is a staging environment.
+func (envName rhobsInstanceEnv) isStage() bool {
+	switch envName {
+	case telemeterStaging, mstStage:
+		return true
+	case telemeterProduction, mstProduction, rhobsp02ue1Production:
+		return false
+	default:
+		panic("not a RHOBS env")
+	}
+}
 
 var (
 	// Reusable k8s type metas.
@@ -39,54 +62,55 @@ var (
 	}
 
 	// IDs <> env.
-	dashboardIDs = map[string]string{
-		"telemeter-production":   "f9fa7677fb4a2669f123f9a0f2234b47",
-		"telemeter-staging":      "080e53f245a15445bdf777ae0e66945d",
-		"mst-production":         "283e7002d85c08126681241df2fdb22b",
-		"mst-stage":              "92520ea4d6976f30d1618164e186ef9b",
-		"rhobsp02ue1-production": "7f4df1c2d5518d5c3f2876ca9bb874a8",
+	dashboardIDs = map[rhobsInstanceEnv]string{
+		telemeterProduction:   "f9fa7677fb4a2669f123f9a0f2234b47",
+		telemeterStaging:      "080e53f245a15445bdf777ae0e66945d",
+		mstProduction:         "283e7002d85c08126681241df2fdb22b",
+		mstStage:              "92520ea4d6976f30d1618164e186ef9b",
+		rhobsp02ue1Production: "7f4df1c2d5518d5c3f2876ca9bb874a8",
 	}
 
 	// Data Source <> env.
-	dashboardDataSource = map[string]string{
-		"telemeter-production":   "telemeter-prod-01-prometheus",
-		"telemeter-staging":      "app-sre-stage-01-prometheus",
-		"mst-production":         "telemeter-prod-01-prometheus",
-		"mst-stage":              "app-sre-stage-01-prometheus",
-		"rhobsp02ue1-production": "rhobsp02ue1-prometheus",
+	dashboardDataSource = map[rhobsInstanceEnv]string{
+		telemeterProduction:   "telemeter-prod-01-prometheus",
+		telemeterStaging:      "app-sre-stage-01-prometheus",
+		mstProduction:         "telemeter-prod-01-prometheus",
+		mstStage:              "app-sre-stage-01-prometheus",
+		rhobsp02ue1Production: "rhobsp02ue1-prometheus",
 	}
 
 	// Unifying our namespaces would allow us to remove these metrics/up/apiJobSelector maps.
-	apiJobSelector = map[string]string{
-		"telemeter-production":   "observatorium-observatorium-api",
-		"telemeter-staging":      "observatorium-observatorium-api",
-		"mst-production":         "observatorium-observatorium-mst-api",
-		"mst-stage":              "observatorium-observatorium-mst-api",
-		"rhobsp02ue1-production": "observatorium-observatorium-mst-api",
+	apiJobSelector = map[rhobsInstanceEnv]string{
+		telemeterProduction:   "observatorium-observatorium-api",
+		telemeterStaging:      "observatorium-observatorium-api",
+		mstProduction:         "observatorium-observatorium-mst-api",
+		mstStage:              "observatorium-observatorium-mst-api",
+		rhobsp02ue1Production: "observatorium-observatorium-mst-api",
 	}
 
-	metricsNS = map[string]string{
-		"telemeter-production":   "observatorium-metrics-production",
-		"telemeter-staging":      "observatorium-metrics-stage",
-		"mst-production":         "observatorium-mst-production",
-		"mst-stage":              "observatorium-mst-stage",
-		"rhobsp02ue1-production": "observatorium-mst-production",
+	metricsNS = map[rhobsInstanceEnv]string{
+		telemeterProduction:   "observatorium-metrics-production",
+		telemeterStaging:      "observatorium-metrics-stage",
+		mstProduction:         "observatorium-mst-production",
+		mstStage:              "observatorium-mst-stage",
+		rhobsp02ue1Production: "observatorium-mst-production",
 	}
 
-	upNS = map[string]string{
-		"telemeter-production":   "observatorium-production",
-		"telemeter-staging":      "observatorium-stage",
-		"mst-production":         "observatorium-mst-production",
-		"mst-stage":              "observatorium-mst-stage",
-		"rhobsp02ue1-production": "observatorium-mst-production",
+	upNS = map[rhobsInstanceEnv]string{
+		telemeterProduction:   "observatorium-production",
+		telemeterStaging:      "observatorium-stage",
+		mstProduction:         "observatorium-mst-production",
+		mstStage:              "observatorium-mst-stage",
+		rhobsp02ue1Production: "observatorium-mst-production",
 	}
 )
 
+// sloType indicates the type of a particular SLO in rhobsSLOs shorthand.
 type sloType string
 
 const (
-	latency      sloType = "latency"
-	availability sloType = "availability"
+	sloTypeLatency      sloType = "latency"
+	sloTypeAvailability sloType = "availability"
 )
 
 // rhobsSLOs is a shorthand struct to generate Pyrra SLOs.
@@ -104,7 +128,7 @@ type rhobsSLOs struct {
 type rhobSLOList []rhobsSLOs
 
 // GetObjectives returns Pyrra Objectives from a rhobsSLOList shorthand.
-func (slos rhobSLOList) GetObjectives(envName string) []pyrrav1alpha1.ServiceLevelObjective {
+func (slos rhobSLOList) GetObjectives(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
 	objectives := []pyrrav1alpha1.ServiceLevelObjective{}
 
 	for _, s := range slos {
@@ -121,15 +145,15 @@ func (slos rhobSLOList) GetObjectives(envName string) []pyrrav1alpha1.ServiceLev
 			},
 			Spec: pyrrav1alpha1.ServiceLevelObjectiveSpec{
 				Description: s.description,
-				Window:      window,
+				Window:      globalSLOWindowDuration,
 				Alerting: pyrrav1alpha1.Alerting{
 					Name: s.alertName,
 				},
 			},
 		}
 
-		if s.sloType == availability {
-			objective.Spec.Target = availabilityTarget
+		if s.sloType == sloTypeAvailability {
+			objective.Spec.Target = globalSLOAvailabilityTargetPercent
 			objective.Spec.ServiceLevelIndicator = pyrrav1alpha1.ServiceLevelIndicator{
 				Ratio: &pyrrav1alpha1.RatioIndicator{
 					Errors: pyrrav1alpha1.Query{
@@ -141,7 +165,7 @@ func (slos rhobSLOList) GetObjectives(envName string) []pyrrav1alpha1.ServiceLev
 				},
 			}
 		} else {
-			objective.Spec.Target = latencyTarget
+			objective.Spec.Target = globalSLOLatencyTargetPercent
 			objective.Spec.ServiceLevelIndicator = pyrrav1alpha1.ServiceLevelIndicator{
 				Latency: &pyrrav1alpha1.LatencyIndicator{
 					Success: pyrrav1alpha1.Query{
@@ -161,7 +185,7 @@ func (slos rhobSLOList) GetObjectives(envName string) []pyrrav1alpha1.ServiceLev
 }
 
 // getGrafanaLink returns the AppSRE production Grafana dashboard for a particular RHOBS environment.
-func getGrafanaLink(envName string) string {
+func getGrafanaLink(envName rhobsInstanceEnv) string {
 	return fmt.Sprintf(
 		"https://grafana.app-sre.devshift.net/d/%s/%s-slos?orgId=1&refresh=10s&var-datasource=%s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m",
 		dashboardIDs[envName],
@@ -179,7 +203,7 @@ func getRunbookLink(alert string) string {
 }
 
 // TelemeterSLOs returns the openshift/telemeter specific SLOs we maintain.
-func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
+func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
 	// This set of SLOs are driven by the RHOBS Service Level Objectives document
 	// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
 
@@ -195,7 +219,7 @@ func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 			successOrErrorsExpr: "haproxy_server_http_responses_total{route=\"telemeter-server-upload\", code=~\"5..\"}",
 			totalExpr:           "haproxy_server_http_responses_total{route=\"telemeter-server-upload\", code!~\"^4..$\"}",
 			alertName:           "TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "rhobs-telemeter-server-metrics-receive-availability-slo",
@@ -207,7 +231,7 @@ func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 			successOrErrorsExpr: "haproxy_server_http_responses_total{route=\"telemeter-server-metrics-v1-receive\", code=~\"5..\"}",
 			totalExpr:           "haproxy_server_http_responses_total{route=\"telemeter-server-metrics-v1-receive\", code!~\"^4..$\"}",
 			alertName:           "TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 
 		// Telemeter Latency SLOs.
@@ -218,10 +242,10 @@ func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 				"service": "telemeter",
 			},
 			description:         "Telemeter Server /upload is burning too much error budget to guarantee latency SLOs.",
-			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"upload\", code=~\"^2..$\", le=\"" + latencySeconds + "\"}",
+			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"upload\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
 			totalExpr:           "http_request_duration_seconds_count{job=\"telemeter-server\", handler=\"upload\", code=~\"^2..$\"}",
 			alertName:           "TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning",
-			sloType:             latency,
+			sloType:             sloTypeLatency,
 		},
 		{
 			name: "rhobs-telemeter-server-metrics-receive-latency-slo",
@@ -230,10 +254,10 @@ func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 				"service": "telemeter",
 			},
 			description:         "Telemeter Server /receive is burning too much error budget to guarantee latency SLOs.",
-			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"receive\", code=~\"^2..$\", le=\"" + latencySeconds + "\"}",
+			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"receive\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
 			totalExpr:           "http_request_duration_seconds_count{job=\"telemeter-server\", handler=\"receive\", code=~\"^2..$\"}",
 			alertName:           "TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning",
-			sloType:             latency,
+			sloType:             sloTypeLatency,
 		},
 	}
 
@@ -241,7 +265,7 @@ func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 }
 
 // ObservatoriumSLOs returns the observatorium/observatorium specific SLOs we maintain.
-func ObservatoriumSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
+func ObservatoriumSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
 	// This set of SLOs are driven by the RHOBS Service Level Objectives document
 	// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
 
@@ -251,109 +275,109 @@ func ObservatoriumSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 			name: "api-metrics-write-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /receive handler is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^5..$\"}",
 			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code!~\"^4..$\"}",
 			alertName:           "APIMetricsWriteAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-metrics-query-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /query handler is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", code=~\"^5..$\"}",
 			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", code!~\"^4..$\"}",
 			alertName:           "APIMetricsQueryAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-metrics-query-range-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /query_range handler is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", code=~\"^5..$\"}",
 			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", code!~\"^4..$\"}",
 			alertName:           "APIMetricsQueryRangeAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-rules-raw-write-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /rules/raw endpoint for writes is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", code=~\"^5..$\"}",
 			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", code!~\"^4..$\"}",
 			alertName:           "APIRulesRawWriteAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-rules-raw-read-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /rules/raw endpoint for reads is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", code=~\"^5..$\"}",
 			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", code!~\"^4..$\"}",
 			alertName:           "APIRulesRawReadAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-rules-read-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /rules endpoint is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", code=~\"^5..$\"}",
 			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", code!~\"^4..$\"}",
 			alertName:           "APIRulesReadAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-rules-sync-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "Thanos Ruler /reload endpoint is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
 			totalExpr:           "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
 			alertName:           "APIRulesSyncAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-alerting-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
 			totalExpr:           "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
 			alertName:           "APIAlertmanagerAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 		{
 			name: "api-alerting-notif-availability-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
 			totalExpr:           "alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
 			alertName:           "APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning",
-			sloType:             availability,
+			sloType:             sloTypeAvailability,
 		},
 
 		// Observatorium Latency SLOs.
@@ -361,49 +385,49 @@ func ObservatoriumSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 			name: "api-metrics-write-latency-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /receive handler is burning too much error budget to guarantee latency SLOs.",
-			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^2..$\", le=\"" + latencySeconds + "\"}",
+			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
 			totalExpr:           "http_request_duration_seconds_count{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^2..$\"}",
 			alertName:           "APIMetricsWriteLatencyErrorBudgetBurning",
-			sloType:             latency,
+			sloType:             sloTypeLatency,
 		},
 		{
 			name: "api-metrics-read-1M-latency-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /query endpoint is burning too much error budget for 1M samples, to guarantee latency SLOs.",
 			successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"10\"}",
 			totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
 			alertName:           "APIMetricsReadLatency1MErrorBudgetBurning",
-			sloType:             latency,
+			sloType:             sloTypeLatency,
 		},
 		{
 			name: "api-metrics-read-10M-latency-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
 			successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"30\"}",
 			totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
 			alertName:           "APIMetricsReadLatency10MErrorBudgetBurning",
-			sloType:             latency,
+			sloType:             sloTypeLatency,
 		},
 		{
 			name: "api-metrics-read-100M-latency-slo",
 			labels: map[string]string{
 				"service":  "observatorium-api",
-				"instance": envName,
+				"instance": string(envName),
 			},
 			description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
 			successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"120\"}",
 			totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
 			alertName:           "APIMetricsReadLatency100MErrorBudgetBurning",
-			sloType:             latency,
+			sloType:             sloTypeLatency,
 		},
 	}
 
@@ -413,72 +437,63 @@ func ObservatoriumSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 // GenSLO is the function responsible for tying together Pyrra Objectives and converting them into SLO+Rule files.
 func GenSLO(genPyrra, genRules *mimic.Generator) {
 	// Add on extra Telemeter-only SLOs.
-	telemeterObjectives := TelemeterSLOs("telemeter-production")
-	telemeterStageObjectives := TelemeterSLOs("telemeter-staging")
-	obsSLOTelemeter := ObservatoriumSLOs("telemeter-production")
-	obsSLOTelemeterStage := ObservatoriumSLOs("telemeter-staging")
+	telemeterProdObjectives := []pyrrav1alpha1.ServiceLevelObjective{}
+	telemeterProdObjectives = append(telemeterProdObjectives, TelemeterSLOs(telemeterProduction)...)
+	telemeterProdObjectives = append(telemeterProdObjectives, ObservatoriumSLOs(telemeterProduction)...)
 
-	telemeterProd := []pyrrav1alpha1.ServiceLevelObjective{}
-	telemeterProd = append(telemeterProd, telemeterObjectives...)
-	telemeterProd = append(telemeterProd, obsSLOTelemeter...)
-
-	telemeterStage := []pyrrav1alpha1.ServiceLevelObjective{}
-	telemeterStage = append(telemeterStage, telemeterStageObjectives...)
-	telemeterStage = append(telemeterStage, obsSLOTelemeterStage...)
+	telemeterStageObjectives := []pyrrav1alpha1.ServiceLevelObjective{}
+	telemeterStageObjectives = append(telemeterStageObjectives, TelemeterSLOs(telemeterStaging)...)
+	telemeterStageObjectives = append(telemeterStageObjectives, ObservatoriumSLOs(telemeterStaging)...)
 
 	envSLOs(
-		"telemeter-production",
-		telemeterProd,
+		telemeterProduction,
+		telemeterProdObjectives,
 		"rhobs-slos-telemeter-production.prometheusrules.yaml",
-		false,
 		genPyrra,
 		genRules,
 	)
 
 	envSLOs(
-		"telemeter-staging",
-		telemeterStage,
+		telemeterStaging,
+		telemeterStageObjectives,
 		"rhobs-slos-telemeter-stage.prometheusrules.yaml",
-		true,
 		genPyrra,
 		genRules,
 	)
 
 	envSLOs(
-		"mst-production",
-		ObservatoriumSLOs("mst-production"),
+		mstProduction,
+		ObservatoriumSLOs(mstProduction),
 		"rhobs-slos-mst-production.prometheusrules.yaml",
-		false,
 		genPyrra,
 		genRules,
 	)
 
 	envSLOs(
-		"mst-stage",
-		ObservatoriumSLOs("mst-stage"),
+		mstStage,
+		ObservatoriumSLOs(mstStage),
 		"rhobs-slos-mst-stage.prometheusrules.yaml",
-		true,
 		genPyrra,
 		genRules,
 	)
 
 	envSLOs(
-		"rhobsp02ue1-production",
-		ObservatoriumSLOs("rhobsp02ue1-production"),
+		rhobsp02ue1Production,
+		ObservatoriumSLOs(rhobsp02ue1Production),
 		"rhobs-slos-rhobsp02ue1-prod.prometheusrules.yaml",
-		false,
 		genPyrra,
 		genRules,
 	)
 }
 
-func envSLOs(envName string, objs []pyrrav1alpha1.ServiceLevelObjective, ruleFilename string, isStage bool, genPyrra, genRules *mimic.Generator) {
+// envSLOs generates the resultant config for a particular rhobsInstanceEnv.
+func envSLOs(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLevelObjective, ruleFilename string, genPyrra, genRules *mimic.Generator) {
 	for _, obj := range objs {
-		name := envName + "-" + obj.ObjectMeta.Name + ".yaml"
+		name := string(envName) + "-" + obj.ObjectMeta.Name + ".yaml"
 		genPyrra.Add(name, encoding.GhodssYAML(obj))
 	}
 
-	genRules.Add(ruleFilename, encoding.GhodssYAML("", makePrometheusRule(objs, strings.TrimSuffix(ruleFilename, ".prometheusrules.yaml"), isStage)))
+	genRules.Add(ruleFilename, encoding.GhodssYAML("", makePrometheusRule(envName, objs, strings.TrimSuffix(ruleFilename, ".prometheusrules.yaml"))))
 }
 
 // appSREPrometheusRule allows adding schema field to the generated YAML.
@@ -491,29 +506,29 @@ type appSREPrometheusRule struct {
 // Helps us group and generate SLO rules into monitoringv1.PrometheusRule objects which are embedded in appSREPrometheusRule struct.
 // Ideally, this can be done via pyrra generate command somehow. Pending PR: https://github.com/pyrra-dev/pyrra/pull/620
 // However even with CLI we might need to generate in specific format, and group together  SLO rules in different ways.
-func makePrometheusRule(objs []pyrrav1alpha1.ServiceLevelObjective, name string, isStage bool) appSREPrometheusRule {
+func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLevelObjective, name string) appSREPrometheusRule {
 	grp := []monitoringv1.RuleGroup{}
 	for _, obj := range objs {
 		objective, err := obj.Internal()
 		if err != nil {
-			panic(err)
+			mimic.PanicErr(err)
 		}
 
 		increases, err := objective.IncreaseRules()
 		if err != nil {
-			panic(err)
+			mimic.PanicErr(err)
 		}
 		grp = append(grp, increases)
 
 		burnrates, err := objective.Burnrates()
 		if err != nil {
-			panic(err)
+			mimic.PanicErr(err)
 		}
 		grp = append(grp, burnrates)
 
 		generic, err := objective.GenericRules()
 		if err != nil {
-			panic(err)
+			mimic.PanicErr(err)
 		}
 		grp = append(grp, generic)
 	}
@@ -521,7 +536,7 @@ func makePrometheusRule(objs []pyrrav1alpha1.ServiceLevelObjective, name string,
 	// We do not want to page on staging environments, i.e, no "critical" alerts.
 	// There isn't a way to control the alert severity in Pyrra configs yet, but ideally should be.
 	// Pending PR: https://github.com/pyrra-dev/pyrra/pull/617
-	if isStage {
+	if envName.isStage() {
 		for i := range grp {
 			for j := range grp[i].Rules {
 				if v, ok := grp[i].Rules[j].Labels["severity"]; ok {

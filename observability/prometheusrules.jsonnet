@@ -5,7 +5,6 @@ local loki = (import 'github.com/grafana/loki/production/loki-mixin/mixin.libson
 // This fork also adds support for !~ operator in label selectors.
 local slo = import 'github.com/saswatamcode/slo-libsonnet/slo-libsonnet/slo.libsonnet';
 local lokiTenants = import './observatorium-logs/loki-tenant-alerts.libsonnet';
-local utils = import './utils.jsonnet';
 
 local config = (import 'config.libsonnet') {
   thanos+: {

@@ -5,3 +5,6 @@ vendor_jsonnet/
 .envrc
 resources/.tmp/
 tmp/
+.fleet
+.vscode
+.DS_Store

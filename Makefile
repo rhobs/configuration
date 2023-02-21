@@ -2,6 +2,7 @@ include .bingo/Variables.mk
 
 SED ?= $(shell which gsed 2>/dev/null || which sed)
 XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
+FILES_TO_FMT ?= $(shell find . -path ./vendor* -not -prune -o -name '*.go' -print)
 
 CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
@@ -26,14 +27,37 @@ update: $(JB) jsonnetfile.json jsonnetfile.lock.json
 	@$(JB) update --jsonnetpkg-home="$(JSONNET_VENDOR_DIR)" https://github.com/observatorium/api/jsonnet/lib@main
 
 .PHONY: format
-format: $(JSONNET_SRC) $(JSONNETFMT)
+format: $(JSONNET_SRC) $(JSONNETFMT) go-format
 	@echo ">>>>> Running format"
 	$(JSONNETFMT) -n 2 --max-blank-lines 2 --string-style s --comment-style s -i $(JSONNET_SRC)
 
 .PHONY: lint
-lint: $(JSONNET_LINT) $(JSONNET_VENDOR_DIR)
+lint: $(JSONNET_LINT) $(JSONNET_VENDOR_DIR) go-lint
 	@echo ">>>>> Running linter"
 	echo ${JSONNET_SRC} | $(XARGS) -n 1 -- $(JSONNET_LINT) -J "$(JSONNET_VENDOR_DIR)"
+
+.PHONY: go-lint
+go-lint: ## Runs various static analysis against our code.
+go-lint: $(FAILLINT) $(GOLANGCI_LINT) go-format go-deps
+	@echo ">> verifying modules being imported"
+	@$(FAILLINT) -paths "fmt.{Print,Printf,Println},io/ioutil.{Discard,NopCloser,ReadAll,ReadDir,ReadFile,TempDir,TempFile,Writefile}" -ignore-tests ./...
+	@echo ">> examining all of the Go files"
+	@go vet -stdmethods=false ./...
+	@echo ">> linting all of the Go files GOGC=${GOGC}"
+	@$(GOLANGCI_LINT) run
+
+.PHONY: go-deps
+go-deps: go.mod go.sum
+	go mod tidy
+	go mod download
+	go mod verify
+
+.PHONY: go-format
+go-format: ## Formats Go code.
+go-format: $(GOIMPORTS) $(GOLANGCI_LINT)
+	@echo ">> formatting code"
+	@gofmt -s -w $(FILES_TO_FMT)
+	@$(GOIMPORTS) -w $(FILES_TO_FMT)
 
 .PHONY: validate
 validate: $(OC)

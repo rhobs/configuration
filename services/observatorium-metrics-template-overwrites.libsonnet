@@ -220,6 +220,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                       env+: s3EnvVars,
                       args+: [
                         '--store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}',
+                        '--store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}',
                       ],
                     } else c
                     for c in super.containers

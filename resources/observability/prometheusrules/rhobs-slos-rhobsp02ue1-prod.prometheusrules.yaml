@@ -7,7 +7,7 @@ metadata:
   labels:
     prometheus: app-sre
     role: alert-rules
-  name: rhobs-slos-mst-production
+  name: rhobs-slos-rhobsp02ue1-prod
 spec:
   groups:
   - interval: 2m30s
@@ -21,7 +21,7 @@ spec:
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -87,7 +87,7 @@ spec:
       record: http_requests:burnrate4d
     - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -104,7 +104,7 @@ spec:
         slo: api-metrics-write-availability-slo
     - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -121,7 +121,7 @@ spec:
         slo: api-metrics-write-availability-slo
     - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -138,7 +138,7 @@ spec:
         slo: api-metrics-write-availability-slo
     - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -189,7 +189,7 @@ spec:
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -255,7 +255,7 @@ spec:
       record: http_requests:burnrate4d
     - alert: APIMetricsQueryAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -272,7 +272,7 @@ spec:
         slo: api-metrics-query-availability-slo
     - alert: APIMetricsQueryAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -289,7 +289,7 @@ spec:
         slo: api-metrics-query-availability-slo
     - alert: APIMetricsQueryAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -306,7 +306,7 @@ spec:
         slo: api-metrics-query-availability-slo
     - alert: APIMetricsQueryAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -357,7 +357,7 @@ spec:
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -423,7 +423,7 @@ spec:
       record: http_requests:burnrate4d
     - alert: APIMetricsQueryRangeAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -440,7 +440,7 @@ spec:
         slo: api-metrics-query-range-availability-slo
     - alert: APIMetricsQueryRangeAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -457,7 +457,7 @@ spec:
         slo: api-metrics-query-range-availability-slo
     - alert: APIMetricsQueryRangeAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -474,7 +474,7 @@ spec:
         slo: api-metrics-query-range-availability-slo
     - alert: APIMetricsQueryRangeAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query_range handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -526,7 +526,7 @@ spec:
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for writes is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -600,7 +600,7 @@ spec:
       record: http_requests:burnrate4d
     - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for writes is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -618,7 +618,7 @@ spec:
         slo: api-rules-raw-write-availability-slo
     - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for writes is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -636,7 +636,7 @@ spec:
         slo: api-rules-raw-write-availability-slo
     - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for writes is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -654,7 +654,7 @@ spec:
         slo: api-rules-raw-write-availability-slo
     - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for writes is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -707,7 +707,7 @@ spec:
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for reads is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -781,7 +781,7 @@ spec:
       record: http_requests:burnrate4d
     - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for reads is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -799,7 +799,7 @@ spec:
         slo: api-rules-raw-read-availability-slo
     - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for reads is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -817,7 +817,7 @@ spec:
         slo: api-rules-raw-read-availability-slo
     - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for reads is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -835,7 +835,7 @@ spec:
         slo: api-rules-raw-read-availability-slo
     - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules/raw endpoint for reads is burning too much error budget
           to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -888,7 +888,7 @@ spec:
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules endpoint is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesReadAvailabilityErrorBudgetBurning
@@ -962,7 +962,7 @@ spec:
       record: http_requests:burnrate4d
     - alert: APIRulesReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules endpoint is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesReadAvailabilityErrorBudgetBurning
@@ -980,7 +980,7 @@ spec:
         slo: api-rules-read-availability-slo
     - alert: APIRulesReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules endpoint is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesReadAvailabilityErrorBudgetBurning
@@ -998,7 +998,7 @@ spec:
         slo: api-rules-read-availability-slo
     - alert: APIRulesReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules endpoint is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesReadAvailabilityErrorBudgetBurning
@@ -1016,7 +1016,7 @@ spec:
         slo: api-rules-read-availability-slo
     - alert: APIRulesReadAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /rules endpoint is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesReadAvailabilityErrorBudgetBurning
@@ -1069,7 +1069,7 @@ spec:
       record: client_api_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Ruler /reload endpoint is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1143,7 +1143,7 @@ spec:
       record: client_api_requests:burnrate4d
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Ruler /reload endpoint is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1161,7 +1161,7 @@ spec:
         slo: api-rules-sync-availability-slo
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Ruler /reload endpoint is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1179,7 +1179,7 @@ spec:
         slo: api-rules-sync-availability-slo
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Ruler /reload endpoint is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1197,7 +1197,7 @@ spec:
         slo: api-rules-sync-availability-slo
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Thanos Ruler /reload endpoint is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1249,7 +1249,7 @@ spec:
       record: thanos_alert_sender_alerts_dropped:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning
           too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1315,7 +1315,7 @@ spec:
       record: thanos_alert_sender_alerts_dropped:burnrate4d
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning
           too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1332,7 +1332,7 @@ spec:
         slo: api-alerting-availability-slo
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning
           too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1349,7 +1349,7 @@ spec:
         slo: api-alerting-availability-slo
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning
           too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1366,7 +1366,7 @@ spec:
         slo: api-alerting-availability-slo
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Thanos Rule failing to send alerts to Alertmanager and is burning
           too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1417,7 +1417,7 @@ spec:
       record: alertmanager_notifications_failed:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Alertmanager failing to deliver alerts to upstream targets and
           is burning too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1483,7 +1483,7 @@ spec:
       record: alertmanager_notifications_failed:burnrate4d
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Alertmanager failing to deliver alerts to upstream targets and
           is burning too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1500,7 +1500,7 @@ spec:
         slo: api-alerting-notif-availability-slo
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Alertmanager failing to deliver alerts to upstream targets and
           is burning too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1517,7 +1517,7 @@ spec:
         slo: api-alerting-notif-availability-slo
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Alertmanager failing to deliver alerts to upstream targets and
           is burning too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1534,7 +1534,7 @@ spec:
         slo: api-alerting-notif-availability-slo
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API Alertmanager failing to deliver alerts to upstream targets and
           is burning too much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -1592,7 +1592,7 @@ spec:
       record: http_request_duration_seconds:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
@@ -1606,7 +1606,7 @@ spec:
         slo: api-metrics-write-latency-slo
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
@@ -1680,7 +1680,7 @@ spec:
       record: http_request_duration_seconds:burnrate4d
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
@@ -1697,7 +1697,7 @@ spec:
         slo: api-metrics-write-latency-slo
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
@@ -1714,7 +1714,7 @@ spec:
         slo: api-metrics-write-latency-slo
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
@@ -1731,7 +1731,7 @@ spec:
         slo: api-metrics-write-latency-slo
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /receive handler is burning too much error budget to guarantee
           latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
@@ -1789,7 +1789,7 @@ spec:
       record: up_custom_query_duration_seconds:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
@@ -1803,7 +1803,7 @@ spec:
         slo: api-metrics-read-1M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
@@ -1877,7 +1877,7 @@ spec:
       record: up_custom_query_duration_seconds:burnrate4d
     - alert: APIMetricsReadLatency1MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
@@ -1894,7 +1894,7 @@ spec:
         slo: api-metrics-read-1M-latency-slo
     - alert: APIMetricsReadLatency1MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
@@ -1911,7 +1911,7 @@ spec:
         slo: api-metrics-read-1M-latency-slo
     - alert: APIMetricsReadLatency1MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
@@ -1928,7 +1928,7 @@ spec:
         slo: api-metrics-read-1M-latency-slo
     - alert: APIMetricsReadLatency1MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
@@ -1986,7 +1986,7 @@ spec:
       record: up_custom_query_duration_seconds:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
@@ -2000,7 +2000,7 @@ spec:
         slo: api-metrics-read-10M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
@@ -2074,7 +2074,7 @@ spec:
       record: up_custom_query_duration_seconds:burnrate4d
     - alert: APIMetricsReadLatency10MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
@@ -2091,7 +2091,7 @@ spec:
         slo: api-metrics-read-10M-latency-slo
     - alert: APIMetricsReadLatency10MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
@@ -2108,7 +2108,7 @@ spec:
         slo: api-metrics-read-10M-latency-slo
     - alert: APIMetricsReadLatency10MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
@@ -2125,7 +2125,7 @@ spec:
         slo: api-metrics-read-10M-latency-slo
     - alert: APIMetricsReadLatency10MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
@@ -2183,7 +2183,7 @@ spec:
       record: up_custom_query_duration_seconds:increase4w
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
@@ -2197,7 +2197,7 @@ spec:
         slo: api-metrics-read-100M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
@@ -2271,7 +2271,7 @@ spec:
       record: up_custom_query_duration_seconds:burnrate4d
     - alert: APIMetricsReadLatency100MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
@@ -2288,7 +2288,7 @@ spec:
         slo: api-metrics-read-100M-latency-slo
     - alert: APIMetricsReadLatency100MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
@@ -2305,7 +2305,7 @@ spec:
         slo: api-metrics-read-100M-latency-slo
     - alert: APIMetricsReadLatency100MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
@@ -2322,7 +2322,7 @@ spec:
         slo: api-metrics-read-100M-latency-slo
     - alert: APIMetricsReadLatency100MErrorBudgetBurning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning

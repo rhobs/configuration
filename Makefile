@@ -6,7 +6,6 @@ XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
 CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
 BIN_DIR ?= $(TMP_DIR)/bin
-PYRRA_DIR := $(shell pwd)/resources/.tmp2
 OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
 OC_VERSION ?= 4.10.6
 OC ?= $(BIN_DIR)/oc
@@ -57,6 +56,7 @@ resources/observability/prometheusrules: format observability/prometheusrules.js
 	rm -f resources/observability/prometheusrules/*.yaml
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -m resources/observability/prometheusrules observability/prometheusrules.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/prometheusrules/*.yaml | $(XARGS) -I{} sh -c '$(SED) -i "1s;^;---\n\$$schema: /openshift/prometheus-rule-1.yml\n;" {}'
+	$(MAKE) mimic
 
 .PHONY: test-rules
 test-rules: prometheusrules $(PROMTOOL) $(YQ) $(wildcard observability/prometheus_rule_tests/*.prometheusrulestests.yaml) $(wildcard resources/observability/prometheusrules/*.prometheusrules.yaml)
@@ -171,14 +171,16 @@ clean:
 resources/.tmp/tenants/rbac.json: configuration/observatorium/rbac.go
 	$(MAKE) mimic
 
+# Generate rbac and Pyrra-based Prometheus rules for SLO.
 .PHONY: mimic
 mimic:
 	GOFLAGS="-mod=mod" go run ./mimic.go generate -o resources
 
-.PHONY: docker-pyrra
-docker-pyrra:
-	@chmod -R 777 $(PYRRA_DIR)
-	docker run -v $(PYRRA_DIR):/shared -i ghcr.io/pyrra-dev/pyrra:main generate --config-files=/shared/test/*.yaml --prometheus-folder=/shared/output --generic-rules
+# In theory we'd be able to run Pyrra as a CLI directly.
+# .PHONY: docker-pyrra
+# docker-pyrra:
+# 	@chmod -R 777 $(PYRRA_DIR)
+# 	docker run -v $(PYRRA_DIR):/shared -i ghcr.io/pyrra-dev/pyrra:main generate --config-files=/shared/pyrra/*.yaml --prometheus-folder=/shared/rules/ --generic-rules
 
 # Tools
 $(TMP_DIR):

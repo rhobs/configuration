@@ -21,6 +21,7 @@ const (
 )
 
 var (
+	// Reusable k8s type metas.
 	pyrraTypeMeta = metav1.TypeMeta{
 		Kind:       "ServiceLevelObjective",
 		APIVersion: pyrrav1alpha1.GroupVersion.Version,
@@ -31,11 +32,13 @@ var (
 		Kind:       monitoringv1.PrometheusRuleKind,
 	}
 
+	// Needed appSRE labels for prom-operator PromethuesRule file.
 	ruleFileLabels = map[string]string{
 		"prometheus": "app-sre",
 		"role":       "alert-rules",
 	}
 
+	// IDs <> env.
 	dashboardIDs = map[string]string{
 		"telemeter-production":   "f9fa7677fb4a2669f123f9a0f2234b47",
 		"telemeter-staging":      "080e53f245a15445bdf777ae0e66945d",
@@ -44,6 +47,7 @@ var (
 		"rhobsp02ue1-production": "7f4df1c2d5518d5c3f2876ca9bb874a8",
 	}
 
+	// Data Source <> env.
 	dashboardDataSource = map[string]string{
 		"telemeter-production":   "telemeter-prod-01-prometheus",
 		"telemeter-staging":      "app-sre-stage-01-prometheus",
@@ -52,7 +56,7 @@ var (
 		"rhobsp02ue1-production": "rhobsp02ue1-prometheus",
 	}
 
-	// Unifying our namespaces would allow us to remove the metrics/up/apiJobSelector maps.
+	// Unifying our namespaces would allow us to remove these metrics/up/apiJobSelector maps.
 	apiJobSelector = map[string]string{
 		"telemeter-production":   "observatorium-observatorium-api",
 		"telemeter-staging":      "observatorium-observatorium-api",
@@ -96,8 +100,10 @@ type rhobsSLOs struct {
 	sloType             sloType
 }
 
+// rhobSLOList is a list of shorthand SLOs.
 type rhobSLOList []rhobsSLOs
 
+// GetObjectives returns Pyrra Objectives from a rhobsSLOList shorthand.
 func (slos rhobSLOList) GetObjectives(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 	objectives := []pyrrav1alpha1.ServiceLevelObjective{}
 
@@ -174,6 +180,9 @@ func getRunbookLink(alert string) string {
 
 // TelemeterSLOs returns the openshift/telemeter specific SLOs we maintain.
 func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
+	// This set of SLOs are driven by the RHOBS Service Level Objectives document
+	// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
+
 	slos := rhobSLOList{
 		// Telemeter Availability SLOs.
 		{
@@ -231,7 +240,11 @@ func TelemeterSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
 	return slos.GetObjectives(envName)
 }
 
+// ObservatoriumSLOs returns the observatorium/observatorium specific SLOs we maintain.
 func ObservatoriumSLOs(envName string) []pyrrav1alpha1.ServiceLevelObjective {
+	// This set of SLOs are driven by the RHOBS Service Level Objectives document
+	// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
+
 	slos := rhobSLOList{
 		// Observatorium Availability SLOs.
 		{
@@ -477,8 +490,9 @@ type appSREPrometheusRule struct {
 }
 
 // Adapted from https://github.com/pyrra-dev/pyrra/blob/v0.5.3/kubernetes/controllers/servicelevelobjective.go#L207
-// Helps us group and generate SLO rules into monitoringv1.PrometheusRule objects.
+// Helps us group and generate SLO rules into monitoringv1.PrometheusRule objects which are embedded in appSREPrometheusRule struct.
 // Ideally, this can be done via pyrra generate command somehow. Pending PR: https://github.com/pyrra-dev/pyrra/pull/620
+// However even with CLI we might need to generate in specific format, and group together  SLO rules in different ways.
 func makePrometheusRule(objs []pyrrav1alpha1.ServiceLevelObjective, name string, isStage bool) appSREPrometheusRule {
 	grp := []monitoringv1.RuleGroup{}
 	for _, obj := range objs {
@@ -507,7 +521,7 @@ func makePrometheusRule(objs []pyrrav1alpha1.ServiceLevelObjective, name string,
 	}
 
 	// We do not want to page on staging environments, i.e, no "critical" alerts.
-	// There isn't a way to control the alert severity in Pyrra config yet, but ideally should be.
+	// There isn't a way to control the alert severity in Pyrra configs yet, but ideally should be.
 	// Pending PR: https://github.com/pyrra-dev/pyrra/pull/617
 	if isStage {
 		for i := range grp {

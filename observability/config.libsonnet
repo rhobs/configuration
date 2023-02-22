@@ -119,7 +119,13 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
                         std.strReplace(
                           std.strReplace(
                             std.strReplace(
-                              t.expr,
+                              std.strReplace(
+                                // TODO: This substitution is needed because the 'replaceClusterMatchers' function in upstream lib 'loki-operational.libsonnet' misses 'cluster=~"$cluster"' substitution.
+                                // Remove this substitution when it has been added to upstream.
+                                t.expr,
+                                'cluster=~"$cluster"',
+                                ''
+                              ),
                               'pod=~"distributor.*"',
                               'pod=~".*distributor.*"',
                             ),
@@ -154,7 +160,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
             ],
           }
           for p in super.panels
-          if !std.member(['Consul', 'Big Table', 'GCS', 'Dynamo', 'Cassandra'], p.title)
+          if !std.member(['Consul', 'Big Table', 'GCS', 'Dynamo', 'Cassandra', 'Azure Blob'], p.title)
         ],
         templating+: {
           list:

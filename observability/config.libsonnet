@@ -84,10 +84,13 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         templating+: {
           list:
             std.map(
-              function(e) withLokiMetricsDatasource(e, 'datasource'),
+              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                super.list
+                function(e) withLokiMetricsDatasource(e, 'datasource'),
+                std.map(
+                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
+                  super.list
+                )
               )
             ),
         },
@@ -122,7 +125,11 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
                               std.strReplace(
                                 // TODO: This substitution is needed because the 'replaceClusterMatchers' function in upstream lib 'loki-operational.libsonnet' misses 'cluster=~"$cluster"' substitution.
                                 // Remove this substitution when it has been added to upstream.
-                                t.expr,
+                                std.strReplace(
+                                  t.expr,
+                                  'cluster=~"$cluster",',
+                                  ''
+                                ),
                                 'cluster=~"$cluster"',
                                 ''
                               ),
@@ -136,7 +143,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
                           'pod=~".*querier.*"',
                         ),
                         'job=~"$namespace/ingester",',
-                        'job="observatorium-loki-ingester-http"',
+                        'job="observatorium-loki-ingester-http",',
                       ),
                   }
                   for t in ip.targets
@@ -165,10 +172,13 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         templating+: {
           list:
             std.map(
-              function(e) withLokiMetricsDatasource(e, 'datasource'),
+              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                super.list
+                function(e) withLokiMetricsDatasource(e, 'datasource'),
+                std.map(
+                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
+                  super.list
+                )
               )
             ),
         },
@@ -197,11 +207,14 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         templating+: {
           list:
             std.map(
-              function(e) withLokiMetricsDatasource(e, 'datasource'),
+              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                super.list
-              )
+                function(e) withLokiMetricsDatasource(e, 'datasource'),
+                std.map(
+                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
+                  super.list
+                )
+              ),
             ),
         },
       },
@@ -220,10 +233,13 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         templating+: {
           list:
             std.map(
-              function(e) withLokiMetricsDatasource(e, 'datasource'),
+              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
               std.map(
-                function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                super.list
+                function(e) withLokiMetricsDatasource(e, 'datasource'),
+                std.map(
+                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
+                  super.list
+                )
               )
             ),
         },

@@ -24,12 +24,15 @@ dex() {
 observatorium_metrics() {
     oc create ns observatorium-metrics || true
     oc process -f observatorium-metrics-thanos-objectstorage-secret-template.yaml | oc apply --namespace observatorium-metrics -f -
+    oc apply -f observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
     role
     oc process --param-file=observatorium-metrics.test.env -f ../resources/services/observatorium-metrics-template.yaml | oc apply --namespace observatorium-metrics -f -
 }
 
 observatorium() {
     oc create ns observatorium || true
+    oc apply -f observatorium-rules-objstore-secret.yaml --namespace observatorium
+    oc apply -f observatorium-rhobs-tenant-secret.yaml --namespace observatorium
     oc process --param-file=observatorium.test.env -f ../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
 }
 

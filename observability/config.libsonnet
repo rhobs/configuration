@@ -68,6 +68,21 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     std.uniq(t + ['observatorium', 'observatorium-logs']),
 
   loki: {
+    prometheusRules+: {
+      groups: [
+        g {
+          rules: [
+            r {
+              expr: std.strReplace(r.expr, 'cluster, ', ''),
+              record: std.strReplace(r.record, 'cluster_', ''),
+            }
+            for r in g.rules
+          ],
+        }
+        for g in super.groups
+      ],
+    },
+
     grafanaDashboards+: {
       'loki-deletion.json':: super['loki-deletion.json'],
       'loki-mixin-recording-rules.json':: super['loki-mixin-recording-rules.json'],

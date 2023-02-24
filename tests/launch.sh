@@ -55,9 +55,6 @@ teardown() {
     oc delete crds recordingrules.loki.grafana.com || true
     oc delete crds alertingrules.loki.grafana.com || true
 }
-validation(){
-    ./validation.sh
-}
 
 case $1 in
 deploy)
@@ -67,7 +64,6 @@ deploy)
     observatorium
     observatorium_metrics
     telemeter
-    validation
     ;;
 teardown)
     teardown

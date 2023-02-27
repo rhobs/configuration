@@ -14,21 +14,21 @@ import (
 )
 
 const (
-	globalSLOWindowDuration            = "28d"
-	globalSLOAvailabilityTargetPercent = "99"
-	globalSLOLatencyTargetPercent      = "90"
-	genericSLOLatencySeconds           = "5" // Latency request duration to measure percentile target (this is diff for query SLOs).
+	globalSLOWindowDuration            = "28d" // Window over which all RHOBS SLOs are calculated.
+	globalSLOAvailabilityTargetPercent = "99"  // The Availability Target percentage for RHOBS availability SLOs.
+	globalSLOLatencyTargetPercent      = "90"  // The Latency Target percentage for RHOBS latency SLOs.
+	genericSLOLatencySeconds           = "5"   // Latency request duration to measure percentile target (this is diff for query SLOs).
 )
 
 // rhobsInstanceEnv represents a particular RHOBS Instance environment.
 type rhobsInstanceEnv string
 
 const (
-	telemeterProduction   rhobsInstanceEnv = "telemeter-production"
-	telemeterStaging      rhobsInstanceEnv = "telemeter-staging"
-	mstProduction         rhobsInstanceEnv = "mst-production"
-	mstStage              rhobsInstanceEnv = "mst-stage"
-	rhobsp02ue1Production rhobsInstanceEnv = "rhobsp02ue1-production"
+	telemeterProduction   rhobsInstanceEnv = "telemeter-production"   // Telemeter production Observatorium instance on telemeter-prod-01 cluster.
+	telemeterStaging      rhobsInstanceEnv = "telemeter-staging"      // Telemeter staging Observatorium instance on app-sre-stage-01 cluster.
+	mstProduction         rhobsInstanceEnv = "mst-production"         // MST production Observatorium instance on telemeter-prod-01 cluster.
+	mstStage              rhobsInstanceEnv = "mst-stage"              // MST staging Observatorium instance on app-sre-stage-01 cluster.
+	rhobsp02ue1Production rhobsInstanceEnv = "rhobsp02ue1-production" // MST production Observatorium instance on rhobsp02ue1 cluster.
 )
 
 // isStage as the name suggests returns if the rhobsInstanceEnv is a staging environment.
@@ -45,6 +45,7 @@ func (envName rhobsInstanceEnv) isStage() bool {
 
 var (
 	// Reusable k8s type metas.
+
 	pyrraTypeMeta = metav1.TypeMeta{
 		Kind:       "ServiceLevelObjective",
 		APIVersion: pyrrav1alpha1.GroupVersion.Version,
@@ -61,7 +62,7 @@ var (
 		"role":       "alert-rules",
 	}
 
-	// IDs <> env.
+	// Grafana IDs <> env.
 	dashboardIDs = map[rhobsInstanceEnv]string{
 		telemeterProduction:   "f9fa7677fb4a2669f123f9a0f2234b47",
 		telemeterStaging:      "080e53f245a15445bdf777ae0e66945d",
@@ -70,7 +71,7 @@ var (
 		rhobsp02ue1Production: "7f4df1c2d5518d5c3f2876ca9bb874a8",
 	}
 
-	// Data Source <> env.
+	// Grafana Data Source <> env.
 	dashboardDataSource = map[rhobsInstanceEnv]string{
 		telemeterProduction:   "telemeter-prod-01-prometheus",
 		telemeterStaging:      "app-sre-stage-01-prometheus",
@@ -79,7 +80,7 @@ var (
 		rhobsp02ue1Production: "rhobsp02ue1-prometheus",
 	}
 
-	// Unifying our namespaces would allow us to remove these metrics/up/apiJobSelector maps.
+	// Prometheus job label value for the Observatorium API.
 	apiJobSelector = map[rhobsInstanceEnv]string{
 		telemeterProduction:   "observatorium-observatorium-api",
 		telemeterStaging:      "observatorium-observatorium-api",
@@ -88,6 +89,11 @@ var (
 		rhobsp02ue1Production: "observatorium-observatorium-mst-api",
 	}
 
+	// Namespace for the metrics (Thanos) components of Observatorium instance.
+	// Usually the same namespace as Observatorium API, but can be different in some
+	// cases like Telemeter due to historical reasons.
+	//
+	// This can be deprecated once we unify our environments.
 	metricsNS = map[rhobsInstanceEnv]string{
 		telemeterProduction:   "observatorium-metrics-production",
 		telemeterStaging:      "observatorium-metrics-stage",
@@ -96,6 +102,12 @@ var (
 		rhobsp02ue1Production: "observatorium-mst-production",
 	}
 
+	// Namespace for the observatorium/up job in Observatorium instance, that allows
+	// generating synthetic data for Query SLOs. Usually the same namespace as other
+	// components, but can be different in some cases like Telemeter due to historical
+	// reasons.
+	//
+	// This can be deprecated once we unify our environments.
 	upNS = map[rhobsInstanceEnv]string{
 		telemeterProduction:   "observatorium-production",
 		telemeterStaging:      "observatorium-stage",
@@ -109,7 +121,13 @@ var (
 type sloType string
 
 const (
-	sloTypeLatency      sloType = "latency"
+	// Pyrra Latency SLO, calculated as percentile ratio of successful requests
+	// in a latency bucket by total successful requests. For example, p90 of
+	// # of http requests with 2xx response code, under 5s / # of http requests with 2xx.
+	sloTypeLatency sloType = "latency"
+
+	// Pyrra Availablity SLO, calculated as the inverse percentage ratio of errors by total
+	// requests. For example, (1 - # of http requests with 5xx response code / # of http requests) * 100.
 	sloTypeAvailability sloType = "availability"
 )
 
@@ -203,10 +221,10 @@ func getRunbookLink(alert string) string {
 }
 
 // TelemeterSLOs returns the openshift/telemeter specific SLOs we maintain.
+//
+// This set of SLOs are driven by the RHOBS Service Level Objectives document
+// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
 func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
-	// This set of SLOs are driven by the RHOBS Service Level Objectives document
-	// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
-
 	slos := rhobSLOList{
 		// Telemeter Availability SLOs.
 		{
@@ -265,10 +283,10 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 }
 
 // ObservatoriumSLOs returns the observatorium/observatorium specific SLOs we maintain.
+//
+// This set of SLOs are driven by the RHOBS Service Level Objectives document
+// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
 func ObservatoriumSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
-	// This set of SLOs are driven by the RHOBS Service Level Objectives document
-	// https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
-
 	slos := rhobSLOList{
 		// Observatorium Availability SLOs.
 		{
@@ -434,6 +452,11 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObj
 	return slos.GetObjectives(envName)
 }
 
+const (
+	yamlExt               = ".yaml"
+	prometheusRuleYamlExt = ".prometheusrules.yaml"
+)
+
 // GenSLO is the function responsible for tying together Pyrra Objectives and converting them into SLO+Rule files.
 func GenSLO(genPyrra, genRules *mimic.Generator) {
 	// Add on extra Telemeter-only SLOs.
@@ -448,7 +471,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		telemeterProduction,
 		telemeterProdObjectives,
-		"rhobs-slos-telemeter-production.prometheusrules.yaml",
+		"rhobs-slos-telemeter-production"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
@@ -456,7 +479,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		telemeterStaging,
 		telemeterStageObjectives,
-		"rhobs-slos-telemeter-stage.prometheusrules.yaml",
+		"rhobs-slos-telemeter-stage"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
@@ -464,7 +487,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		mstProduction,
 		ObservatoriumSLOs(mstProduction),
-		"rhobs-slos-mst-production.prometheusrules.yaml",
+		"rhobs-slos-mst-production"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
@@ -472,7 +495,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		mstStage,
 		ObservatoriumSLOs(mstStage),
-		"rhobs-slos-mst-stage.prometheusrules.yaml",
+		"rhobs-slos-mst-stage"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
@@ -480,7 +503,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		rhobsp02ue1Production,
 		ObservatoriumSLOs(rhobsp02ue1Production),
-		"rhobs-slos-rhobsp02ue1-prod.prometheusrules.yaml",
+		"rhobs-slos-rhobsp02ue1-prod"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
@@ -489,24 +512,26 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 // envSLOs generates the resultant config for a particular rhobsInstanceEnv.
 func envSLOs(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLevelObjective, ruleFilename string, genPyrra, genRules *mimic.Generator) {
 	for _, obj := range objs {
-		name := string(envName) + "-" + obj.ObjectMeta.Name + ".yaml"
+		name := string(envName) + "-" + obj.ObjectMeta.Name + yamlExt
 		genPyrra.Add(name, encoding.GhodssYAML(obj))
 	}
 
-	genRules.Add(ruleFilename, encoding.GhodssYAML("", makePrometheusRule(envName, objs, strings.TrimSuffix(ruleFilename, ".prometheusrules.yaml"))))
+	// We add "" to encoding as first arg, so that we get a YAML doc directive
+	// at the start of the file as per app-interface format.
+	genRules.Add(ruleFilename, encoding.GhodssYAML("", makePrometheusRule(envName, objs, strings.TrimSuffix(ruleFilename, prometheusRuleYamlExt))))
 }
 
-// appSREPrometheusRule allows adding schema field to the generated YAML.
-type appSREPrometheusRule struct {
+// appInterfacePrometheusRule allows adding schema field to the generated YAML.
+type appInterfacePrometheusRule struct {
 	Schema string `json:"$schema"`
 	monitoringv1.PrometheusRule
 }
 
 // Adapted from https://github.com/pyrra-dev/pyrra/blob/v0.5.3/kubernetes/controllers/servicelevelobjective.go#L207
-// Helps us group and generate SLO rules into monitoringv1.PrometheusRule objects which are embedded in appSREPrometheusRule struct.
-// Ideally, this can be done via pyrra generate command somehow. Pending PR: https://github.com/pyrra-dev/pyrra/pull/620
+// Helps us group and generate SLO rules into monitoringv1.PrometheusRule objects which are embedded in appInterfacePrometheusRule struct.
+// Ideally, this can be done via pyrra generate command somehow. Upstream PR: https://github.com/pyrra-dev/pyrra/pull/620
 // However even with CLI we might need to generate in specific format, and group together  SLO rules in different ways.
-func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLevelObjective, name string) appSREPrometheusRule {
+func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLevelObjective, name string) appInterfacePrometheusRule {
 	grp := []monitoringv1.RuleGroup{}
 	for _, obj := range objs {
 		objective, err := obj.Internal()
@@ -548,7 +573,7 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 		}
 	}
 
-	return appSREPrometheusRule{
+	return appInterfacePrometheusRule{
 		Schema: "/openshift/prometheus-rule-1.yml",
 		PrometheusRule: monitoringv1.PrometheusRule{
 			TypeMeta: promRuleTypeMeta,

@@ -201,6 +201,8 @@ mimic:
 	GOFLAGS="-mod=mod" go run ./mimic.go generate -o resources
 
 # In theory we'd be able to run Pyrra as a CLI directly.
+# PYRRA_DIR := $(shell pwd)/test
+#
 # .PHONY: docker-pyrra
 # docker-pyrra:
 # 	@chmod -R 777 $(PYRRA_DIR)

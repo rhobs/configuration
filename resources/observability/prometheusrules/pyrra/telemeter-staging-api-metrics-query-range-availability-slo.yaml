@@ -20,11 +20,11 @@ spec:
     ratio:
       errors:
         metric: http_requests_total{job="observatorium-observatorium-api", handler="query_range",
-          code=~"^5..$"}
+          group="metricsv1", code=~"^5..$"}
       grouping: null
       total:
         metric: http_requests_total{job="observatorium-observatorium-api", handler="query_range",
-          code!~"^4..$"}
+          group="metricsv1", code!~"^4..$"}
   target: "99"
   window: 28d
 status: {}

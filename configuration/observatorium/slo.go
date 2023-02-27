@@ -286,167 +286,239 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 //
 // This set of SLOs are driven by the RHOBS Service Level Objectives document
 // https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
-func ObservatoriumSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
-	slos := rhobSLOList{
-		// Observatorium Availability SLOs.
-		{
-			name: "api-metrics-write-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.ServiceLevelObjective {
+	var slos rhobSLOList
+	switch signal {
+	case metricsSignal:
+		slos = rhobSLOList{
+			// Observatorium Metrics Availability SLOs.
+			{
+				name: "api-metrics-write-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /receive handler is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code!~\"^4..$\"}",
+				alertName:           "APIMetricsWriteAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API /receive handler is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^5..$\"}",
-			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code!~\"^4..$\"}",
-			alertName:           "APIMetricsWriteAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-metrics-query-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-metrics-query-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /query handler is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", group=\"metricsv1\", code!~\"^4..$\"}",
+				alertName:           "APIMetricsQueryAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API /query handler is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", code=~\"^5..$\"}",
-			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", code!~\"^4..$\"}",
-			alertName:           "APIMetricsQueryAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-metrics-query-range-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-metrics-query-range-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /query_range handler is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"metricsv1\", code!~\"^4..$\"}",
+				alertName:           "APIMetricsQueryRangeAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API /query_range handler is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", code=~\"^5..$\"}",
-			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", code!~\"^4..$\"}",
-			alertName:           "APIMetricsQueryRangeAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-rules-raw-write-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-rules-raw-write-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /rules/raw endpoint for writes is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", group=\"metricsv1\", code!~\"^4..$\"}",
+				alertName:           "APIRulesRawWriteAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API /rules/raw endpoint for writes is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", code=~\"^5..$\"}",
-			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", code!~\"^4..$\"}",
-			alertName:           "APIRulesRawWriteAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-rules-raw-read-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-rules-raw-read-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /rules/raw endpoint for reads is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", group=\"metricsv1\", code!~\"^4..$\"}",
+				alertName:           "APIRulesRawReadAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API /rules/raw endpoint for reads is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", code=~\"^5..$\"}",
-			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", code!~\"^4..$\"}",
-			alertName:           "APIRulesRawReadAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-rules-read-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-rules-read-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /rules endpoint is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", group=\"metricsv1\", code!~\"^4..$\"}",
+				alertName:           "APIRulesReadAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API /rules endpoint is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", code=~\"^5..$\"}",
-			totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", code!~\"^4..$\"}",
-			alertName:           "APIRulesReadAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-rules-sync-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-rules-sync-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "Thanos Ruler /reload endpoint is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
+				totalExpr:           "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
+				alertName:           "APIRulesSyncAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "Thanos Ruler /reload endpoint is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
-			totalExpr:           "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
-			alertName:           "APIRulesSyncAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-alerting-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-alerting-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
+				totalExpr:           "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
+				alertName:           "APIAlertmanagerAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
-			totalExpr:           "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
-			alertName:           "APIAlertmanagerAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-		{
-			name: "api-alerting-notif-availability-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-alerting-notif-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
+				totalExpr:           "alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
+				alertName:           "APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
 			},
-			description:         "API Alertmanager failing to deliver alerts to upstream targets and is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
-			totalExpr:           "alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\", namespace=\"" + metricsNS[envName] + "\", code!~\"^4..$\"}",
-			alertName:           "APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
 
-		// Observatorium Latency SLOs.
-		{
-			name: "api-metrics-write-latency-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			// Observatorium Metrics Latency SLOs.
+			{
+				name: "api-metrics-write-latency-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /receive handler is burning too much error budget to guarantee latency SLOs.",
+				successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
+				totalExpr:           "http_request_duration_seconds_count{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^2..$\"}",
+				alertName:           "APIMetricsWriteLatencyErrorBudgetBurning",
+				sloType:             sloTypeLatency,
 			},
-			description:         "API /receive handler is burning too much error budget to guarantee latency SLOs.",
-			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
-			totalExpr:           "http_request_duration_seconds_count{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", code=~\"^2..$\"}",
-			alertName:           "APIMetricsWriteLatencyErrorBudgetBurning",
-			sloType:             sloTypeLatency,
-		},
-		{
-			name: "api-metrics-read-1M-latency-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-metrics-read-1M-latency-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /query endpoint is burning too much error budget for 1M samples, to guarantee latency SLOs.",
+				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"10\"}",
+				totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
+				alertName:           "APIMetricsReadLatency1MErrorBudgetBurning",
+				sloType:             sloTypeLatency,
 			},
-			description:         "API /query endpoint is burning too much error budget for 1M samples, to guarantee latency SLOs.",
-			successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"10\"}",
-			totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
-			alertName:           "APIMetricsReadLatency1MErrorBudgetBurning",
-			sloType:             sloTypeLatency,
-		},
-		{
-			name: "api-metrics-read-10M-latency-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-metrics-read-10M-latency-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
+				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"30\"}",
+				totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
+				alertName:           "APIMetricsReadLatency10MErrorBudgetBurning",
+				sloType:             sloTypeLatency,
 			},
-			description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
-			successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"30\"}",
-			totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
-			alertName:           "APIMetricsReadLatency10MErrorBudgetBurning",
-			sloType:             sloTypeLatency,
-		},
-		{
-			name: "api-metrics-read-100M-latency-slo",
-			labels: map[string]string{
-				"service":  "observatorium-api",
-				"instance": string(envName),
+			{
+				name: "api-metrics-read-100M-latency-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
+				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"120\"}",
+				totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
+				alertName:           "APIMetricsReadLatency100MErrorBudgetBurning",
+				sloType:             sloTypeLatency,
 			},
-			description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
-			successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"120\"}",
-			totalExpr:           "up_custom_query_duration_seconds_count{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\"}",
-			alertName:           "APIMetricsReadLatency100MErrorBudgetBurning",
-			sloType:             sloTypeLatency,
-		},
+		}
+	case logsSignal:
+		slos = rhobSLOList{
+			// Observatorium Logs Availability SLOs.
+			{
+				name: "api-logs-write-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API logs /push handler is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code!~\"^4..$\"}",
+				alertName:           "APILogsPushAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
+			{
+				name: "api-logs-query-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API logs /query handler is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", group=\"logsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", group=\"logsv1\", code!~\"^4..$\"}",
+				alertName:           "APILogsQueryAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
+			{
+				name: "api-logs-query-range-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API logs /query_range handler is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"logsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"logsv1\", code!~\"^4..$\"}",
+				alertName:           "APILogsQueryRangeAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
+			{
+				name: "api-logs-tail-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API logs /tail is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"tail\", group=\"logsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"tail\", group=\"logsv1\", code!~\"^4..$\"}",
+				alertName:           "APILogsTailAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
+			{
+				name: "api-logs-prom-tail-availability-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API logs /prom_tail is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"prom_tail\", group=\"logsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"prom_tail\", group=\"logsv1\", code!~\"^4..$\"}",
+				alertName:           "APILogsPromTailAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
+		}
+	case tracesSignal:
+		panic("signal not yet supported")
+	default:
+		panic("not an Observatorium signal")
 	}
 
 	return slos.GetObjectives(envName)
@@ -462,11 +534,11 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	// Add on extra Telemeter-only SLOs.
 	telemeterProdObjectives := []pyrrav1alpha1.ServiceLevelObjective{}
 	telemeterProdObjectives = append(telemeterProdObjectives, TelemeterSLOs(telemeterProduction)...)
-	telemeterProdObjectives = append(telemeterProdObjectives, ObservatoriumSLOs(telemeterProduction)...)
+	telemeterProdObjectives = append(telemeterProdObjectives, ObservatoriumSLOs(telemeterProduction, metricsSignal)...)
 
 	telemeterStageObjectives := []pyrrav1alpha1.ServiceLevelObjective{}
 	telemeterStageObjectives = append(telemeterStageObjectives, TelemeterSLOs(telemeterStaging)...)
-	telemeterStageObjectives = append(telemeterStageObjectives, ObservatoriumSLOs(telemeterStaging)...)
+	telemeterStageObjectives = append(telemeterStageObjectives, ObservatoriumSLOs(telemeterStaging, metricsSignal)...)
 
 	envSLOs(
 		telemeterProduction,
@@ -486,23 +558,39 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 
 	envSLOs(
 		mstProduction,
-		ObservatoriumSLOs(mstProduction),
+		ObservatoriumSLOs(mstProduction, metricsSignal),
 		"rhobs-slos-mst-production"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
 
 	envSLOs(
+		mstProduction,
+		ObservatoriumSLOs(mstProduction, logsSignal),
+		"rhobs-slos-logs-mst-production"+prometheusRuleYamlExt,
+		genPyrra,
+		genRules,
+	)
+
+	envSLOs(
 		mstStage,
-		ObservatoriumSLOs(mstStage),
+		ObservatoriumSLOs(mstStage, metricsSignal),
 		"rhobs-slos-mst-stage"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,
 	)
 
 	envSLOs(
+		mstStage,
+		ObservatoriumSLOs(mstStage, logsSignal),
+		"rhobs-slos-logs-mst-stage"+prometheusRuleYamlExt,
+		genPyrra,
+		genRules,
+	)
+
+	envSLOs(
 		rhobsp02ue1Production,
-		ObservatoriumSLOs(rhobsp02ue1Production),
+		ObservatoriumSLOs(rhobsp02ue1Production, metricsSignal),
 		"rhobs-slos-rhobsp02ue1-prod"+prometheusRuleYamlExt,
 		genPyrra,
 		genRules,

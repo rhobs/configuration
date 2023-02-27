@@ -33,41 +33,111 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     },
   },
 
-  local withLokiMetricsDatasource = function(ds, key) ds + (
-    if ds.name == key then {
-      regex: '${OBSERVATORIUM_DATASOURCE_REGEX}',
-      current: {
-        selected: true,
-        text: '${OBSERVATORIUM_API_DATASOURCE}',
-        value: '${OBSERVATORIUM_API_DATASOURCE}',
-      },
-    } else {}
-  ),
-
-  local withLokiMetricsNamespace = function(ns, ds, value) ns + (
-    if ns.label == value then {
-      datasource: {
-        type: 'prometheus',
-        uid: '${%s}' % ds,
-      },
-      current: {
-        selected: true,
-        text: '${OBSERVATORIUM_API_NAMESPACE}',
-        value: '${OBSERVATORIUM_API_NAMESPACE}',
-      },
-      definition: 'label_values(kube_pod_info, namespace)',
-      query: {
-        query: 'label_values(kube_pod_info, namespace)',
-        refId: 'StandardVariableQuery',
-      },
-      regex: 'observatorium-logs|mst-.+',
-    } else {}
-  ),
-
-  local defaultLokiTags = function(t)
-    std.uniq(t + ['observatorium', 'observatorium-logs']),
-
   loki: {
+    local withDatasource = function(ds) ds + (
+      if ds.name == 'datasource' then {
+        regex: '${OBSERVATORIUM_DATASOURCE_REGEX}',
+        current: {
+          selected: true,
+          text: '${OBSERVATORIUM_API_DATASOURCE}',
+          value: '${OBSERVATORIUM_API_DATASOURCE}',
+        },
+      } else {}
+    ),
+
+    local withNamespace = function(ns) ns + (
+      if ns.label == 'namespace' then {
+        datasource: {
+          type: 'prometheus',
+          uid: '${datasource}',
+        },
+        current: {
+          selected: true,
+          text: '${OBSERVATORIUM_API_NAMESPACE}',
+          value: '${OBSERVATORIUM_API_NAMESPACE}',
+        },
+        definition: 'label_values(kube_pod_info, namespace)',
+        query: {
+          query: 'label_values(kube_pod_info, namespace)',
+          refId: 'StandardVariableQuery',
+        },
+        regex: 'observatorium-logs|mst-.+',
+      } else {}
+    ),
+
+    local withLatencyAxis = function(p) p + (
+      if std.length(std.findSubstr('atency', p.title)) != 0 then {
+        yaxes: [
+          y {
+            format: 's',
+          }
+          for y in p.yaxes
+        ],
+      } else {}
+    ),
+
+    local defaultLokiTags = function(t)
+      std.uniq(t + ['observatorium', 'observatorium-logs']),
+
+    local replaceMatchers = function(p) p {
+      local replacements = [
+        // TODO: This substitution is needed because the 'replaceClusterMatchers' function in upstream lib 'loki-operational.libsonnet' misses 'cluster=~"$cluster"' substitution.
+        // Remove this substitution when it has been added to upstream.
+        { from: 'cluster=~"$cluster",', to: '' },
+        { from: 'job=~"$namespace/cortex-gw(-internal)?",', to: '' },
+        { from: 'kube_pod_container_status_restarts_total{ ', to: 'kube_pod_container_status_restarts_total{container=~"observatorium-loki.+", ' },
+        { from: ' * 1e3', to: '' },
+        { from: 'pod=~"distributor.*"', to: 'pod=~".*distributor.*"' },
+        { from: 'pod=~"ingester.*"', to: 'pod=~".*ingester.*"' },
+        { from: 'pod=~"querier.*"', to: 'pod=~".*querier.*"' },
+        { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester-http"' },
+      ],
+      targets: [
+        t {
+          expr: std.foldl(function(x, rp) std.strReplace(x, rp.from, rp.to), replacements, t.expr),
+        }
+        for t in p.targets
+        if std.objectHas(p, 'targets')
+      ],
+    },
+
+    // dropPanels removes unnecessary panels from the loki-operational dashboard
+    // that are of obsolete usage on our AWS-based deployment environment.
+    local dropPanels = function(panels)
+      [
+        p
+        for p in panels
+        if !std.member(['Consul', 'Big Table', 'GCS', 'Dynamo', 'Azure Blob', 'Cassandra'], p.title)
+      ],
+
+    // mapPanels applies recursively a set of functions over all panels.
+    // Note: A Grafana dashboard panel can include other panels.
+    // Example: Replace job label in expression and add axis units for all panels.
+    local mapPanels = function(funcs, panels)
+      [
+        // Transform the current panel by applying all transformer funcs.
+        // Keep the last version after foldl ends.
+        std.foldl(function(agg, fn) fn(agg), funcs, p) + (
+          // Recursively apply all transformer functions to any
+          // children panels.
+          if std.objectHas(p, 'panels') then {
+            panels: mapPanels(funcs, p.panels),
+          } else {}
+        )
+        for p in panels
+      ],
+
+    // mapTemplateParameters applies a static list of transformer functions to
+    // all dashboard template parameters. The static list includes:
+    // - RHOBS cluster-prometheus as datasource based on RHOBS environment.
+    // - filtered list of namespaces based on selected RHOBS cluster.
+    local mapTemplateParameters = function(ls)
+      [
+        std.foldl(function(x, fn) fn(x), [withDatasource, withNamespace], item)
+        for item in ls
+        if item.name != 'cluster'
+      ],
+
     prometheusRules+: {
       groups: [
         g {
@@ -82,7 +152,6 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         for g in super.groups
       ],
     },
-
     grafanaDashboards+: {
       'loki-deletion.json':: super['loki-deletion.json'],
       'loki-mixin-recording-rules.json':: super['loki-mixin-recording-rules.json'],
@@ -96,18 +165,11 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         namespaceQuery:: 'label_values(kube_pod_info, namespace)',
         namespaceType:: 'query',
         labelsSelector:: 'job="observatorium-loki-ingester-http"',
+        // Adapt dashboard template parameters:
+        // - Match default selected datasource to RHOBS cluster.
+        // - Match namespaces to RHOBS cluster namespaces
         templating+: {
-          list:
-            std.map(
-              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
-              std.map(
-                function(e) withLokiMetricsDatasource(e, 'datasource'),
-                std.map(
-                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                  super.list
-                )
-              )
-            ),
+          list: mapTemplateParameters(super.list),
         },
       },
       'loki-operational.json'+: {
@@ -126,76 +188,16 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
           ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
           querier:: [utils.selector.eq('job', 'observatorium-loki-querier-http')],
         },
-        panels: [
-          p {
-            panels: [
-              ip {
-                targets: [
-                  t {
-                    expr:
-                      std.strReplace(
-                        std.strReplace(
-                          std.strReplace(
-                            std.strReplace(
-                              std.strReplace(
-                                // TODO: This substitution is needed because the 'replaceClusterMatchers' function in upstream lib 'loki-operational.libsonnet' misses 'cluster=~"$cluster"' substitution.
-                                // Remove this substitution when it has been added to upstream.
-                                std.strReplace(
-                                  t.expr,
-                                  'cluster=~"$cluster",',
-                                  ''
-                                ),
-                                'cluster=~"$cluster"',
-                                ''
-                              ),
-                              'pod=~"distributor.*"',
-                              'pod=~".*distributor.*"',
-                            ),
-                            'pod=~"ingester.*"',
-                            'pod=~".*ingester.*"',
-                          ),
-                          'pod=~"querier.*"',
-                          'pod=~".*querier.*"',
-                        ),
-                        'job=~"$namespace/ingester",',
-                        'job="observatorium-loki-ingester-http",',
-                      ),
-                  }
-                  for t in ip.targets
-                ],
-              }
-              for ip in p.panels
-            ],
-            targets: [
-              t {
-                // TODO(@periklis): Remove all the string replaces once we update the dahboards mixin dependencies.
-                //                  This is currently needed because we use Loki 2.7.x and on out-of-date mixin
-                //                  for dashboards from 2020.
-                expr:
-                  std.strReplace(
-                    std.strReplace(t.expr, 'job=~"$namespace/cortex-gw(-internal)?",', '',),
-                    'kube_pod_container_status_restarts_total{ ',
-                    'kube_pod_container_status_restarts_total{container=~"observatorium-loki.+", ',
-                  ),
-              }
-              for t in p.targets
-            ],
-          }
-          for p in super.panels
-          if !std.member(['Consul', 'Big Table', 'GCS', 'Dynamo', 'Cassandra', 'Azure Blob'], p.title)
-        ],
+        // Adapt dashboard panels to:
+        // - Use RHOBS related job label selectors instead of mixin defaults.
+        // - Add seconds as time unit for all latency panels
+        // - Drop all rows not relevant for the RHOBS Loki deployment (e.g. GCS, BigTable)
+        panels: mapPanels([replaceMatchers, withLatencyAxis], dropPanels(super.panels)),
+        // Adapt dashboard template parameters:
+        // - Match default selected datasource to RHOBS cluster.
+        // - Match namespaces to RHOBS cluster namespaces
         templating+: {
-          list:
-            std.map(
-              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
-              std.map(
-                function(e) withLokiMetricsDatasource(e, 'datasource'),
-                std.map(
-                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                  super.list
-                )
-              )
-            ),
+          list: mapTemplateParameters(super.list),
         },
       },
       'loki-reads.json'+: {
@@ -219,18 +221,11 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
           for r in super.rows
           if r.title != 'BigTable'
         ],
+        // Adapt dashboard template parameters:
+        // - Match default selected datasource to RHOBS cluster.
+        // - Match namespaces to RHOBS cluster namespaces
         templating+: {
-          list:
-            std.map(
-              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
-              std.map(
-                function(e) withLokiMetricsDatasource(e, 'datasource'),
-                std.map(
-                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                  super.list
-                )
-              ),
-            ),
+          list: mapTemplateParameters(super.list),
         },
       },
       'loki-writes.json'+: {
@@ -245,18 +240,11 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
           ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
           ingester_zone:: [],
         },
+        // Adapt dashboard template parameters:
+        // - Match default selected datasource to RHOBS cluster.
+        // - Match namespaces to RHOBS cluster namespaces
         templating+: {
-          list:
-            std.map(
-              function(e) (if e.name != 'cluster' then e else {}),  // Remove 'cluster' selector.
-              std.map(
-                function(e) withLokiMetricsDatasource(e, 'datasource'),
-                std.map(
-                  function(e) withLokiMetricsNamespace(e, 'datasource', 'namespace'),
-                  super.list
-                )
-              )
-            ),
+          list: mapTemplateParameters(super.list),
         },
       },
     },

@@ -4577,7 +4577,7 @@ parameters:
 - name: THANOS_CONFIG_SECRET
   value: thanos-objectstorage
 - name: THANOS_IMAGE_TAG
-  value: v0.29.0
+  value: v0.30.2
 - name: THANOS_IMAGE
   value: quay.io/thanos/thanos
 - name: THANOS_QUERIER_CPU_LIMIT

@@ -88,8 +88,18 @@
           "subdir": "production/loki-mixin"
         }
       },
-      "version": "899e8cc95b9fbf2e76c898b9f8a7a9d5623536d4",
-      "sum": "XGl2E7/qrumkYyiyjWd32q1j9Ha5TKqnTvOluqXDsoo="
+      "version": "2e11ff00eb753cc9f05ae624a818c681bd16dcfa",
+      "sum": "U71dm+zZVqWB1CkCRd875Nb9gL9kZswX9lOJYkH63ik="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/mimir.git",
+          "subdir": "operations/mimir-mixin"
+        }
+      },
+      "version": "c1cfa0367dc87440546dabc9081ced3276d3eb77",
+      "sum": "8bQfVmEekD2KhifhkRrX/UdBIKPotCjXef4umbbEtjM="
     },
     {
       "source": {
@@ -245,6 +255,16 @@
       },
       "version": "1c19d2a26167927459dec3778dfd21050052382f",
       "sum": "FwTPXq9GLUUF49qFDvL9h7kISvKx+dxxju+M1RjWMP8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/prometheus-operator/kube-prometheus.git",
+          "subdir": "jsonnet/kube-prometheus/lib"
+        }
+      },
+      "version": "f737ac4d012c05b0e1f187f247295923ba9560b6",
+      "sum": "QKRgrgEZ3k9nLmLCrDBaeIGVqQZf+AvZTcnhdLk3TrA="
     },
     {
       "source": {

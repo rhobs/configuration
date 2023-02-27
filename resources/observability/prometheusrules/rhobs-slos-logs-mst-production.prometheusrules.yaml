@@ -101,8 +101,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (14 * (1-0.99)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (14 * (1-0.99))
+        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (14 * (1-0.95))
       for: 2m
       labels:
         group: logsv1
@@ -119,8 +119,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (7 * (1-0.99)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (7 * (1-0.99))
+        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (7 * (1-0.95))
       for: 15m
       labels:
         group: logsv1
@@ -137,8 +137,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (2 * (1-0.99)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (2 * (1-0.99))
+        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (2 * (1-0.95))
       for: 1h
       labels:
         group: logsv1
@@ -155,8 +155,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (1 * (1-0.99)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (1 * (1-0.99))
+        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (1 * (1-0.95))
       for: 3h
       labels:
         group: logsv1
@@ -169,7 +169,7 @@ spec:
   - interval: 30s
     name: api-logs-write-availability-slo-generic
     rules:
-    - expr: "0.99"
+    - expr: "0.95"
       labels:
         slo: api-logs-write-availability-slo
       record: pyrra_objective
@@ -282,8 +282,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (14 * (1-0.99)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (14 * (1-0.99))
+        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (14 * (1-0.95))
       for: 2m
       labels:
         group: logsv1
@@ -300,8 +300,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (7 * (1-0.99)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (7 * (1-0.99))
+        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (7 * (1-0.95))
       for: 15m
       labels:
         group: logsv1
@@ -318,8 +318,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (2 * (1-0.99)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (2 * (1-0.99))
+        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (2 * (1-0.95))
       for: 1h
       labels:
         group: logsv1
@@ -336,8 +336,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (1 * (1-0.99)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (1 * (1-0.99))
+        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (1 * (1-0.95))
       for: 3h
       labels:
         group: logsv1
@@ -350,7 +350,7 @@ spec:
   - interval: 30s
     name: api-logs-query-availability-slo-generic
     rules:
-    - expr: "0.99"
+    - expr: "0.95"
       labels:
         slo: api-logs-query-availability-slo
       record: pyrra_objective
@@ -463,8 +463,8 @@ spec:
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (14 * (1-0.99)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (14 * (1-0.99))
+        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (14 * (1-0.95))
       for: 2m
       labels:
         group: logsv1
@@ -481,8 +481,8 @@ spec:
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (7 * (1-0.99)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (7 * (1-0.99))
+        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (7 * (1-0.95))
       for: 15m
       labels:
         group: logsv1
@@ -499,8 +499,8 @@ spec:
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (2 * (1-0.99)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (2 * (1-0.99))
+        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (2 * (1-0.95))
       for: 1h
       labels:
         group: logsv1
@@ -517,8 +517,8 @@ spec:
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (1 * (1-0.99)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (1 * (1-0.99))
+        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (1 * (1-0.95))
       for: 3h
       labels:
         group: logsv1
@@ -531,7 +531,7 @@ spec:
   - interval: 30s
     name: api-logs-query-range-availability-slo-generic
     rules:
-    - expr: "0.99"
+    - expr: "0.95"
       labels:
         slo: api-logs-query-range-availability-slo
       record: pyrra_objective
@@ -644,8 +644,8 @@ spec:
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (14 * (1-0.99)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (14 * (1-0.99))
+        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (14 * (1-0.95))
       for: 2m
       labels:
         group: logsv1
@@ -662,8 +662,8 @@ spec:
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (7 * (1-0.99)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (7 * (1-0.99))
+        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (7 * (1-0.95))
       for: 15m
       labels:
         group: logsv1
@@ -680,8 +680,8 @@ spec:
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (2 * (1-0.99)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (2 * (1-0.99))
+        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (2 * (1-0.95))
       for: 1h
       labels:
         group: logsv1
@@ -698,8 +698,8 @@ spec:
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (1 * (1-0.99)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (1 * (1-0.99))
+        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (1 * (1-0.95))
       for: 3h
       labels:
         group: logsv1
@@ -712,7 +712,7 @@ spec:
   - interval: 30s
     name: api-logs-tail-availability-slo-generic
     rules:
-    - expr: "0.99"
+    - expr: "0.95"
       labels:
         slo: api-logs-tail-availability-slo
       record: pyrra_objective
@@ -825,8 +825,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (14 * (1-0.99)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (14 * (1-0.99))
+        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (14 * (1-0.95))
       for: 2m
       labels:
         group: logsv1
@@ -843,8 +843,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (7 * (1-0.99)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (7 * (1-0.99))
+        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (7 * (1-0.95))
       for: 15m
       labels:
         group: logsv1
@@ -861,8 +861,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (2 * (1-0.99)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (2 * (1-0.99))
+        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (2 * (1-0.95))
       for: 1h
       labels:
         group: logsv1
@@ -879,8 +879,8 @@ spec:
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (1 * (1-0.99)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (1 * (1-0.99))
+        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (1 * (1-0.95))
       for: 3h
       labels:
         group: logsv1
@@ -893,7 +893,7 @@ spec:
   - interval: 30s
     name: api-logs-prom-tail-availability-slo-generic
     rules:
-    - expr: "0.99"
+    - expr: "0.95"
       labels:
         slo: api-logs-prom-tail-availability-slo
       record: pyrra_objective

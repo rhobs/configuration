@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	globalSLOWindowDuration            = "28d" // Window over which all RHOBS SLOs are calculated.
-	globalSLOAvailabilityTargetPercent = "99"  // The Availability Target percentage for RHOBS availability SLOs.
-	globalSLOLatencyTargetPercent      = "90"  // The Latency Target percentage for RHOBS latency SLOs.
-	genericSLOLatencySeconds           = "5"   // Latency request duration to measure percentile target (this is diff for query SLOs).
+	globalSLOWindowDuration                   = "28d" // Window over which all RHOBS SLOs are calculated.
+	globalMetricsSLOAvailabilityTargetPercent = "99"  // The Availability Target percentage for RHOBS metrics availability SLOs.
+	globalLogsSLOAvailabilityTargetPercent    = "95"  // The Availability Target percentage for RHOBS logs availability SLOs.
+	globalSLOLatencyTargetPercent             = "90"  // The Latency Target percentage for RHOBS latency SLOs.
+	genericSLOLatencySeconds                  = "5"   // Latency request duration to measure percentile target (this is diff for query SLOs).
 )
 
 // rhobsInstanceEnv represents a particular RHOBS Instance environment.
@@ -140,6 +141,7 @@ type rhobsSLOs struct {
 	totalExpr           string
 	alertName           string
 	sloType             sloType
+	signal              signal
 }
 
 // rhobSLOList is a list of shorthand SLOs.
@@ -171,7 +173,11 @@ func (slos rhobSLOList) GetObjectives(envName rhobsInstanceEnv) []pyrrav1alpha1.
 		}
 
 		if s.sloType == sloTypeAvailability {
-			objective.Spec.Target = globalSLOAvailabilityTargetPercent
+			// Metrics availability target as the default.
+			objective.Spec.Target = globalMetricsSLOAvailabilityTargetPercent
+			if s.signal == logsSignal {
+				objective.Spec.Target = globalLogsSLOAvailabilityTargetPercent
+			}
 			objective.Spec.ServiceLevelIndicator = pyrrav1alpha1.ServiceLevelIndicator{
 				Ratio: &pyrrav1alpha1.RatioIndicator{
 					Errors: pyrrav1alpha1.Query{
@@ -465,6 +471,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code!~\"^4..$\"}",
 				alertName:           "APILogsPushAvailabilityErrorBudgetBurning",
 				sloType:             sloTypeAvailability,
+				signal:              logsSignal,
 			},
 			{
 				name: "api-logs-query-availability-slo",
@@ -477,6 +484,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", group=\"logsv1\", code!~\"^4..$\"}",
 				alertName:           "APILogsQueryAvailabilityErrorBudgetBurning",
 				sloType:             sloTypeAvailability,
+				signal:              logsSignal,
 			},
 			{
 				name: "api-logs-query-range-availability-slo",
@@ -489,6 +497,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"logsv1\", code!~\"^4..$\"}",
 				alertName:           "APILogsQueryRangeAvailabilityErrorBudgetBurning",
 				sloType:             sloTypeAvailability,
+				signal:              logsSignal,
 			},
 			{
 				name: "api-logs-tail-availability-slo",
@@ -501,6 +510,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"tail\", group=\"logsv1\", code!~\"^4..$\"}",
 				alertName:           "APILogsTailAvailabilityErrorBudgetBurning",
 				sloType:             sloTypeAvailability,
+				signal:              logsSignal,
 			},
 			{
 				name: "api-logs-prom-tail-availability-slo",
@@ -513,6 +523,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"prom_tail\", group=\"logsv1\", code!~\"^4..$\"}",
 				alertName:           "APILogsPromTailAvailabilityErrorBudgetBurning",
 				sloType:             sloTypeAvailability,
+				signal:              logsSignal,
 			},
 		}
 	case tracesSignal:

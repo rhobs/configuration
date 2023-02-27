@@ -525,6 +525,20 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				sloType:             sloTypeAvailability,
 				signal:              logsSignal,
 			},
+
+			// Observatorium Logs Latency SLOs.
+			{
+				name: "api-logs-write-latency-slo",
+				labels: map[string]string{
+					"service":  "observatorium-api",
+					"instance": string(envName),
+				},
+				description:         "API /push handler is burning too much error budget to guarantee latency SLOs.",
+				successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
+				totalExpr:           "http_request_duration_seconds_count{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code=~\"^2..$\"}",
+				alertName:           "APILogsPushLatencyErrorBudgetBurning",
+				sloType:             sloTypeLatency,
+			},
 		}
 	case tracesSignal:
 		panic("signal not yet supported")

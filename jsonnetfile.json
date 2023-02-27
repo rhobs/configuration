@@ -124,15 +124,6 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/saswatamcode/slo-libsonnet.git",
-          "subdir": "slo-libsonnet"
-        }
-      },
-      "version": "special-selector"
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/thanos-io/kube-thanos.git",
           "subdir": "jsonnet/kube-thanos"
         }

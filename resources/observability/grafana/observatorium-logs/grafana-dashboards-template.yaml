@@ -3466,9 +3466,6 @@ objects:
               "type": "datasource"
             },
             {
-
-            },
-            {
               "allValue": null,
               "current": {
                 "selected": true,
@@ -4335,17 +4332,17 @@ objects:
             "steppedLine": false,
             "targets": [
               {
-                "expr": "histogram_quantile(0.99, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{ route=~\"api_prom_push|loki_api_v1_push\"})) * 1e3",
+                "expr": "histogram_quantile(0.99, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{ route=~\"api_prom_push|loki_api_v1_push\"}))",
                 "legendFormat": ".99",
                 "refId": "A"
               },
               {
-                "expr": "histogram_quantile(0.75, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{ route=~\"api_prom_push|loki_api_v1_push\"})) * 1e3",
+                "expr": "histogram_quantile(0.75, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{ route=~\"api_prom_push|loki_api_v1_push\"}))",
                 "legendFormat": ".9",
                 "refId": "B"
               },
               {
-                "expr": "histogram_quantile(0.5, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{ route=~\"api_prom_push|loki_api_v1_push\"})) * 1e3",
+                "expr": "histogram_quantile(0.5, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{ route=~\"api_prom_push|loki_api_v1_push\"}))",
                 "legendFormat": ".5",
                 "refId": "C"
               }
@@ -4376,7 +4373,7 @@ objects:
             },
             "yaxes": [
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4384,7 +4381,7 @@ objects:
                 "show": true
               },
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4459,17 +4456,17 @@ objects:
             "steppedLine": false,
             "targets": [
               {
-                "expr": "histogram_quantile(0.99, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"})) * 1e3",
+                "expr": "histogram_quantile(0.99, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"}))",
                 "legendFormat": ".99",
                 "refId": "A"
               },
               {
-                "expr": "histogram_quantile(0.9, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"})) * 1e3",
+                "expr": "histogram_quantile(0.9, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"}))",
                 "legendFormat": ".9",
                 "refId": "B"
               },
               {
-                "expr": "histogram_quantile(0.5, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"})) * 1e3",
+                "expr": "histogram_quantile(0.5, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor-http\"}))",
                 "legendFormat": ".5",
                 "refId": "C"
               }
@@ -4500,7 +4497,7 @@ objects:
             },
             "yaxes": [
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4508,7 +4505,7 @@ objects:
                 "show": true
               },
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4699,18 +4696,18 @@ objects:
             "steppedLine": false,
             "targets": [
               {
-                "expr": "histogram_quantile(0.99, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"})) * 1e3",
+                "expr": "histogram_quantile(0.99, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"}))",
                 "legendFormat": ".99",
                 "refId": "A"
               },
               {
-                "expr": "histogram_quantile(0.9, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"})) * 1e3",
+                "expr": "histogram_quantile(0.9, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"}))",
                 "hide": false,
                 "legendFormat": ".9",
                 "refId": "B"
               },
               {
-                "expr": "histogram_quantile(0.5, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"})) * 1e3",
+                "expr": "histogram_quantile(0.5, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=\"/logproto.Pusher/Push\"}))",
                 "hide": false,
                 "legendFormat": ".5",
                 "refId": "C"
@@ -4742,7 +4739,7 @@ objects:
             },
             "yaxes": [
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4750,7 +4747,7 @@ objects:
                 "show": true
               },
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4984,7 +4981,7 @@ objects:
             },
             "yaxes": [
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -4992,7 +4989,7 @@ objects:
                 "show": true
               },
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -5067,17 +5064,17 @@ objects:
             "steppedLine": false,
             "targets": [
               {
-                "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier-http\", route=~\"api_prom_query|api_prom_labels|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_label|loki_api_v1_label_name_values\"})) * 1e3",
+                "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier-http\", route=~\"api_prom_query|api_prom_labels|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_label|loki_api_v1_label_name_values\"}))",
                 "legendFormat": ".99-{{route}}",
                 "refId": "A"
               },
               {
-                "expr": "histogram_quantile(0.9, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier-http\", route=~\"api_prom_query|api_prom_labels|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_label|loki_api_v1_label_name_values\"})) * 1e3",
+                "expr": "histogram_quantile(0.9, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier-http\", route=~\"api_prom_query|api_prom_labels|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_label|loki_api_v1_label_name_values\"}))",
                 "legendFormat": ".9-{{route}}",
                 "refId": "B"
               },
               {
-                "expr": "histogram_quantile(0.5, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier-http\", route=~\"api_prom_query|api_prom_labels|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_label|loki_api_v1_label_name_values\"})) * 1e3",
+                "expr": "histogram_quantile(0.5, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier-http\", route=~\"api_prom_query|api_prom_labels|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_label|loki_api_v1_label_name_values\"}))",
                 "legendFormat": ".5-{{route}}",
                 "refId": "C"
               }
@@ -5108,7 +5105,7 @@ objects:
             },
             "yaxes": [
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -5116,7 +5113,7 @@ objects:
                 "show": true
               },
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -5308,17 +5305,17 @@ objects:
             "steppedLine": false,
             "targets": [
               {
-                "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"})) * 1e3",
+                "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}))",
                 "legendFormat": ".99-{{route}}",
                 "refId": "A"
               },
               {
-                "expr": "histogram_quantile(0.9, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"})) * 1e3",
+                "expr": "histogram_quantile(0.9, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}))",
                 "legendFormat": ".9-{{route}}",
                 "refId": "B"
               },
               {
-                "expr": "histogram_quantile(0.5, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"})) * 1e3",
+                "expr": "histogram_quantile(0.5, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester-http\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}))",
                 "legendFormat": ".5-{{route}}",
                 "refId": "C"
               }
@@ -5349,7 +5346,7 @@ objects:
             },
             "yaxes": [
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -5357,7 +5354,7 @@ objects:
                 "show": true
               },
               {
-                "format": "short",
+                "format": "s",
                 "label": null,
                 "logBase": 1,
                 "max": null,
@@ -7416,7 +7413,7 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by(reason) (rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\", namespace=~\"$namespace\"}[$__rate_interval])) / ignoring(reason) group_left sum(rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\", namespace=~\"$namespace\"}[$__rate_interval]))",
+                    "expr": "sum by(reason) (rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\" namespace=~\"$namespace\"}[$__rate_interval])) / ignoring(reason) group_left sum(rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\" namespace=~\"$namespace\"}[$__rate_interval]))",
                     "interval": "",
                     "legendFormat": "{{ reason }}"
                   }
@@ -8118,7 +8115,7 @@ objects:
                 },
                 "yaxes": [
                   {
-                    "format": "short",
+                    "format": "s",
                     "label": null,
                     "logBase": 1,
                     "max": null,
@@ -8126,7 +8123,7 @@ objects:
                     "show": true
                   },
                   {
-                    "format": "short",
+                    "format": "s",
                     "label": null,
                     "logBase": 1,
                     "max": null,
@@ -8359,7 +8356,7 @@ objects:
                 },
                 "yaxes": [
                   {
-                    "format": "short",
+                    "format": "s",
                     "label": null,
                     "logBase": 1,
                     "max": null,
@@ -8367,7 +8364,7 @@ objects:
                     "show": true
                   },
                   {
-                    "format": "short",
+                    "format": "s",
                     "label": null,
                     "logBase": 1,
                     "max": null,
@@ -8599,7 +8596,7 @@ objects:
                 },
                 "yaxes": [
                   {
-                    "format": "short",
+                    "format": "s",
                     "label": null,
                     "logBase": 1,
                     "max": null,
@@ -8607,7 +8604,7 @@ objects:
                     "show": true
                   },
                   {
-                    "format": "short",
+                    "format": "s",
                     "label": null,
                     "logBase": 1,
                     "max": null,
@@ -8774,9 +8771,6 @@ objects:
               "refresh": 1,
               "regex": "",
               "type": "datasource"
-            },
-            {
-
             },
             {
               "allValue": null,
@@ -12150,9 +12144,6 @@ objects:
               "type": "datasource"
             },
             {
-
-            },
-            {
               "allValue": null,
               "current": {
                 "selected": true,
@@ -13315,9 +13306,6 @@ objects:
               "refresh": 1,
               "regex": "${OBSERVATORIUM_DATASOURCE_REGEX}",
               "type": "datasource"
-            },
-            {
-
             },
             {
               "allValue": null,

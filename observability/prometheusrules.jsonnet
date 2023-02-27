@@ -250,21 +250,8 @@ local renderAlerts(name, environment, mixin) = {
 {
   local obsSLOs(name) = {
     local logsGroup = 'logsv1',
-    local metricsGroup = 'metricsv1',
     // local metricLatency = 'http_request_duration_seconds',
     local metricError = 'http_requests_total',
-    local writeMetricsSelector(group) = {
-      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="receive"', 'job="%s"' % name],
-    },
-    local queryLegacyMetricsSelector(group) = {
-      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="query_legacy"', 'job="%s"' % name],
-    },
-    local queryMetricsSelector(group) = {
-      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="query"', 'job="%s"' % name],
-    },
-    local queryRangeMetricsSelector(group) = {
-      selectors: ['ONLY_IN_BASE_group="%s"' % group, 'handler="query_range"', 'job="%s"' % name],
-    },
     local pushLogsSelector(group) = {
       selectors: ['group="%s"' % group, 'handler="push"', 'job="%s"' % name],
     },
@@ -283,38 +270,6 @@ local renderAlerts(name, environment, mixin) = {
     // local alertNameLatency = 'ObservatoriumAPILatencySLOBudgetBurn',
 
     errorBurn:: [
-      {
-        name: 'observatorium-api-write-metrics-errors.slo',
-        config: writeMetricsSelector(metricsGroup) {
-          alertName: alertNameMetricsErrors,
-          metric: metricError,
-          target: 0.99,
-        },
-      },
-      {
-        name: 'observatorium-api-query-metrics-errors.slo',
-        config: queryMetricsSelector(metricsGroup) {
-          alertName: alertNameMetricsErrors,
-          metric: metricError,
-          target: 0.95,
-        },
-      },
-      {
-        name: 'observatorium-api-query-legacy-metrics-errors.slo',
-        config: queryLegacyMetricsSelector(metricsGroup) {
-          alertName: alertNameMetricsErrors,
-          metric: metricError,
-          target: 0.95,
-        },
-      },
-      {
-        name: 'observatorium-api-query-range-metrics-errors.slo',
-        config: queryRangeMetricsSelector(metricsGroup) {
-          alertName: alertNameMetricsErrors,
-          metric: metricError,
-          target: 0.90,
-        },
-      },
       {
         name: 'observatorium-api-push-logs-errors.slo',
         config: pushLogsSelector(logsGroup) {

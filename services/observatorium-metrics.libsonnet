@@ -366,7 +366,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           storageClassName: '${STORAGE_CLASS}',
           resources: {
             requests: {
-              storage: '50Gi',
+              storage: '${THANOS_STORE_PVC_STORAGE}',
             },
           },
         },
@@ -986,7 +986,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           accessModes: ['ReadWriteOnce'],
           resources: {
             requests: {
-              storage: '10Gi',
+              storage: '${ALERTMANAGER_PVC_STORAGE}',
             },
           },
         },

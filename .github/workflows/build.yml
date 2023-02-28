@@ -1,0 +1,30 @@
+name: CI build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.18
+    - name: Vendor
+      run: make vendor_jsonnet
+    - name: Build
+      run: make grafana manifests prometheusrules
+    - name: Format
+      run: make format
+    - name: Lint
+      run: make lint
+    - name: Validate
+      run: make validate
+    - name: Diff
+      run: git diff --exit-code

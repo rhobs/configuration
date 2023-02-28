@@ -142,11 +142,34 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
       ],
     },
     grafanaDashboards+: {
+      // Exclude the following dashboards
       'loki-deletion.json':: super['loki-deletion.json'],
       'loki-mixin-recording-rules.json':: super['loki-mixin-recording-rules.json'],
       'loki-reads-resources.json':: super['loki-reads-resources.json'],
-      'loki-retention.json':: super['loki-retention.json'],
       'loki-writes-resources.json':: super['loki-writes-resources.json'],
+
+      'loki-retention.json'+: {
+        local dropList = ['Logs'],
+        local replacements = [
+          { from: 'cluster=~"$cluster",', to: '' },
+          { from: 'container="compactor"', to: 'container="observatorium-loki-compactor"' },
+          { from: 'job=~"($namespace)/compactor"', to: 'job="observatorium-loki-compactor-http"' },
+        ],
+        uid: 'RetCujSHzC8gd9i5fck9a3v9n2EvTzA',
+        tags: defaultLokiTags(super.tags),
+        rows: [
+          r {
+            panels: mapPanels([replaceMatchers(replacements)], r.panels),
+          }
+          for r in dropPanels(super.rows, dropList)
+        ],
+        // Adapt dashboard template parameters:
+        // - Match default selected datasource to RHOBS cluster.
+        // - Match namespaces to RHOBS cluster namespaces
+        templating+: {
+          list: mapTemplateParameters(super.list),
+        },
+      },
       'loki-chunks.json'+: {
         uid: 'GtCujSHzC8gd9i5fck9a3v9n2EvTzA',
         tags: defaultLokiTags(super.tags),

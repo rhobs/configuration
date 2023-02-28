@@ -7413,7 +7413,7 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by(reason) (rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\" namespace=~\"$namespace\"}[$__rate_interval])) / ignoring(reason) group_left sum(rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\" namespace=~\"$namespace\"}[$__rate_interval]))",
+                    "expr": "sum by(reason) (rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\", namespace=~\"$namespace\"}[$__rate_interval])) / ignoring(reason) group_left sum(rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester-http\", namespace=~\"$namespace\"}[$__rate_interval]))",
                     "interval": "",
                     "legendFormat": "{{ reason }}"
                   }

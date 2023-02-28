@@ -90,7 +90,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         { from: 'pod=~"distributor.*"', to: 'pod=~".*distributor.*"' },
         { from: 'pod=~"ingester.*"', to: 'pod=~".*ingester.*"' },
         { from: 'pod=~"querier.*"', to: 'pod=~".*querier.*"' },
-        { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester-http"' },
+        { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester-http",' },
       ],
       targets: [
         t {

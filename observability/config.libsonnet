@@ -79,35 +79,24 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     local defaultLokiTags = function(t)
       std.uniq(t + ['observatorium', 'observatorium-logs']),
 
-    local replaceMatchers = function(p) p {
-      local replacements = [
-        // TODO: This substitution is needed because the 'replaceClusterMatchers' function in upstream lib 'loki-operational.libsonnet' misses 'cluster=~"$cluster"' substitution.
-        // Remove this substitution when it has been added to upstream.
-        { from: 'cluster=~"$cluster",', to: '' },
-        { from: 'job=~"$namespace/cortex-gw(-internal)?",', to: '' },
-        { from: 'kube_pod_container_status_restarts_total{ ', to: 'kube_pod_container_status_restarts_total{container=~"observatorium-loki.+", ' },
-        { from: ' * 1e3', to: '' },
-        { from: 'pod=~"distributor.*"', to: 'pod=~".*distributor.*"' },
-        { from: 'pod=~"ingester.*"', to: 'pod=~".*ingester.*"' },
-        { from: 'pod=~"querier.*"', to: 'pod=~".*querier.*"' },
-        { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester-http",' },
-      ],
-      targets: [
-        t {
-          expr: std.foldl(function(x, rp) std.strReplace(x, rp.from, rp.to), replacements, t.expr),
-        }
-        for t in p.targets
-        if std.objectHas(p, 'targets')
-      ],
-    },
+    local replaceMatchers = function(replacements)
+      function(p) p {
+        targets: [
+          t {
+            expr: std.foldl(function(x, rp) std.strReplace(x, rp.from, rp.to), replacements, t.expr),
+          }
+          for t in p.targets
+          if std.objectHas(p, 'targets')
+        ],
+      },
 
     // dropPanels removes unnecessary panels from the loki-operational dashboard
     // that are of obsolete usage on our AWS-based deployment environment.
-    local dropPanels = function(panels)
+    local dropPanels = function(panels, dropList)
       [
         p
         for p in panels
-        if !std.member(['Consul', 'Big Table', 'GCS', 'Dynamo', 'Azure Blob', 'Cassandra'], p.title)
+        if !std.member(dropList, p.title)
       ],
 
     // mapPanels applies recursively a set of functions over all panels.
@@ -192,7 +181,20 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         // - Use RHOBS related job label selectors instead of mixin defaults.
         // - Add seconds as time unit for all latency panels
         // - Drop all rows not relevant for the RHOBS Loki deployment (e.g. GCS, BigTable)
-        panels: mapPanels([replaceMatchers, withLatencyAxis], dropPanels(super.panels)),
+        local dropList = ['Consul', 'Big Table', 'GCS', 'Dynamo', 'Azure Blob', 'Cassandra'],
+        local replacements = [
+          // TODO: This substitution is needed because the 'replaceClusterMatchers' function in upstream lib 'loki-operational.libsonnet' misses 'cluster=~"$cluster"' substitution.
+          // Remove this substitution when it has been added to upstream.
+          { from: 'cluster=~"$cluster",', to: '' },
+          { from: 'job=~"$namespace/cortex-gw(-internal)?",', to: '' },
+          { from: 'kube_pod_container_status_restarts_total{ ', to: 'kube_pod_container_status_restarts_total{container=~"observatorium-loki.+", ' },
+          { from: ' * 1e3', to: '' },
+          { from: 'pod=~"distributor.*"', to: 'pod=~".*distributor.*"' },
+          { from: 'pod=~"ingester.*"', to: 'pod=~".*ingester.*"' },
+          { from: 'pod=~"querier.*"', to: 'pod=~".*querier.*"' },
+          { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester-http",' },
+        ],
+        panels: mapPanels([replaceMatchers(replacements), withLatencyAxis], dropPanels(super.panels, dropList)),
         // Adapt dashboard template parameters:
         // - Match default selected datasource to RHOBS cluster.
         // - Match namespaces to RHOBS cluster namespaces
@@ -201,6 +203,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         },
       },
       'loki-reads.json'+: {
+        local dropList = ['BigTable', 'Ingester - Zone Aware'],
+
         uid: '62q5jjYwhVSaz4Mcrm8tV3My3gcKED',
         tags: defaultLokiTags(super.tags),
         showMultiCluster:: false,
@@ -218,8 +222,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
           r {
             title: std.strReplace(r.title, 'Frontend (query-frontend)', 'API'),
           }
-          for r in super.rows
-          if r.title != 'BigTable'
+          for r in dropPanels(super.rows, dropList)
         ],
         // Adapt dashboard template parameters:
         // - Match default selected datasource to RHOBS cluster.
@@ -229,6 +232,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         },
       },
       'loki-writes.json'+: {
+        local dropList = ['Ingester - Zone Aware'],
+
         uid: 'F6nRYKuXmFVpVSFQmXr7cgXy5j7UNr',
         tags: defaultLokiTags(super.tags),
         showMultiCluster:: false,
@@ -240,6 +245,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
           ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
           ingester_zone:: [],
         },
+        rows: dropPanels(super.rows, dropList),
         // Adapt dashboard template parameters:
         // - Match default selected datasource to RHOBS cluster.
         // - Match namespaces to RHOBS cluster namespaces

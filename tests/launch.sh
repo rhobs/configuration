@@ -24,12 +24,15 @@ dex() {
 observatorium_metrics() {
     oc create ns observatorium-metrics || true
     oc process -f observatorium-metrics-thanos-objectstorage-secret-template.yaml | oc apply --namespace observatorium-metrics -f -
+    oc apply -f observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
     role
     oc process --param-file=observatorium-metrics.test.env -f ../resources/services/observatorium-metrics-template.yaml | oc apply --namespace observatorium-metrics -f -
 }
 
 observatorium() {
     oc create ns observatorium || true
+    oc apply -f observatorium-rules-objstore-secret.yaml --namespace observatorium
+    oc apply -f observatorium-rhobs-tenant-secret.yaml --namespace observatorium
     oc process --param-file=observatorium.test.env -f ../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
 }
 
@@ -38,6 +41,10 @@ telemeter() {
     oc apply --namespace telemeter -f telemeter-token-refersher-oidc-secret.yaml
     oc process --param-file=telemeter.test.env -f ../resources/services/telemeter-template.yaml | oc apply --namespace telemeter -f -
 }
+loki_crds(){
+    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_recordingrules.yaml
+    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_alertingrules.yaml
+}
 
 teardown() {
     oc delete ns telemeter || true
@@ -45,12 +52,15 @@ teardown() {
     oc delete ns observatorium || true
     oc delete ns minio || true
     oc delete ns dex || true
+    oc delete crds recordingrules.loki.grafana.com || true
+    oc delete crds alertingrules.loki.grafana.com || true
 }
 
 case $1 in
 deploy)
     minio
     dex
+    loki_crds
     observatorium
     observatorium_metrics
     telemeter

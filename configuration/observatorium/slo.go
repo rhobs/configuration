@@ -2,7 +2,6 @@ package cfgobservatorium
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
@@ -40,7 +39,7 @@ func (envName rhobsInstanceEnv) isStage() bool {
 	case telemeterProduction, mstProduction, rhobsp02ue1Production:
 		return false
 	default:
-		panic("not a RHOBS env")
+		panic(envName + " is not a RHOBS env")
 	}
 }
 
@@ -541,18 +540,13 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			},
 		}
 	case tracesSignal:
-		panic("signal not yet supported")
+		panic("tracing signal is not yet supported")
 	default:
-		panic("not an Observatorium signal")
+		panic(signal + " is not an Observatorium signal")
 	}
 
 	return slos.GetObjectives(envName)
 }
-
-const (
-	yamlExt               = ".yaml"
-	prometheusRuleYamlExt = ".prometheusrules.yaml"
-)
 
 // GenSLO is the function responsible for tying together Pyrra Objectives and converting them into SLO+Rule files.
 func GenSLO(genPyrra, genRules *mimic.Generator) {
@@ -568,7 +562,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		telemeterProduction,
 		telemeterProdObjectives,
-		"rhobs-slos-telemeter-production"+prometheusRuleYamlExt,
+		"rhobs-slos-telemeter-production",
 		genPyrra,
 		genRules,
 	)
@@ -576,7 +570,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		telemeterStaging,
 		telemeterStageObjectives,
-		"rhobs-slos-telemeter-stage"+prometheusRuleYamlExt,
+		"rhobs-slos-telemeter-stage",
 		genPyrra,
 		genRules,
 	)
@@ -584,7 +578,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		mstProduction,
 		ObservatoriumSLOs(mstProduction, metricsSignal),
-		"rhobs-slos-mst-production"+prometheusRuleYamlExt,
+		"rhobs-slos-mst-production",
 		genPyrra,
 		genRules,
 	)
@@ -592,7 +586,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		mstProduction,
 		ObservatoriumSLOs(mstProduction, logsSignal),
-		"rhobs-slos-logs-mst-production"+prometheusRuleYamlExt,
+		"rhobs-slos-logs-mst-production",
 		genPyrra,
 		genRules,
 	)
@@ -600,7 +594,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		mstStage,
 		ObservatoriumSLOs(mstStage, metricsSignal),
-		"rhobs-slos-mst-stage"+prometheusRuleYamlExt,
+		"rhobs-slos-mst-stage",
 		genPyrra,
 		genRules,
 	)
@@ -608,7 +602,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		mstStage,
 		ObservatoriumSLOs(mstStage, logsSignal),
-		"rhobs-slos-logs-mst-stage"+prometheusRuleYamlExt,
+		"rhobs-slos-logs-mst-stage",
 		genPyrra,
 		genRules,
 	)
@@ -616,7 +610,7 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	envSLOs(
 		rhobsp02ue1Production,
 		ObservatoriumSLOs(rhobsp02ue1Production, metricsSignal),
-		"rhobs-slos-rhobsp02ue1-prod"+prometheusRuleYamlExt,
+		"rhobs-slos-rhobsp02ue1-prod",
 		genPyrra,
 		genRules,
 	)
@@ -625,13 +619,13 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 // envSLOs generates the resultant config for a particular rhobsInstanceEnv.
 func envSLOs(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLevelObjective, ruleFilename string, genPyrra, genRules *mimic.Generator) {
 	for _, obj := range objs {
-		name := string(envName) + "-" + obj.ObjectMeta.Name + yamlExt
+		name := string(envName) + "-" + obj.ObjectMeta.Name + ".yaml"
 		genPyrra.Add(name, encoding.GhodssYAML(obj))
 	}
 
 	// We add "" to encoding as first arg, so that we get a YAML doc directive
 	// at the start of the file as per app-interface format.
-	genRules.Add(ruleFilename, encoding.GhodssYAML("", makePrometheusRule(envName, objs, strings.TrimSuffix(ruleFilename, prometheusRuleYamlExt))))
+	genRules.Add(ruleFilename+".prometheusrules.yaml", encoding.GhodssYAML("", makePrometheusRule(envName, objs, ruleFilename)))
 }
 
 // appInterfacePrometheusRule allows adding schema field to the generated YAML.

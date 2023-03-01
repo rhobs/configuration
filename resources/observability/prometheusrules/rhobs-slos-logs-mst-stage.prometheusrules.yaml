@@ -194,100 +194,90 @@ spec:
   - interval: 2m30s
     name: api-logs-query-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[4w]))
+    - expr: sum by(code, handler) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4w]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/mst-stage-slos?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API logs /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API logs /query, /labels, or /label_values handler is burning too
+          much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"})
+      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
         == 1
       for: 2m
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         severity: high
         slo: api-logs-query-availability-slo
   - interval: 30s
     name: api-logs-query-availability-slo
     rules:
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[5m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[5m]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[5m]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[5m]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate5m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[30m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[30m]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[30m]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[30m]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate30m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[1h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[1h]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1h]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1h]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate1h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[2h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[2h]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[2h]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[2h]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate2h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[6h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[6h]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[6h]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[6h]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate6h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[1d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[1d]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1d]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1d]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate1d
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[4d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}[4d]))
+    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4d]))
+        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4d]))
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate4d
     - alert: APILogsQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/mst-stage-slos?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API logs /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API logs /query, /labels, or /label_values handler is burning too
+          much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (14 * (1-0.95))
       for: 2m
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         long: 1h
         severity: high
@@ -296,16 +286,15 @@ spec:
     - alert: APILogsQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/mst-stage-slos?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API logs /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API logs /query, /labels, or /label_values handler is burning too
+          much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (7 * (1-0.95))
       for: 15m
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         long: 6h
         severity: high
@@ -314,16 +303,15 @@ spec:
     - alert: APILogsQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/mst-stage-slos?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API logs /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API logs /query, /labels, or /label_values handler is burning too
+          much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (2 * (1-0.95))
       for: 1h
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         long: 1d
         severity: warning
@@ -332,16 +320,15 @@ spec:
     - alert: APILogsQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/92520ea4d6976f30d1618164e186ef9b/mst-stage-slos?orgId=1&refresh=10s&var-datasource=app-sre-stage-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API logs /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API logs /query, /labels, or /label_values handler is burning too
+          much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (1 * (1-0.95))
       for: 3h
       labels:
         group: logsv1
-        handler: query
         job: observatorium-observatorium-mst-api
         long: 4d
         severity: warning
@@ -358,16 +345,16 @@ spec:
       labels:
         slo: api-logs-query-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}
-        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}
+        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-query-availability-slo
       record: pyrra_availability
-    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"})
+    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-query-availability-slo
       record: pyrra_requests_total
-    - expr: sum(http_requests_total{code=~"^5..$",group="logsv1",handler="query",job="observatorium-observatorium-mst-api"}
+    - expr: sum(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}
         or vector(0))
       labels:
         slo: api-logs-query-availability-slo

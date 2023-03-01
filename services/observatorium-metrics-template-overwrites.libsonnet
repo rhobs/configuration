@@ -221,6 +221,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                       args+: [
                         '--store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}',
                         '--store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}',
+                        '--max-time=${THANOS_STORE_MAX_TIME}',
                       ],
                     } else c
                     for c in super.containers

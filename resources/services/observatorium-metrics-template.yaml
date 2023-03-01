@@ -3104,6 +3104,7 @@ objects:
                 regex: 0
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
+          - --max-time=${THANOS_STORE_MAX_TIME}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3354,6 +3355,7 @@ objects:
                 regex: 1
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
+          - --max-time=${THANOS_STORE_MAX_TIME}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3604,6 +3606,7 @@ objects:
                 regex: 2
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
+          - --max-time=${THANOS_STORE_MAX_TIME}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3854,6 +3857,7 @@ objects:
                 regex: 3
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
+          - --max-time=${THANOS_STORE_MAX_TIME}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4104,6 +4108,7 @@ objects:
                 regex: 4
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
+          - --max-time=${THANOS_STORE_MAX_TIME}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4354,6 +4359,7 @@ objects:
                 regex: 5
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
+          - --max-time=${THANOS_STORE_MAX_TIME}
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4722,6 +4728,8 @@ parameters:
   value: 1Gi
 - name: THANOS_STORE_REPLICAS
   value: "5"
+- name: THANOS_STORE_MAX_TIME
+  value: "9999-12-31T23:59:59Z"
 - name: CONFIGMAP_RELOADER_IMAGE
   value: quay.io/openshift/origin-configmap-reloader
 - name: CONFIGMAP_RELOADER_IMAGE_TAG

@@ -1,0 +1,30 @@
+apiVersion: v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  annotations:
+    pyrra.dev/dashboard: https://grafana.app-sre.devshift.net/d/7f4df1c2d5518d5c3f2876ca9bb874a8/rhobsp02ue1-production-slos?orgId=1&refresh=10s&var-datasource=rhobsp02ue1-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+    pyrra.dev/message: API /receive handler is burning too much error budget to guarantee
+      availability SLOs.
+    pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteAvailabilityErrorBudgetBurning
+  creationTimestamp: null
+  labels:
+    instance: rhobsp02ue1-production
+    service: observatorium-api
+  name: api-metrics-write-availability-slo
+spec:
+  alerting:
+    name: APIMetricsWriteAvailabilityErrorBudgetBurning
+  description: API /receive handler is burning too much error budget to guarantee
+    availability SLOs.
+  indicator:
+    ratio:
+      errors:
+        metric: http_requests_total{job="observatorium-observatorium-mst-api", handler="receive",
+          group="metricsv1", code=~"^5..$"}
+      grouping: null
+      total:
+        metric: http_requests_total{job="observatorium-observatorium-mst-api", handler="receive",
+          group="metricsv1", code!~"^4..$"}
+  target: "99"
+  window: 28d
+status: {}

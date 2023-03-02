@@ -10,5 +10,7 @@ func main() {
 
 	defer gen.Generate()
 
-	cfgobservatorium.GenerateRBAC(gen.With("tenants"))
+	cfgobservatorium.GenSLO(gen.With("observability", "prometheusrules", "pyrra"), gen.With("observability", "prometheusrules"))
+
+	cfgobservatorium.GenerateRBAC(gen.With(".tmp", "tenants"))
 }

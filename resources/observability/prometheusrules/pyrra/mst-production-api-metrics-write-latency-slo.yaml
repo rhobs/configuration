@@ -1,0 +1,30 @@
+apiVersion: v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  annotations:
+    pyrra.dev/dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+    pyrra.dev/message: API /receive handler is burning too much error budget to guarantee
+      latency SLOs.
+    pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsWriteLatencyErrorBudgetBurning
+  creationTimestamp: null
+  labels:
+    instance: mst-production
+    service: observatorium-api
+  name: api-metrics-write-latency-slo
+spec:
+  alerting:
+    name: APIMetricsWriteLatencyErrorBudgetBurning
+  description: API /receive handler is burning too much error budget to guarantee
+    latency SLOs.
+  indicator:
+    latency:
+      grouping: null
+      success:
+        metric: http_request_duration_seconds_bucket{job="observatorium-observatorium-mst-api",
+          handler="receive", group="metricsv1", code=~"^2..$", le="5"}
+      total:
+        metric: http_request_duration_seconds_count{job="observatorium-observatorium-mst-api",
+          handler="receive", group="metricsv1", code=~"^2..$"}
+  target: "90"
+  window: 28d
+status: {}

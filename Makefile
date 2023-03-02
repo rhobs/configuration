@@ -2,6 +2,7 @@ include .bingo/Variables.mk
 
 SED ?= $(shell which gsed 2>/dev/null || which sed)
 XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
+FILES_TO_FMT ?= $(shell find . -path ./vendor* -not -prune -o -name '*.go' -print)
 
 CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
@@ -26,14 +27,37 @@ update: $(JB) jsonnetfile.json jsonnetfile.lock.json
 	@$(JB) update --jsonnetpkg-home="$(JSONNET_VENDOR_DIR)" https://github.com/observatorium/api/jsonnet/lib@main
 
 .PHONY: format
-format: $(JSONNET_SRC) $(JSONNETFMT)
+format: $(JSONNET_SRC) $(JSONNETFMT) go-format
 	@echo ">>>>> Running format"
 	$(JSONNETFMT) -n 2 --max-blank-lines 2 --string-style s --comment-style s -i $(JSONNET_SRC)
 
 .PHONY: lint
-lint: $(JSONNET_LINT) $(JSONNET_VENDOR_DIR)
+lint: $(JSONNET_LINT) $(JSONNET_VENDOR_DIR) go-lint
 	@echo ">>>>> Running linter"
 	echo ${JSONNET_SRC} | $(XARGS) -n 1 -- $(JSONNET_LINT) -J "$(JSONNET_VENDOR_DIR)"
+
+.PHONY: go-lint
+go-lint: ## Runs various static analysis against our code.
+go-lint: $(FAILLINT) $(GOLANGCI_LINT) go-format go-deps
+	@echo ">> verifying modules being imported"
+	@$(FAILLINT) -paths "fmt.{Print,Printf,Println},io/ioutil.{Discard,NopCloser,ReadAll,ReadDir,ReadFile,TempDir,TempFile,Writefile}" -ignore-tests ./...
+	@echo ">> examining all of the Go files"
+	@go vet -stdmethods=false ./...
+	@echo ">> linting all of the Go files GOGC=${GOGC}"
+	@$(GOLANGCI_LINT) run
+
+.PHONY: go-deps
+go-deps: go.mod go.sum
+	go mod tidy
+	go mod download
+	go mod verify
+
+.PHONY: go-format
+go-format: ## Formats Go code.
+go-format: $(GOIMPORTS) $(GOLANGCI_LINT)
+	@echo ">> formatting code"
+	@gofmt -s -w $(FILES_TO_FMT)
+	@$(GOIMPORTS) -w $(FILES_TO_FMT)
 
 .PHONY: validate
 validate: $(OC)
@@ -56,6 +80,7 @@ resources/observability/prometheusrules: format observability/prometheusrules.js
 	rm -f resources/observability/prometheusrules/*.yaml
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -m resources/observability/prometheusrules observability/prometheusrules.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 	find resources/observability/prometheusrules/*.yaml | $(XARGS) -I{} sh -c '$(SED) -i "1s;^;---\n\$$schema: /openshift/prometheus-rule-1.yml\n;" {}'
+	$(MAKE) mimic
 
 .PHONY: test-rules
 test-rules: prometheusrules $(PROMTOOL) $(YQ) $(wildcard observability/prometheus_rule_tests/*.prometheusrulestests.yaml) $(wildcard resources/observability/prometheusrules/*.prometheusrules.yaml)
@@ -170,9 +195,18 @@ clean:
 resources/.tmp/tenants/rbac.json: configuration/observatorium/rbac.go
 	$(MAKE) mimic
 
+# Generate rbac and Pyrra-based Prometheus rules for SLO.
 .PHONY: mimic
 mimic:
-	GOFLAGS="-mod=mod" go run ./mimic.go generate -o resources/.tmp
+	GOFLAGS="-mod=mod" go run ./mimic.go generate -o resources
+
+# In theory we'd be able to run Pyrra as a CLI directly.
+# PYRRA_DIR := $(shell pwd)/test
+#
+# .PHONY: docker-pyrra
+# docker-pyrra:
+# 	@chmod -R 777 $(PYRRA_DIR)
+# 	docker run -v $(PYRRA_DIR):/shared -i ghcr.io/pyrra-dev/pyrra:main generate --config-files=/shared/pyrra/*.yaml --prometheus-folder=/shared/rules/ --generic-rules
 
 # Tools
 $(TMP_DIR):

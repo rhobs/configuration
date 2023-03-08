@@ -45,6 +45,7 @@
   "{__name__=\"cluster:vmi_request_cpu_cores:sum\"}",
   "{__name__=\"cluster:vsphere_esxi_version_total:sum\"}",
   "{__name__=\"cluster:vsphere_node_hw_version_total:sum\"}",
+  "{__name__=\"cluster:vsphere_topology_tags:max\"}",
   "{__name__=\"cluster:vsphere_vcenter_info:sum\"}",
   "{__name__=\"cluster_feature_set\"}",
   "{__name__=\"cluster_infrastructure_provider\"}",

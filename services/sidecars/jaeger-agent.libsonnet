@@ -48,6 +48,14 @@ function(params) {
               port: ja.config.ports.metrics,
             },
           },
+          readinessProbe: {
+            initialDelaySeconds: 1,
+            httpGet: {
+              path: '/',
+              scheme: 'HTTP',
+              port: ja.config.ports.metrics,
+            },
+          },
           resources: ja.config.resources,
         }],
         serviceAccountName: '${SERVICE_ACCOUNT_NAME}',

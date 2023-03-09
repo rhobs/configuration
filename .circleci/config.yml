@@ -1,0 +1,72 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+    - image: cimg/go:1.18
+    steps:
+    - checkout
+    - run: make vendor_jsonnet
+    - run: make grafana manifests prometheusrules
+    - run: make format
+    - run: make lint
+    - run: make validate
+    - run: git diff --exit-code
+  tests:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: large
+    environment:
+      KUBECONFIG: kubeconfig
+    steps:
+    - checkout
+    - run:
+        name: Get dependicies
+        command: |
+          sudo apt-get update
+          sudo apt-get install \
+            ca-certificates \
+            curl \
+            wget \
+            gnupg \
+            lsb-release
+          sudo mkdir -m 0755 -p /etc/apt/keyrings
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+          echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo chmod a+r /etc/apt/keyrings/docker.gpg
+          sudo apt-get update
+    - run:
+        name: Install Docker
+        command: sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    - run:
+        name: Get OC CLI Binary
+        command: |
+          wget https://github.com/okd-project/okd/releases/download/4.12.0-0.okd-2023-02-18-033438/openshift-client-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz
+          tar xzvf openshift-client-linux-4.12.0-0.okd-2023-02-18-033438.tar.gz
+          sudo mv oc kubectl /usr/local/bin
+    - run:
+        name: Spin up microshift container
+        command: |
+          docker run -d --name microshift --privileged -v microshift-data:/var/lib -p 6443:6443 -p 80:80 -p 443:443 quay.io/microshift/microshift-aio:latest
+          sleep 60
+    - run:
+        name: Export the kubeconfig
+        command: docker exec -i microshift cat /var/lib/microshift/resources/kubeadmin/kubeconfig > tests/ci/kubeconfig
+    - run:
+        name: List the kubeconfig file
+        command: ls tests/ci
+    - run:
+        name: Deploy the pre-requisites
+        command: |
+          echo $KUBECONFIG
+          cd tests/ci
+          ./ci_test.sh metrics
+    - store_artifacts:
+        path: /tmp/artifacts
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+    - build
+    - tests

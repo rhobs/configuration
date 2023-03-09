@@ -947,6 +947,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1175,6 +1181,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1465,6 +1477,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1776,6 +1794,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -2350,6 +2374,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -2665,6 +2695,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -3188,6 +3224,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -3439,6 +3481,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -3690,6 +3738,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -3941,6 +3995,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -4192,6 +4252,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -4443,6 +4509,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m

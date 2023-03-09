@@ -93,10 +93,20 @@ objects:
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 11211
+            timeoutSeconds: 5
           name: memcached
           ports:
           - containerPort: 11211
             name: client
+          readinessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 11211
+            timeoutSeconds: 1
           resources:
             limits:
               cpu: ${LOKI_CHUNK_CACHE_CPU_LIMITS}
@@ -110,10 +120,20 @@ objects:
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 9150
+            timeoutSeconds: 5
           name: exporter
           ports:
           - containerPort: 9150
             name: metrics
+          readinessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 9150
+            timeoutSeconds: 1
           resources: {}
         securityContext: {}
         serviceAccountName: observatorium-loki-chunk-cache
@@ -207,10 +227,20 @@ objects:
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 11211
+            timeoutSeconds: 5
           name: memcached
           ports:
           - containerPort: 11211
             name: client
+          readinessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 11211
+            timeoutSeconds: 1
           resources:
             limits:
               cpu: ${LOKI_INDEX_QUERY_CACHE_CPU_LIMITS}
@@ -224,10 +254,20 @@ objects:
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 9150
+            timeoutSeconds: 5
           name: exporter
           ports:
           - containerPort: 9150
             name: metrics
+          readinessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 9150
+            timeoutSeconds: 1
           resources: {}
         securityContext: {}
         serviceAccountName: observatorium-loki-index-query-cache
@@ -321,10 +361,20 @@ objects:
           - -v
           image: ${MEMCACHED_IMAGE}:${MEMCACHED_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 11211
+            timeoutSeconds: 5
           name: memcached
           ports:
           - containerPort: 11211
             name: client
+          readinessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 11211
+            timeoutSeconds: 1
           resources:
             limits:
               cpu: ${LOKI_RESULTS_CACHE_CPU_LIMITS}
@@ -338,10 +388,20 @@ objects:
           - --web.listen-address=0.0.0.0:9150
           image: ${MEMCACHED_EXPORTER_IMAGE}:${MEMCACHED_EXPORTER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 30
+            tcpSocket:
+              port: 9150
+            timeoutSeconds: 5
           name: exporter
           ports:
           - containerPort: 9150
             name: metrics
+          readinessProbe:
+            initialDelaySeconds: 5
+            tcpSocket:
+              port: 9150
+            timeoutSeconds: 1
           resources: {}
         securityContext: {}
         serviceAccountName: observatorium-loki-results-cache
@@ -531,6 +591,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -869,6 +935,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1152,6 +1224,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1369,6 +1447,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1522,6 +1606,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1672,6 +1762,13 @@ objects:
             name: metrics
           - containerPort: 9095
             name: grpc
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: 3100
+              scheme: HTTP
+            periodSeconds: 30
           resources:
             limits:
               cpu: ${LOKI_QUERY_FRONTEND_CPU_LIMITS}
@@ -1714,6 +1811,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -1913,6 +2016,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m
@@ -2204,6 +2313,12 @@ objects:
             name: jaeger-thrift
           - containerPort: 14271
             name: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
           resources:
             limits:
               cpu: 128m

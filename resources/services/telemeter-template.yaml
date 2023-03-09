@@ -139,6 +139,7 @@ objects:
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_topology_tags:max"}
           - --whitelist={__name__="cluster:vsphere_vcenter_info:sum"}
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}
@@ -386,6 +387,7 @@ objects:
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_topology_tags:max"}
           - --whitelist={__name__="cluster:vsphere_vcenter_info:sum"}
           - --whitelist={__name__="cluster_feature_set"}
           - --whitelist={__name__="cluster_infrastructure_provider"}

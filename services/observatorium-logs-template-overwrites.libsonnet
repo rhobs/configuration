@@ -33,6 +33,25 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
           template+: {
             spec+: {
               securityContext: {},
+              containers: [
+                c {
+                  livenessProbe: {
+                    initialDelaySeconds: 30,
+                    tcpSocket: {
+                      port: c.ports[0].containerPort,
+                    },
+                    timeoutSeconds: 5,
+                  },
+                  readinessProbe: {
+                    initialDelaySeconds: 5,
+                    tcpSocket: {
+                      port: c.ports[0].containerPort,
+                    },
+                    timeoutSeconds: 1,
+                  },
+                }
+                for c in super.containers
+              ],
             },
           },
         },
@@ -174,7 +193,16 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                             + [
                               '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
                             ],
-                    }
+                    } +
+                    if std.length(std.findSubstr('query-frontend', c.name)) != 0 then
+                      // The frontend will only return ready once a querier has connected to it.
+                      // Because the service used for connecting the querier to the frontend only lists ready
+                      // instances there's sequencing issue. For now, we re-use the liveness-probe path
+                      // for the readiness-probe as a workaround.
+                      {
+                        readinessProbe: c.livenessProbe,
+                      }
+                    else {}
                     for c in super.containers
                   ],
                 },

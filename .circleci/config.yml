@@ -54,10 +54,7 @@ jobs:
         name: Export the kubeconfig
         command: docker exec -i microshift cat /var/lib/microshift/resources/kubeadmin/kubeconfig > tests/ci/kubeconfig
     - run:
-        name: List the kubeconfig file
-        command: ls tests/ci
-    - run:
-        name: Deploy the pre-requisites
+        name: Run tests
         command: |
           echo $KUBECONFIG
           cd tests/ci

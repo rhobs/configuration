@@ -237,21 +237,6 @@ spec:
       labels:
         service: telemeter
         severity: high
-    - alert: ThanosQueryOverload
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/98fde97ddeaf2981041745f1f2ba68c2/thanos-query?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        description: Thanos Query {{$labels.job}} in {{$labels.namespace}} has been overloaded for more than 15 minutes. This may be a symptom of excessive simultanous complex requests, low performance of the Prometheus API, or failures within these components. Assess the health of the Thanos query instances, the connnected Prometheus instances, look for potential senders of these requests and then contact support.
-        message: Thanos Query {{$labels.job}} in {{$labels.namespace}} has been overloaded for more than 15 minutes. This may be a symptom of excessive simultanous complex requests, low performance of the Prometheus API, or failures within these components. Assess the health of the Thanos query instances, the connnected Prometheus instances, look for potential senders of these requests and then contact support.
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#thanosqueryoverload
-        summary: Thanos query reaches its maximum capacity serving concurrent requests.
-      expr: |
-        (
-          max_over_time(thanos_query_concurrent_gate_queries_max[5m]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight[5m]) < 1
-        )
-      for: 15m
-      labels:
-        service: telemeter
-        severity: medium
   - name: thanos-receive
     rules:
     - alert: ThanosReceiveHttpRequestErrorRateHigh

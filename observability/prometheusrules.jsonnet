@@ -191,23 +191,27 @@ local appSREOverwrites(environment) = {
   ],
 } + {
   groups: [
-    g {
+    group {
       rules: std.filter(
-        function(r) !(
-          std.objectHas(r, 'alert') && (
+        function(rule) !(
+          std.objectHas(rule, 'alert') && (
             // Using multi-burnrate SLO alerts for these.
-            r.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh' ||
-            r.alert == 'ThanosQueryRangeLatencyHigh' ||
-            r.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
+            rule.alert == 'ThanosQueryHttpRequestQueryRangeErrorRateHigh' ||
+            rule.alert == 'ThanosQueryRangeLatencyHigh' ||
+            rule.alert == 'ThanosStoreSeriesGateLatencyHigh' ||
             // These components arent' deployed.
-            r.alert == 'ThanosSidecarIsDown' ||
-            r.alert == 'ThanosBucketReplicateIsDown'
+            rule.alert == 'ThanosSidecarIsDown' ||
+            rule.alert == 'ThanosBucketReplicateIsDown' ||
+            // Skipping ThanosQueryOverload alert due to topology of
+            // Queriers with concurrency set to 1, which very frequently
+            // fires this alert.
+            rule.alert == 'ThanosQueryOverload'
           )
         ),
         super.rules,
       ),
     }
-    for g in super.groups
+    for group in super.groups
   ],
 };
 

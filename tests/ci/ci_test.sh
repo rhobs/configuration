@@ -17,9 +17,7 @@ check_status(){
 prereq(){
     log_info "Deploying prerequisites on cluster"
     oc apply -f pre-requisites.yaml
-    oc create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/master/bundle.yaml 
-    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_recordingrules.yaml 
-    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_alertingrules.yaml 
+    oc process -f ../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
 
 }
 minio(){

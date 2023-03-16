@@ -42,8 +42,7 @@ telemeter() {
     oc process --param-file=telemeter.test.env -f ../resources/services/telemeter-template.yaml | oc apply --namespace telemeter -f -
 }
 loki_crds(){
-    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_recordingrules.yaml
-    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/config/crd/bases/loki.grafana.com_alertingrules.yaml
+    oc process -f ../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
 }
 
 teardown() {

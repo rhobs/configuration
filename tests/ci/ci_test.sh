@@ -17,7 +17,7 @@ check_status(){
 prereq(){
     log_info "Deploying prerequisites on cluster"
     oc apply -f pre-requisites.yaml
-    oc process -f ../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
+    oc process -f ../../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
 
 }
 minio(){

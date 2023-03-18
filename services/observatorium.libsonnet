@@ -328,7 +328,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
   },
 
   rulesSLOAlertingRule: {
-    apiVersion: 'loki.grafana.com/v1beta1',
+    apiVersion: 'loki.grafana.com/v1',
     kind: 'AlertingRule',
     metadata: {
       name: 'observatorium-loki-alerting-rules-reloader-slo',
@@ -389,7 +389,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
   },
 
   rulesSLORecordingRule: {
-    apiVersion: 'loki.grafana.com/v1beta1',
+    apiVersion: 'loki.grafana.com/v1',
     kind: 'RecordingRule',
     metadata: {
       name: 'observatorium-loki-recording-rules-reloader-slo',

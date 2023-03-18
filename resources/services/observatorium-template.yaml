@@ -158,7 +158,7 @@ objects:
               memory: ${MEMCACHED_EXPORTER_MEMORY_REQUEST}
         securityContext: {}
         serviceAccountName: observatorium-api-cache-memcached
-- apiVersion: loki.grafana.com/v1beta1
+- apiVersion: loki.grafana.com/v1
   kind: AlertingRule
   metadata:
     labels:
@@ -197,7 +197,7 @@ objects:
           severity: page
           source: alertingrule.loki.grafana.com
     tenantID: rhobs
-- apiVersion: loki.grafana.com/v1beta1
+- apiVersion: loki.grafana.com/v1
   kind: RecordingRule
   metadata:
     labels:

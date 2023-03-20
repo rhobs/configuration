@@ -3,7 +3,6 @@ local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 local metricFederationRules = (import '../configuration/observatorium/metric-federation-rules.libsonnet');
-local remoteWriteConfig = (import '../configuration/observatorium/ruler-remote-write.libsonnet');
 local tenants = (import '../configuration/observatorium/tenants.libsonnet');
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 

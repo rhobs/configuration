@@ -46,12 +46,6 @@
                   '--limit-bytes=5242880',
                   '--forward-url=' + config.telemeterServer.telemeterForwardURL,
                 ],
-                env+: [
-                  {
-                    name: 'GODEBUG',
-                    value: 'http2server=0,http2client=0',
-                  },
-                ],
               }
               for c in super.containers
             ],

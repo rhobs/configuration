@@ -270,8 +270,6 @@ objects:
               secretKeyRef:
                 key: client_id
                 name: telemeter-server
-          - name: GODEBUG
-            value: http2server=0,http2client=0
           image: ${IMAGE}:${IMAGE_TAG}
           livenessProbe:
             httpGet:
@@ -521,8 +519,6 @@ objects:
               secretKeyRef:
                 key: client_id
                 name: telemeter-server
-          - name: GODEBUG
-            value: http2server=0,http2client=0
           image: ${IMAGE_CANARY}:${IMAGE_CANARY_TAG}
           livenessProbe:
             httpGet:

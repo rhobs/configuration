@@ -49,7 +49,7 @@
                 env+: [
                   {
                     name: 'GODEBUG',
-                    value: 'http2server=0',
+                    value: 'http2server=0,http2client=0',
                   },
                 ],
               }

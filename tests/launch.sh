@@ -59,13 +59,12 @@ create_loki_secret() {
     bucket_name=$2
     echo "CreateLokiSecret: secret $secret_name"
     oc create secret generic ${secret_name} \
-        --from-literal=bucketnames="${bucket_name}" \
-        --from-literal=endpoint="${ENDPOINT}" \
-        --from-literal=region="${AWS_DEFAULT_REGION}" \
-        --from-literal=access_key_id="${AWS_ACCESS_KEY_ID}" \
-        --from-literal=access_key_secret="${AWS_SECRET_ACCESS_KEY}"
+        --from-literal=bucket="${bucket_name}" \
+        --from-literal=aws_region="${AWS_DEFAULT_REGION}" \
+        --from-literal=aws_access_key_id="${AWS_ACCESS_KEY_ID}" \
+        --from-literal=aws_secret_access_key="${AWS_SECRET_ACCESS_KEY}"
     if [[ $? == 0 ]]  ;then
-        echo "CreateLokiSecret: Secret ${secret_name} created, endpoint=${ENDPOINT} bucket=${bucket_name}"
+        echo "CreateLokiSecret: Secret ${secret_name} created, bucket=${bucket_name}, region=${AWS_DEFAULT_REGION}"
     fi
 }
 
@@ -109,9 +108,10 @@ telemeter() {
 lokistack(){
     echo "deployLoki: in ${loki_namespace}"
     cluster_name=$(oc config view -o jsonpath='{range .clusters[*]}{"\n"}{.name}' |egrep -v ':|^$')
-    app_domain=$(oc get ingresses.config/cluster -o jsonpath={.spec.domain})
     default_storage_class=$(oc get sc |grep '(default)' |awk '{print $1}')
-    alertmanger_url="observatorium-alertmanager-mst.${app_domain}"
+    #app_domain=$(oc get ingresses.config/cluster -o jsonpath={.spec.domain})
+    #alertmanger_url="observatorium-alertmanager-mst.${app_domain}"
+    alertmanger_url="observatorium-alertmanager.observatorium-metrics.svc.cluster.local"
     #alertmanger_namespace="observatorium-mst-stage"
 
     set_aws_credentials
@@ -144,11 +144,11 @@ lokistack(){
 }
 
 teardown() {
-    #oc delete ns telemeter || true
-    #oc delete ns observatorium-metrics || true
-    #oc delete ns observatorium || true
-    #oc delete ns minio || true
-    #oc delete ns dex || true
+    oc delete ns telemeter || true
+    oc delete ns observatorium-metrics || true
+    oc delete ns observatorium || true
+    oc delete ns minio || true
+    oc delete ns dex || true
     oc delete ns ${loki_namespace} || true
 }
 

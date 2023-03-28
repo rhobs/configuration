@@ -7,11 +7,11 @@
     },
     creationTimestamp: null,
     labels: {
-      'app.kubernetes.io/instance': 'loki-operator-v0.1.0',
+      'app.kubernetes.io/instance': 'loki-operator-v0.2.0',
       'app.kubernetes.io/managed-by': 'operator-lifecycle-manager',
       'app.kubernetes.io/name': 'loki-operator',
       'app.kubernetes.io/part-of': 'loki-operator',
-      'app.kubernetes.io/version': '0.1.0',
+      'app.kubernetes.io/version': '0.2.0',
     },
     name: 'recordingrules.loki.grafana.com',
   },

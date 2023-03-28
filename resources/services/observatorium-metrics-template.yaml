@@ -4520,24 +4520,6 @@ parameters:
   value: prometheus
 - name: THANOS_QUERIER_MAX_CONCURRENT
   value: "20"
-- name: THANOS_RULER_QUERIER_CPU_LIMIT
-  value: "1"
-- name: THANOS_RULER_QUERIER_CPU_REQUEST
-  value: 100m
-- name: THANOS_RULER_QUERIER_LOG_LEVEL
-  value: info
-- name: THANOS_RULER_QUERIER_MEMORY_LIMIT
-  value: 1Gi
-- name: THANOS_RULER_QUERIER_MEMORY_REQUEST
-  value: 256Mi
-- name: THANOS_RULER_QUERIER_REPLICAS
-  value: "3"
-- name: THANOS_RULER_QUERIER_PROXY_STRATEGY
-  value: eager
-- name: THANOS_RULER_QUERIER_ENGINE
-  value: prometheus
-- name: THANOS_RULER_QUERIER_MAX_CONCURRENT
-  value: "20"
 - name: THANOS_QUERY_FRONTEND_CPU_LIMIT
   value: "1"
 - name: THANOS_QUERY_FRONTEND_CPU_REQUEST
@@ -4612,6 +4594,24 @@ parameters:
   value: 50Gi
 - name: THANOS_RULER_REPLICAS
   value: "2"
+- name: THANOS_RULER_QUERIER_CPU_LIMIT
+  value: "1"
+- name: THANOS_RULER_QUERIER_CPU_REQUEST
+  value: 100m
+- name: THANOS_RULER_QUERIER_LOG_LEVEL
+  value: info
+- name: THANOS_RULER_QUERIER_MEMORY_LIMIT
+  value: 1Gi
+- name: THANOS_RULER_QUERIER_MEMORY_REQUEST
+  value: 256Mi
+- name: THANOS_RULER_QUERIER_REPLICAS
+  value: "3"
+- name: THANOS_RULER_QUERIER_PROXY_STRATEGY
+  value: eager
+- name: THANOS_RULER_QUERIER_ENGINE
+  value: prometheus
+- name: THANOS_RULER_QUERIER_MAX_CONCURRENT
+  value: "20"
 - name: THANOS_S3_SECRET
   value: telemeter-thanos-stage-s3
 - name: THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT

@@ -8,7 +8,7 @@ CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
 BIN_DIR ?= $(TMP_DIR)/bin
 OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
-OC_VERSION ?= 4.10.6
+OC_VERSION ?= latest
 OC ?= $(BIN_DIR)/oc
 
 JSONNET_SRC = $(shell find . -type f -not -path './*vendor_jsonnet/*' \( -name '*.libsonnet' -o -name '*.jsonnet' \))

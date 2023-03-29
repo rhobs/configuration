@@ -210,14 +210,38 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       },
     },
     components+: {
-      compactor+: { withServiceMonitor: true },
-      distributor+: { withServiceMonitor: true },
-      ingester+: { withServiceMonitor: true },
-      index_gateway+: { withServiceMonitor: true },
-      querier+: { withServiceMonitor: true },
-      query_scheduler+: { withServiceMonitor: true },
-      query_frontend+: { withServiceMonitor: true },
-      ruler+: { withServiceMonitor: true },
+      compactor+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      distributor+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      ingester+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      index_gateway+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      querier+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      query_scheduler+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      query_frontend+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
+      ruler+: {
+        withServiceMonitor: true,
+        withPodAntiAffinity: true,
+      },
     },
     config+: {
       limits_config+: {

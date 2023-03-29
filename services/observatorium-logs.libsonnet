@@ -18,6 +18,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       chunkCache: {
         replicas: 1,  // overwritten in observatorium-logs-template.libsonnet
         withServiceMonitor: true,
+        withPodAntiAffinity: true,
         resources+: {
           requests: {
             cpu: '${LOKI_CHUNK_CACHE_CPU_REQUESTS}',
@@ -32,6 +33,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       indexQueryCache: {
         replicas: 1,  // overwritten in observatorium-logs-template.libsonnet
         withServiceMonitor: true,
+        withPodAntiAffinity: true,
         resources+: {
           requests: {
             cpu: '${LOKI_INDEX_QUERY_CACHE_CPU_REQUESTS}',
@@ -46,6 +48,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       resultsCache: {
         replicas: 1,  // overwritten in observatorium-logs-template.libsonnet
         withServiceMonitor: true,
+        withPodAntiAffinity: true,
         resources+: {
           requests: {
             cpu: '${LOKI_RESULTS_CACHE_CPU_REQUESTS}',

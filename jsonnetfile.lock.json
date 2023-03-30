@@ -191,8 +191,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "a3dddc853dd7cdaf14fab1512628d424cd885d82",
-      "sum": "0VRNdmDjOALo/9pVQX1LhrBjsflOavpqGrsoB03u/GY=",
+      "version": "02aec09ce44b2f26ec9364469c2c6396f58702eb",
+      "sum": "kDkLgDFudmDJhEYpMjInoy5Kzz+OedfMNFGpQ9fteG4=",
       "name": "thanos-receive-controller"
     },
     {
@@ -202,7 +202,7 @@
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
-      "version": "a3dddc853dd7cdaf14fab1512628d424cd885d82",
+      "version": "02aec09ce44b2f26ec9364469c2c6396f58702eb",
       "sum": "PQPhMFFGY15ATdzHv0L9/cgwhlM4yKUkuljrOQi/Y3g="
     },
     {

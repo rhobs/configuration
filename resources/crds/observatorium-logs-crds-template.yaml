@@ -17,18 +17,6 @@ objects:
       app.kubernetes.io/version: 0.2.0
     name: alertingrules.loki.grafana.com
   spec:
-    conversion:
-      strategy: Webhook
-      webhook:
-        clientConfig:
-          service:
-            name: loki-operator-webhook-service
-            namespace: loki-operator
-            path: /convert
-            port: 443
-        conversionReviewVersions:
-        - v1
-        - v1beta1
     group: loki.grafana.com
     names:
       kind: AlertingRule
@@ -285,7 +273,7 @@ objects:
                   type: array
               type: object
           type: object
-      served: false
+      served: true
       storage: false
       subresources:
         status: {}
@@ -309,18 +297,6 @@ objects:
       app.kubernetes.io/version: 0.2.0
     name: recordingrules.loki.grafana.com
   spec:
-    conversion:
-      strategy: Webhook
-      webhook:
-        clientConfig:
-          service:
-            name: loki-operator-webhook-service
-            namespace: loki-operator
-            path: /convert
-            port: 443
-        conversionReviewVersions:
-        - v1
-        - v1beta1
     group: loki.grafana.com
     names:
       kind: RecordingRule
@@ -549,7 +525,7 @@ objects:
                   type: array
               type: object
           type: object
-      served: false
+      served: true
       storage: false
       subresources:
         status: {}

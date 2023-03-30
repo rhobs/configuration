@@ -2072,6 +2072,7 @@ objects:
     - get
     - create
     - update
+    - delete
   - apiGroups:
     - ""
     resources:

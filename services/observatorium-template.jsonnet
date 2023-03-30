@@ -97,7 +97,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'RHOC_RELOADER_SECRET_NAME', value: 'observatorium-rhoc-staging' },
     { name: 'LOG_RULES_ENABLED', value: 'true' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
-    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: 'a39316a' },
+    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: 'ad1ed3a' },
     { name: 'METRICS_WRITE_SERVICE_NAME', value: obs.thanos.receiversService.metadata.name },
     { name: 'METRICS_WRITE_SERVICE_PORT', value: std.toString(obs.thanos.receiversService.spec.ports[2].port) },
     // AMS Org IDs

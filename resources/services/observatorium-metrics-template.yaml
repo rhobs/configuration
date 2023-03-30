@@ -2027,12 +2027,16 @@ objects:
           - --configmap-generated-name=observatorium-thanos-receive-controller-tenants-generated
           - --file-name=hashrings.json
           - --namespace=$(NAMESPACE)
+          - --annotate-pods-on-change
+          - --allow-only-ready-replicas
+          - --allow-dynamic-scaling
           env:
           - name: NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
           image: ${THANOS_RECEIVE_CONTROLLER_IMAGE}:${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
           name: thanos-receive-controller
           ports:
           - containerPort: 8080
@@ -2067,6 +2071,13 @@ objects:
     - watch
     - get
     - create
+    - update
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    verbs:
+    - get
     - update
   - apiGroups:
     - apps

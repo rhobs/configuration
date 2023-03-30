@@ -16,6 +16,7 @@ local defaults = {
     chunkCache: {
       replicas: 1,
       withServiceMonitor: false,
+      withPodAntiAffinity: false,
       resources: {
         requests: {
           cpu: '500m',
@@ -30,6 +31,7 @@ local defaults = {
     indexQueryCache: {
       replicas: 1,
       withServiceMonitor: false,
+      withPodAntiAffinity: false,
       resources: {
         requests: {
           cpu: '500m',
@@ -44,6 +46,7 @@ local defaults = {
     resultsCache: {
       replicas: 1,
       withServiceMonitor: false,
+      withPodAntiAffinity: false,
       resources: {
         requests: {
           cpu: '500m',
@@ -90,6 +93,7 @@ function(params) {
     exporterImage:: lc.config.exporterImage,
     replicas: lc.config.components.chunkCache.replicas,
     serviceMonitor: lc.config.components.chunkCache.withServiceMonitor,
+    affinity: lc.config.components.chunkCache.withPodAntiAffinity,
     maxItemSize:: '2m',
     memoryLimitMb: 4096,
     resources: {
@@ -122,6 +126,7 @@ function(params) {
     exporterImage:: lc.config.exporterImage,
     replicas: lc.config.components.indexQueryCache.replicas,
     serviceMonitor: lc.config.components.indexQueryCache.withServiceMonitor,
+    affinity: lc.config.components.chunkCache.withPodAntiAffinity,
     maxItemSize:: '5m',
     resources: {
       memcached: {
@@ -153,6 +158,7 @@ function(params) {
     exporterImage:: lc.config.exporterImage,
     replicas: lc.config.components.resultsCache.replicas,
     serviceMonitor: lc.config.components.resultsCache.withServiceMonitor,
+    affinity: lc.config.components.chunkCache.withPodAntiAffinity,
     resources: {
       memcached: {
         requests: {

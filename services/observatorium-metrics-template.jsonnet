@@ -82,7 +82,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_LIMIT', value: '2048Mi' },
     { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMCACHED_MEMORY_REQUEST', value: '1024Mi' },
     { name: 'THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB', value: '1024' },
-    { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE_TAG', value: 'master-2022-09-08-2cb99e5' },
+    { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE_TAG', value: 'master-2023-03-29-a3dddc8' },
     { name: 'THANOS_RECEIVE_CONTROLLER_IMAGE', value: 'quay.io/observatorium/thanos-receive-controller' },
     { name: 'THANOS_RECEIVE_CPU_LIMIT', value: '1' },
     { name: 'THANOS_RECEIVE_CPU_REQUEST', value: '1' },

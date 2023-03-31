@@ -60,6 +60,8 @@ objects:
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
+    annotations:
+      ignore-check.kube-linter.io/memory-requirements: This is a cache, minimal memory required
     labels:
       app.kubernetes.io/component: chunk-cache
       app.kubernetes.io/instance: observatorium
@@ -208,6 +210,8 @@ objects:
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
+    annotations:
+      ignore-check.kube-linter.io/memory-requirements: This is a cache, minimal memory required
     labels:
       app.kubernetes.io/component: index-query-cache
       app.kubernetes.io/instance: observatorium
@@ -356,6 +360,8 @@ objects:
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
+    annotations:
+      ignore-check.kube-linter.io/memory-requirements: This is a cache, minimal memory required
     labels:
       app.kubernetes.io/component: results-cache
       app.kubernetes.io/instance: observatorium

@@ -110,6 +110,14 @@ run_test() {
         must_gather "$ARTIFACT_DIR" 
         exit 1
     }
+    for namespace in minio dex observatorium observatorium-metrics telemeter; do
+
+        out=$(oc get pods -n $namespace -o jsonpath='{.items[?(@.status.containerStatuses[].restartCount>=3)].metadata.name}')
+        if [ -n "$out" ]; then
+            must_gather "$ARTIFACT_DIR"
+            exit 1
+        fi
+    done
 }
 
 must_gather() {
@@ -122,11 +130,11 @@ must_gather() {
             oc -n "$namespace" describe pod "$name" > "$artifact_dir/$namespace/$name.describe"
             oc -n "$namespace" get pod "$name" -o yaml > "$artifact_dir/$namespace/$name.yaml"
 
-            for initContainer in $(oc -n "$namespace" get po "$name" -o jsonpath='{.spec.initContainers[*].name}') ; do
+            for initContainer in $(oc -n "$namespace" get pod "$name" -o jsonpath='{.spec.initContainers[*].name}') ; do
                 oc -n "$namespace" logs "$name" -c "$initContainer" > "$artifact_dir/$namespace/$name-$initContainer.logs"
             done
 
-            for container in $(oc -n "$namespace" get po "$name" -o jsonpath='{.spec.containers[*].name}') ; do
+            for container in $(oc -n "$namespace" get pod "$name" -o jsonpath='{.spec.containers[*].name}') ; do
                 oc -n "$namespace" logs "$name" -c "$container" > "$artifact_dir/$namespace/$name-$container.logs"
             done
         done

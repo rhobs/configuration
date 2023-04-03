@@ -28,6 +28,11 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
   } + {
     manifests+:: {
       [name]+: {
+        metadata+: {
+          annotations+: {
+            'ignore-check.kube-linter.io/memory-requirements': 'This is a cache, minimal memory required',
+          },
+        },
         spec+: {
           replicas: replicas[name],
           template+: {

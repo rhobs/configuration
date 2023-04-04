@@ -3,7 +3,6 @@ local trc = (import 'github.com/observatorium/thanos-receive-controller/jsonnet/
 local memcached = (import 'github.com/observatorium/observatorium/configuration/components/memcached.libsonnet');
 local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
 local metricFederationRules = (import '../configuration/observatorium/metric-federation-rules.libsonnet');
-local remoteWriteConfig = (import '../configuration/observatorium/ruler-remote-write.libsonnet');
 local tenants = (import '../configuration/observatorium/tenants.libsonnet');
 local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 
@@ -81,7 +80,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       serviceMonitor: true,
       alertmanagersURLs: ['dnssrv+http://%s.%s.svc.cluster.local:%s' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace, thanosSharedConfig.alertmanagerPort]],
       queriers: [
-        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
+        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.rulerQuery.service.metadata.name, thanos.rulerQuery.service.metadata.namespace],
       ],
       ruleFiles: [
         '/etc/thanos/rules/rule-syncer/observatorium.yaml',
@@ -114,75 +113,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           },
         },
       },
-    }),
-
-    local statelessRuler = 'remote-write-config',
-    local statelessRulerKey = 'rw-config.yaml',
-    statelessRule:: t.rule(thanosSharedConfig {
-      name: 'observatorium-thanos-stateless-rule',
-      commonLabels+:: {
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/name': 'thanos-stateless-rule',
-      },
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      logLevel: '${THANOS_RULER_LOG_LEVEL}',
-      serviceMonitor: true,
-      alertmanagersURLs: ['dnssrv+http://%s.%s.svc.cluster.local:%s' % [thanosSharedConfig.alertmanagerName, thanosSharedConfig.namespace, thanosSharedConfig.alertmanagerPort]],
-      queriers: [
-        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, thanos.query.service.metadata.namespace],
-      ],
-      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      remoteWriteConfigFile: {
-        name: statelessRuler,
-        key: statelessRulerKey,
-      },
-      resources: {
-        limits: {
-          cpu: '${THANOS_RULER_CPU_LIMIT}',
-          memory: '${THANOS_RULER_MEMORY_LIMIT}',
-        },
-        requests: {
-          cpu: '${THANOS_RULER_CPU_REQUEST}',
-          memory: '${THANOS_RULER_MEMORY_REQUEST}',
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          storageClassName: '${STORAGE_CLASS}',
-          resources: {
-            requests: {
-              storage: '${THANOS_RULER_PVC_REQUEST}',
-            },
-          },
-        },
-      },
     }) + {
-      configmap_rwconfig: {
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: {
-          name: statelessRuler,
-          annotations: {
-            'qontract.recycle': 'true',
-          },
-          labels: {
-            'app.kubernetes.io/instance': 'observatorium',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
-        },
-        data: {
-          [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-              thanos.receiversService.metadata.name,
-              thanosSharedConfig.namespace,
-              thanos.receiversService.spec.ports[2].port,
-            ],
-          })),
-        },
-      },
       // TODO: Move configmap either to upstream (best) or as overwrite.
+
       configmap: {
         apiVersion: 'v1',
         kind: 'ConfigMap',
@@ -210,7 +143,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           }),
         },
       },
+
     },
+
 
     local metricFederationRulesName = 'metric-federation-rules',
     metricFederationRule:: t.rule(thanosSharedConfig {
@@ -223,7 +158,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       logLevel: '${THANOS_RULER_LOG_LEVEL}',
       serviceMonitor: true,
       queriers: [
-        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
+        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.rulerQuery.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
       ],
       reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
       rulesConfig: [
@@ -253,72 +188,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           },
         },
       },
-    }),
-
-    local metricFederationStatelessRuler = 'metric-federation-ruler-remote-write-config',
-    metricFederationStatelessRule:: t.rule(thanosSharedConfig {
-      name: 'observatorium-thanos-metric-fed-stateless-rule',
-      commonLabels+:: {
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/instance': 'metric-federation',
-        'app.kubernetes.io/name': 'thanos-stateless-rule',
-      },
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      logLevel: '${THANOS_RULER_LOG_LEVEL}',
-      serviceMonitor: true,
-      queriers: [
-        'dnssrv+_http._tcp.%s.%s.svc.cluster.local' % [thanos.query.service.metadata.name, '${THANOS_QUERIER_NAMESPACE}'],
-      ],
-      reloaderImage: '${CONFIGMAP_RELOADER_IMAGE}:${CONFIGMAP_RELOADER_IMAGE_TAG}',
-      remoteWriteConfigFile: {
-        name: metricFederationStatelessRuler,
-        key: statelessRulerKey,
-      },
-      resources: {
-        limits: {
-          cpu: '${THANOS_RULER_CPU_LIMIT}',
-          memory: '${THANOS_RULER_MEMORY_LIMIT}',
-        },
-        requests: {
-          cpu: '${THANOS_RULER_CPU_REQUEST}',
-          memory: '${THANOS_RULER_MEMORY_REQUEST}',
-        },
-      },
-      volumeClaimTemplate: {
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          storageClassName: '${STORAGE_CLASS}',
-          resources: {
-            requests: {
-              storage: '${THANOS_RULER_PVC_REQUEST}',
-            },
-          },
-        },
-      },
     }) + {
-      configmap_rwconfig: {
-        apiVersion: 'v1',
-        kind: 'ConfigMap',
-        metadata: {
-          name: metricFederationStatelessRuler,
-          annotations: {
-            'qontract.recycle': 'true',
-          },
-          labels: {
-            'app.kubernetes.io/instance': 'observatorium',
-            'app.kubernetes.io/part-of': 'observatorium',
-          },
-        },
-        data: {
-          [statelessRulerKey]: std.manifestYamlDoc(remoteWriteConfig({
-            url: 'http://%s.%s.svc.cluster.local:%d/api/v1/receive' % [
-              thanos.receiversService.metadata.name,
-              thanosSharedConfig.namespace,
-              thanos.receiversService.spec.ports[2].port,
-            ],
-          })),
-        },
-      },
       // TODO: Move configmap either to upstream (best) or as overwrite.
       configmap: {
         apiVersion: 'v1',
@@ -577,8 +447,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       rules: [
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
-          [thanos.rule.service] +
-          [thanos.statelessRule.service]
+          [thanos.rule.service]
       ],
       serviceMonitor: true,
       resources: {
@@ -642,6 +511,75 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
+    rulerQuery:: t.query(thanosSharedConfig {
+      name: 'observatorium-ruler-query',
+      commonLabels+:: {
+        'app.kubernetes.io/instance': 'observatorium',
+        'app.kubernetes.io/part-of': 'observatorium',
+        'app.kubernetes.io/name': 'observatorium-ruler-query',
+      },
+      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      logLevel: '${THANOS_RULER_QUERIER_LOG_LEVEL}',
+      lookbackDelta: '15m',
+      queryTimeout: '15m',
+      prefixHeader: 'X-Forwarded-Prefix',
+      stores: [
+        'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
+        for service in
+          [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)]
+      ] + [
+        // todo - @pgough revert after https://issues.redhat.com/browse/RHOBS-112
+        'dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local',
+      ],
+      rules: [
+        'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
+        for service in
+          [thanos.rule.service]
+      ],
+      serviceMonitor: true,
+      resources: {
+        requests: {
+          cpu: '${THANOS_RULER_QUERIER_CPU_REQUEST}',
+          memory: '${THANOS_RULER_QUERIER_MEMORY_REQUEST}',
+        },
+        limits: {
+          cpu: '${THANOS_RULER_QUERIER_CPU_LIMIT}',
+          memory: '${THANOS_RULER_QUERIER_MEMORY_LIMIT}',
+        },
+      },
+    }) + {
+      // This is a workaround for adding extra store for the metric federation
+      // ruler service, which does not exist in the MST instance, so we cannot simply pass it
+      // with the --store flag. Instead, we use the file service discovery. The extra store(s)
+      // should be passed as an array string in THANOS_QUERIER_FILE_SD_TARGETS parameter.
+      deployment+: {
+        spec+: {
+          template+: {
+            spec+: {
+              volumes+: [{
+                configMap: {
+                  name: 'thanos-query-file-sd',
+                },
+                name: 'file-sd',
+              }],
+              containers: [
+                if x.name == 'thanos-query'
+                then x {
+                  args+: ['--store.sd-files=/etc/thanos/sd/file_sd.yaml'],
+                  volumeMounts+: [{
+                    mountPath: '/etc/thanos/sd',
+                    name: 'file-sd',
+                  }],
+                }
+                else x
+                for x in super.containers
+              ],
+            },
+          },
+        },
+      },
+    },
+
     // Querier with new PromQL query engine.
     // This is not linked to anything on critical path.
     // TODO(saswatamcode): Revert once new PromQL engine is stable.
@@ -671,8 +609,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       rules: [
         'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
         for service in
-          [thanos.rule.service] +
-          [thanos.statelessRule.service]
+          [thanos.rule.service]
       ],
       serviceMonitor: true,
       resources: {
@@ -1092,17 +1029,14 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       ['metric-federation-rule-' + name]: thanos.metricFederationRule[name]
       for name in std.objectFields(thanos.metricFederationRule)
     } + {
-      ['metric-federation-stateless-rule-' + name]: thanos.metricFederationStatelessRule[name]
-      for name in std.objectFields(thanos.metricFederationStatelessRule)
-    } + {
-      ['observatorium-thanos-stateless-rule' + name]: thanos.statelessRule[name]
-      for name in std.objectFields(thanos.statelessRule)
-    } + {
       ['observatorium-alertmanager-' + name]: thanos.alertmanager[name]
       for name in std.objectFields(thanos.alertmanager)
     } + {
       ['observatorium-volcano-' + name]: thanos.volcanoQuery[name]
       for name in std.objectFields(thanos.volcanoQuery)
+    } + {
+      ['observatorium-ruler-' + name]: thanos.rulerQuery[name]
+      for name in std.objectFields(thanos.rulerQuery)
     },
   },
 }

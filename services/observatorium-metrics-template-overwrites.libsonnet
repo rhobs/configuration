@@ -136,58 +136,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
       },
     },
 
-    statelessRule+:: {
-      statefulSet+: jaegerAgentSidecar.statefulSet + ruleSyncerSidecar.statefulSet {
-        spec+: {
-          replicas: '${{THANOS_RULER_REPLICAS}}',
-          template+: {
-            spec+: {
-              securityContext: {},
-              containers: [
-                if c.name == 'thanos-rule' then c {
-                  env+: s3EnvVars,
-                  volumeMounts+: [{
-                    name: ruleSyncerVolume,
-                    mountPath: '/etc/thanos/rules/rule-syncer',
-                  }],
-                  readinessProbe+: {
-                    failureThreshold: 3,
-                    periodSeconds: 180,
-                    initialDelaySeconds: 60,
-                  },
-                  livenessProbe+: {
-                    failureThreshold: 10,
-                    periodSeconds: 120,
-                  },
-                } else c
-                for c in super.containers
-              ],
-            },
-          },
-        },
-      },
-    },
-
     metricFederationRule+:: {
-      statefulSet+: jaegerAgentSidecar.statefulSet {
-        spec+: {
-          replicas: '${{THANOS_RULER_REPLICAS}}',
-          template+: {
-            spec+: {
-              securityContext: {},
-              containers: [
-                if c.name == 'thanos-rule' then c {
-                  env+: s3EnvVars,
-                } else c
-                for c in super.containers
-              ],
-            },
-          },
-        },
-      },
-    },
-
-    metricFederationStatelessRule+:: {
       statefulSet+: jaegerAgentSidecar.statefulSet {
         spec+: {
           replicas: '${{THANOS_RULER_REPLICAS}}',
@@ -319,6 +268,56 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     '--grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}',
                     '--query.promql-engine=${THANOS_QUERIER_ENGINE}',
                     '--query.max-concurrent=${THANOS_QUERIER_MAX_CONCURRENT}',
+                  ],
+                } else c
+                for c in super.containers
+              ],
+            },
+          },
+        },
+      },
+    },
+
+    rulerQuery+:: {
+      local query = self,
+      local oauth = oauthProxy({
+        name: 'query',
+        image: '${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}',
+        upstream: 'http://localhost:9090',
+        ports: { https: 9091 },
+        serviceAccountName: thanos.config.serviceAccountName,
+        sessionSecretName: 'query-proxy',
+        resources: {
+          requests: {
+            cpu: '${OAUTH_PROXY_CPU_REQUEST}',
+            memory: '${OAUTH_PROXY_MEMORY_REQUEST}',
+          },
+          limits: {
+            cpu: '${OAUTH_PROXY_CPU_LIMITS}',
+            memory: '${OAUTH_PROXY_MEMORY_LIMITS}',
+          },
+        },
+      }),
+
+      proxySecret: oauth.proxySecret {
+        metadata+: { labels+: query.config.commonLabels },
+      },
+
+      service+: oauth.service,
+
+      deployment+: oauth.deployment + jaegerAgentSidecar.deployment {
+        spec+: {
+          replicas: '${{THANOS_RULER_QUERIER_REPLICAS}}',
+          securityContext: {},
+          template+: {
+            spec+: {
+              securityContext: {},
+              containers: [
+                if c.name == 'thanos-query' then c {
+                  args+: [
+                    '--grpc.proxy-strategy=${THANOS_RULER_QUERIER_PROXY_STRATEGY}',
+                    '--query.promql-engine=${THANOS_RULER_QUERIER_ENGINE}',
+                    '--query.max-concurrent=${THANOS_RULER_QUERIER_MAX_CONCURRENT}',
                   ],
                 } else c
                 for c in super.containers

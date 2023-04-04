@@ -27,13 +27,20 @@ observatorium_metrics() {
     oc apply -f observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
     role
     oc process --param-file=observatorium-metrics.test.env -f ../resources/services/observatorium-metrics-template.yaml | oc apply --namespace observatorium-metrics -f -
+    oc process --param-file=observatorium-metric-federation-rule.test.env -f ../resources/services/metric-federation-rule-template.yaml| oc apply --namespace observatorium-metrics -f -
 }
 
 observatorium() {
     oc create ns observatorium || true
     oc apply -f observatorium-rules-objstore-secret.yaml --namespace observatorium
     oc apply -f observatorium-rhobs-tenant-secret.yaml --namespace observatorium
+    oc apply --namespace observatorium -f observatorium-service-account.yaml
+    oc apply -f observatorium-parca-secret.yaml --namespace observatorium
+    rbac
     oc process --param-file=observatorium.test.env -f ../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
+    oc process --param-file=observatorium-parca.test.env -f ../resources/services/parca-template.yaml| oc apply --namespace observatorium -f -
+    oc process --param-file=observatorium-jaeger.test.env -f ../resources/services/jaeger-template.yaml| oc apply --namespace observatorium -f -
+
 }
 
 telemeter() {
@@ -41,6 +48,7 @@ telemeter() {
     oc apply --namespace telemeter -f telemeter-token-refersher-oidc-secret.yaml
     oc process --param-file=telemeter.test.env -f ../resources/services/telemeter-template.yaml | oc apply --namespace telemeter -f -
 }
+
 loki_crds(){
     oc process -f ../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
 }
@@ -51,18 +59,26 @@ teardown() {
     oc delete ns observatorium || true
     oc delete ns minio || true
     oc delete ns dex || true
+    oc delete ns observatorium-logs || true
+    oc delete ns observatorium-mst || true
     oc delete crds recordingrules.loki.grafana.com || true
     oc delete crds alertingrules.loki.grafana.com || true
 }
 
+rbac(){
+    # The below namespaces are just created for parca-observatorium-remote-ns-rbac-template. These can be removed once logging/tracing is deployed
+    oc create ns observatorium-logs || true
+    oc create ns observatorium-mst || true
+    oc process -f ../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | oc apply -f -
+}
 case $1 in
 deploy)
     minio
     dex
     loki_crds
-    observatorium
     observatorium_metrics
     telemeter
+    observatorium
     ;;
 teardown)
     teardown

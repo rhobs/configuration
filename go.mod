@@ -1,6 +1,6 @@
 module github.com/rhobs/configuration
 
-go 1.18
+go 1.19
 
 require (
 	github.com/bwplotka/mimic v0.1.1-0.20220621130344-a6338e3b8238

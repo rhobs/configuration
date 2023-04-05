@@ -2554,7 +2554,7 @@ parameters:
 - name: LOKI_INGESTER_MEMORY_LIMITS
   value: 10Gi
 - name: LOKI_INDEX_GATEWAY_REPLICAS
-  value: "2"
+  value: "3"
 - name: LOKI_INDEX_GATEWAY_CPU_REQUESTS
   value: 500m
 - name: LOKI_INDEX_GATEWAY_CPU_LIMITS
@@ -2574,7 +2574,7 @@ parameters:
 - name: LOKI_QUERIER_MEMORY_LIMITS
   value: 1200Mi
 - name: LOKI_QUERY_SCHEDULER_REPLICAS
-  value: "2"
+  value: "3"
 - name: LOKI_QUERY_SCHEDULER_CPU_REQUESTS
   value: 1000m
 - name: LOKI_QUERY_SCHEDULER_CPU_LIMITS
@@ -2584,7 +2584,7 @@ parameters:
 - name: LOKI_QUERY_SCHEDULER_MEMORY_LIMITS
   value: 1200Mi
 - name: LOKI_QUERY_FRONTEND_REPLICAS
-  value: "2"
+  value: "3"
 - name: LOKI_QUERY_FRONTEND_CPU_REQUESTS
   value: 500m
 - name: LOKI_QUERY_FRONTEND_CPU_LIMITS
@@ -2610,7 +2610,7 @@ parameters:
 - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
   value: 5GB
 - name: LOKI_CHUNK_CACHE_REPLICAS
-  value: "2"
+  value: "3"
 - name: LOKI_CHUNK_CACHE_CPU_REQUESTS
   value: 500m
 - name: LOKI_CHUNK_CACHE_CPU_LIMITS
@@ -2620,7 +2620,7 @@ parameters:
 - name: LOKI_CHUNK_CACHE_MEMORY_LIMITS
   value: 6Gi
 - name: LOKI_INDEX_QUERY_CACHE_REPLICAS
-  value: "2"
+  value: "3"
 - name: LOKI_INDEX_QUERY_CACHE_CPU_REQUESTS
   value: 500m
 - name: LOKI_INDEX_QUERY_CACHE_CPU_LIMITS
@@ -2630,7 +2630,7 @@ parameters:
 - name: LOKI_INDEX_QUERY_CACHE_MEMORY_LIMITS
   value: 1536Mi
 - name: LOKI_RESULTS_CACHE_REPLICAS
-  value: "2"
+  value: "3"
 - name: LOKI_RESULTS_CACHE_CPU_REQUESTS
   value: 500m
 - name: LOKI_RESULTS_CACHE_CPU_LIMITS

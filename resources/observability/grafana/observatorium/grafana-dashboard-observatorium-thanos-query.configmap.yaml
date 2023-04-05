@@ -164,10 +164,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\",code=~\"5..\"}[$interval])) / sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))",
+                  "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],
@@ -493,10 +492,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\",code=~\"5..\"}[$interval])) / sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))",
+                  "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],
@@ -874,10 +872,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval])) / sum by (namespace, job) (rate(grpc_client_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))",
+                  "expr": "sum by (namespace, job, grpc_code) (rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_client_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],
@@ -1255,10 +1252,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval])) / sum by (namespace, job) (rate(grpc_client_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
+                  "expr": "sum by (namespace, job, grpc_code) (rate(grpc_client_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_client_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],

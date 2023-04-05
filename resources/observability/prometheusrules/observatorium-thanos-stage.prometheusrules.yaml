@@ -370,10 +370,10 @@ spec:
         description: Thanos Store {{$labels.job}} in {{$labels.namespace}} is failing to handle {{$value | humanize}}% of requests.
         message: Thanos Store {{$labels.job}} in {{$labels.namespace}} is failing to handle {{$value | humanize}}% of requests.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#thanosstoregrpcerrorrate
-        summary: Thanos Store is failing to handle qrpcd requests.
+        summary: Thanos Store is failing to handle gRPC requests.
       expr: |
         (
-          sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~"observatorium-thanos-store-shard.*"}[5m]))
+          sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~"observatorium-thanos-store-shard.*"}[5m]))
         /
           sum by (namespace, job) (rate(grpc_server_started_total{job=~"observatorium-thanos-store-shard.*"}[5m]))
         * 100 > 5

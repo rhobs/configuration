@@ -147,7 +147,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  telemeterTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read},
-		envs:    []env{stagingEnv},
+		envs:    []env{stagingEnv, productionEnv},
 	})
 
 	// Subwatch

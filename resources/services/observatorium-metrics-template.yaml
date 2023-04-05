@@ -364,11 +364,11 @@ objects:
             periodSeconds: 30
           resources:
             limits:
-              cpu: "4"
-              memory: 4Gi
+              cpu: ${OBSERVATORIUM_ALERTMANAGER_CPU_LIMIT}
+              memory: ${OBSERVATORIUM_ALERTMANAGER_MEMORY_LIMIT}
             requests:
-              cpu: "1"
-              memory: 1Gi
+              cpu: ${OBSERVATORIUM_ALERTMANAGER_CPU_REQUEST}
+              memory: ${OBSERVATORIUM_ALERTMANAGER_MEMORY_REQUEST}
           volumeMounts:
           - mountPath: /data
             name: alertmanager-data
@@ -435,7 +435,7 @@ objects:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 10Gi
+        storage: ${OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -3109,7 +3109,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_STORE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -3366,7 +3366,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_STORE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -3623,7 +3623,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_STORE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -3880,7 +3880,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_STORE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -4137,7 +4137,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_STORE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
   kind: Service
@@ -4394,7 +4394,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: ${THANOS_STORE_PVC_STORAGE}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -4478,6 +4478,16 @@ parameters:
   value: quay.io/prometheus/alertmanager
 - name: OBSERVATORIUM_ALERTMANAGER_IMAGE_TAG
   value: v0.25.0
+- name: OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE
+  value: 10Gi
+- name: OBSERVATORIUM_ALERTMANAGER_CPU_REQUEST
+  value: "1"
+- name: OBSERVATORIUM_ALERTMANAGER_MEMORY_REQUEST
+  value: 1Gi
+- name: OBSERVATORIUM_ALERTMANAGER_MEMORY_LIMIT
+  value: "4"
+- name: OBSERVATORIUM_ALERTMANAGER_CPU_LIMIT
+  value: 4Gi
 - name: SERVICE_ACCOUNT_NAME
   value: prometheus-telemeter
 - name: STORAGE_CLASS
@@ -4644,6 +4654,8 @@ parameters:
   value: "2"
 - name: THANOS_STORE_CPU_REQUEST
   value: 500m
+- name: THANOS_STORE_PVC_STORAGE
+  value: 50Gi
 - name: THANOS_STORE_SERIES_TOUCHED_LIMIT
   value: "0"
 - name: THANOS_STORE_SERIES_SAMPLE_LIMIT

@@ -803,6 +803,8 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-ccx-processing-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-ccx-processing"
       - "name": "observatorium-subwatch"
         "roles":
         - "telemeter-metrics-read"

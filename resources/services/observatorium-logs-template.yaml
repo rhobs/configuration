@@ -511,7 +511,7 @@ objects:
       app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
     name: observatorium-loki-compactor
   spec:
-    replicas: 1
+    replicas: ${{LOKI_COMPACTOR_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: compactor
@@ -2523,6 +2523,8 @@ parameters:
   value: docker.io/grafana/loki
 - name: LOKI_S3_SECRET
   value: observatorium-mst-logs-stage-s3
+- name: LOKI_COMPACTOR_REPLICAS
+  value: "3"
 - name: LOKI_COMPACTOR_CPU_REQUESTS
   value: 500m
 - name: LOKI_COMPACTOR_CPU_LIMITS

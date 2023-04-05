@@ -164,10 +164,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\",code=~\"5..\"}[$interval])) / sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))",
+                  "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],
@@ -387,7 +386,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (tenant, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\"}[$interval]))",
+                  "expr": "sum by (tenant, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\"}[$__rate_interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{code}} - {{tenant}}",
@@ -473,7 +472,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (tenant, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code!~\"2..\"}[$interval]))",
+                  "expr": "sum by (tenant, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code!~\"2..\"}[$__rate_interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{code}} - {{tenant}}",
@@ -559,7 +558,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job, tenant) (rate(http_request_duration_seconds_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\"}[$interval])) / sum by (namespace, job, tenant) (http_request_duration_seconds_count{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\"})",
+                  "expr": "sum by (namespace, job, tenant) (rate(http_request_duration_seconds_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\"}[$__rate_interval])) / sum by (namespace, job, tenant) (http_request_duration_seconds_count{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\"})",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{tenant}}",
@@ -657,7 +656,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job, tenant) (rate(http_request_size_bytes_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code=~\"2..\"}[$interval])) / sum by (namespace, job, tenant) (rate(http_request_size_bytes_count{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code=~\"2..\"}[$interval]))",
+                  "expr": "sum by (namespace, job, tenant) (rate(http_request_size_bytes_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code=~\"2..\"}[$__rate_interval])) / sum by (namespace, job, tenant) (rate(http_request_size_bytes_count{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code=~\"2..\"}[$__rate_interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{tenant}}",
@@ -743,7 +742,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job, tenant) (rate(http_request_size_bytes_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code!~\"2..\"}[$interval])) / sum by (namespace, job, tenant) (rate(http_request_size_bytes_count{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code!~\"2..\"}[$interval]))",
+                  "expr": "sum by (namespace, job, tenant) (rate(http_request_size_bytes_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code!~\"2..\"}[$__rate_interval])) / sum by (namespace, job, tenant) (rate(http_request_size_bytes_count{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", handler=\"receive\", code!~\"2..\"}[$__rate_interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{tenant}}",
@@ -927,7 +926,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_write_timeseries_bucket{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code=~\"2..\"}[$interval])) by (namespace, job, tenant) ",
+                  "expr": "sum(rate(thanos_receive_write_timeseries_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code=~\"2..\"}[$__rate_interval])) by (namespace, job, tenant) ",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{tenant}}",
@@ -1013,7 +1012,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_write_timeseries_bucket{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code!~\"2..\"}[$interval])) by (tenant, code) ",
+                  "expr": "sum(rate(thanos_receive_write_timeseries_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code!~\"2..\"}[$__rate_interval])) by (tenant, code) ",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{code}} - {{tenant}}",
@@ -1099,7 +1098,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_write_samples_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code=~\"2..\"}[$interval])) by (namespace, job, tenant) ",
+                  "expr": "sum(rate(thanos_receive_write_samples_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code=~\"2..\"}[$__rate_interval])) by (namespace, job, tenant) ",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{tenant}}",
@@ -1185,7 +1184,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(thanos_receive_write_samples_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code!~\"2..\"}[$interval])) by (tenant, code) ",
+                  "expr": "sum(rate(thanos_receive_write_samples_sum{namespace=\"$namespace\", job=~\"$job\", tenant=~\"$tenant\", code!~\"2..\"}[$__rate_interval])) by (tenant, code) ",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "{{code}} - {{tenant}}",
@@ -1284,7 +1283,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_replications_total{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all {{job}}",
@@ -1469,7 +1468,7 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
+                  "expr": "sum by (namespace, job) (rate(thanos_receive_forward_requests_total{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
                   "legendFormat": "all {{job}}",
@@ -1811,10 +1810,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace, job, grpc_code) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],
@@ -2192,10 +2190,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
+                  "expr": "sum by (namespace, job, grpc_code) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\", grpc_method!=\"RemoteWrite\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],
@@ -2573,10 +2570,9 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval])) / sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
+                  "expr": "sum by (namespace, job, grpc_code) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "error",
                   "step": 10
                 }
               ],

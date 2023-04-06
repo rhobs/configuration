@@ -26,6 +26,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'ALERTMANAGER_EXTERNAL_URL', value: 'https://observatorium-alertmanager-mst.api.stage.openshift.com' },
     { name: 'RULES_OBJSTORE_S3_SECRET', value: 'rules-objstore-stage-s3' },
     { name: 'STORAGE_CLASS', value: 'gp2' },
+    { name: 'LOKI_LOG_LEVEL', value: 'error' },
     { name: 'LOKI_IMAGE_TAG', value: '2.7.2' },
     { name: 'LOKI_IMAGE', value: 'docker.io/grafana/loki' },
     { name: 'LOKI_S3_SECRET', value: 'observatorium-mst-logs-stage-s3' },

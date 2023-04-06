@@ -263,6 +263,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       },
       server+: {
         http_server_write_timeout: '10m',
+        log_level: '${LOKI_LOG_LEVEL}',
       },
       tracing: {
         enabled: true,

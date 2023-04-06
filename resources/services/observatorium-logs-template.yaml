@@ -840,7 +840,7 @@ objects:
         "http_listen_port": 3100
         "http_server_idle_timeout": "120s"
         "http_server_write_timeout": "10m"
-        "log_level": "error"
+        "log_level": "${LOKI_LOG_LEVEL}"
       "storage_config":
         "boltdb_shipper":
           "active_index_directory": "/data/loki/index"
@@ -2526,6 +2526,8 @@ parameters:
   value: rules-objstore-stage-s3
 - name: STORAGE_CLASS
   value: gp2
+- name: LOKI_LOG_LEVEL
+  value: error
 - name: LOKI_IMAGE_TAG
   value: 2.7.2
 - name: LOKI_IMAGE

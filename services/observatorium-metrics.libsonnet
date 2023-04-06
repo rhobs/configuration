@@ -841,9 +841,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       version: '${THANOS_RECEIVE_CONTROLLER_IMAGE_TAG}',
       replicas: 1,
       hashrings: hashrings,
-      annotatePodsOnChange: true,
-      allowOnlyReadyReplicas: true,
-      allowDynamicScaling: true,
+      annotatePodsOnChange: false,
+      allowOnlyReadyReplicas: false,
+      allowDynamicScaling: false,
       resources: {
         requests: {
           cpu: '10m',

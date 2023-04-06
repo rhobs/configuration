@@ -526,24 +526,24 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     },
     logs: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['query-frontend-http-service'].metadata.name,
+        obs.loki.manifests['query-frontend-service'].metadata.name,
         obs.config.namespaces.logs,
-        obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
+        obs.loki.manifests['query-frontend-service'].spec.ports[0].port,
       ],
       tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['querier-http-service'].metadata.name,
+        obs.loki.manifests['querier-service'].metadata.name,
         obs.config.namespaces.logs,
-        obs.loki.manifests['querier-http-service'].spec.ports[0].port,
+        obs.loki.manifests['querier-service'].spec.ports[0].port,
       ],
       writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['distributor-http-service'].metadata.name,
+        obs.loki.manifests['distributor-service'].metadata.name,
         obs.config.namespaces.logs,
-        obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
+        obs.loki.manifests['distributor-service'].spec.ports[0].port,
       ],
       rulesEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['ruler-http-service'].metadata.name,
+        obs.loki.manifests['ruler-service'].metadata.name,
         obs.config.namespaces.logs,
-        obs.loki.manifests['ruler-http-service'].spec.ports[0].port,
+        obs.loki.manifests['ruler-service'].spec.ports[0].port,
       ],
     },
     metrics: {

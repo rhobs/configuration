@@ -73,6 +73,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     query+: {
       concurrency: 2,  // overwritten in observatorium-logs-template-overwrites.libsonnet
     },
+    replicationFactor: '${LOKI_REPLICATION_FACTOR}',
     objectStorageConfig: {
       secretName: '${LOKI_S3_SECRET}',
       bucketsKey: 'bucket',
@@ -248,6 +249,10 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     },
     config+: {
       limits_config+: {
+        // Although deletion_mode is by default false we want to make it explicit
+        // because the Deletion API has caused numerous issues upstream.
+        // TODO move deletion_mode to observatorium/observatorium
+        deletion_mode: 'disabled',
         ingestion_rate_mb: 50,
         max_global_streams_per_user: 25000,
         per_stream_rate_limit: '5MB',
@@ -255,8 +260,8 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       },
       ruler+: {
         enable_alertmanager_discovery: true,
-        enable_alertmanager_v2: false,
-        alertmanager_url: 'http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
+        enable_alertmanager_v2::: false,
+        alertmanager_url::: 'http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
         alertmanager_refresh_interval: '1m',
       },
       querier+: {

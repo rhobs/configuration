@@ -100,12 +100,12 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                     c {
                       args: std.filter(function(arg)
                               !std.member([
-                                '-distributor.replication-factor',
                                 '-querier.max-concurrent',
                                 '-querier.worker-match-max-concurrent',
                               ], std.split(arg, '=')[0]), super.args)
                             + [
-                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
+                              // TODO move this to config and leverage env var expansion
+                              // see LOKI_REPLICATION_FACTOR as an example
                               '-querier.max-concurrent=${LOKI_QUERIER_MAX_CONCURRENCY}',
                               '-querier.worker-match-max-concurrent',
                             ],
@@ -125,11 +125,11 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                     c {
                       args: std.filter(function(arg)
                               !std.member([
-                                '-distributor.replication-factor',
                                 '-ingester.wal-replay-memory-ceiling',
                               ], std.split(arg, '=')[0]), super.args)
                             + [
-                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
+                              // TODO move this to config and leverage env var expansion
+                              // see LOKI_REPLICATION_FACTOR as an example
                               '-ingester.wal-replay-memory-ceiling=${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}',
                             ],
                     }
@@ -161,6 +161,8 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
                   containers: [
                     c {
                       args+: [
+                        // TODO move this to config and leverage env var expansion
+                        // see LOKI_REPLICATION_FACTOR as an example
                         '-ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"',
                       ],
                     }
@@ -190,15 +192,7 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
               template+: {
                 spec+: {
                   containers: [
-                    c {
-                      args: std.filter(function(arg)
-                              !std.member([
-                                '-distributor.replication-factor',
-                              ], std.split(arg, '=')[0]), super.args)
-                            + [
-                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
-                            ],
-                    } +
+                    c +
                     if std.length(std.findSubstr('query-frontend', c.name)) != 0 then
                       // The frontend will only return ready once a querier has connected to it.
                       // Because the service used for connecting the querier to the frontend only lists ready

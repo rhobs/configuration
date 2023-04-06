@@ -261,6 +261,9 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         alertmanager_url: 'http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
         alertmanager_refresh_interval: '1m',
       },
+      server+: {
+        http_server_write_timeout: '10m',
+      },
       tracing: {
         enabled: true,
       },

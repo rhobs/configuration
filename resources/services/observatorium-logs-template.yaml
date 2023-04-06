@@ -839,7 +839,7 @@ objects:
         "grpc_server_ping_without_stream_allowed": true
         "http_listen_port": 3100
         "http_server_idle_timeout": "120s"
-        "http_server_write_timeout": "1m"
+        "http_server_write_timeout": "10m"
         "log_level": "error"
       "storage_config":
         "boltdb_shipper":

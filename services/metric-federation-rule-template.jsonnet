@@ -21,7 +21,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     { name: 'STORAGE_CLASS', value: 'gp2' },
     { name: 'THANOS_CONFIG_SECRET', value: 'thanos-objectstorage' },
-    { name: 'THANOS_IMAGE_TAG', value: 'v0.23.1' },
+    { name: 'THANOS_IMAGE_TAG', value: 'v0.30.2' },
     { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },
     { name: 'THANOS_QUERIER_NAMESPACE', value: 'observatorium-mst' },
     { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },

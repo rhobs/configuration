@@ -6,7 +6,7 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
   image:: '${IMAGE}:${IMAGE_TAG}',
   version:: '${IMAGE_TAG}',
   replicas: 1,
-  pvc+:: { class: 'gp2' },
+  pvc+:: { class: '${STORAGE_CLASS}' },
   serviceMonitor: true,
 }) + {
   local j = self,
@@ -132,7 +132,7 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },
     { name: 'IMAGE', value: 'jaegertracing/all-in-one' },
-    { name: 'IMAGE_TAG', value: '1.14.0' },
+    { name: 'IMAGE_TAG', value: '1.22.0' },
     { name: 'REPLICAS', value: '1' },
     { name: 'JAEGER_MAX_TRACES', value: '100000' },
     { name: 'JAEGER_CPU_REQUEST', value: '1' },
@@ -140,11 +140,12 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
     { name: 'JAEGER_CPU_LIMITS', value: '4' },
     { name: 'JAEGER_MEMORY_LIMITS', value: '8Gi' },
     { name: 'OAUTH_PROXY_IMAGE', value: 'quay.io/openshift/origin-oauth-proxy' },
-    { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.7.0' },
+    { name: 'OAUTH_PROXY_IMAGE_TAG', value: '4.8.0' },
     { name: 'OAUTH_PROXY_CPU_REQUEST', value: '100m' },
     { name: 'OAUTH_PROXY_MEMORY_REQUEST', value: '100Mi' },
     { name: 'OAUTH_PROXY_CPU_LIMITS', value: '200m' },
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
+    { name: 'STORAGE_CLASS', value: 'gp2' },
   ],
 }

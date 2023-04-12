@@ -31,6 +31,9 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     compact+:: {
       selector: 'job="%s"' % thanos.compact.config.name,
     },
+    dashboard+:: {
+      instance_name_filter: '/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/',
+    },
   },
 
   loki: {

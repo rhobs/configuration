@@ -769,6 +769,7 @@ objects:
         "max_streams_per_user": 0
         "per_stream_rate_limit": "5MB"
         "per_stream_rate_limit_burst": "15MB"
+        "query_timeout": "8m"
         "reject_old_samples": true
         "reject_old_samples_max_age": "24h"
         "split_queries_by_interval": "30m"
@@ -786,7 +787,6 @@ objects:
         "extra_query_delay": "0s"
         "max_concurrent": 2
         "query_ingesters_within": "3h"
-        "query_timeout": "6m"
         "tail_max_duration": "1h"
       "query_range":
         "align_queries_with_step": true

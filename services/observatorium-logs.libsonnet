@@ -251,15 +251,16 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         ingestion_rate_mb: 50,
         max_global_streams_per_user: 25000,
         per_stream_rate_limit: '5MB',
-      },
-      querier+: {
-        query_timeout: '6m',
+        query_timeout: '8m',  // Aligned with http_server_write_timeout leaving some wiggle room for response processing
       },
       ruler+: {
         enable_alertmanager_discovery: true,
         enable_alertmanager_v2: false,
         alertmanager_url: 'http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
         alertmanager_refresh_interval: '1m',
+      },
+      querier+: {
+        query_timeout:: '',
       },
       server+: {
         http_server_write_timeout: '10m',

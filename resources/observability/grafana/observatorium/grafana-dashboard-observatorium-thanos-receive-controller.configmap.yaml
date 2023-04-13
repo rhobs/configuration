@@ -974,7 +974,7 @@ data:
             ],
             "query": "prometheus",
             "refresh": 1,
-            "regex": "",
+            "regex": "/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/",
             "type": "datasource"
           },
           {

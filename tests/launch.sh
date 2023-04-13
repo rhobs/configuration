@@ -24,10 +24,10 @@ dex() {
 observatorium_metrics() {
     oc create ns observatorium-metrics || true
     oc process -f observatorium-metrics-thanos-objectstorage-secret-template.yaml | oc apply --namespace observatorium-metrics -f -
-    oc apply -f observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
+    oc apply --namespace observatorium-metrics -f observatorium-alertmanager-config-secret.yaml
     role
     oc process --param-file=observatorium-metrics.test.env -f ../resources/services/observatorium-metrics-template.yaml | oc apply --namespace observatorium-metrics -f -
-    oc process --param-file=observatorium-metric-federation-rule.test.env -f ../resources/services/metric-federation-rule-template.yaml| oc apply --namespace observatorium-metrics -f -
+    oc process --param-file=observatorium-metric-federation-rule.test.env -f ../resources/services/metric-federation-rule-template.yaml | oc apply --namespace observatorium-metrics -f -
 }
 
 observatorium() {
@@ -38,9 +38,15 @@ observatorium() {
     oc apply -f observatorium-parca-secret.yaml --namespace observatorium
     rbac
     oc process --param-file=observatorium.test.env -f ../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
-    oc process --param-file=observatorium-parca.test.env -f ../resources/services/parca-template.yaml| oc apply --namespace observatorium -f -
-    oc process --param-file=observatorium-jaeger.test.env -f ../resources/services/jaeger-template.yaml| oc apply --namespace observatorium -f -
+    oc process --param-file=observatorium-parca.test.env -f ../resources/services/parca-template.yaml | oc apply --namespace observatorium -f -
+    oc process --param-file=observatorium-jaeger.test.env -f ../resources/services/jaeger-template.yaml | oc apply --namespace observatorium -f -
 
+}
+
+observatorium_logs(){
+    oc create ns observatorium-logs || true
+    oc apply --namespace observatorium-logs -f observatorium-logs-secret.yaml
+    oc process --param-file=observatorium-logs.test.env -f ../resources/services/observatorium-logs-template.yaml | oc apply --namespace observatorium-logs -f -
 }
 
 telemeter() {
@@ -67,7 +73,6 @@ teardown() {
 
 rbac(){
     # The below namespaces are just created for parca-observatorium-remote-ns-rbac-template. These can be removed once logging/tracing is deployed
-    oc create ns observatorium-logs || true
     oc create ns observatorium-mst || true
     oc process -f ../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | oc apply -f -
 }
@@ -78,6 +83,7 @@ deploy)
     loki_crds
     observatorium_metrics
     telemeter
+    observatorium_logs
     observatorium
     ;;
 teardown)

@@ -71,9 +71,13 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     image: '%s:%s' % ['${LOKI_IMAGE}', cfg.version],
     commonLabels+: obs.config.commonLabels,
     query+: {
-      concurrency: 2,  // overwritten in observatorium-logs-template-overwrites.libsonnet
+      concurrency: '${LOKI_QUERIER_MAX_CONCURRENCY}',
+    },
+    ruler: {
+      externalUrl: '${ALERTMANAGER_EXTERNAL_URL}',
     },
     replicationFactor: '${LOKI_REPLICATION_FACTOR}',
+    logLevel: '${LOKI_LOG_LEVEL}',
     objectStorageConfig: {
       secretName: '${LOKI_S3_SECRET}',
       bucketsKey: 'bucket',
@@ -93,7 +97,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       ringName: 'gossip-ring',
     },
     wal: {
-      replayMemoryCeiling: '4GB',  // overwritten in observatorium-logs-template-overwrites.libsonnet
+      replayMemoryCeiling: '${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}',
     },
     replicas: {
       compactor: 1,  // Loki supports only a single compactor instance.
@@ -249,10 +253,6 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
     },
     config+: {
       limits_config+: {
-        // Although deletion_mode is by default false we want to make it explicit
-        // because the Deletion API has caused numerous issues upstream.
-        // TODO move deletion_mode to observatorium/observatorium
-        deletion_mode: 'disabled',
         ingestion_rate_mb: 50,
         max_global_streams_per_user: 25000,
         per_stream_rate_limit: '5MB',
@@ -264,12 +264,8 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
         alertmanager_url::: 'http://_http._tcp.observatorium-alertmanager.${ALERTMANAGER_NAMESPACE}.svc.cluster.local',
         alertmanager_refresh_interval: '1m',
       },
-      querier+: {
-        query_timeout:: '',
-      },
       server+: {
         http_server_write_timeout: '10m',
-        log_level: '${LOKI_LOG_LEVEL}',
       },
       tracing: {
         enabled: true,

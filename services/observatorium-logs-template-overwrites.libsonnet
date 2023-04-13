@@ -91,52 +91,9 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
               },
             },
           }
-        else if m.kind == 'StatefulSet' && std.length(std.findSubstr('querier', name)) != 0 then
-          m {
-            spec+: {
-              template+: {
-                spec+: {
-                  containers: [
-                    c {
-                      args: std.filter(function(arg)
-                              !std.member([
-                                '-querier.max-concurrent',
-                                '-querier.worker-match-max-concurrent',
-                              ], std.split(arg, '=')[0]), super.args)
-                            + [
-                              // TODO move this to config and leverage env var expansion
-                              // see LOKI_REPLICATION_FACTOR as an example
-                              '-querier.max-concurrent=${LOKI_QUERIER_MAX_CONCURRENCY}',
-                              '-querier.worker-match-max-concurrent',
-                            ],
-                    }
-                    for c in super.containers
-                  ],
-                },
-              },
-            } + jaegerAgentSidecar.spec,
-          }
         else if m.kind == 'StatefulSet' && std.length(std.findSubstr('ingester', name)) != 0 then
           m {
             spec+: {
-              template+: {
-                spec+: {
-                  containers: [
-                    c {
-                      args: std.filter(function(arg)
-                              !std.member([
-                                '-ingester.wal-replay-memory-ceiling',
-                              ], std.split(arg, '=')[0]), super.args)
-                            + [
-                              // TODO move this to config and leverage env var expansion
-                              // see LOKI_REPLICATION_FACTOR as an example
-                              '-ingester.wal-replay-memory-ceiling=${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}',
-                            ],
-                    }
-                    for c in super.containers
-                  ],
-                },
-              },
               volumeClaimTemplates: [
                 t {
                   spec: {
@@ -156,20 +113,6 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
         else if m.kind == 'StatefulSet' && std.length(std.findSubstr('ruler', name)) != 0 then
           m {
             spec+: {
-              template+: {
-                spec+: {
-                  containers: [
-                    c {
-                      args+: [
-                        // TODO move this to config and leverage env var expansion
-                        // see LOKI_REPLICATION_FACTOR as an example
-                        '-ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"',
-                      ],
-                    }
-                    for c in super.containers
-                  ],
-                },
-              },
               volumeClaimTemplates: [
                 t {
                   spec: {

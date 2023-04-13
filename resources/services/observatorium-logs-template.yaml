@@ -550,13 +550,15 @@ objects:
           - -config.expand-env=true
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -793,6 +795,7 @@ objects:
         "enable_alertmanager_v2": false
         "enable_api": true
         "enable_sharding": true
+        "external_url": "${ALERTMANAGER_EXTERNAL_URL}"
         "ring":
           "kvstore":
             "store": "memberlist"
@@ -907,13 +910,15 @@ objects:
           - -config.expand-env=true
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -1185,13 +1190,15 @@ objects:
           - -config.expand-env=true
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -1405,16 +1412,17 @@ objects:
           - -config.file=/etc/loki/config/config.yaml
           - -limits.per-user-override-config=/etc/loki/config/overrides.yaml
           - -config.expand-env=true
-          - -ingester.wal-replay-memory-ceiling=${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -1584,13 +1592,15 @@ objects:
           - -config.expand-env=true
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -1790,13 +1800,15 @@ objects:
           - -config.expand-env=true
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -1994,13 +2006,15 @@ objects:
           - -config.expand-env=true
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:
@@ -2251,16 +2265,17 @@ objects:
           - -config.file=/etc/loki/config/config.yaml
           - -limits.per-user-override-config=/etc/loki/config/overrides.yaml
           - -config.expand-env=true
-          - -ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"
           env:
           - name: LOKI_LOG_LEVEL
-            value: info
+            value: ${LOKI_LOG_LEVEL}
           - name: LOKI_REPLICATION_FACTOR
             value: ${LOKI_REPLICATION_FACTOR}
           - name: LOKI_QUERIER_MAX_CONCURRENCY
-            value: "2"
+            value: ${LOKI_QUERIER_MAX_CONCURRENCY}
           - name: LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING
-            value: 4GB
+            value: ${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}
+          - name: ALERTMANAGER_EXTERNAL_URL
+            value: ${ALERTMANAGER_EXTERNAL_URL}
           - name: S3_BUCKETS
             valueFrom:
               secretKeyRef:

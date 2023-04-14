@@ -8,6 +8,10 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     targetGroups+:: {
       namespace: 'thanos_status',
     },
+    // Filter the namespaces in thanos-recieve-controller dashboard
+    hierarcies+:: {
+      namespace: 'thanos_status',
+    },
     overview+:: {
       title: '%(prefix)sOverview' % t.dashboard.prefix,
     },

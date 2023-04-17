@@ -1034,6 +1034,26 @@ objects:
       app.kubernetes.io/name: loki
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-distributor-http
+  spec:
+    ports:
+    - name: metrics
+      port: 3100
+      targetPort: 3100
+    selector:
+      app.kubernetes.io/component: distributor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: distributor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
     name: observatorium-loki-distributor
   spec:
     ports:
@@ -1716,6 +1736,26 @@ objects:
       app.kubernetes.io/name: loki
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-querier-http
+  spec:
+    ports:
+    - name: metrics
+      port: 3100
+      targetPort: 3100
+    selector:
+      app.kubernetes.io/component: querier
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: querier
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
     name: observatorium-loki-querier
   spec:
     ports:
@@ -1913,6 +1953,26 @@ objects:
           name: config
         - emptyDir: {}
           name: storage
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: query-frontend
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-query-frontend-http
+  spec:
+    ports:
+    - name: metrics
+      port: 3100
+      targetPort: 3100
+    selector:
+      app.kubernetes.io/component: query-frontend
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2168,6 +2228,26 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: loki
         app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${LOKI_IMAGE_TAG}
+    name: observatorium-loki-ruler-http
+  spec:
+    ports:
+    - name: metrics
+      port: 3100
+      targetPort: 3100
+    selector:
+      app.kubernetes.io/component: ruler
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:

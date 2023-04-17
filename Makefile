@@ -2,7 +2,7 @@ include .bingo/Variables.mk
 
 SED ?= $(shell which gsed 2>/dev/null || which sed)
 XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
-FILES_TO_FMT ?= $(shell find . -path ./vendor* -not -prune -o -name '*.go' -print)
+FILES_TO_FMT ?= $(shell find . -path './vendor*' -not -prune -o -name '*.go' -print)
 
 CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp

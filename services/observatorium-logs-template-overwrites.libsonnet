@@ -91,52 +91,9 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
               },
             },
           }
-        else if m.kind == 'StatefulSet' && std.length(std.findSubstr('querier', name)) != 0 then
-          m {
-            spec+: {
-              template+: {
-                spec+: {
-                  containers: [
-                    c {
-                      args: std.filter(function(arg)
-                              !std.member([
-                                '-distributor.replication-factor',
-                                '-querier.max-concurrent',
-                                '-querier.worker-match-max-concurrent',
-                              ], std.split(arg, '=')[0]), super.args)
-                            + [
-                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
-                              '-querier.max-concurrent=${LOKI_QUERIER_MAX_CONCURRENCY}',
-                              '-querier.worker-match-max-concurrent',
-                            ],
-                    }
-                    for c in super.containers
-                  ],
-                },
-              },
-            } + jaegerAgentSidecar.spec,
-          }
         else if m.kind == 'StatefulSet' && std.length(std.findSubstr('ingester', name)) != 0 then
           m {
             spec+: {
-              template+: {
-                spec+: {
-                  containers: [
-                    c {
-                      args: std.filter(function(arg)
-                              !std.member([
-                                '-distributor.replication-factor',
-                                '-ingester.wal-replay-memory-ceiling',
-                              ], std.split(arg, '=')[0]), super.args)
-                            + [
-                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
-                              '-ingester.wal-replay-memory-ceiling=${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}',
-                            ],
-                    }
-                    for c in super.containers
-                  ],
-                },
-              },
               volumeClaimTemplates: [
                 t {
                   spec: {
@@ -156,18 +113,6 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
         else if m.kind == 'StatefulSet' && std.length(std.findSubstr('ruler', name)) != 0 then
           m {
             spec+: {
-              template+: {
-                spec+: {
-                  containers: [
-                    c {
-                      args+: [
-                        '-ruler.external.url="${ALERTMANAGER_EXTERNAL_URL}"',
-                      ],
-                    }
-                    for c in super.containers
-                  ],
-                },
-              },
               volumeClaimTemplates: [
                 t {
                   spec: {
@@ -190,15 +135,7 @@ local jaegerAgentSidecar = (import 'sidecars/jaeger-agent.libsonnet')({
               template+: {
                 spec+: {
                   containers: [
-                    c {
-                      args: std.filter(function(arg)
-                              !std.member([
-                                '-distributor.replication-factor',
-                              ], std.split(arg, '=')[0]), super.args)
-                            + [
-                              '-distributor.replication-factor=${LOKI_REPLICATION_FACTOR}',
-                            ],
-                    } +
+                    c +
                     if std.length(std.findSubstr('query-frontend', c.name)) != 0 then
                       // The frontend will only return ready once a querier has connected to it.
                       // Because the service used for connecting the querier to the frontend only lists ready

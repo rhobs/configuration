@@ -55,11 +55,51 @@
       "source": {
         "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "consul"
+        }
+      },
+      "version": "18a7aa2cd2154057a16d4667f6b1debda8bc50a6",
+      "sum": "Po3c1Ic96ngrJCtOazic/7OsLkoILOKZWXWyZWl+od8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "grafana-builder"
         }
       },
       "version": "4d4b5b1ce01003547a110f93cc86b8b7afb282a6",
       "sum": "GRf2GvwEU4jhXV+JOonXSZ4wdDv8mnHBPCQ6TUVd+g8="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "jaeger-agent-mixin"
+        }
+      },
+      "version": "18a7aa2cd2154057a16d4667f6b1debda8bc50a6",
+      "sum": "nsukyr2SS8h97I2mxvBazXZp2fxu1i6eg+rKq3/NRwY="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "ksonnet-util"
+        }
+      },
+      "version": "18a7aa2cd2154057a16d4667f6b1debda8bc50a6",
+      "sum": "0y3AFX9LQSpfWTxWKSwoLgbt0Wc9nnCwhMH2szKzHv0="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/jsonnet-libs.git",
+          "subdir": "memcached"
+        }
+      },
+      "version": "18a7aa2cd2154057a16d4667f6b1debda8bc50a6",
+      "sum": "SWywAq4U0MRPMbASU0Ez8O9ArRNeoZzb75sEuReueow="
     },
     {
       "source": {
@@ -80,6 +120,16 @@
       },
       "version": "881db2241f0c5007c3e831caf34b0c645202b4ab",
       "sum": "Je2SxBKu+1WrKEEG60zjSKaY/6TPX8uRz5bsaw0a8oA="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/loki.git",
+          "subdir": "production/ksonnet/loki"
+        }
+      },
+      "version": "ea14d1348e5a3ae7ed075a5fc0b0b93304bb2ebd",
+      "sum": "i2I9UmJ1Etvw2QsHyi0zJ6PQMKwR+1X/Ohs1jmKEV24="
     },
     {
       "source": {
@@ -110,6 +160,26 @@
       },
       "version": "6f8fe448c7a021bbdac78e5d848e2fb7346a1d99",
       "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/docsonnet.git",
+          "subdir": "doc-util"
+        }
+      },
+      "version": "2eae33a828320269c42acf38e808479a33e416db",
+      "sum": "lppHbNARpG3YTpuSv94X9TyIE9TfV3CyTVceIHSRxpc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
+          "subdir": "1.26"
+        }
+      },
+      "version": "9e5b48eee32913938d3cac30f183b49ecd9fe13a",
+      "sum": "7pl3HQqiKg4zJ0dWFqMo9yMGDEvlVdxgPGr1rMm0/LE="
     },
     {
       "source": {
@@ -170,8 +240,8 @@
           "subdir": "configuration"
         }
       },
-      "version": "361c20e9bbc6533e10e1582fa0e88c378818018b",
-      "sum": "l1Xz/Hs/ba0wdjugaK90fCxqy2DuW8sMY95HuR0/QHI="
+      "version": "a05c34ec1334f7811df0900930f9784e4aace552",
+      "sum": "mLtOlWUztW8Kb+p7baP2Tl16na5qGKJwA4mmFljXVe4="
     },
     {
       "source": {

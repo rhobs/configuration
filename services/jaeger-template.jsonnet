@@ -6,7 +6,7 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
   image:: '${IMAGE}:${IMAGE_TAG}',
   version:: '${IMAGE_TAG}',
   replicas: 1,
-  pvc+:: { class: '${STORAGE_CLASS}' },
+  pvc+:: { class: '${STORAGE_CLASS}', size: '${JAEGER_PVC_STORAGE}' },
   serviceMonitor: true,
 }) + {
   local j = self,
@@ -147,5 +147,6 @@ local jaeger = (import 'components/jaeger-collector.libsonnet')({
     { name: 'OAUTH_PROXY_MEMORY_LIMITS', value: '200Mi' },
     { name: 'SERVICE_ACCOUNT_NAME', value: 'prometheus-telemeter' },
     { name: 'STORAGE_CLASS', value: 'gp2' },
+    { name: 'JAEGER_PVC_STORAGE', value: '50Gi' },
   ],
 }

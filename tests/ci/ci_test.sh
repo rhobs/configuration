@@ -17,8 +17,17 @@ prereq() {
 
 }
 
-minio() {
+create_ns() {
     oc create ns minio || true
+    oc create ns dex || true
+    oc create ns observatorium-metrics || true
+    oc create ns observatorium || true
+    oc create ns telemeter || true
+    oc create ns observatorium-logs || true
+    oc create ns observatorium-mst || true
+}
+
+minio() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/minio --timeout=5s
     oc process -f ../minio-template.yaml \
         -p MINIO_CPU_REQUEST=30m \
@@ -32,7 +41,6 @@ minio() {
 }
 
 dex() {
-    oc create ns dex || true
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/dex --timeout=5s
     oc process -f ../dex-template.yaml \
         -p DEX_CPU_REQUEST=30m \
@@ -46,7 +54,6 @@ dex() {
 }
 
 observatorium_metrics() {
-    oc create ns observatorium-metrics || true
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-metrics --timeout=5s
     oc process -f ../observatorium-metrics-thanos-objectstorage-secret-template.yaml | oc apply --namespace observatorium-metrics -f -
     oc apply -f ../observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
@@ -55,6 +62,9 @@ observatorium_metrics() {
     oc apply --namespace observatorium-metrics -f ../observatorium-service-account.yaml
     oc process --param-file=observatorium-metrics.ci.env \
         -f ../../resources/services/observatorium-metrics-template.yaml | \
+        oc apply --namespace observatorium-metrics -f -
+    oc process --param-file=observatorium-metric-federation-rule.test.env \
+        -f ../../resources/services/metric-federation-rule-template.yaml| \
         oc apply --namespace observatorium-metrics -f -
     resources=$(
         oc get statefulsets -o name -n observatorium-metrics
@@ -66,12 +76,20 @@ observatorium_metrics() {
 }
 
 observatorium() {
-    oc create ns observatorium || true
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium --timeout=5s
     oc apply -f ../observatorium-rules-objstore-secret.yaml --namespace observatorium
     oc apply -f ../observatorium-rhobs-tenant-secret.yaml --namespace observatorium
+    oc apply --namespace observatorium -f ../observatorium-service-account.yaml
+    oc apply -f ../observatorium-parca-secret.yaml --namespace observatorium
+    rbac
     oc process --param-file=observatorium.test.ci.env \
         -f ../../resources/services/observatorium-template.yaml | \
+        oc apply --namespace observatorium -f -
+    oc process --param-file=observatorium-parca.test.env \
+        -f ../../resources/services/parca-template.yaml| \
+        oc apply --namespace observatorium -f -
+    oc process --param-file=observatorium-jaeger.test.env \
+        -f ../../resources/services/jaeger-template.yaml| \
         oc apply --namespace observatorium -f -
     resources=$(
         oc get statefulsets -o name -n observatorium
@@ -84,7 +102,6 @@ observatorium() {
 }
 
 telemeter() {
-    oc create ns telemeter || true
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/telemeter --timeout=5s
     oc apply --namespace telemeter -f ../telemeter-token-refersher-oidc-secret.yaml
     oc process --param-file=telemeter.ci.env \
@@ -96,6 +113,23 @@ telemeter() {
     )
     for res in $resources; do
         check_status $res telemeter
+    done
+}
+
+rbac(){
+    # The below namespaces are just created for parca-observatorium-remote-ns-rbac-template. These can be removed once logging/tracing is deployed
+    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | oc apply -f -
+}
+
+observatorium_logs(){
+    oc apply --namespace observatorium-logs -f ../observatorium-logs-secret.yaml
+    oc process --param-file=observatorium-logs.test.env -f ../../resources/services/observatorium-logs-template.yaml | oc apply --namespace observatorium-logs -f -
+    resources=$(
+        oc get statefulsets -o name -n observatorium-logs
+        oc get deployments -o name -n observatorium-logs
+    )
+    for res in $resources; do
+        check_status $res observatorium-logs
     done
 }
 
@@ -148,19 +182,25 @@ must_gather() {
     oc get endpoints --all-namespaces > "$artifact_dir/endpoints"
 }
 
-ci.metrics() {
+ci.setup() {
     prereq
+    create_ns
     minio
     dex
+}
+
+ci.metrics() {
     observatorium_metrics
     observatorium
-    run_test
     telemeter
 }
 
+ci.tests(){
+    run_test
+}
+
 ci.logs() {
-    #TODO
-    :
+    observatorium_logs
 }
 
 ci.traces(){

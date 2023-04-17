@@ -29,12 +29,7 @@ create_ns() {
 
 minio() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/minio --timeout=5s
-    oc process -f ../minio-template.yaml \
-        -p MINIO_CPU_REQUEST=30m \
-        -p MINIO_CPU_LIMITS=50m \
-        -p MINIO_MEMORY_REQUEST=50Mi \
-        -p MINIO_MEMORY_LIMITS=100Mi \
-        --local -o yaml | \
+    oc process --param-file=minio.test.ci.env -f ../minio-template.yaml --local -o yaml | \
         sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
         oc apply -n minio -f -
     check_status deployment/minio minio
@@ -42,12 +37,7 @@ minio() {
 
 dex() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/dex --timeout=5s
-    oc process -f ../dex-template.yaml \
-        -p DEX_CPU_REQUEST=30m \
-        -p DEX_CPU_LIMITS=50m \
-        -p DEX_MEMORY_REQUEST=50Mi \
-        -p DEX_MEMORY_LIMITS=100Mi \
-        --local -o yaml | \
+    oc process --param-file=dex.test.ci.env -f ../dex-template.yaml --local -o yaml | \
         sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
         oc apply -n dex -f -
     check_status deployment/dex dex
@@ -55,7 +45,8 @@ dex() {
 
 observatorium_metrics() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-metrics --timeout=5s
-    oc process -f ../observatorium-metrics-thanos-objectstorage-secret-template.yaml | oc apply --namespace observatorium-metrics -f -
+    oc process -f ../observatorium-metrics-thanos-objectstorage-secret-template.yaml | \
+         oc apply --namespace observatorium-metrics -f -
     oc apply -f ../observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
     oc apply -f ../observatorium-cluster-role.yaml
     oc apply -f ../observatorium-cluster-role-binding.yaml
@@ -63,7 +54,7 @@ observatorium_metrics() {
     oc process --param-file=observatorium-metrics.ci.env \
         -f ../../resources/services/observatorium-metrics-template.yaml | \
         oc apply --namespace observatorium-metrics -f -
-    oc process --param-file=observatorium-metric-federation-rule.test.env \
+    oc process --param-file=observatorium-metric-federation-rule.test.ci.env \
         -f ../../resources/services/metric-federation-rule-template.yaml| \
         oc apply --namespace observatorium-metrics -f -
     resources=$(
@@ -85,10 +76,10 @@ observatorium() {
     oc process --param-file=observatorium.test.ci.env \
         -f ../../resources/services/observatorium-template.yaml | \
         oc apply --namespace observatorium -f -
-    oc process --param-file=observatorium-parca.test.env \
+    oc process --param-file=observatorium-parca.test.ci.env \
         -f ../../resources/services/parca-template.yaml| \
         oc apply --namespace observatorium -f -
-    oc process --param-file=observatorium-jaeger.test.env \
+    oc process --param-file=observatorium-jaeger.test.ci.env \
         -f ../../resources/services/jaeger-template.yaml| \
         oc apply --namespace observatorium -f -
     resources=$(
@@ -117,13 +108,15 @@ telemeter() {
 }
 
 rbac(){
-    # The below namespaces are just created for parca-observatorium-remote-ns-rbac-template. These can be removed once logging/tracing is deployed
-    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | oc apply -f -
+    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | \
+        oc apply -f -
 }
 
 observatorium_logs(){
     oc apply --namespace observatorium-logs -f ../observatorium-logs-secret.yaml
-    oc process --param-file=observatorium-logs.test.env -f ../../resources/services/observatorium-logs-template.yaml | oc apply --namespace observatorium-logs -f -
+    oc process --param-file=observatorium-logs.test.ci.env -f \
+        ../../resources/services/observatorium-logs-template.yaml | \
+        oc apply --namespace observatorium-logs -f -
     resources=$(
         oc get statefulsets -o name -n observatorium-logs
         oc get deployments -o name -n observatorium-logs
@@ -187,20 +180,18 @@ ci.setup() {
     create_ns
     minio
     dex
+    observatorium
 }
 
 ci.metrics() {
     observatorium_metrics
-    observatorium
     telemeter
-}
-
-ci.tests(){
     run_test
 }
 
 ci.logs() {
     observatorium_logs
+    #run_test
 }
 
 ci.traces(){

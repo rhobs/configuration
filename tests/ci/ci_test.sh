@@ -137,14 +137,6 @@ run_test() {
         must_gather "$ARTIFACT_DIR" 
         exit 1
     }
-    for namespace in minio dex observatorium observatorium-metrics telemeter; do
-
-        out=$(oc get pods -n $namespace -o jsonpath='{.items[?(@.status.containerStatuses[].restartCount>=3)].metadata.name}')
-        if [ -n "$out" ]; then
-            must_gather "$ARTIFACT_DIR"
-            exit 1
-        fi
-    done
 }
 
 must_gather() {

@@ -32,7 +32,7 @@ minio() {
     oc process --param-file=minio.test.ci.env -f ../minio-template.yaml --local -o yaml | \
         sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
         oc apply -n minio -f -
-    check_status deployment/minio minio
+    #check_status deployment/minio minio
 }
 
 dex() {
@@ -40,7 +40,7 @@ dex() {
     oc process --param-file=dex.test.ci.env -f ../dex-template.yaml --local -o yaml | \
         sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
         oc apply -n dex -f -
-    check_status deployment/dex dex
+    #check_status deployment/dex dex
 }
 
 observatorium_metrics() {
@@ -57,13 +57,13 @@ observatorium_metrics() {
     oc process --param-file=observatorium-metric-federation-rule.test.ci.env \
         -f ../../resources/services/metric-federation-rule-template.yaml| \
         oc apply --namespace observatorium-metrics -f -
-    resources=$(
-        oc get statefulsets -o name -n observatorium-metrics
-        oc get deployments -o name -n observatorium-metrics
-    )
-    for res in $resources; do
-        check_status $res observatorium-metrics
-    done
+    # resources=$(
+    #     oc get statefulsets -o name -n observatorium-metrics
+    #     oc get deployments -o name -n observatorium-metrics
+    # )
+    # for res in $resources; do
+    #     check_status $res observatorium-metrics
+    # done
 }
 
 observatorium() {
@@ -82,13 +82,13 @@ observatorium() {
     oc process --param-file=observatorium-jaeger.test.ci.env \
         -f ../../resources/services/jaeger-template.yaml| \
         oc apply --namespace observatorium -f -
-    resources=$(
-        oc get statefulsets -o name -n observatorium
-        oc get deployments -o name -n observatorium
-    )
-    for res in $resources; do
-        check_status $res observatorium
-    done
+    # resources=$(
+    #     oc get statefulsets -o name -n observatorium
+    #     oc get deployments -o name -n observatorium
+    # )
+    # for res in $resources; do
+    #     check_status $res observatorium
+    # done
 
 }
 
@@ -98,13 +98,13 @@ telemeter() {
     oc process --param-file=telemeter.ci.env \
         -f ../../resources/services/telemeter-template.yaml | \
         oc apply --namespace telemeter -f -
-    resources=$(
-        oc get statefulsets -o name -n telemeter
-        oc get deployments -o name -n telemeter
-    )
-    for res in $resources; do
-        check_status $res telemeter
-    done
+    # resources=$(
+    #     oc get statefulsets -o name -n telemeter
+    #     oc get deployments -o name -n telemeter
+    # )
+    # for res in $resources; do
+    #     check_status $res telemeter
+    # done
 }
 
 rbac(){
@@ -117,16 +117,25 @@ observatorium_logs(){
     oc process --param-file=observatorium-logs.test.ci.env -f \
         ../../resources/services/observatorium-logs-template.yaml | \
         oc apply --namespace observatorium-logs -f -
-    resources=$(
-        oc get statefulsets -o name -n observatorium-logs
-        oc get deployments -o name -n observatorium-logs
-    )
-    for res in $resources; do
-        check_status $res observatorium-logs
-    done
+    # resources=$(
+    #     oc get statefulsets -o name -n observatorium-logs
+    #     oc get deployments -o name -n observatorium-logs
+    # )
+    # for res in $resources; do
+    #     check_status $res observatorium-logs
+    # done
 }
 
 run_test() {
+    for namespace in minio dex observatorium observatorium-metrics observatorium-logs telemeter ; do
+        resources=$(
+            oc get statefulsets -o name -n $namespace
+            oc get deployments -o name -n $namespace
+        )
+        for res in $resources; do
+            check_status $res $namespace
+        done
+    done
     oc apply -n observatorium -f test-tenant.yaml
     oc apply -n observatorium -f rbac.yaml
     oc rollout restart deployment/observatorium-observatorium-api -n observatorium
@@ -178,12 +187,14 @@ ci.setup() {
 ci.metrics() {
     observatorium_metrics
     telemeter
-    run_test
 }
 
 ci.logs() {
     observatorium_logs
-    #run_test
+}
+
+ci.tests() {
+    run_test
 }
 
 ci.traces(){

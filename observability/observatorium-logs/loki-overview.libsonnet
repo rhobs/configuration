@@ -368,7 +368,7 @@ function(datasource, namespace) {
                   uid: '${datasource}',
                 },
                 editorMode: 'code',
-                expr: 'sum by (route)(rate(loki_request_duration_seconds_count{namespace="$namespace",job=~".*loki-querier-http", route=~"loki_api_v1.*", status_code!~"5[0-9]{2}"}[1m]))\n/\nsum by (route)(rate(loki_request_duration_seconds_count{namespace="$namespace", job=~".*loki-querier-http", route=~"loki_api_v1.*"}[1m])) ',
+                expr: 'sum by (route)(rate(loki_request_duration_seconds_count{namespace="$namespace",job=~".*loki-querier", route=~"loki_api_v1.*", status_code!~"5[0-9]{2}"}[1m]))\n/\nsum by (route)(rate(loki_request_duration_seconds_count{namespace="$namespace", job=~".*loki-querier", route=~"loki_api_v1.*"}[1m])) ',
                 instant: false,
                 interval: '',
                 legendFormat: '__auto',

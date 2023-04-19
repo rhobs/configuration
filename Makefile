@@ -2,7 +2,7 @@ include .bingo/Variables.mk
 
 SED ?= $(shell which gsed 2>/dev/null || which sed)
 XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
-FILES_TO_FMT ?= $(shell find . -path ./vendor* -not -prune -o -name '*.go' -print)
+FILES_TO_FMT ?= $(shell find . -path './vendor*' -not -prune -o -name '*.go' -print)
 
 CRD_DIR := $(shell pwd)/crds
 TMP_DIR := $(shell pwd)/tmp
@@ -34,7 +34,7 @@ format: $(JSONNET_SRC) $(JSONNETFMT) go-format
 .PHONY: lint
 lint: $(JSONNET_LINT) $(JSONNET_VENDOR_DIR) go-lint
 	@echo ">>>>> Running linter"
-	echo ${JSONNET_SRC} | $(XARGS) -n 1 -- $(JSONNET_LINT) -J "$(JSONNET_VENDOR_DIR)"
+	echo ${JSONNET_SRC} | $(XARGS) -n 1 -- $(JSONNET_LINT) -J "$(JSONNET_VENDOR_DIR)" -J lib
 
 .PHONY: go-lint
 go-lint: ## Runs various static analysis against our code.
@@ -157,7 +157,7 @@ resources/services/observatorium-tenants-template.yaml: services/observatorium-t
 
 resources/services/observatorium-template.yaml: resources/.tmp/tenants/rbac.json services/observatorium.libsonnet services/observatorium-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"
-	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/observatorium-template.jsonnet | $(GOJSONTOYAML) > $@
+	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -J lib services/observatorium-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/observatorium-metrics-template.yaml: $(wildcard services/observatorium-metrics-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium-metrics templates"
@@ -165,7 +165,7 @@ resources/services/observatorium-metrics-template.yaml: $(wildcard services/obse
 
 resources/services/observatorium-logs-template.yaml: $(wildcard services/observatorium-logs-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium-logs templates"
-	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/observatorium-logs-template.jsonnet | $(GOJSONTOYAML) > $@
+	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -J lib services/observatorium-logs-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/observatorium-traces-template.yaml: $(wildcard services/observatorium-traces-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium-traces templates"

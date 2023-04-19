@@ -8,6 +8,10 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
     targetGroups+:: {
       namespace: 'thanos_status',
     },
+    // Filter the namespaces in thanos-recieve-controller dashboard
+    hierarcies+:: {
+      namespace: 'thanos_status',
+    },
     overview+:: {
       title: '%(prefix)sOverview' % t.dashboard.prefix,
     },
@@ -156,7 +160,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         local replacements = [
           { from: 'cluster=~"$cluster",', to: '' },
           { from: 'container="compactor"', to: 'container="observatorium-loki-compactor"' },
-          { from: 'job=~"($namespace)/compactor"', to: 'job="observatorium-loki-compactor-http"' },
+          { from: 'job=~"($namespace)/compactor"', to: 'job="observatorium-loki-compactor"' },
         ],
         uid: 'RetCujSHzC8gd9i5fck9a3v9n2EvTzA',
         tags: defaultLokiTags(super.tags),
@@ -179,7 +183,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         showMultiCluster:: false,
         namespaceQuery:: 'label_values(kube_pod_info, namespace)',
         namespaceType:: 'query',
-        labelsSelector:: 'job="observatorium-loki-ingester-http"',
+        labelsSelector:: 'job="observatorium-loki-ingester"',
         // Adapt dashboard template parameters:
         // - Match default selected datasource to RHOBS cluster.
         // - Match namespaces to RHOBS cluster namespaces
@@ -199,9 +203,9 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         namespaceType:: 'query',
         jobMatchers:: {
           cortexgateway:: sjm.cortexgateway,
-          distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor-http')],
-          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
-          querier:: [utils.selector.eq('job', 'observatorium-loki-querier-http')],
+          distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor')],
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester')],
+          querier:: [utils.selector.eq('job', 'observatorium-loki-querier')],
         },
         // Adapt dashboard panels to:
         // - Use RHOBS related job label selectors instead of mixin defaults.
@@ -218,7 +222,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
           { from: 'pod=~"distributor.*"', to: 'pod=~".*distributor.*"' },
           { from: 'pod=~"ingester.*"', to: 'pod=~".*ingester.*"' },
           { from: 'pod=~"querier.*"', to: 'pod=~".*querier.*"' },
-          { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester-http",' },
+          { from: 'job=~"$namespace/ingester",', to: 'job="observatorium-loki-ingester",' },
         ],
         panels: mapPanels([replaceMatchers(replacements), withLatencyAxis], dropPanels(super.panels, dropList)),
         // Adapt dashboard template parameters:
@@ -238,9 +242,9 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         namespaceType:: 'query',
         matchers:: {
           cortexgateway:: [],
-          queryFrontend:: [utils.selector.eq('job', 'observatorium-loki-query-frontend-http')],
-          querier:: [utils.selector.eq('job', 'observatorium-loki-querier-http')],
-          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
+          queryFrontend:: [utils.selector.eq('job', 'observatorium-loki-query-frontend')],
+          querier:: [utils.selector.eq('job', 'observatorium-loki-querier')],
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester')],
           ingesterZoneAware:: [],
           querierOrIndexGateway:: [],
         },
@@ -267,8 +271,8 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
         namespaceType:: 'query',
         matchers:: {
           cortexgateway:: [],
-          distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor-http')],
-          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester-http')],
+          distributor:: [utils.selector.eq('job', 'observatorium-loki-distributor')],
+          ingester:: [utils.selector.eq('job', 'observatorium-loki-ingester')],
           ingester_zone:: [],
         },
         rows: dropPanels(super.rows, dropList),

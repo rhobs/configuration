@@ -14,10 +14,9 @@ prereq() {
     oc apply -f pre-requisites.yaml
     oc create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
     oc process -f ../../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
-
 }
 
-create_ns() {
+ns() {
     oc create ns minio || true
     oc create ns dex || true
     oc create ns observatorium-metrics || true
@@ -32,7 +31,6 @@ minio() {
     oc process --param-file=minio.test.ci.env -f ../minio-template.yaml --local -o yaml | \
         sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
         oc apply -n minio -f -
-    #check_status deployment/minio minio
 }
 
 dex() {
@@ -40,7 +38,6 @@ dex() {
     oc process --param-file=dex.test.ci.env -f ../dex-template.yaml --local -o yaml | \
         sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
         oc apply -n dex -f -
-    #check_status deployment/dex dex
 }
 
 observatorium_metrics() {
@@ -57,13 +54,6 @@ observatorium_metrics() {
     oc process --param-file=observatorium-metric-federation-rule.test.ci.env \
         -f ../../resources/services/metric-federation-rule-template.yaml| \
         oc apply --namespace observatorium-metrics -f -
-    # resources=$(
-    #     oc get statefulsets -o name -n observatorium-metrics
-    #     oc get deployments -o name -n observatorium-metrics
-    # )
-    # for res in $resources; do
-    #     check_status $res observatorium-metrics
-    # done
 }
 
 observatorium() {
@@ -72,7 +62,8 @@ observatorium() {
     oc apply -f ../observatorium-rhobs-tenant-secret.yaml --namespace observatorium
     oc apply --namespace observatorium -f ../observatorium-service-account.yaml
     oc apply -f ../observatorium-parca-secret.yaml --namespace observatorium
-    rbac
+    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | \
+        oc apply -f -
     oc process --param-file=observatorium.test.ci.env \
         -f ../../resources/services/observatorium-template.yaml | \
         oc apply --namespace observatorium -f -
@@ -82,13 +73,6 @@ observatorium() {
     oc process --param-file=observatorium-jaeger.test.ci.env \
         -f ../../resources/services/jaeger-template.yaml| \
         oc apply --namespace observatorium -f -
-    # resources=$(
-    #     oc get statefulsets -o name -n observatorium
-    #     oc get deployments -o name -n observatorium
-    # )
-    # for res in $resources; do
-    #     check_status $res observatorium
-    # done
 
 }
 
@@ -98,32 +82,13 @@ telemeter() {
     oc process --param-file=telemeter.ci.env \
         -f ../../resources/services/telemeter-template.yaml | \
         oc apply --namespace telemeter -f -
-    # resources=$(
-    #     oc get statefulsets -o name -n telemeter
-    #     oc get deployments -o name -n telemeter
-    # )
-    # for res in $resources; do
-    #     check_status $res telemeter
-    # done
 }
 
-rbac(){
-    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | \
-        oc apply -f -
-}
-
-observatorium_logs(){
+observatorium_logs() {
     oc apply --namespace observatorium-logs -f ../observatorium-logs-secret.yaml
     oc process --param-file=observatorium-logs.test.ci.env -f \
         ../../resources/services/observatorium-logs-template.yaml | \
         oc apply --namespace observatorium-logs -f -
-    # resources=$(
-    #     oc get statefulsets -o name -n observatorium-logs
-    #     oc get deployments -o name -n observatorium-logs
-    # )
-    # for res in $resources; do
-    #     check_status $res observatorium-logs
-    # done
 }
 
 run_test() {
@@ -141,12 +106,12 @@ run_test() {
     oc rollout restart deployment/observatorium-observatorium-api -n observatorium
     check_status deployment/observatorium-observatorium-api observatorium
     oc apply -n observatorium -f observatorium-up-metrics.yaml
-    oc apply -n observatorium-logs -f observatorium-up-logs.yaml
     oc wait --for=condition=complete --timeout=5m \
         -n observatorium job/observatorium-up-metrics || {
         must_gather "$ARTIFACT_DIR" 
         exit 1
     }
+    oc apply -n observatorium-logs -f observatorium-up-logs.yaml
     oc wait --for=condition=complete --timeout=5m \
         -n observatorium-logs job/observatorium-up-logs || {
         must_gather "$ARTIFACT_DIR"
@@ -182,30 +147,20 @@ must_gather() {
     oc get endpoints --all-namespaces > "$artifact_dir/endpoints"
 }
 
-ci.setup() {
+ci.deploy() {
     prereq
-    create_ns
+    ns
     minio
     dex
     observatorium
-}
-
-ci.metrics() {
     observatorium_metrics
     telemeter
-}
-
-ci.logs() {
     observatorium_logs
+
 }
 
 ci.tests() {
     run_test
-}
-
-ci.traces(){
-    #TODO
-    :
 }
 
 ci.help() {

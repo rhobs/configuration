@@ -24,8 +24,8 @@ spec:
         - --endpoint-read=http://observatorium-observatorium-api.observatorium.svc.cluster.local:8080/api/metrics/v1/test
         - --period=5s
         - --duration=2m
-        - --name=mydummymetrics
-        - --labels=dummyid="12"
+        - --name=foo
+        - --labels=bar="baz"
         - --latency=30s
         - --initial-query-delay=10s
         - --threshold=0.90

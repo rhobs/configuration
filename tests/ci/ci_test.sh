@@ -147,6 +147,11 @@ run_test() {
         must_gather "$ARTIFACT_DIR" 
         exit 1
     }
+    oc wait --for=condition=complete --timeout=5m \
+        -n observatorium-logs job/observatorium-up-logs || {
+        must_gather "$ARTIFACT_DIR"
+        exit 1
+    }
 }
 
 must_gather() {

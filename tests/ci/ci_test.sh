@@ -141,6 +141,7 @@ run_test() {
     oc rollout restart deployment/observatorium-observatorium-api -n observatorium
     check_status deployment/observatorium-observatorium-api observatorium
     oc apply -n observatorium -f observatorium-up-metrics.yaml
+    oc apply -n observatorium-logs -f observatorium-up-logs.yaml
     oc wait --for=condition=complete --timeout=5m \
         -n observatorium job/observatorium-up-metrics || {
         must_gather "$ARTIFACT_DIR" 

@@ -775,6 +775,8 @@ objects:
         "max_join_retries": 10
         "min_join_backoff": "1s"
       "querier":
+        "engine":
+          "max_look_back_period": "5m"
         "max_concurrent": ${LOKI_QUERIER_MAX_CONCURRENCY}
         "query_ingesters_within": "2h"
       "query_range":

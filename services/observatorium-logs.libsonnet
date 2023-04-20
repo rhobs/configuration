@@ -100,7 +100,7 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       replayMemoryCeiling: '${LOKI_INGESTER_WAL_REPLAY_MEMORY_CEILING}',
     },
     replicas: {
-      compactor: 1,  // Loki supports only a single compactor instance.
+      compactor: '${{LOKI_COMPACTOR_REPLICAS}}',  // Loki supports only a single compactor instance.
       distributor: '${{LOKI_DISTRIBUTOR_REPLICAS}}',
       ingester: '${{LOKI_INGESTER_REPLICAS}}',
       index_gateway: '${{LOKI_INDEX_GATEWAY_REPLICAS}}',

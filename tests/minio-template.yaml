@@ -61,7 +61,7 @@ objects:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 10Gi
+        storage: ${MINIO_STORAGE}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -95,3 +95,5 @@ parameters:
   value: minio
 - name: MINIO_SECRET_KEY
   value: minio123
+- name: MINIO_STORAGE
+  value: 10Gi

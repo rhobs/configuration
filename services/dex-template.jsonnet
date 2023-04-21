@@ -78,6 +78,15 @@ local dex = (import 'github.com/observatorium/observatorium/configuration/compon
       },
     },
   },
+  pvc+: {
+    spec+: {
+      resources: {
+        requests: {
+          storage: '${DEX_STORAGE}',
+        },
+      },
+    },
+  },
 };
 
 {
@@ -103,5 +112,6 @@ local dex = (import 'github.com/observatorium/observatorium/configuration/compon
     { name: 'DEX_MEMORY_REQUEST', value: '200Mi' },
     { name: 'DEX_CPU_LIMITS', value: '100m' },
     { name: 'DEX_MEMORY_LIMITS', value: '200Mi' },
+    { name: 'DEX_STORAGE', value: '1Gi' },
   ],
 }

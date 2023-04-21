@@ -28,15 +28,13 @@ ns() {
 
 minio() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/minio --timeout=5s
-    oc process --param-file=minio.test.ci.env -f ../minio-template.yaml --local -o yaml | \
-        sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
+    oc process --param-file=minio.test.ci.env -f ../minio-template.yaml | \
         oc apply -n minio -f -
 }
 
 dex() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/dex --timeout=5s
-    oc process --param-file=dex.test.ci.env -f ../dex-template.yaml --local -o yaml | \
-        sed -e 's/storage: [0-9].Gi/storage: 0.25Gi/g' | \
+    oc process --param-file=dex.test.ci.env -f ../dex-template.yaml | \
         oc apply -n dex -f -
 }
 

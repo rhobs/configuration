@@ -76,7 +76,7 @@ objects:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 1Gi
+        storage: ${DEX_STORAGE}
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -147,3 +147,5 @@ parameters:
   value: 100m
 - name: DEX_MEMORY_LIMITS
   value: 200Mi
+- name: DEX_STORAGE
+  value: 1Gi

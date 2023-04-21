@@ -31,6 +31,15 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
       },
     },
   },
+  pvc+: {
+    spec+: {
+      resources: {
+        requests: {
+          storage: '${MINIO_STORAGE}',
+        },
+      },
+    },
+  },
 };
 
 {
@@ -58,5 +67,6 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
     { name: 'MINIO_MEMORY_LIMITS', value: '200Mi' },
     { name: 'MINIO_ACCESS_KEY', value: 'minio' },
     { name: 'MINIO_SECRET_KEY', value: 'minio123' },
+    { name: 'MINIO_STORAGE', value: '10Gi' },
   ],
 }

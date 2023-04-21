@@ -71,7 +71,6 @@ observatorium() {
     oc process --param-file=observatorium-jaeger.test.ci.env \
         -f ../../resources/services/jaeger-template.yaml| \
         oc apply --namespace observatorium -f -
-
 }
 
 telemeter() {
@@ -154,7 +153,6 @@ ci.deploy() {
     observatorium_metrics
     telemeter
     observatorium_logs
-
 }
 
 ci.tests() {
@@ -191,4 +189,3 @@ main() {
 	return $?
 }
 main "$@"
-

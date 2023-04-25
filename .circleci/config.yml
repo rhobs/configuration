@@ -58,7 +58,8 @@ jobs:
         command: |
           echo $KUBECONFIG
           cd tests/ci
-          ./ci_test.sh metrics
+          ./ci_test.sh deploy
+          ./ci_test.sh tests
     - store_artifacts:
         path: /tmp/artifacts
 workflows:

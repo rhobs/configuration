@@ -270,6 +270,11 @@ local lokiCaches = (import 'components/loki-caches.libsonnet');
       tracing: {
         enabled: true,
       },
+      querier+: {
+        engine+: {
+          max_look_back_period: '5m',
+        },
+      },
     },
   }),
 }

@@ -320,7 +320,7 @@ objects:
     - ReadWriteOnce
     resources:
       requests:
-        storage: 50Gi
+        storage: ${JAEGER_PVC_STORAGE}
     storageClassName: ${STORAGE_CLASS}
 parameters:
 - name: NAMESPACE
@@ -357,3 +357,5 @@ parameters:
   value: prometheus-telemeter
 - name: STORAGE_CLASS
   value: gp2
+- name: JAEGER_PVC_STORAGE
+  value: 50Gi

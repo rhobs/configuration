@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/instance: e2e-test
     app.kubernetes.io/name: observatorium-up
     app.kubernetes.io/version: master-2022-10-27-d8bb06f
-  name: observatorium-up-metrics
+  name: observatorium-up-logs
 spec:
   backoffLimit: 5
   template:
@@ -19,9 +19,9 @@ spec:
     spec:
       containers:
       - args:
-        - --endpoint-type=metrics
-        - --endpoint-write=http://observatorium-observatorium-api.observatorium.svc.cluster.local:8080/api/metrics/v1/test/api/v1/receive
-        - --endpoint-read=http://observatorium-observatorium-api.observatorium.svc.cluster.local:8080/api/metrics/v1/test
+        - --endpoint-type=logs
+        - --endpoint-write=http://observatorium-observatorium-api.observatorium.svc.cluster.local:8080/api/logs/v1/test/loki/api/v1/push
+        - --endpoint-read=http://observatorium-observatorium-api.observatorium.svc.cluster.local:8080/api/logs/v1/test/loki/api/v1/query
         - --period=5s
         - --duration=2m
         - --name=foo
@@ -30,6 +30,7 @@ spec:
         - --initial-query-delay=10s
         - --threshold=0.90
         - --token-file=/var/shared/token
+        - --logs-file=/var/logs-file/logs.yaml
         image: quay.io/observatorium/up:master-2022-10-27-d8bb06f
         name: observatorium-up
         resources:
@@ -42,6 +43,9 @@ spec:
         volumeMounts:
         - mountPath: /var/shared
           name: shared
+          readOnly: true
+        - mountPath: /var/logs-file
+          name: logs-file
           readOnly: true
       initContainers:
       - command:
@@ -64,7 +68,23 @@ spec:
         - mountPath: /var/shared
           name: shared
           readOnly: false
+      - command:
+        - /bin/sh
+        - -c
+        - |
+          cat > /var/logs-file/logs.yaml << EOF
+          spec:
+            logs: [ [ "$(date '+%s%N')", "log line"] ]
+          EOF
+        image: docker.io/debian
+        name: logs-file
+        volumeMounts:
+        - mountPath: /var/logs-file
+          name: logs-file
+          readOnly: false
       restartPolicy: OnFailure
       volumes:
       - emptyDir: {}
         name: shared
+      - emptyDir: {}
+        name: logs-file

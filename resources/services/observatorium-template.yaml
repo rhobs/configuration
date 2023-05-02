@@ -896,6 +896,13 @@ objects:
           "name": "service-account-observatorium-appsre-staging"
         - "kind": "user"
           "name": "service-account-observatorium-appsre"
+      - "name": "observatorium-rhtap"
+        "roles":
+        - "rhtap-metrics-read"
+        - "rhtap-metrics-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhtap-staging"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -1121,6 +1128,20 @@ objects:
         - "logs"
         "tenants":
         - "appsre"
+      - "name": "rhtap-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhtap"
+      - "name": "rhtap-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhtap"
   kind: ConfigMap
   metadata:
     annotations:

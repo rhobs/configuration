@@ -67,7 +67,8 @@ objects:
     endpoints:
     - port: http
       relabelings:
-      - separator: /
+      - action: replace
+        separator: /
         sourceLabels:
         - namespace
         - pod
@@ -781,7 +782,8 @@ objects:
     endpoints:
     - port: http
       relabelings:
-      - separator: /
+      - action: replace
+        separator: /
         sourceLabels:
         - namespace
         - pod
@@ -1060,13 +1062,13 @@ objects:
           - --query.replica-label=replica
           - --query.replica-label=rule_replica
           - --query.replica-label=prometheus_replica
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-stateless-rule.${NAMESPACE}.svc.cluster.local
           - --web.prefix-header=X-Forwarded-Prefix
@@ -1277,7 +1279,8 @@ objects:
     endpoints:
     - port: http
       relabelings:
-      - separator: /
+      - action: replace
+        separator: /
         sourceLabels:
         - namespace
         - pod
@@ -1354,13 +1357,13 @@ objects:
           - --query.replica-label=replica
           - --query.replica-label=rule_replica
           - --query.replica-label=prometheus_replica
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
-          - --store=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-0.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-1.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-2.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-3.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-4.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-shard-5.${NAMESPACE}.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.${NAMESPACE}.svc.cluster.local
           - --rule=dnssrv+_grpc._tcp.observatorium-thanos-stateless-rule.${NAMESPACE}.svc.cluster.local
           - --web.prefix-header=X-Forwarded-Prefix
@@ -1884,7 +1887,8 @@ objects:
     endpoints:
     - port: http
       relabelings:
-      - separator: /
+      - action: replace
+        separator: /
         sourceLabels:
         - namespace
         - pod
@@ -1963,7 +1967,8 @@ objects:
     endpoints:
     - port: http
       relabelings:
-      - separator: /
+      - action: replace
+        separator: /
         sourceLabels:
         - namespace
         - pod
@@ -2207,6 +2212,7 @@ objects:
       controller.receive.thanos.io/hashring: default
     name: observatorium-thanos-receive-default
   spec:
+    minReadySeconds: 60
     podManagementPolicy: Parallel
     replicas: ${{THANOS_RECEIVE_REPLICAS}}
     selector:
@@ -2538,7 +2544,8 @@ objects:
     endpoints:
     - port: http
       relabelings:
-      - separator: /
+      - action: replace
+        separator: /
         sourceLabels:
         - namespace
         - pod

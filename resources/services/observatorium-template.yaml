@@ -1634,9 +1634,9 @@ parameters:
 - name: GUBERNATOR_IMAGE
   value: quay.io/app-sre/gubernator
 - name: GUBERNATOR_MEMORY_LIMIT
-  value: 600Mi
+  value: 200Mi
 - name: GUBERNATOR_MEMORY_REQUEST
-  value: 300Mi
+  value: 100Mi
 - name: GUBERNATOR_REPLICAS
   value: "2"
 - name: JAEGER_AGENT_IMAGE_TAG

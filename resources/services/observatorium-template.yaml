@@ -1626,9 +1626,9 @@ parameters:
 - name: AMS_URL
   value: https://api.openshift.com
 - name: GUBERNATOR_CPU_LIMIT
-  value: 200m
+  value: 600m
 - name: GUBERNATOR_CPU_REQUEST
-  value: 100m
+  value: 300m
 - name: GUBERNATOR_IMAGE_TAG
   value: 1.0.0-rc.1
 - name: GUBERNATOR_IMAGE

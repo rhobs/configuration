@@ -591,6 +591,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           memory: '${THANOS_QUERIER_MEMORY_LIMIT}',
         },
       },
+      telemetryDurationQuantiles: '0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120',
     }) + {
       // This is a workaround for adding extra store for the metric federation
       // ruler service, which does not exist in the MST instance, so we cannot simply pass it

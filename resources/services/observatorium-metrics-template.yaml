@@ -1376,6 +1376,19 @@ objects:
               "service_name": "thanos-query"
             "type": "JAEGER"
           - --query.auto-downsampling
+          - --query.telemetry.request-duration-seconds-quantiles=0.1
+          - --query.telemetry.request-duration-seconds-quantiles=0.25
+          - --query.telemetry.request-duration-seconds-quantiles=0.75
+          - --query.telemetry.request-duration-seconds-quantiles=1.25
+          - --query.telemetry.request-duration-seconds-quantiles=1.75
+          - --query.telemetry.request-duration-seconds-quantiles=2.5
+          - --query.telemetry.request-duration-seconds-quantiles=3
+          - --query.telemetry.request-duration-seconds-quantiles=5
+          - --query.telemetry.request-duration-seconds-quantiles=10
+          - --query.telemetry.request-duration-seconds-quantiles=15
+          - --query.telemetry.request-duration-seconds-quantiles=30
+          - --query.telemetry.request-duration-seconds-quantiles=60
+          - --query.telemetry.request-duration-seconds-quantiles=120
           - --store.sd-files=/etc/thanos/sd/file_sd.yaml
           - --grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}
           - --query.promql-engine=${THANOS_QUERIER_ENGINE}

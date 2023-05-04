@@ -13,7 +13,7 @@ spec:
     rules:
     - alert: LokiRequestErrors
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: |
           {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}% errors.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequesterrors
@@ -28,7 +28,7 @@ spec:
         severity: info
     - alert: LokiRequestPanics
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: |
           {{ $labels.job }} is experiencing {{ printf "%.2f" $value }}% increase of panics.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequestpanics
@@ -39,7 +39,7 @@ spec:
         severity: info
     - alert: LokiRequestLatency
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: |
           {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokirequestlatency
@@ -50,7 +50,7 @@ spec:
         severity: info
     - alert: LokiTooManyCompactorsRunning
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/Lg-mH0rizaSJDKSADX/loki_alerts?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: |
           {{ $labels.cluster }} {{ $labels.namespace }} has had {{ printf "%.0f" $value }} compactors running for more than 5m. Only one compactor should run at a time.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#lokitoomanycompactorsrunning

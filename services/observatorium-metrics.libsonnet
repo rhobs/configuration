@@ -1000,25 +1000,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
       },
 
-
-      volumeClaim: {
-        apiVersion: 'v1',
-        kind: 'PersistentVolumeClaim',
-        metadata: {
-          name: cfg.persistentVolumeClaimName,
-          namespace: cfg.namespace,
-          labels: { 'app.kubernetes.io/name': cfg.name },
-        },
-        spec: {
-          accessModes: ['ReadWriteOnce'],
-          resources: {
-            requests: {
-              storage: '${OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE}',
-            },
-          },
-        },
-      },
-
       statefulSet: {
         apiVersion: 'apps/v1',
         kind: 'StatefulSet',
@@ -1028,14 +1009,26 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           labels: cfg.commonLabels,
         },
         spec: {
+          serviceName: cfg.name + '-peers',
           replicas: 2,
-          selector: { matchLabels: cfg.commonLabels },
-          strategy: {
-            rollingUpdate: {
-              maxSurge: 0,
-              maxUnavailable: 1,
+          volumeClaimTemplates: [
+            {
+              metadata: {
+                name: 'alertmanager-data',
+              },
+              spec: {
+                accessModes: [
+                  'ReadWriteOnce',
+                ],
+                resources: {
+                  requests: {
+                    storage: '1Gi',
+                  },
+                },
+              },
             },
-          },
+          ],
+          selector: { matchLabels: cfg.commonLabels },
           template: {
             metadata: {
               labels: cfg.commonLabels,
@@ -1054,6 +1047,13 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                               operator: 'In',
                               values: [
                                 'alertmanager',
+                              ],
+                            },
+                            {
+                              key: 'app.kubernetes.io/part-of',
+                              operator: 'In',
+                              values: [
+                                'observatorium',
                               ],
                             },
                           ],
@@ -1112,7 +1112,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                     protocol: 'UDP',
                   },
                 ],
-                serviceName: cfg.name + '-peers',
                 volumeMounts: [
                   { name: cfg.persistentVolumeClaimName, mountPath: cfg.dataMountPath, readOnly: false },
                   { name: cfg.routingConfigName, mountPath: cfg.configMountPath, readOnly: true },
@@ -1133,7 +1132,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                 },
               }],
               volumes: [
-                { name: cfg.persistentVolumeClaimName, persistentVolumeClaim: { claimName: cfg.persistentVolumeClaimName } },
                 { name: cfg.routingConfigName, secret: { secretName: cfg.routingConfigName } },
               ],
             },

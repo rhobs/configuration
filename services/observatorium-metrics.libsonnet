@@ -27,7 +27,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           sampler_param: 2,
         },
       },
-      alertmanagerName: 'observatorium-alertmanager',
+      alertmanagerName: 'observatorium-alertmanager-peers',
       alertmanagerPort: 9093,
     },
 
@@ -933,7 +933,9 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         routingConfigName: 'alertmanager-config',
         routingConfigFileName: 'alertmanager.yaml',
         port: 9093,
+        meshPort: 9094,
         portName: 'http',
+        meshPortPrefix: 'mesh-',
         commonLabels: {
           'app.kubernetes.io/component': 'alertmanager',
           'app.kubernetes.io/name': 'alertmanager',
@@ -979,6 +981,26 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
       } + oauth.service,
 
+      headlessService: {
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: {
+          name: cfg.name + '-peers',
+          namespace: cfg.namespace,
+          labels: cfg.commonLabels,
+        },
+        spec: {
+          clusterIP: 'None',
+          ports: [
+            { name: cfg.portName, targetPort: cfg.port, port: cfg.port },
+            { name: cfg.meshPortPrefix + 'tcp', targetPort: cfg.meshPort, port: cfg.meshPort, protocol: 'TCP' },
+            { name: cfg.meshPortPrefix + 'udp', targetPort: cfg.meshPort, port: cfg.meshPort, protocol: 'UDP' },
+          ],
+          selector: cfg.commonLabels,
+        },
+      },
+
+
       volumeClaim: {
         apiVersion: 'v1',
         kind: 'PersistentVolumeClaim',
@@ -1006,7 +1028,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           labels: cfg.commonLabels,
         },
         spec: {
-          replicas: 1,
+          replicas: 2,
           selector: { matchLabels: cfg.commonLabels },
           strategy: {
             rollingUpdate: {
@@ -1068,7 +1090,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                   '--config.file=%s/%s' % [cfg.configMountPath, cfg.routingConfigFileName],
                   '--storage.path=%s' % cfg.dataMountPath,
                   '--web.listen-address=:' + cfg.port,
-                  '--cluster.listen-address=',  // Disabled cluster gossiping while we only have one replica
+                  '--cluster.listen-address=[$(POD_IP)]:' + cfg.meshPort,
+                  '--cluster.peer=' + cfg.name + '-0.' + cfg.name + '-peers.$(POD_NAMESPACE).svc.cluster.local:' + +cfg.meshPort,
+                  '--cluster.peer=' + cfg.name + '-1.' + cfg.name + '-peers.$(POD_NAMESPACE).svc.cluster.local:' + cfg.meshPort,
+                  '--cluster.reconnect-timeout=5m',
                   '--log.level=${OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL}',
                 ],
                 ports: [
@@ -1076,7 +1101,18 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                     name: cfg.portName,
                     containerPort: cfg.port,
                   },
+                  {
+                    name: cfg.meshPortPrefix + 'tcp',
+                    containerPort: cfg.meshPort,
+                    protocol: 'TCP',
+                  },
+                  {
+                    name: cfg.meshPortPrefix + 'udp',
+                    containerPort: cfg.meshPort,
+                    protocol: 'UDP',
+                  },
                 ],
+                serviceName: cfg.name + '-peers',
                 volumeMounts: [
                   { name: cfg.persistentVolumeClaimName, mountPath: cfg.dataMountPath, readOnly: false },
                   { name: cfg.routingConfigName, mountPath: cfg.configMountPath, readOnly: true },

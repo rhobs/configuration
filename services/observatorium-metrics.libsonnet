@@ -1019,9 +1019,51 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
               labels: cfg.commonLabels,
             },
             spec: {
+              affinity: {
+                podAntiAffinity: {
+                  preferredDuringSchedulingIgnoredDuringExecution: [
+                    {
+                      weight: 100,
+                      podAffinityTerm: {
+                        labelSelector: {
+                          matchExpressions: [
+                            {
+                              key: 'app.kubernetes.io/name',
+                              operator: 'In',
+                              values: [
+                                'alertmanager',
+                              ],
+                            },
+                          ],
+                        },
+                        topologyKey: 'kubernetes.io/hostname',
+                      },
+                    },
+                  ],
+                },
+              },
               containers: [{
                 name: cfg.name,
                 image: cfg.image,
+                env: [
+                  {
+                    name: 'POD_IP',
+                    valueFrom: {
+                      fieldRef: {
+                        apiVersion: 'v1',
+                        fieldPath: 'status.podIP',
+                      },
+                    },
+                  },
+                  {
+                    name: 'POD_NAMESPACE',
+                    valueFrom: {
+                      fieldRef: {
+                        fieldPath: 'metadata.namespace',
+                      },
+                    },
+                  },
+                ],
                 args: [
                   '--config.file=%s/%s' % [cfg.configMountPath, cfg.routingConfigFileName],
                   '--storage.path=%s' % cfg.dataMountPath,

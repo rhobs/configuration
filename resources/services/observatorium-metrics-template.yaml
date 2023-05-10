@@ -259,6 +259,32 @@ objects:
             storage: ${THANOS_COMPACTOR_PVC_REQUEST}
         storageClassName: ${STORAGE_CLASS}
 - apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-alertmanager-peers
+  spec:
+    clusterIP: None
+    ports:
+    - name: http
+      port: 9093
+      targetPort: 9093
+    - name: mesh-tcp
+      port: 9094
+      protocol: TCP
+      targetPort: 9094
+    - name: mesh-udp
+      port: 9094
+      protocol: UDP
+      targetPort: 9094
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
   data:
     session_secret: c2VjcmV0
   kind: Secret
@@ -319,16 +345,13 @@ objects:
       app.kubernetes.io/part-of: observatorium
     name: observatorium-alertmanager
   spec:
-    replicas: 1
+    replicas: 2
     selector:
       matchLabels:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-    strategy:
-      rollingUpdate:
-        maxSurge: 0
-        maxUnavailable: 1
+    serviceName: observatorium-alertmanager-peers
     template:
       metadata:
         labels:
@@ -336,13 +359,42 @@ objects:
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - alertmanager
+                  - key: app.kubernetes.io/part-of
+                    operator: In
+                    values:
+                    - observatorium
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - --config.file=/etc/config/alertmanager.yaml
           - --storage.path=/data
           - --web.listen-address=:9093
-          - --cluster.listen-address=
+          - --cluster.listen-address=[$(POD_IP)]:9094
+          - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-peers.$(POD_NAMESPACE).svc.cluster.local:9094
+          - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-peers.$(POD_NAMESPACE).svc.cluster.local:9094
+          - --cluster.reconnect-timeout=5m
           - --log.level=${OBSERVATORIUM_ALERTMANAGER_LOG_LEVEL}
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: status.podIP
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           image: ${OBSERVATORIUM_ALERTMANAGER_IMAGE}:${OBSERVATORIUM_ALERTMANAGER_IMAGE_TAG}
           livenessProbe:
             failureThreshold: 4
@@ -355,6 +407,12 @@ objects:
           ports:
           - containerPort: 9093
             name: http
+          - containerPort: 9094
+            name: mesh-tcp
+            protocol: TCP
+          - containerPort: 9094
+            name: mesh-udp
+            protocol: UDP
           readinessProbe:
             failureThreshold: 3
             httpGet:
@@ -413,9 +471,6 @@ objects:
             readOnly: false
         serviceAccountName: ${SERVICE_ACCOUNT_NAME}
         volumes:
-        - name: alertmanager-data
-          persistentVolumeClaim:
-            claimName: alertmanager-data
         - name: alertmanager-config
           secret:
             secretName: alertmanager-config
@@ -425,18 +480,15 @@ objects:
         - name: alertmanager-proxy
           secret:
             secretName: alertmanager-proxy
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    labels:
-      app.kubernetes.io/name: observatorium-alertmanager
-    name: alertmanager-data
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: ${OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE}
+    volumeClaimTemplates:
+    - metadata:
+        name: alertmanager-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: ${OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE}
 - apiVersion: v1
   data:
     observatorium.yaml: |-
@@ -840,7 +892,7 @@ objects:
           - --tsdb.retention=48h
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
-          - --alertmanagers.url=dnssrv+http://observatorium-alertmanager.${NAMESPACE}.svc.cluster.local:9093
+          - --alertmanagers.url=dnssrv+http://observatorium-alertmanager-peers.${NAMESPACE}.svc.cluster.local:9093
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -2617,7 +2669,7 @@ objects:
           - --tsdb.block-duration=2h
           - --query=dnssrv+_http._tcp.observatorium-thanos-query.${NAMESPACE}.svc.cluster.local
           - --rule-file=/etc/thanos/rules/rule-syncer/observatorium.yaml
-          - --alertmanagers.url=dnssrv+http://observatorium-alertmanager.${NAMESPACE}.svc.cluster.local:9093
+          - --alertmanagers.url=dnssrv+http://observatorium-alertmanager-peers.${NAMESPACE}.svc.cluster.local:9093
           - --rule-file=/etc/thanos/rules/observatorium-rules/observatorium.yaml
           - |-
             --tracing.config="config":

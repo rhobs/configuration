@@ -1022,7 +1022,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
                 ],
                 resources: {
                   requests: {
-                    storage: '1Gi',
+                    storage: '${OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE}',
                   },
                 },
               },

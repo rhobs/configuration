@@ -488,7 +488,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: ${OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE}
 - apiVersion: v1
   data:
     observatorium.yaml: |-

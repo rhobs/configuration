@@ -32,7 +32,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">99% of valid requests return successfully</center>",
+                    "content": "<center style=\"font-size: 25px;\">99.5% of valid requests return successfully</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -176,7 +176,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code=\"5xx\"}[28d])) or vector(0))\n        /\n        sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code!=\"4xx\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code=\"5xx\"}[28d])) or vector(0))\n        /\n        sum(rate(haproxy_server_http_responses_total{route=~\"telemeter-server-upload|telemeter-server-metrics-v1-receive\",code!=\"4xx\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
@@ -370,7 +370,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">99% of valid requests return successfully</center>",
+                    "content": "<center style=\"font-size: 25px;\">99.5% of valid requests return successfully</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -514,7 +514,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
@@ -708,7 +708,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">99% of valid /query requests return successfully</center>",
+                    "content": "<center style=\"font-size: 25px;\">99.5% of valid /query requests return successfully</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -852,7 +852,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
@@ -869,7 +869,7 @@ data:
                     "x": 0
                 },
                 "options": {
-                    "content": "<center style=\"font-size: 25px;\">99% of valid /query_range requests return successfully</center>",
+                    "content": "<center style=\"font-size: 25px;\">99.5% of valid /query_range requests return successfully</center>",
                     "mode": "markdown"
                 },
                 "pluginVersion": "8.2.1",
@@ -1013,7 +1013,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",

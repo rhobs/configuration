@@ -25,6 +25,6 @@ spec:
       total:
         metric: client_api_requests_total{client="reload", container="thanos-rule-syncer",
           namespace="observatorium-metrics-stage", code!~"^4..$"}
-  target: "99"
+  target: "99.5"
   window: 28d
 status: {}

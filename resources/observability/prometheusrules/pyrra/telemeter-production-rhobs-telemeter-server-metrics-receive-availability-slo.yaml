@@ -25,6 +25,6 @@ spec:
       total:
         metric: haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive",
           code!~"^4..$"}
-  target: "99"
+  target: "99.5"
   window: 28d
 status: {}

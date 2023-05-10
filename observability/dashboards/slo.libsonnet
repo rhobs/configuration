@@ -405,8 +405,8 @@ function(instanceName, environment, dashboardName) {
   local telemeterPanels =
     titleRow('Telemeter Server > Metrics Write > Availability') +
     availabilityRow(
-      '99% of valid requests return successfully',
-      0.99,
+      '99.5% of valid requests return successfully',
+      0.995,
       'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[28d]))',
       'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[28d]))',
       0
@@ -424,8 +424,8 @@ function(instanceName, environment, dashboardName) {
   local apiPanels =
     titleRow('API > Metrics Write > Availability') +
     availabilityRow(
-      '99% of valid requests return successfully',
-      0.99,
+      '99.5% of valid requests return successfully',
+      0.995,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"receive",code=~"5.+"}[28d]))' % instance.apiJob,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"receive",code!~"4.+"}[28d]))' % instance.apiJob,
       2
@@ -442,15 +442,15 @@ function(instanceName, environment, dashboardName) {
     ) +
     titleRow('API > Metrics Read > Availability') +
     availabilityRow(
-      '99% of valid /query requests return successfully',
-      0.99,
+      '99.5% of valid /query requests return successfully',
+      0.995,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler="query",code=~"5.+"}[28d]))' % instance.apiJob,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler="query",code!~"4.+"}[28d]))' % instance.apiJob,
       4
     ) +
     availabilityRow(
-      '99% of valid /query_range requests return successfully',
-      0.99,
+      '99.5% of valid /query_range requests return successfully',
+      0.995,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code=~"5.+"}[28d]))' % instance.apiJob,
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code!~"4.+"}[28d]))' % instance.apiJob,
       5

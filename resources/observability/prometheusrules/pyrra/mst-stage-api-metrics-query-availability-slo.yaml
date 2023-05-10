@@ -25,6 +25,6 @@ spec:
       total:
         metric: http_requests_total{job="observatorium-observatorium-mst-api", handler="query",
           group="metricsv1", code!~"^4..$"}
-  target: "99"
+  target: "99.5"
   window: 28d
 status: {}

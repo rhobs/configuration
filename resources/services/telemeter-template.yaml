@@ -137,7 +137,9 @@ objects:
           - --whitelist={__name__="cluster:velero_restore_total:max"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
+          - --whitelist={__name__="cluster:vsphere_csi_migration:max"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_infrastructure_failure_domains:max"}
           - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_topology_tags:max"}
           - --whitelist={__name__="cluster:vsphere_vcenter_info:sum"}
@@ -385,7 +387,9 @@ objects:
           - --whitelist={__name__="cluster:velero_restore_total:max"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
+          - --whitelist={__name__="cluster:vsphere_csi_migration:max"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
+          - --whitelist={__name__="cluster:vsphere_infrastructure_failure_domains:max"}
           - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_topology_tags:max"}
           - --whitelist={__name__="cluster:vsphere_vcenter_info:sum"}

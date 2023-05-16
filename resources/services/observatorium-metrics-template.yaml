@@ -284,6 +284,20 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-alertmanager
+  spec:
+    maxUnavailable: 1
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     session_secret: c2VjcmV0

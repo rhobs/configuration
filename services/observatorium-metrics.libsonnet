@@ -1139,6 +1139,20 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
       } + oauth.statefulSet,
 
+      pdb: {
+        apiVersion: 'policy/v1',
+        kind: 'PodDisruptionBudget',
+        metadata: {
+          name: cfg.name,
+          namespace: cfg.namespace,
+          labels: cfg.commonLabels,
+        },
+        spec: {
+          maxUnavailable: 1,
+          selector: cfg.commonLabels,
+        },
+      },
+
       serviceMonitor: {
         apiVersion: 'monitoring.coreos.com/v1',
         kind: 'ServiceMonitor',

@@ -665,6 +665,20 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 		grp = append(grp, generic)
 	}
 
+	// Make long/short labels more descriptive.
+	for i := range grp {
+		for j := range grp[i].Rules {
+			if v, ok := grp[i].Rules[j].Labels["long"]; ok {
+				grp[i].Rules[j].Labels["long_burnrate_window"] = v
+				delete(grp[i].Rules[j].Labels, "long")
+			}
+
+			if v, ok := grp[i].Rules[j].Labels["short"]; ok {
+				grp[i].Rules[j].Labels["short_burnrate_window"] = v
+				delete(grp[i].Rules[j].Labels, "short")
+			}
+		}
+	}
 	// We do not want to page on staging environments, i.e, no "critical" alerts.
 	// There isn't a way to control the alert severity in Pyrra configs yet, but ideally should be.
 	// Pending PR: https://github.com/pyrra-dev/pyrra/pull/617

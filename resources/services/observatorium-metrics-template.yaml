@@ -295,9 +295,10 @@ objects:
   spec:
     maxUnavailable: 1
     selector:
-      app.kubernetes.io/component: alertmanager
-      app.kubernetes.io/name: alertmanager
-      app.kubernetes.io/part-of: observatorium
+      matchLabels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   data:
     session_secret: c2VjcmV0

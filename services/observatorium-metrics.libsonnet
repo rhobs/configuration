@@ -1149,7 +1149,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         },
         spec: {
           maxUnavailable: 1,
-          selector: cfg.commonLabels,
+          selector: { matchLabels: cfg.commonLabels },
         },
       },
 

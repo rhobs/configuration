@@ -11,6 +11,13 @@ parameters:
     description: The namespace where Loki will be installed.
     required: true
     value: observatorium-tools
+  - name: ACCESS_KEY_ID
+  - name: SECRET_ACCESS_KEY
+  - name: S3_BUCKET_NAME
+  - name: S3_BUCKET_ENDPOINT
+    value: s3.us-east-1.amazonaws.com
+  - name: S3_BUCKET_REGION
+    value: us-east-1
   - name: LOKI_SIZE
     description: The size of the Loki instance.
     required: true
@@ -32,6 +39,18 @@ parameters:
     required: true
     value: openshift-logging
 objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${LOKI_STORAGE_SECRET_NAME}
+      namespace: ${NAMESPACE}
+    type: Opaque
+    stringData:
+      access_key_id: ${ACCESS_KEY_ID}
+      access_key_secret: ${SECRET_ACCESS_KEY}
+      bucketnames: ${S3_BUCKET_NAME}
+      endpoint: ${S3_BUCKET_ENDPOINT}
+      region: ${S3_BUCKET_REGION}
   - apiVersion: loki.grafana.com/v1
     kind: LokiStack
     metadata:

@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: rhobs-tools-logs
+  labels:
+    app: loki-operator
+description: |
+  This template deploys Loki via a LokiStack CR.
+parameters:
+  - name: NAMESPACE
+    description: The namespace where Loki will be installed.
+    required: true
+    value: observatorium-tools
+  - name: LOKI_SIZE
+    description: The size of the Loki instance.
+    required: true
+    value: 1x.medium
+  - name: LOKI_STORAGE_CLASS
+    description: The storage class name to use for Loki.
+    required: true
+    value: gp2
+  - name: LOKI_STORAGE_SECRET_NAME
+    description: The Secret name to use for Loki storage
+    required: true
+    value: observatorium-loki
+  - name: LOKI_STORAGE_SECRET_TYPE
+    description: The storage type to use for Loki storage
+    required: true
+    value: s3
+  - name: LOKI_TENANT_MODE
+    description: The tenant mode to use for LokiStack
+    required: true
+    value: openshift-logging
+objects:
+  - apiVersion: loki.grafana.com/v1
+    kind: LokiStack
+    metadata:
+      name: observatorium-lokistack
+      namespace: ${NAMESPACE}
+    spec:
+      managementState: Managed
+      size: ${LOKI_SIZE}
+      storage:
+        schemas:
+          - effectiveDate: '2022-06-01'
+            version: v12
+        secret:
+          name: ${LOKI_STORAGE_SECRET_NAME}
+          type: ${LOKI_STORAGE_SECRET_TYPE}
+      storageClassName: ${LOKI_STORAGE_CLASS}
+      tenants:
+        mode: ${LOKI_TENANT_MODE}

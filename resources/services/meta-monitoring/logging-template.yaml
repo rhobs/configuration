@@ -69,3 +69,29 @@ objects:
       storageClassName: ${LOKI_STORAGE_CLASS}
       tenants:
         mode: ${LOKI_TENANT_MODE}
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: rhobs-logcollector-lokistack-logs
+    rules:
+      - apiGroups:
+          - 'loki.grafana.com'
+        resources:
+          - application
+        resourceNames:
+          - logs
+        verbs:
+          - 'create'
+          - 'get'
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: rhobs-logcollector-lokistack-logs
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: rhobs-logcollector-lokistack-logs
+    subjects:
+      - kind: ServiceAccount
+        name: logcollector
+        namespace: openshift-logging

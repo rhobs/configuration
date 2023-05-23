@@ -13,7 +13,6 @@ check_status() {
 prereq() {
     oc apply -f pre-requisites.yaml
     oc create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
-    oc process -f ../../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
 }
 
 ns() {

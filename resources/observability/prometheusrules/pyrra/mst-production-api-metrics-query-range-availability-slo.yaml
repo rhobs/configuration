@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-production
-    service: observatorium-api
+    pyrra.dev/service: observatorium-thanos-query
   name: api-metrics-query-range-availability-slo
 spec:
   alerting:

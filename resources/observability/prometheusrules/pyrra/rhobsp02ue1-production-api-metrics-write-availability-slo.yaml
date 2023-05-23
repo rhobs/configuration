@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: rhobsp02ue1-production
-    service: observatorium-api
+    pyrra.dev/service: observatorium-thanos-receive
   name: api-metrics-write-availability-slo
 spec:
   alerting:

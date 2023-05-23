@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-production
-    service: observatorium-api
+    pyrra.dev/service: observatorium-thanos-receive
   name: api-metrics-write-latency-slo
 spec:
   alerting:

@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: telemeter-staging
-    service: observatorium-api
+    pyrra.dev/service: observatorium-thanos-ruler
   name: api-alerting-availability-slo
 spec:
   alerting:

@@ -235,8 +235,8 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 		{
 			name: "rhobs-telemeter-server-metrics-upload-availability-slo",
 			labels: map[string]string{
-				"route":   "telemeter-server-upload",
-				"service": "telemeter",
+				"route":                                 "telemeter-server-upload",
+				slo.PropagationLabelsPrefix + "service": "telemeter",
 			},
 			description:         "Telemeter Server /upload is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "haproxy_server_http_responses_total{route=\"telemeter-server-upload\", code=~\"5..\"}",
@@ -247,8 +247,8 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 		{
 			name: "rhobs-telemeter-server-metrics-receive-availability-slo",
 			labels: map[string]string{
-				"route":   "telemeter-server-receive",
-				"service": "telemeter",
+				"route":                                 "telemeter-server-receive",
+				slo.PropagationLabelsPrefix + "service": "telemeter",
 			},
 			description:         "Telemeter Server /receive is burning too much error budget to guarantee availability SLOs.",
 			successOrErrorsExpr: "haproxy_server_http_responses_total{route=\"telemeter-server-metrics-v1-receive\", code=~\"5..\"}",
@@ -261,8 +261,8 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 		{
 			name: "rhobs-telemeter-server-metrics-upload-latency-slo",
 			labels: map[string]string{
-				"route":   "telemeter-server-upload",
-				"service": "telemeter",
+				"route":                                 "telemeter-server-upload",
+				slo.PropagationLabelsPrefix + "service": "telemeter",
 			},
 			description:         "Telemeter Server /upload is burning too much error budget to guarantee latency SLOs.",
 			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"upload\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
@@ -273,8 +273,8 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 		{
 			name: "rhobs-telemeter-server-metrics-receive-latency-slo",
 			labels: map[string]string{
-				"route":   "telemeter-server-receive",
-				"service": "telemeter",
+				"route":                                 "telemeter-server-receive",
+				slo.PropagationLabelsPrefix + "service": "telemeter",
 			},
 			description:         "Telemeter Server /receive is burning too much error budget to guarantee latency SLOs.",
 			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"receive\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
@@ -300,8 +300,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-write-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-receive",
+					"instance":                              string(envName),
 				},
 				description:         "API /receive handler is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^5..$\"}",
@@ -312,8 +312,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-query-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					"instance":                              string(envName),
 				},
 				description:         "API /query handler is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query\", group=\"metricsv1\", code=~\"^5..$\"}",
@@ -324,8 +324,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-query-range-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					"instance":                              string(envName),
 				},
 				description:         "API /query_range handler is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"metricsv1\", code=~\"^5..$\"}",
@@ -336,8 +336,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-rules-raw-write-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
 				},
 				description:         "API /rules/raw endpoint for writes is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", group=\"metricsv1\", code=~\"^5..$\"}",
@@ -348,8 +348,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-rules-raw-read-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
 				},
 				description:         "API /rules/raw endpoint for reads is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"GET\", group=\"metricsv1\", code=~\"^5..$\"}",
@@ -360,8 +360,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-rules-read-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-ruler",
+					"instance":                              string(envName),
 				},
 				description:         "API /rules endpoint is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules\", method=\"GET\", group=\"metricsv1\", code=~\"^5..$\"}",
@@ -372,8 +372,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-rules-sync-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-ruler",
+					"instance":                              string(envName),
 				},
 				description:         "Thanos Ruler /reload endpoint is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "client_api_requests_total{client=\"reload\", container=\"thanos-rule-syncer\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
@@ -384,8 +384,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-alerting-availability-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-ruler",
+					"instance":                              string(envName),
 				},
 				description:         "API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs.",
 				successOrErrorsExpr: "thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\", namespace=\"" + metricsNS[envName] + "\", code=~\"^5..$\"}",
@@ -410,8 +410,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-write-latency-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-receive",
+					"instance":                              string(envName),
 				},
 				description:         "API /receive handler is burning too much error budget to guarantee latency SLOs.",
 				successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
@@ -422,8 +422,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-read-1M-latency-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					"instance":                              string(envName),
 				},
 				description:         "API /query endpoint is burning too much error budget for 1M samples, to guarantee latency SLOs.",
 				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"10\"}",
@@ -434,8 +434,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-read-10M-latency-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					"instance":                              string(envName),
 				},
 				description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
 				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"30\"}",
@@ -446,8 +446,8 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-read-100M-latency-slo",
 				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
+					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					"instance":                              string(envName),
 				},
 				description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
 				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", code=~\"^2..$\", le=\"120\"}",

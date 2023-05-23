@@ -940,6 +940,8 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
           'app.kubernetes.io/component': 'alertmanager',
           'app.kubernetes.io/name': 'alertmanager',
           'app.kubernetes.io/part-of': 'observatorium',
+          cluster_name: '${CLUSTER_NAME}',
+          cluster_env: '${CLUSTER_ENVIRONMENT}',
         },
       },
 

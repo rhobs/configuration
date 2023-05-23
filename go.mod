@@ -14,6 +14,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/brancz/gojsontoyaml v0.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dennwc/varint v1.0.0 // indirect

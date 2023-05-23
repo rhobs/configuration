@@ -144,5 +144,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_VOLCANO_LOG_LEVEL', value: 'debug' },
     { name: 'THANOS_VOLCANO_MEMORY_LIMIT', value: '1Gi' },
     { name: 'THANOS_VOLCANO_MEMORY_REQUEST', value: '256Mi' },
+    { name: 'CLUSTER_NAME', value: 'myCluster' },
+    { name: 'CLUSTER_ENVIRONMENT', value: 'clusterEnv' },
   ],
 }

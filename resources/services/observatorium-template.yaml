@@ -1569,7 +1569,7 @@ parameters:
 - name: GUBERNATOR_CPU_REQUEST
   value: 300m
 - name: GUBERNATOR_IMAGE_TAG
-  value: 1.0.0-rc.1
+  value: v2.0.0-rc.36
 - name: GUBERNATOR_IMAGE
   value: quay.io/app-sre/gubernator
 - name: GUBERNATOR_MEMORY_LIMIT
@@ -1631,7 +1631,7 @@ parameters:
 - name: OBSERVATORIUM_API_IDENTIFIER
   value: observatorium-observatorium-api
 - name: OBSERVATORIUM_API_IMAGE_TAG
-  value: main-2022-11-14-v0.1.2-283-gc29a861
+  value: main-2023-04-05-v0.1.2-366-g2761e0f
 - name: OBSERVATORIUM_API_IMAGE
   value: quay.io/observatorium/api
 - name: OBSERVATORIUM_API_MEMORY_LIMIT
@@ -1649,7 +1649,7 @@ parameters:
 - name: OPA_AMS_CPU_REQUEST
   value: 100m
 - name: OPA_AMS_IMAGE_TAG
-  value: master-2021-07-14-d517f70
+  value: master-2022-11-03-222daab
 - name: OPA_AMS_IMAGE
   value: quay.io/observatorium/opa-ams
 - name: OPA_AMS_MEMCACHED_EXPIRE
@@ -1663,7 +1663,7 @@ parameters:
 - name: RULES_OBJSTORE_IMAGE
   value: quay.io/observatorium/rules-objstore
 - name: RULES_OBJSTORE_IMAGE_TAG
-  value: main-2022-04-01-64cd17e
+  value: main-2022-09-21-9df4d2c
 - name: RULES_OBJSTORE_S3_SECRET
   value: rules-objstore-stage-s3
 - name: RULES_OBJSTORE_SECRET

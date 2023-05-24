@@ -928,11 +928,11 @@ parameters:
 - name: NAMESPACE
   value: telemeter
 - name: IMAGE_CANARY_TAG
-  value: 2c9c76e
+  value: b4f226c
 - name: IMAGE_CANARY
   value: quay.io/app-sre/telemeter
 - name: IMAGE_TAG
-  value: 2c9c76e
+  value: df72531
 - name: IMAGE
   value: quay.io/app-sre/telemeter
 - name: MEMCACHED_CPU_LIMIT

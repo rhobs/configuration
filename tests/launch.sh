@@ -55,10 +55,6 @@ telemeter() {
     oc process --param-file=telemeter.test.env -f ../resources/services/telemeter-template.yaml | oc apply --namespace telemeter -f -
 }
 
-loki_crds(){
-    oc process -f ../resources/crds/observatorium-logs-crds-template.yaml | oc apply -f -
-}
-
 teardown() {
     oc delete ns telemeter || true
     oc delete ns observatorium-metrics || true
@@ -67,8 +63,6 @@ teardown() {
     oc delete ns dex || true
     oc delete ns observatorium-logs || true
     oc delete ns observatorium-mst || true
-    oc delete crds recordingrules.loki.grafana.com || true
-    oc delete crds alertingrules.loki.grafana.com || true
 }
 
 rbac(){
@@ -80,7 +74,6 @@ case $1 in
 deploy)
     minio
     dex
-    loki_crds
     observatorium_metrics
     telemeter
     observatorium_logs

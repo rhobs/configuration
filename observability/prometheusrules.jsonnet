@@ -169,7 +169,7 @@ local appSREOverwrites(environment) = {
               else
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
                     dashboardID(g.name, environment).id,
                     g.name,
                   ],

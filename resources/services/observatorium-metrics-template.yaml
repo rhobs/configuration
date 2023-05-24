@@ -265,8 +265,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
     name: observatorium-alertmanager-peers
   spec:
     clusterIP: None
@@ -286,8 +284,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:
@@ -295,8 +291,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
     name: observatorium-alertmanager
   spec:
     maxUnavailable: 1
@@ -305,8 +299,6 @@ objects:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-        cluster_env: ${CLUSTER_ENVIRONMENT}
-        cluster_name: ${CLUSTER_NAME}
 - apiVersion: v1
   data:
     session_secret: c2VjcmV0
@@ -316,8 +308,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
     name: alertmanager-proxy
   type: Opaque
 - apiVersion: v1
@@ -329,8 +319,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
     name: observatorium-alertmanager
   spec:
     ports:
@@ -344,8 +332,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -353,8 +339,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
       prometheus: app-sre
     name: observatorium-alertmanager
   spec:
@@ -367,8 +351,6 @@ objects:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-        cluster_env: ${CLUSTER_ENVIRONMENT}
-        cluster_name: ${CLUSTER_NAME}
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -376,8 +358,6 @@ objects:
       app.kubernetes.io/component: alertmanager
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      cluster_env: ${CLUSTER_ENVIRONMENT}
-      cluster_name: ${CLUSTER_NAME}
     name: observatorium-alertmanager
   spec:
     replicas: 2
@@ -386,8 +366,6 @@ objects:
         app.kubernetes.io/component: alertmanager
         app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-        cluster_env: ${CLUSTER_ENVIRONMENT}
-        cluster_name: ${CLUSTER_NAME}
     serviceName: observatorium-alertmanager-peers
     template:
       metadata:
@@ -395,8 +373,6 @@ objects:
           app.kubernetes.io/component: alertmanager
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
-          cluster_env: ${CLUSTER_ENVIRONMENT}
-          cluster_name: ${CLUSTER_NAME}
       spec:
         affinity:
           podAntiAffinity:
@@ -4955,7 +4931,3 @@ parameters:
   value: 1Gi
 - name: THANOS_VOLCANO_MEMORY_REQUEST
   value: 256Mi
-- name: CLUSTER_NAME
-  value: myCluster
-- name: CLUSTER_ENVIRONMENT
-  value: clusterEnv

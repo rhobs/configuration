@@ -30,7 +30,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
       receiveSelector: t.receive.selector,
     },
     rule+:: {
-      selector: 'job=~"%s.*|%s.*|%s.*|%s.*"' % [thanos.rule.config.name, thanos.statelessRule.config.name, thanos.metricFederationRule.config.name, thanos.metricFederationStatelessRule.config.name],
+      selector: 'job=~"%s.*|%s.*"' % [thanos.rule.config.name, thanos.metricFederationRule.config.name],
     },
     compact+:: {
       selector: 'job="%s"' % thanos.compact.config.name,

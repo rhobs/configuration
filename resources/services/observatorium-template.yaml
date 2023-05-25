@@ -842,6 +842,8 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhtap-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhtap"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":

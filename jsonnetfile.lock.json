@@ -78,7 +78,7 @@
           "subdir": "jaeger-agent-mixin"
         }
       },
-      "version": "18a7aa2cd2154057a16d4667f6b1debda8bc50a6",
+      "version": "3b08e7d37511dfd39af6027d07788a5ca8ec71b1",
       "sum": "nsukyr2SS8h97I2mxvBazXZp2fxu1i6eg+rKq3/NRwY="
     },
     {
@@ -158,8 +158,8 @@
           "subdir": "monitoring/jaeger-mixin"
         }
       },
-      "version": "6f8fe448c7a021bbdac78e5d848e2fb7346a1d99",
-      "sum": "U/RwaRP/ps+5dVyeVxeFEb2psfZHQgEjHU2Jeb454Kg="
+      "version": "3021d314f71b9ce0707e8f5a443dd49b6a73d7da",
+      "sum": "OQCueps8UH/JhWnoA1dX7P9Q7ct3zk2/d8Y7DHNT2YI="
     },
     {
       "source": {

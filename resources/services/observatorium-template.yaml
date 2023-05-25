@@ -1436,6 +1436,8 @@ objects:
             value: "8081"
           - name: GUBER_K8S_ENDPOINTS_SELECTOR
             value: app.kubernetes.io/name=gubernator
+          - name: GUBER_PEER_DISCOVERY_TYPE
+            value: k8s
           image: ${GUBERNATOR_IMAGE}:${GUBERNATOR_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: gubernator
@@ -1510,6 +1512,7 @@ objects:
       app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
     name: observatorium-gubernator
   spec:
+    clusterIP: None
     ports:
     - name: grpc
       port: 8081

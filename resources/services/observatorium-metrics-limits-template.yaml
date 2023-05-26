@@ -1,0 +1,19 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  annotations:
+    qontract.recycle: "true"
+  name: ${CONFIGMAP_NAME}
+objects:
+- apiVersion: v1
+  data:
+    receive.limits.yaml: ${{RECEIVE_LIMITS}}
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    name: ${CONFIGMAP_NAME}
+parameters:
+- name: CONFIGMAP_NAME
+- description: The Thanos-Receive limits configuration
+  name: RECEIVE_LIMITS

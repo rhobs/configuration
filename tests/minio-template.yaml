@@ -31,7 +31,7 @@ objects:
             value: ${MINIO_ACCESS_KEY}
           - name: MINIO_ROOT_PASSWORD
             value: ${MINIO_SECRET_KEY}
-          image: minio/minio:RELEASE.2021-09-09T21-37-07Z
+          image: ${IMAGE}:${IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: minio
           ports:
@@ -80,7 +80,7 @@ parameters:
 - name: IMAGE
   value: minio/minio
 - name: IMAGE_TAG
-  value: RELEASE.2021-09-09T21-37-07Z
+  value: RELEASE.2023-05-27T05-56-19Z
 - name: REPLICAS
   value: "1"
 - name: MINIO_CPU_REQUEST

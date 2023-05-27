@@ -21,6 +21,23 @@ dex() {
     oc process -f dex-template.yaml | oc apply --namespace dex -f -
 }
 
+observatorium_tools(){
+    oc apply -f loki-operator.yaml
+    sleep 30 # wait till clusterserviceversion becomes available
+    oc wait --for=jsonpath='{.status.phase}'=Succeeded clusterserviceversions loki-operator.v5.6.6 --namespace openshift-operators-redhat --timeout=60s
+    oc create ns observatorium-tools || true
+    oc apply --namespace observatorium-tools -f observatorium-tools-network-policy.yaml
+    oc process --param-file=logging.test.env -f ../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
+}
+
+logging(){
+    oc apply -f logging-operator.yaml
+    sleep 30 # wait till clusterserviceversion becomes available
+    oc wait --for=jsonpath='{.status.phase}'=Succeeded clusterserviceversions cluster-logging.v5.6.6 --namespace openshift-logging
+    oc apply --namespace openshift-logging -f clusterlogging.yaml
+    oc apply --namespace openshift-logging -f clusterlogforwader.yaml
+}
+
 observatorium_metrics() {
     oc create ns observatorium-metrics || true
     oc process -f observatorium-metrics-thanos-objectstorage-secret-template.yaml | oc apply --namespace observatorium-metrics -f -
@@ -40,7 +57,6 @@ observatorium() {
     oc process --param-file=observatorium.test.env -f ../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
     oc process --param-file=observatorium-parca.test.env -f ../resources/services/parca-template.yaml | oc apply --namespace observatorium -f -
     oc process --param-file=observatorium-jaeger.test.env -f ../resources/services/jaeger-template.yaml | oc apply --namespace observatorium -f -
-
 }
 
 observatorium_logs(){
@@ -63,6 +79,9 @@ teardown() {
     oc delete ns dex || true
     oc delete ns observatorium-logs || true
     oc delete ns observatorium-mst || true
+    oc delete ns observatorium-tools || true
+    oc delete ns openshift-logging || true
+    oc delete ns openshift-operators-redhat || true
 }
 
 rbac(){
@@ -74,10 +93,12 @@ case $1 in
 deploy)
     minio
     dex
+    observatorium_tools
     observatorium_metrics
     telemeter
     observatorium_logs
     observatorium
+    logging
     ;;
 teardown)
     teardown

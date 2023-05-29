@@ -69,6 +69,10 @@ objects:
       storageClassName: ${LOKI_STORAGE_CLASS}
       tenants:
         mode: ${LOKI_TENANT_MODE}
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: rhobs-loki-logs-reader
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:

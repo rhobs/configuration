@@ -665,9 +665,17 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 		grp = append(grp, generic)
 	}
 
-	// Make long/short labels more descriptive.
+	// AppSRE customizations.
 	for i := range grp {
 		for j := range grp[i].Rules {
+			// Prune certain alert labels.
+			if grp[i].Rules[j].Alert != "" {
+				delete(grp[i].Rules[j].Labels, "le")
+				delete(grp[i].Rules[j].Labels, "client")
+				delete(grp[i].Rules[j].Labels, "container")
+			}
+
+			// Make long/short labels more descriptive.
 			if v, ok := grp[i].Rules[j].Labels["long"]; ok {
 				grp[i].Rules[j].Labels["long_burnrate_window"] = v
 				delete(grp[i].Rules[j].Labels, "long")

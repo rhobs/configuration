@@ -300,7 +300,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-write-availability-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-receive",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /receive handler is burning too much error budget to guarantee availability SLOs.",
@@ -312,7 +312,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-query-availability-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /query handler is burning too much error budget to guarantee availability SLOs.",
@@ -324,7 +324,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-query-range-availability-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /query_range handler is burning too much error budget to guarantee availability SLOs.",
@@ -360,7 +360,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-rules-read-availability-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-ruler",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /rules endpoint is burning too much error budget to guarantee availability SLOs.",
@@ -372,7 +372,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-rules-sync-availability-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-ruler",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "Thanos Ruler /reload endpoint is burning too much error budget to guarantee availability SLOs.",
@@ -384,7 +384,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-alerting-availability-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-ruler",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API Thanos Rule failing to send alerts to Alertmanager and is burning too much error budget to guarantee availability SLOs.",
@@ -410,7 +410,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-write-latency-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-receive",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /receive handler is burning too much error budget to guarantee latency SLOs.",
@@ -422,7 +422,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-read-1M-latency-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /query endpoint is burning too much error budget for 1M samples, to guarantee latency SLOs.",
@@ -434,7 +434,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-read-10M-latency-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
@@ -446,7 +446,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 			{
 				name: "api-metrics-read-100M-latency-slo",
 				labels: map[string]string{
-					slo.PropagationLabelsPrefix + "service": "observatorium-thanos-query",
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
 					"instance":                              string(envName),
 				},
 				description:         "API /query endpoint is burning too much error budget for 100M samples, to guarantee latency SLOs.",
@@ -668,11 +668,16 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 	// AppSRE customizations.
 	for i := range grp {
 		for j := range grp[i].Rules {
-			// Prune certain alert labels.
 			if grp[i].Rules[j].Alert != "" {
+				// Prune certain alert labels.
 				delete(grp[i].Rules[j].Labels, "le")
 				delete(grp[i].Rules[j].Labels, "client")
 				delete(grp[i].Rules[j].Labels, "container")
+
+				// Hack for AM alert labels.
+				if v, ok := grp[i].Rules[j].Labels["service"]; ok && v == "observatorium-alertmanager" {
+					grp[i].Rules[j].Labels["service"] = "observatorium-api"
+				}
 			}
 
 			// Make long/short labels more descriptive.

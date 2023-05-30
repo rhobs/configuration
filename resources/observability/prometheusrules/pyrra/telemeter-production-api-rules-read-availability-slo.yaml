@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: telemeter-production
-    pyrra.dev/service: observatorium-thanos-ruler
+    pyrra.dev/service: observatorium-api
   name: api-rules-read-availability-slo
 spec:
   alerting:

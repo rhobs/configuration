@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: rhobsp02ue1-production
-    pyrra.dev/service: observatorium-thanos-query
+    pyrra.dev/service: observatorium-api
   name: api-metrics-read-100M-latency-slo
 spec:
   alerting:

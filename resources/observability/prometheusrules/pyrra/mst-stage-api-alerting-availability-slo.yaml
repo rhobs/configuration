@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-stage
-    pyrra.dev/service: observatorium-thanos-ruler
+    pyrra.dev/service: observatorium-api
   name: api-alerting-availability-slo
 spec:
   alerting:

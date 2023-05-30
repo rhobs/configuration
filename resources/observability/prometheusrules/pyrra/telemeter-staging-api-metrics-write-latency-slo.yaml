@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: telemeter-staging
-    pyrra.dev/service: observatorium-thanos-receive
+    pyrra.dev/service: observatorium-api
   name: api-metrics-write-latency-slo
 spec:
   alerting:

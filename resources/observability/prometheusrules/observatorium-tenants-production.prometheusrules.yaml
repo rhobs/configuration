@@ -13,7 +13,7 @@ spec:
     rules:
     - alert: ObservatoriumTenantsFailedOIDCRegistrations
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-tenants?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-tenants?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Increase in failed attempts to register with OIDC provider for {{ $labels.tenant }}
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumtenantsfailedoidcregistrations
       expr: |
@@ -23,7 +23,7 @@ spec:
         severity: medium
     - alert: ObservatoriumTenantsSkippedDuringConfiguration
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-tenants?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-tenants?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         message: Tenant {{ $labels.tenant }} was skipped due to misconfiguration
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumtenantsskippedduringconfiguration
       expr: |

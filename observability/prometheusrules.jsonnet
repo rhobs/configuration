@@ -146,14 +146,14 @@ local appSREOverwrites(environment) = {
               if std.length(std.findSubstr('Logs', r.alert)) > 0 then
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}' % [
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/api-logs?orgId=1&refresh=1m&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}' % [
                     dashboardID('loki', environment).id,
                   ],
                 }
               else if std.startsWith(g.name, 'telemeter') then
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/telemeter.md#%s' % std.asciiLower(r.alert),
-                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource={{$labels.cluster}}-prometheus' % [
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/telemeter?orgId=1&refresh=1m&var-datasource={{$externalLabels.cluster}}-prometheus' % [
                     dashboardID(g.name, environment).id,
                   ],
                 }
@@ -169,7 +169,7 @@ local appSREOverwrites(environment) = {
               else
                 {
                   runbook: 'https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#%s' % std.asciiLower(r.alert),
-                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource={{$labels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
+                  dashboard: 'https://grafana.app-sre.devshift.net/d/%s/%s?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m' % [
                     dashboardID(g.name, environment).id,
                     g.name,
                   ],

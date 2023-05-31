@@ -15,6 +15,7 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
         spec+: {
           containers: [
             super.containers[0] {
+              image: '${IMAGE}:${IMAGE_TAG}',
               resources: {
                 requests: {
                   cpu: '${MINIO_CPU_REQUEST}',
@@ -59,7 +60,7 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
   parameters: [
     { name: 'NAMESPACE', value: 'minio' },
     { name: 'IMAGE', value: 'minio/minio' },
-    { name: 'IMAGE_TAG', value: 'RELEASE.2021-09-09T21-37-07Z' },
+    { name: 'IMAGE_TAG', value: 'RELEASE.2023-05-27T05-56-19Z' },
     { name: 'REPLICAS', value: '1' },
     { name: 'MINIO_CPU_REQUEST', value: '100m' },
     { name: 'MINIO_MEMORY_REQUEST', value: '200Mi' },

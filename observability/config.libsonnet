@@ -16,7 +16,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
       title: '%(prefix)sOverview' % t.dashboard.prefix,
     },
     query+:: {
-      selector: 'job="%s"' % thanos.query.config.name,
+      selector: 'job=~"%s.*|%s.*"' % [thanos.query.config.name, thanos.rulerQuery.config.name],
     },
     store+:: {
       selector: 'job=~"%s.*"' % thanos.stores.config.name,

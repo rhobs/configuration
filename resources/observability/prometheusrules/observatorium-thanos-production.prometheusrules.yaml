@@ -32,7 +32,7 @@ spec:
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#thanosqueryisdown
         summary: Thanos component has disappeared from {{$labels.namespace}}.
       expr: |
-        absent(up{job="observatorium-thanos-query"} == 1)
+        absent(up{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"} == 1)
       for: 5m
       labels:
         service: telemeter
@@ -160,9 +160,9 @@ spec:
         summary: Thanos Query is failing to handle requests.
       expr: |
         (
-          sum by (namespace, job) (rate(http_requests_total{code=~"5..", job="observatorium-thanos-query", handler="query"}[5m]))
+          sum by (namespace, job) (rate(http_requests_total{code=~"5..", job=~"observatorium-thanos-query.*|observatorium-ruler-query.*", handler="query"}[5m]))
         /
-          sum by (namespace, job) (rate(http_requests_total{job="observatorium-thanos-query", handler="query"}[5m]))
+          sum by (namespace, job) (rate(http_requests_total{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*", handler="query"}[5m]))
         ) * 100 > 5
       for: 5m
       labels:
@@ -177,9 +177,9 @@ spec:
         summary: Thanos Query is failing to handle requests.
       expr: |
         (
-          sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job="observatorium-thanos-query"}[5m]))
+          sum by (namespace, job) (rate(grpc_server_handled_total{grpc_code=~"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded", job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"}[5m]))
         /
-          sum by (namespace, job) (rate(grpc_server_started_total{job="observatorium-thanos-query"}[5m]))
+          sum by (namespace, job) (rate(grpc_server_started_total{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"}[5m]))
         * 100 > 5
         )
       for: 5m
@@ -195,9 +195,9 @@ spec:
         summary: Thanos Query is failing to send requests.
       expr: |
         (
-          sum by (namespace, job) (rate(grpc_client_handled_total{grpc_code!="OK", job="observatorium-thanos-query"}[5m]))
+          sum by (namespace, job) (rate(grpc_client_handled_total{grpc_code!="OK", job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"}[5m]))
         /
-          sum by (namespace, job) (rate(grpc_client_started_total{job="observatorium-thanos-query"}[5m]))
+          sum by (namespace, job) (rate(grpc_client_started_total{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"}[5m]))
         ) * 100 > 5
       for: 5m
       labels:
@@ -212,9 +212,9 @@ spec:
         summary: Thanos Query is having high number of DNS failures.
       expr: |
         (
-          sum by (namespace, job) (rate(thanos_query_store_apis_dns_failures_total{job="observatorium-thanos-query"}[5m]))
+          sum by (namespace, job) (rate(thanos_query_store_apis_dns_failures_total{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"}[5m]))
         /
-          sum by (namespace, job) (rate(thanos_query_store_apis_dns_lookups_total{job="observatorium-thanos-query"}[5m]))
+          sum by (namespace, job) (rate(thanos_query_store_apis_dns_lookups_total{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*"}[5m]))
         ) * 100 > 1
       for: 15m
       labels:
@@ -229,9 +229,9 @@ spec:
         summary: Thanos Query has high latency for queries.
       expr: |
         (
-          histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query"}[5m]))) > 90
+          histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*", handler="query"}[5m]))) > 90
         and
-          sum by (namespace, job) (rate(http_request_duration_seconds_bucket{job="observatorium-thanos-query", handler="query"}[5m])) > 0
+          sum by (namespace, job) (rate(http_request_duration_seconds_bucket{job=~"observatorium-thanos-query.*|observatorium-ruler-query.*", handler="query"}[5m])) > 0
         )
       for: 10m
       labels:

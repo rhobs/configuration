@@ -1,5 +1,6 @@
 local utils = (import 'github.com/grafana/jsonnet-libs/mixin-utils/utils.libsonnet');
 local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
+local var = import 'utils.jsonnet';
 
 {
   thanos: (import 'github.com/thanos-io/thanos/mixin/config.libsonnet') {
@@ -36,7 +37,7 @@ local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
       selector: 'job="%s"' % thanos.compact.config.name,
     },
     dashboard+:: {
-      instance_name_filter: '/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/',
+      instance_name_filter: var.instance_name_filter,
     },
   },
 

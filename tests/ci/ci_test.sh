@@ -13,6 +13,7 @@ check_status() {
 prereq() {
     oc apply -f pre-requisites.yaml
     oc create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+    oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/openshift/manifests/loki.grafana.com_lokistacks.yaml
 }
 
 ns() {
@@ -51,6 +52,12 @@ observatorium_metrics() {
     oc process --param-file=observatorium-metric-federation-rule.test.ci.env \
         -f ../../resources/services/metric-federation-rule-template.yaml| \
         oc apply --namespace observatorium-metrics -f -
+}
+
+observatorium_tools(){
+    oc create ns observatorium-tools || true
+    oc apply --namespace observatorium-tools -f ../observatorium-tools-network-policy.yaml
+    oc process --param-file=logging.test.ci.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
 }
 
 observatorium() {
@@ -152,6 +159,7 @@ ci.deploy() {
     observatorium_metrics
     telemeter
     observatorium_logs
+    observatorium_tools
 }
 
 ci.tests() {

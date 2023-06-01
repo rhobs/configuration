@@ -16,7 +16,7 @@ This document provides an overview of the CI implementation that has been set up
   - CPU requests/limit, Memory request/limits and PVC storage are decreased so that RHOBS can be deployed on smaller clusters.
   - Number of replicas for components is decreased as well in order for the deployment to not be too resource heavy.
   - Objects names like service accounts, storage classes, secrets are replaced to work with local environment.
-  > :bulb: **Tip:** These parameters can be edited accordingly and as per the requirement in `<namespace>.test.ci.env` files.
+  > :bulb: **Note:** These parameters can be edited accordingly and as per the requirement in `<namespace>.test.ci.env` files.
 
 ### Build Process
 - Whenever new code is pushed or new PR is created to rhobs/configuration CircleCI is triggered to build and test the manifests.
@@ -24,3 +24,4 @@ This document provides an overview of the CI implementation that has been set up
 - [ci_test.sh](https://github.com/rhobs/configuration/blob/main/tests/ci/ci_test.sh) takes care of deploying the manifests and running tests
 ### Limitations
 - Since some template parameters are overriden in order to make deployment smooth on CI, so sanity of those paramters are not done. For e.g defining 4Gi in cpu request and "4" memory request.
+- CI doesn't deploy the Loki operator for meta-monitoring templates. It deploys the necessary CRDs like Lokistack and then apply the template to verify syntactic errors.

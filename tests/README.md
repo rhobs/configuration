@@ -39,6 +39,8 @@ Currently, below RHOBS OpenShift templates are being processed and deployed:
 - `observatorium`
 - `parca`
 - `telemeter`
+- `observatorium-tools` 
+> :bulb: The launch script will take care of deploying necessary dependencies for `observatorium-tools` namespace like Logging Operator, Loki Operator, etc.
 
 For optimal use it is recommended to use a OpenShift cluster with more resources.
 

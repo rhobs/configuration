@@ -18,7 +18,7 @@
         },
       },
       data: {
-        'receive.limits.yaml': '${{RECEIVE_LIMITS}}',
+        'receive.limits.yaml': '${RECEIVE_LIMITS}',
       },
     },
   ],

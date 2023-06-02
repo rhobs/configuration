@@ -7,7 +7,7 @@ metadata:
 objects:
 - apiVersion: v1
   data:
-    receive.limits.yaml: ${{RECEIVE_LIMITS}}
+    receive.limits.yaml: ${RECEIVE_LIMITS}
   kind: ConfigMap
   metadata:
     annotations:

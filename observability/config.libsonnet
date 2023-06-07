@@ -1,6 +1,5 @@
 local utils = (import 'github.com/grafana/jsonnet-libs/mixin-utils/utils.libsonnet');
 local thanos = (import '../services/observatorium-metrics.libsonnet').thanos;
-local alertmanager = (import '../services/observatorium-metrics.libsonnet').alertmanager;
 local var = import 'utils.jsonnet';
 
 {
@@ -42,7 +41,12 @@ local var = import 'utils.jsonnet';
     },
   },
   alertmanager: (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/config.libsonnet') {
-    local t = self,
+    _config+:: {
+      alertmanagerName: thanos.alertmanager.config.name,
+      alertmanagerSelector: 'job="%s"' % thanos.alertmanager.config.name,
+      alertmanagerClusterLabels: 'namespace,job',
+      alertmanagerNameLabels: '',
+    },
   },
   loki: {
     local withDatasource = function(ds) ds + (

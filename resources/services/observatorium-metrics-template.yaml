@@ -4703,7 +4703,7 @@ parameters:
 - name: THANOS_RECEIVE_HASHRINGS_ALGORITHM
   value: hashmod
 - name: THANOS_RECEIVE_LIMIT_CONFIG
-  value: '{"write":{"global":{"max_concurrency":0},"default":{"request":{"size_bytes_limit":0,"series_limit":0,"samples_limit":0}}}}'
+  value: '{"write":{"default":{"request":{"samples_limit":0,"series_limit":0,"size_bytes_limit":0}},"global":{"max_concurrency":0}}}'
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

@@ -10,6 +10,22 @@ local obs = import 'observatorium.libsonnet';
     for name in std.objectFields(obs.thanos.manifests)
     if obs.thanos.manifests[name] != null && !std.startsWith(name, 'metric-federation')
   ],
+
+  local defaultReceiveLimits = {  // default is unlimited
+    write: {
+      global: {
+        max_concurrency: 0,
+      },
+      default: {
+        request: {
+          size_bytes_limit: 0,
+          series_limit: 0,
+          samples_limit: 0,
+        },
+      },
+    },
+  },
+
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium-metrics' },
     { name: 'OBSERVATORIUM_NAMESPACE', value: 'observatorium' },
@@ -101,7 +117,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_RECEIVE_TSDB_RETENTION', value: '4d' },
     { name: 'THANOS_RECEIVE_HASHRING_SERVICE_NAME', value: 'observatorium-thanos-receive-default' },
     { name: 'THANOS_RECEIVE_HASHRINGS_ALGORITHM', value: 'hashmod' },
-    { name: 'THANOS_RECEIVE_LIMIT_CONFIG', value: '{"write":{"global":{"max_concurrency":0},"default":{"request":{"size_bytes_limit":0,"series_limit":0,"samples_limit":0}}}}' },  // default is unlimited
+    { name: 'THANOS_RECEIVE_LIMIT_CONFIG', value: std.manifestJsonMinified(defaultReceiveLimits) },
     { name: 'THANOS_RULE_SYNCER_IMAGE', value: 'quay.io/observatorium/thanos-rule-syncer' },
     { name: 'THANOS_RULE_SYNCER_IMAGE_TAG', value: 'main-2022-09-14-338f9ec' },
     { name: 'THANOS_RULER_CPU_LIMIT', value: '1' },

@@ -231,12 +231,6 @@ objects:
                 key: client-id
                 name: ${APPSRE_RELOADER_SECRET_NAME}
                 optional: true
-          - name: RHOC_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${RHOC_RELOADER_SECRET_NAME}
-                optional: true
           - name: RHOBS_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
@@ -265,12 +259,6 @@ objects:
               secretKeyRef:
                 key: client-secret
                 name: ${APPSRE_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHOC_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${RHOC_RELOADER_SECRET_NAME}
                 optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
@@ -1699,7 +1687,7 @@ parameters:
 - name: SLEEP_DURATION_SECONDS
   value: "15"
 - name: MANAGED_TENANTS
-  value: rhobs,osd,appsre,rhoc
+  value: rhobs,osd,appsre
 - name: RHOBS_RELOADER_SECRET_NAME
   value: rhobs-tenant
 - name: OSD_RELOADER_SECRET_NAME
@@ -1710,8 +1698,6 @@ parameters:
   value: rhobs-hypershift-platform-tenant
 - name: APPSRE_RELOADER_SECRET_NAME
   value: observatorium-appsre
-- name: RHOC_RELOADER_SECRET_NAME
-  value: observatorium-rhoc-staging
 - name: LOG_RULES_ENABLED
   value: "true"
 - name: OBSCTL_RELOADER_IMAGE

@@ -759,15 +759,6 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-psiocp-staging"
-      - "name": "observatorium-rhoc"
-        "roles":
-        - "rhoc-metrics-write"
-        - "rhoc-metrics-read"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-rhoc-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-rhoc"
       - "name": "observatorium-odfms-write"
         "roles":
         - "odfms-metrics-write"
@@ -995,20 +986,6 @@ objects:
         - "metrics"
         "tenants":
         - "psiocp"
-      - "name": "rhoc-metrics-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "rhoc"
-      - "name": "rhoc-metrics-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "rhoc"
       - "name": "odfms-metrics-write"
         "permissions":
         - "write"

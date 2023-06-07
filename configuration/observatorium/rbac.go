@@ -20,7 +20,6 @@ const (
 	psiocpTenant            tenantID = "psiocp"
 	rhodsTenant             tenantID = "rhods"
 	rhacsTenant             tenantID = "rhacs"
-	rhocTenant              tenantID = "rhoc"
 	odfmsTenant             tenantID = "odfms"
 	refAddonTenant          tenantID = "reference-addon"
 	hypershiftTenant        tenantID = "hypershift-platform"
@@ -167,15 +166,6 @@ func GenerateRBAC(gen *mimic.Generator) {
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv},
-	})
-
-	// RHOC
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-rhoc",
-		tenant:  rhocTenant,
-		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
 	})
 
 	// ODFMS

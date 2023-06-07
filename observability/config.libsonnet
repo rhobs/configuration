@@ -45,7 +45,6 @@ local var = import 'utils.jsonnet';
       alertmanagerName: thanos.alertmanager.config.name,
       alertmanagerSelector: 'job="%s"' % thanos.alertmanager.config.name,
       alertmanagerClusterLabels: 'namespace,job',
-      alertmanagerNameLabels: '',
     },
   },
   loki: {

@@ -127,7 +127,7 @@ migrate-vendor:
 manifests: migrate-vendor format $(JSONNET_VENDOR_DIR)
 manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml resources/crds/observatorium-logs-crds-template.yaml
-manifests: resources/services/metric-federation-rule-template.yaml resources/services/observatorium-metrics-limits-template.yaml
+manifests: resources/services/metric-federation-rule-template.yaml 
 	$(MAKE) clean
 
 resources/services/parca-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
@@ -154,10 +154,6 @@ resources/services/telemeter-template.yaml: $(wildcard services/telemeter-*) $(J
 resources/services/observatorium-tenants-template.yaml: services/observatorium-tenants-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium mst tenants templates"
 	$(JSONNET) -J vendor services/observatorium-tenants-template.jsonnet | $(GOJSONTOYAML) > $@
-
-resources/services/observatorium-metrics-limits-template.yaml: services/observatorium-metrics-limits-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
-	@echo ">>>>> Running observatorium mst receive limits templates"
-	$(JSONNET) -J vendor services/observatorium-metrics-limits-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/observatorium-template.yaml: resources/.tmp/tenants/rbac.json services/observatorium.libsonnet services/observatorium-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium templates"

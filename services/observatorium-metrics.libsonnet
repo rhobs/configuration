@@ -759,6 +759,29 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     ],
 
+    local receiveLimitsCM = {
+      name: 'observatorium-thanos-receive-limits',
+      key: 'receive.limits.yaml',
+    },
+
+    receiveLimits:: {
+      apiVersion: 'v1',
+      kind: 'ConfigMap',
+      metadata: {
+        name: receiveLimitsCM.name,
+        annotations: {
+          'qontract.recycle': 'true',
+        },
+        labels: {
+          'app.kubernetes.io/instance': 'observatorium',
+          'app.kubernetes.io/part-of': 'observatorium',
+        },
+      },
+      data: {
+        [receiveLimitsCM.key]: '${THANOS_RECEIVE_LIMIT_CONFIG}',  // key is the same as THANOS_RECEIVE_LIMIT_CONFIGMAP_KEY in observatorium-metrics-template.jsonnet
+      },
+    },
+
     receivers:: t.receiveHashrings(thanosSharedConfig {
       hashrings: hashrings,
       name: 'observatorium-thanos-receive',
@@ -796,6 +819,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
       hashringConfigMapName: '%s-generated' % thanos.receiveController.configmap.metadata.name,
       logLevel: '${THANOS_RECEIVE_LOG_LEVEL}',
+      receiveLimitsConfigFile: {
+        name: receiveLimitsCM.name,
+        key: receiveLimitsCM.key,
+      },
     }),
 
     receiversServiceMonitor:: {
@@ -1111,6 +1138,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     manifests+: {
       'stores-service-monitor': thanos.storesServiceMonitor,
       'receivers-service-monitor': thanos.receiversServiceMonitor,
+      'receivers-limits': thanos.receiveLimits,
     } + {
       ['store-index-cache-' + name]: thanos.storeIndexCache[name]
       for name in std.objectFields(thanos.storeIndexCache)

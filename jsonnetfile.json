@@ -156,7 +156,7 @@
           "subdir": "doc/alertmanager-mixin"
         }
       },
-      "version": "mixin"
+      "version": "main"
     }
   ],
   "legacyImports": true

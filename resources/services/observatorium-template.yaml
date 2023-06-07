@@ -809,6 +809,12 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform-read"
+      - "name": "observatorium-hypershift-platform-qe-read"
+        "roles":
+        - "hypershift-platform-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift-platform-qe-read"
       - "name": "observatorium-hypershift-platform-staging"
         "roles":
         - "hypershift-platform-staging-metrics-write"
@@ -822,6 +828,12 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform-staging-read"
+      - "name": "observatorium-hypershift-platform-staging-qe-read"
+        "roles":
+        - "hypershift-platform-staging-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift-platform-staging-qe-read"
       - "name": "observatorium-dptp-reader"
         "roles":
         - "dptp-logs-read"

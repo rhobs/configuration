@@ -234,6 +234,17 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{productionEnv},
 	})
 
+	// hypershift
+	// Special request of extra read account
+	// Ref: https://issues.redhat.com/browse/OHSS-22439
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-hypershift-platform-qe-read",
+		tenant:  hypershiftTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read}, // Read only.
+		envs:    []env{productionEnv},
+	})
+
 	// hypershift staging
 	// observatorium-hypershift-platform-staging is the only tenant that does not
 	// follow conventions, due to them being present in an unique environment alongside
@@ -252,6 +263,17 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// Ref: https://issues.redhat.com/browse/OHSS-22439
 	attachBinding(&obsRBAC, bindingOpts{
 		name:                "observatorium-hypershift-platform-staging-read",
+		tenant:              hypershiftStagingTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Read}, // Read only.
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
+	})
+
+	// hypershift staging
+	// Ref: https://issues.redhat.com/browse/OHSS-22439
+	attachBinding(&obsRBAC, bindingOpts{
+		name:                "observatorium-hypershift-platform-staging-qe-read",
 		tenant:              hypershiftStagingTenant,
 		signals:             []signal{metricsSignal},
 		perms:               []rbac.Permission{rbac.Read}, // Read only.

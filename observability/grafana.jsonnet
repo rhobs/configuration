@@ -13,6 +13,9 @@ local thanos =
   config.thanos;
 
 local memcached = (import 'github.com/grafana/jsonnet-libs/memcached-mixin/mixin.libsonnet');
+local alertmanager = (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/dashboards/overview.libsonnet') +
+                     config.alertmanager;
+
 
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'telemeter-production';
@@ -47,6 +50,20 @@ local dashboards =
       },
     }
     for name in std.objectFields(memcached.grafanaDashboards)
+  } +
+  {
+    ['grafana-dashboard-observatorium-%s.configmap' % sanitizeDashboardName(name)]: {
+      apiVersion: 'v1',
+      kind: 'ConfigMap',
+      metadata: {
+        name: 'grafana-dashboard-observatorium-%s' % sanitizeDashboardName(name),
+      },
+      data: {
+        // Replace references to 'cluster' by 'namespace', since we do not have 'cluster' label and use 'namespace' by default.
+        [name]: std.strReplace(std.manifestJsonEx(alertmanager.grafanaDashboards[name] { tags: std.uniq(super.tags + ['observatorium']) }, '  '), 'cluster', 'namespace'),
+      },
+    }
+    for name in std.objectFields(alertmanager.grafanaDashboards)
   } +
   { 'grafana-dashboard-observatorium-api.configmap': (import 'dashboards/observatorium-api.libsonnet')(obsDatasource, obsNamespace) } +
   { 'grafana-dashboard-telemeter-canary.configmap': (import 'dashboards/telemeter-canary.libsonnet')(obsDatasource, obsNamespace) } +

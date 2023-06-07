@@ -148,6 +148,15 @@
       },
       "version": "main",
       "name": "thanos-mixin"
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/prometheus/alertmanager",
+          "subdir": "doc/alertmanager-mixin"
+        }
+      },
+      "version": "mixin"
     }
   ],
   "legacyImports": true

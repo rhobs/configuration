@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: telemeter-staging
-    service: observatorium-api
+    pyrra.dev/service: observatorium-api
   name: api-rules-raw-write-availability-slo
 spec:
   alerting:

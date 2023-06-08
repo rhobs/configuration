@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-stage
-    service: observatorium-api
+    pyrra.dev/service: observatorium-api
   name: api-metrics-read-10M-latency-slo
 spec:
   alerting:

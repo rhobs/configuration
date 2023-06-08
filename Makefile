@@ -10,6 +10,9 @@ BIN_DIR ?= $(TMP_DIR)/bin
 OS ?= $(shell uname -s | tr '[A-Z]' '[a-z]')
 OC_VERSION ?= latest
 OC ?= $(BIN_DIR)/oc
+ifeq ($(OS),darwin)
+	OS = mac
+endif
 
 JSONNET_SRC = $(shell find . -type f -not -path './*vendor_jsonnet/*' \( -name '*.libsonnet' -o -name '*.jsonnet' \))
 # Given we have Go module in the root of repo we need to have custom dir for jsonnet vendor.

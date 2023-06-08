@@ -8,8 +8,8 @@ metadata:
     pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
   creationTimestamp: null
   labels:
+    pyrra.dev/service: telemeter
     route: telemeter-server-receive
-    service: telemeter
   name: rhobs-telemeter-server-metrics-receive-availability-slo
 spec:
   alerting:

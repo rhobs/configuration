@@ -948,7 +948,6 @@ spec:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
-        le: "5"
         severity: high
         slo: api-logs-write-latency-slo
   - interval: 30s

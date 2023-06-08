@@ -42,9 +42,8 @@ local var = import 'utils.jsonnet';
   },
   alertmanager: (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/config.libsonnet') {
     _config+:: {
-      alertmanagerName: thanos.alertmanager.config.name,
-      alertmanagerSelector: 'job="%s"' % thanos.alertmanager.config.name,
       alertmanagerClusterLabels: 'namespace,job',
+      alertmanagerNameLabels: 'pod',
     },
   },
   loki: {

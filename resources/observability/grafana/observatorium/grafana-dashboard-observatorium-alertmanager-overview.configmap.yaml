@@ -73,10 +73,10 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(alertmanager_alerts{namespace=~\"$namespace\",job=~\"$job\"}) by (namespace,job,instance)",
+                  "expr": "sum(alertmanager_alerts{namespace=~\"$namespace\",job=~\"$job\"}) by (namespace,job,pod)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}}",
+                  "legendFormat": "{{pod}}",
                   "refId": "A"
                 }
               ],
@@ -166,17 +166,17 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(alertmanager_alerts_received_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,instance)",
+                  "expr": "sum(rate(alertmanager_alerts_received_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} Received",
+                  "legendFormat": "{{pod}} Received",
                   "refId": "A"
                 },
                 {
-                  "expr": "sum(rate(alertmanager_alerts_invalid_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,instance)",
+                  "expr": "sum(rate(alertmanager_alerts_invalid_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} Invalid",
+                  "legendFormat": "{{pod}} Invalid",
                   "refId": "B"
                 }
               ],
@@ -278,17 +278,17 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "sum(rate(alertmanager_notifications_total{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (integration,namespace,job,instance)",
+                  "expr": "sum(rate(alertmanager_notifications_total{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (integration,namespace,job,pod)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} Total",
+                  "legendFormat": "{{pod}} Total",
                   "refId": "A"
                 },
                 {
-                  "expr": "sum(rate(alertmanager_notifications_failed_total{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (integration,namespace,job,instance)",
+                  "expr": "sum(rate(alertmanager_notifications_failed_total{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (integration,namespace,job,pod)",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} Failed",
+                  "legendFormat": "{{pod}} Failed",
                   "refId": "B"
                 }
               ],
@@ -377,24 +377,24 @@ data:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "histogram_quantile(0.99,\n  sum(rate(alertmanager_notification_latency_seconds_bucket{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (le,namespace,job,instance)\n) \n",
+                  "expr": "histogram_quantile(0.99,\n  sum(rate(alertmanager_notification_latency_seconds_bucket{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (le,namespace,job,pod)\n) \n",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} 99th Percentile",
+                  "legendFormat": "{{pod}} 99th Percentile",
                   "refId": "A"
                 },
                 {
-                  "expr": "histogram_quantile(0.50,\n  sum(rate(alertmanager_notification_latency_seconds_bucket{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (le,namespace,job,instance)\n) \n",
+                  "expr": "histogram_quantile(0.50,\n  sum(rate(alertmanager_notification_latency_seconds_bucket{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (le,namespace,job,pod)\n) \n",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} Median",
+                  "legendFormat": "{{pod}} Median",
                   "refId": "B"
                 },
                 {
-                  "expr": "sum(rate(alertmanager_notification_latency_seconds_sum{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (namespace,job,instance)\n/\nsum(rate(alertmanager_notification_latency_seconds_count{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (namespace,job,instance)\n",
+                  "expr": "sum(rate(alertmanager_notification_latency_seconds_sum{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (namespace,job,pod)\n/\nsum(rate(alertmanager_notification_latency_seconds_count{namespace=~\"$namespace\",job=~\"$job\", integration=\"$integration\"}[$__rate_interval])) by (namespace,job,pod)\n",
                   "format": "time_series",
                   "intervalFactor": 2,
-                  "legendFormat": "{{instance}} Average",
+                  "legendFormat": "{{pod}} Average",
                   "refId": "C"
                 }
               ],

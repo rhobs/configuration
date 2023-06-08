@@ -21,10 +21,10 @@ spec:
       grouping: null
       success:
         metric: up_custom_query_duration_seconds_bucket{query="query-path-sli-1M-samples",
-          namespace="observatorium-production", code=~"^2..$", le="10"}
+          namespace="observatorium-production", http_code=~"^2..$", le="10"}
       total:
         metric: up_custom_query_duration_seconds_count{query="query-path-sli-1M-samples",
-          namespace="observatorium-production", code=~"^2..$"}
+          namespace="observatorium-production", http_code=~"^2..$"}
   target: "90"
   window: 28d
 status: {}

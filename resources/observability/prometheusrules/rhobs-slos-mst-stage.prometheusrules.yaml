@@ -1970,14 +1970,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-read-1M-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
       labels:
         le: "10"
         namespace: observatorium-mst-stage
@@ -1991,7 +1991,7 @@ spec:
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
@@ -2006,7 +2006,7 @@ spec:
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
@@ -2018,63 +2018,63 @@ spec:
   - interval: 30s
     name: api-metrics-read-1M-latency-slo
     rules:
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate5m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate30m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate2h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate6h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1d
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
@@ -2164,31 +2164,31 @@ spec:
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_window
-    - expr: sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"}
-        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"})
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"})
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_availability
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_requests_total
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
-        - sum(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
     name: api-metrics-read-10M-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4w]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4w]))
       labels:
         le: "30"
         namespace: observatorium-mst-stage
@@ -2202,7 +2202,7 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
         == 1
       for: 2m
       labels:
@@ -2217,7 +2217,7 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
         == 1
       for: 2m
       labels:
@@ -2229,63 +2229,63 @@ spec:
   - interval: 30s
     name: api-metrics-read-10M-latency-slo
     rules:
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[5m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[5m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[5m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[5m]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate5m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[30m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[30m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[30m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[30m]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate30m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[2h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[2h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[2h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[2h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate2h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[6h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[6h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[6h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[6h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate6h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[1d]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1d
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"}[4d]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-10M-samples
@@ -2375,31 +2375,31 @@ spec:
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_window
-    - expr: sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"}
-        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"})
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"})
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_availability
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_requests_total
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
-        - sum(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-stage",query="query-path-sli-10M-samples"})
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
     name: api-metrics-read-100M-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4w]))
       labels:
         le: "120"
         namespace: observatorium-mst-stage
@@ -2413,7 +2413,7 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
@@ -2428,7 +2428,7 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
@@ -2440,63 +2440,63 @@ spec:
   - interval: 30s
     name: api-metrics-read-100M-latency-slo
     rules:
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[5m]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate5m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[30m]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate30m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[2h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate2h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[6h]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate6h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[1d]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1d
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"}[4d]))
       labels:
         namespace: observatorium-mst-stage
         query: query-path-sli-1M-samples
@@ -2586,17 +2586,17 @@ spec:
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_window
-    - expr: sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"}
-        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"})
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"})
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_availability
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_requests_total
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
-        - sum(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-stage",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_errors_total

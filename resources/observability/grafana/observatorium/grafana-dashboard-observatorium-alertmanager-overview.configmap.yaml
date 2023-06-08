@@ -469,7 +469,7 @@ data:
             ],
             "query": "prometheus",
             "refresh": 1,
-            "regex": "",
+            "regex": "/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/",
             "type": "datasource"
           },
           {
@@ -541,7 +541,7 @@ data:
             "options": [
 
             ],
-            "query": "label_values(alertmanager_notifications_total{integration=~\".*\"}, integration)",
+            "query": "label_values(alertmanager_notifications_total{integration=~\"slack|pagerduty|email|webhook\"}, integration)",
             "refresh": 2,
             "regex": "",
             "sort": 1,

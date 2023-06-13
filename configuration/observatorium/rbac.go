@@ -25,6 +25,7 @@ const (
 	hypershiftTenant        tenantID = "hypershift-platform"
 	hypershiftStagingTenant tenantID = "hypershift-platform-staging"
 	rhtapTenant             tenantID = "rhtap"
+	rhelTenant              tenantID = "rhel"
 )
 
 type signal string
@@ -309,6 +310,25 @@ func GenerateRBAC(gen *mimic.Generator) {
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read, rbac.Write},
 		envs:    []env{stagingEnv, productionEnv},
+	})
+
+	// RHEL
+	// Reader serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-rhel-read",
+		tenant:  rhelTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv},
+	})
+	// RHEL
+	// Writer serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-rhel-write",
+		tenant:  rhelTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write},
+		envs:    []env{stagingEnv},
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.

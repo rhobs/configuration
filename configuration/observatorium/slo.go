@@ -13,11 +13,11 @@ import (
 )
 
 const (
-	globalSLOWindowDuration                   = "28d"  // Window over which all RHOBS SLOs are calculated.
-	globalMetricsSLOAvailabilityTargetPercent = "99.5" // The Availability Target percentage for RHOBS metrics availability SLOs.
-	globalLogsSLOAvailabilityTargetPercent    = "95"   // The Availability Target percentage for RHOBS logs availability SLOs.
-	globalSLOLatencyTargetPercent             = "90"   // The Latency Target percentage for RHOBS latency SLOs.
-	genericSLOLatencySeconds                  = "5"    // Latency request duration to measure percentile target (this is diff for query SLOs).
+	globalSLOWindowDuration                   = "28d" // Window over which all RHOBS SLOs are calculated.
+	globalMetricsSLOAvailabilityTargetPercent = "95"  // The Availability Target percentage for RHOBS metrics availability SLOs.
+	globalLogsSLOAvailabilityTargetPercent    = "95"  // The Availability Target percentage for RHOBS logs availability SLOs.
+	globalSLOLatencyTargetPercent             = "90"  // The Latency Target percentage for RHOBS latency SLOs.
+	genericSLOLatencySeconds                  = "5"   // Latency request duration to measure percentile target (this is diff for query SLOs).
 )
 
 // rhobsInstanceEnv represents a particular RHOBS Instance environment.

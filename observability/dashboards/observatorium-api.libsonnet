@@ -1,6 +1,4 @@
 function(datasource, namespace) {
-
-
   local panels = [
     // '/query & /query_legacy'
     titleRow(createGridPos(1, 24, 0, 0), 116, '/query & /query_legacy', false),

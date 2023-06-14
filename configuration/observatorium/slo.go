@@ -31,18 +31,6 @@ const (
 	rhobsp02ue1Production rhobsInstanceEnv = "rhobsp02ue1-production" // MST production Observatorium instance on rhobsp02ue1 cluster.
 )
 
-// isStage as the name suggests returns if the rhobsInstanceEnv is a staging environment.
-func (envName rhobsInstanceEnv) isStage() bool {
-	switch envName {
-	case telemeterStaging, mstStage:
-		return true
-	case telemeterProduction, mstProduction, rhobsp02ue1Production:
-		return false
-	default:
-		panic(envName + " is not a RHOBS env")
-	}
-}
-
 var (
 	// Reusable k8s type metas.
 

@@ -20,12 +20,12 @@ const (
 	psiocpTenant            tenantID = "psiocp"
 	rhodsTenant             tenantID = "rhods"
 	rhacsTenant             tenantID = "rhacs"
-	rhocTenant              tenantID = "rhoc"
 	odfmsTenant             tenantID = "odfms"
 	refAddonTenant          tenantID = "reference-addon"
 	hypershiftTenant        tenantID = "hypershift-platform"
 	hypershiftStagingTenant tenantID = "hypershift-platform-staging"
 	rhtapTenant             tenantID = "rhtap"
+	rhelTenant              tenantID = "rhel"
 )
 
 type signal string
@@ -169,15 +169,6 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{stagingEnv},
 	})
 
-	// RHOC
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-rhoc",
-		tenant:  rhocTenant,
-		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
-	})
-
 	// ODFMS
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-odfms-write",
@@ -234,6 +225,17 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{productionEnv},
 	})
 
+	// hypershift
+	// Special request of extra read account
+	// Ref: https://issues.redhat.com/browse/OHSS-22439
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-hypershift-platform-qe-read",
+		tenant:  hypershiftTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read}, // Read only.
+		envs:    []env{productionEnv},
+	})
+
 	// hypershift staging
 	// observatorium-hypershift-platform-staging is the only tenant that does not
 	// follow conventions, due to them being present in an unique environment alongside
@@ -252,6 +254,17 @@ func GenerateRBAC(gen *mimic.Generator) {
 	// Ref: https://issues.redhat.com/browse/OHSS-22439
 	attachBinding(&obsRBAC, bindingOpts{
 		name:                "observatorium-hypershift-platform-staging-read",
+		tenant:              hypershiftStagingTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Read}, // Read only.
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
+	})
+
+	// hypershift staging
+	// Ref: https://issues.redhat.com/browse/OHSS-22439
+	attachBinding(&obsRBAC, bindingOpts{
+		name:                "observatorium-hypershift-platform-staging-qe-read",
 		tenant:              hypershiftStagingTenant,
 		signals:             []signal{metricsSignal},
 		perms:               []rbac.Permission{rbac.Read}, // Read only.
@@ -297,6 +310,25 @@ func GenerateRBAC(gen *mimic.Generator) {
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read, rbac.Write},
 		envs:    []env{stagingEnv, productionEnv},
+	})
+
+	// RHEL
+	// Reader serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-rhel-read",
+		tenant:  rhelTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv},
+	})
+	// RHEL
+	// Writer serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-rhel-write",
+		tenant:  rhelTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Write},
+		envs:    []env{stagingEnv},
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.

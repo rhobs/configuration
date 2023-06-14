@@ -18,6 +18,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
@@ -33,6 +34,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         severity: critical
         slo: api-metrics-write-availability-slo
   - interval: 30s
@@ -44,6 +46,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate5m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[30m]))
@@ -52,6 +55,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate30m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[1h]))
@@ -60,6 +64,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate1h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[2h]))
@@ -68,6 +73,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate2h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[6h]))
@@ -76,6 +82,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate6h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[1d]))
@@ -84,6 +91,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate1d
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[4d]))
@@ -92,6 +100,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: http_requests:burnrate4d
     - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -109,6 +118,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-write-availability-slo
@@ -127,6 +137,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-write-availability-slo
@@ -145,6 +156,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-write-availability-slo
@@ -163,6 +175,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-write-availability-slo
@@ -199,6 +212,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
@@ -214,6 +228,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         severity: critical
         slo: api-metrics-query-availability-slo
   - interval: 30s
@@ -225,6 +240,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate5m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-mst-api"}[30m]))
@@ -233,6 +249,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate30m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-mst-api"}[1h]))
@@ -241,6 +258,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate1h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-mst-api"}[2h]))
@@ -249,6 +267,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate2h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-mst-api"}[6h]))
@@ -257,6 +276,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate6h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-mst-api"}[1d]))
@@ -265,6 +285,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate1d
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-mst-api"}[4d]))
@@ -273,6 +294,7 @@ spec:
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: http_requests:burnrate4d
     - alert: APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -290,6 +312,7 @@ spec:
         handler: query
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-query-availability-slo
@@ -308,6 +331,7 @@ spec:
         handler: query
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-query-availability-slo
@@ -326,6 +350,7 @@ spec:
         handler: query
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-query-availability-slo
@@ -344,6 +369,7 @@ spec:
         handler: query
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-query-availability-slo
@@ -380,6 +406,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
@@ -395,6 +422,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         severity: critical
         slo: api-metrics-query-range-availability-slo
   - interval: 30s
@@ -406,6 +434,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate5m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[30m]))
@@ -414,6 +443,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate30m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1h]))
@@ -422,6 +452,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate1h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[2h]))
@@ -430,6 +461,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate2h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[6h]))
@@ -438,6 +470,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate6h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1d]))
@@ -446,6 +479,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate1d
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4d]))
@@ -454,6 +488,7 @@ spec:
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: http_requests:burnrate4d
     - alert: APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -471,6 +506,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-query-range-availability-slo
@@ -489,6 +525,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-query-range-availability-slo
@@ -507,6 +544,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-query-range-availability-slo
@@ -525,6 +563,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-query-range-availability-slo
@@ -562,6 +601,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
@@ -578,6 +618,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         severity: critical
         slo: api-rules-raw-write-availability-slo
   - interval: 30s
@@ -590,6 +631,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate5m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="PUT"}[30m]))
@@ -599,6 +641,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate30m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="PUT"}[1h]))
@@ -608,6 +651,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate1h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="PUT"}[2h]))
@@ -617,6 +661,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate2h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="PUT"}[6h]))
@@ -626,6 +671,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate6h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="PUT"}[1d]))
@@ -635,6 +681,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate1d
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="PUT"}[4d]))
@@ -644,6 +691,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: PUT
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: http_requests:burnrate4d
     - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -662,6 +710,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
         method: PUT
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-rules-raw-write-availability-slo
@@ -681,6 +730,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
         method: PUT
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-rules-raw-write-availability-slo
@@ -700,6 +750,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
         method: PUT
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-rules-raw-write-availability-slo
@@ -719,6 +770,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
         method: PUT
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-rules-raw-write-availability-slo
@@ -756,6 +808,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
@@ -772,6 +825,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         severity: critical
         slo: api-rules-raw-read-availability-slo
   - interval: 30s
@@ -784,6 +838,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate5m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="GET"}[30m]))
@@ -793,6 +848,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate30m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="GET"}[1h]))
@@ -802,6 +858,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate1h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="GET"}[2h]))
@@ -811,6 +868,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate2h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="GET"}[6h]))
@@ -820,6 +878,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate6h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="GET"}[1d]))
@@ -829,6 +888,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate1d
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-mst-api",method="GET"}[4d]))
@@ -838,6 +898,7 @@ spec:
         handler: rules-raw
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-raw-read-availability-slo
       record: http_requests:burnrate4d
     - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -856,6 +917,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
         method: GET
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-rules-raw-read-availability-slo
@@ -875,6 +937,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
         method: GET
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-rules-raw-read-availability-slo
@@ -894,6 +957,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
         method: GET
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-rules-raw-read-availability-slo
@@ -913,6 +977,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
         method: GET
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-rules-raw-read-availability-slo
@@ -950,6 +1015,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:increase4w
     - alert: SLOMetricAbsent
@@ -966,6 +1032,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         severity: critical
         slo: api-rules-read-availability-slo
   - interval: 30s
@@ -978,6 +1045,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate5m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-mst-api",method="GET"}[30m]))
@@ -987,6 +1055,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate30m
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-mst-api",method="GET"}[1h]))
@@ -996,6 +1065,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate1h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-mst-api",method="GET"}[2h]))
@@ -1005,6 +1075,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate2h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-mst-api",method="GET"}[6h]))
@@ -1014,6 +1085,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate6h
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-mst-api",method="GET"}[1d]))
@@ -1023,6 +1095,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate1d
     - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-mst-api",method="GET"}[4d]))
@@ -1032,6 +1105,7 @@ spec:
         handler: rules
         job: observatorium-observatorium-mst-api
         method: GET
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: http_requests:burnrate4d
     - alert: APIRulesReadAvailabilityErrorBudgetBurning
@@ -1050,6 +1124,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
         method: GET
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-rules-read-availability-slo
@@ -1069,6 +1144,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
         method: GET
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-rules-read-availability-slo
@@ -1088,6 +1164,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
         method: GET
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-rules-read-availability-slo
@@ -1107,6 +1184,7 @@ spec:
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
         method: GET
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-rules-read-availability-slo
@@ -1143,6 +1221,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:increase4w
     - alert: SLOMetricAbsent
@@ -1155,9 +1234,8 @@ spec:
         == 1
       for: 2m
       labels:
-        client: reload
-        container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: critical
         slo: api-rules-sync-availability-slo
   - interval: 30s
@@ -1169,6 +1247,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate5m
     - expr: sum by(code) (rate(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-mst-production"}[30m]))
@@ -1177,6 +1256,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate30m
     - expr: sum by(code) (rate(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-mst-production"}[1h]))
@@ -1185,6 +1265,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate1h
     - expr: sum by(code) (rate(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-mst-production"}[2h]))
@@ -1193,6 +1274,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate2h
     - expr: sum by(code) (rate(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-mst-production"}[6h]))
@@ -1201,6 +1283,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate6h
     - expr: sum by(code) (rate(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-mst-production"}[1d]))
@@ -1209,6 +1292,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate1d
     - expr: sum by(code) (rate(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-mst-production"}[4d]))
@@ -1217,6 +1301,7 @@ spec:
         client: reload
         container: thanos-rule-syncer
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: client_api_requests:burnrate4d
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
@@ -1230,10 +1315,9 @@ spec:
         > (14 * (1-0.995))
       for: 2m
       labels:
-        client: reload
-        container: thanos-rule-syncer
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-rules-sync-availability-slo
@@ -1248,10 +1332,9 @@ spec:
         > (7 * (1-0.995))
       for: 15m
       labels:
-        client: reload
-        container: thanos-rule-syncer
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-rules-sync-availability-slo
@@ -1266,10 +1349,9 @@ spec:
         > (2 * (1-0.995))
       for: 1h
       labels:
-        client: reload
-        container: thanos-rule-syncer
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-rules-sync-availability-slo
@@ -1284,10 +1366,9 @@ spec:
         > (1 * (1-0.995))
       for: 3h
       labels:
-        client: reload
-        container: thanos-rule-syncer
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-rules-sync-availability-slo
@@ -1323,6 +1404,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:increase4w
     - alert: SLOMetricAbsent
@@ -1335,8 +1417,8 @@ spec:
         == 1
       for: 2m
       labels:
-        container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: critical
         slo: api-alerting-availability-slo
   - interval: 30s
@@ -1347,6 +1429,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate5m
     - expr: sum by(code) (rate(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-mst-production"}[30m]))
@@ -1354,6 +1437,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate30m
     - expr: sum by(code) (rate(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-mst-production"}[1h]))
@@ -1361,6 +1445,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate1h
     - expr: sum by(code) (rate(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-mst-production"}[2h]))
@@ -1368,6 +1453,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate2h
     - expr: sum by(code) (rate(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-mst-production"}[6h]))
@@ -1375,6 +1461,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate6h
     - expr: sum by(code) (rate(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-mst-production"}[1d]))
@@ -1382,6 +1469,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate1d
     - expr: sum by(code) (rate(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-mst-production"}[4d]))
@@ -1389,6 +1477,7 @@ spec:
       labels:
         container: thanos-rule
         namespace: observatorium-mst-production
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: thanos_alert_sender_alerts_dropped:burnrate4d
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -1402,9 +1491,9 @@ spec:
         > (14 * (1-0.995))
       for: 2m
       labels:
-        container: thanos-rule
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-alerting-availability-slo
@@ -1419,9 +1508,9 @@ spec:
         > (7 * (1-0.995))
       for: 15m
       labels:
-        container: thanos-rule
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-alerting-availability-slo
@@ -1436,9 +1525,9 @@ spec:
         > (2 * (1-0.995))
       for: 1h
       labels:
-        container: thanos-rule
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-alerting-availability-slo
@@ -1453,9 +1542,9 @@ spec:
         > (1 * (1-0.995))
       for: 3h
       labels:
-        container: thanos-rule
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-alerting-availability-slo
@@ -1504,7 +1593,7 @@ spec:
       for: 2m
       labels:
         namespace: observatorium-mst-production
-        service: observatorium-alertmanager
+        service: observatorium-api
         severity: critical
         slo: api-alerting-notif-availability-slo
   - interval: 30s
@@ -1572,7 +1661,7 @@ spec:
       labels:
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
-        service: observatorium-alertmanager
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-alerting-notif-availability-slo
@@ -1589,7 +1678,7 @@ spec:
       labels:
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
-        service: observatorium-alertmanager
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-alerting-notif-availability-slo
@@ -1606,7 +1695,7 @@ spec:
       labels:
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
-        service: observatorium-alertmanager
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-alerting-notif-availability-slo
@@ -1623,7 +1712,7 @@ spec:
       labels:
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
-        service: observatorium-alertmanager
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-alerting-notif-availability-slo
@@ -1660,6 +1749,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:increase4w
     - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api",le="5"}[4w]))
@@ -1668,6 +1758,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         le: "5"
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:increase4w
     - alert: SLOMetricAbsent
@@ -1683,6 +1774,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         severity: critical
         slo: api-metrics-write-latency-slo
     - alert: SLOMetricAbsent
@@ -1698,7 +1790,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
-        le: "5"
+        service: observatorium-api
         severity: critical
         slo: api-metrics-write-latency-slo
   - interval: 30s
@@ -1711,6 +1803,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate5m
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[30m]))
@@ -1720,6 +1813,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate30m
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[1h]))
@@ -1729,6 +1823,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate1h
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[2h]))
@@ -1738,6 +1833,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate2h
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[6h]))
@@ -1747,6 +1843,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate6h
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[1d]))
@@ -1756,6 +1853,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate1d
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-mst-api"}[4d]))
@@ -1765,6 +1863,7 @@ spec:
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:burnrate4d
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
@@ -1782,6 +1881,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-write-latency-slo
@@ -1800,6 +1900,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-write-latency-slo
@@ -1818,6 +1919,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-write-latency-slo
@@ -1836,6 +1938,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-write-latency-slo
@@ -1867,17 +1970,19 @@ spec:
   - interval: 2m30s
     name: api-metrics-read-1M-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         le: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
     - alert: SLOMetricAbsent
@@ -1886,12 +1991,13 @@ spec:
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         slo: api-metrics-read-1M-latency-slo
     - alert: SLOMetricAbsent
@@ -1900,72 +2006,79 @@ spec:
         message: API /query endpoint is burning too much error budget for 1M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency1MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
-        le: "10"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         slo: api-metrics-read-1M-latency-slo
   - interval: 30s
     name: api-metrics-read-1M-latency-slo
     rules:
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate5m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate30m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate2h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate6h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1d
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:burnrate4d
     - alert: APIMetricsReadLatency1MErrorBudgetBurning
@@ -1982,6 +2095,7 @@ spec:
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-read-1M-latency-slo
@@ -1999,6 +2113,7 @@ spec:
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-read-1M-latency-slo
@@ -2016,6 +2131,7 @@ spec:
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-read-1M-latency-slo
@@ -2033,6 +2149,7 @@ spec:
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-read-1M-latency-slo
@@ -2047,34 +2164,36 @@ spec:
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_window
-    - expr: sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"}
-        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"})
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"})
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_availability
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_requests_total
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
-        - sum(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
     name: api-metrics-read-10M-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4w]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4w]))
       labels:
         le: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
     - alert: SLOMetricAbsent
@@ -2083,12 +2202,13 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
         == 1
       for: 2m
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         severity: critical
         slo: api-metrics-read-10M-latency-slo
     - alert: SLOMetricAbsent
@@ -2097,72 +2217,79 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency10MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
         == 1
       for: 2m
       labels:
-        le: "30"
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         severity: critical
         slo: api-metrics-read-10M-latency-slo
   - interval: 30s
     name: api-metrics-read-10M-latency-slo
     rules:
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[5m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[5m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[5m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[5m]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate5m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[30m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[30m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[30m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[30m]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate30m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[2h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[2h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[2h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[2h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate2h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[6h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[6h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[6h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[6h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate6h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[1d]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1d
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"}[4d]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:burnrate4d
     - alert: APIMetricsReadLatency10MErrorBudgetBurning
@@ -2179,6 +2306,7 @@ spec:
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-read-10M-latency-slo
@@ -2196,6 +2324,7 @@ spec:
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-read-10M-latency-slo
@@ -2213,6 +2342,7 @@ spec:
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-read-10M-latency-slo
@@ -2230,6 +2360,7 @@ spec:
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-read-10M-latency-slo
@@ -2244,34 +2375,36 @@ spec:
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_window
-    - expr: sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"}
-        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="",namespace="observatorium-mst-production",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"})
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-production",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"})
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_availability
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_requests_total
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
-        - sum(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="query-path-sli-10M-samples"})
       labels:
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
     name: api-metrics-read-100M-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(code) (increase(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         le: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
     - alert: SLOMetricAbsent
@@ -2280,12 +2413,13 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         slo: api-metrics-read-100M-latency-slo
     - alert: SLOMetricAbsent
@@ -2294,72 +2428,79 @@ spec:
         message: API /query endpoint is burning too much error budget for 100M samples,
           to guarantee latency SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsReadLatency100MErrorBudgetBurning
-      expr: absent(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
         == 1
       for: 2m
       labels:
-        le: "120"
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         slo: api-metrics-read-100M-latency-slo
   - interval: 30s
     name: api-metrics-read-100M-latency-slo
     rules:
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[5m]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate5m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[30m]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate30m
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[2h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate2h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[6h]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate6h
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[1d]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate1d
-    - expr: (sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
-        - sum(rate(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d])))
-        / sum(rate(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"}[4d]))
       labels:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:burnrate4d
     - alert: APIMetricsReadLatency100MErrorBudgetBurning
@@ -2376,6 +2517,7 @@ spec:
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 5m
         slo: api-metrics-read-100M-latency-slo
@@ -2393,6 +2535,7 @@ spec:
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: critical
         short_burnrate_window: 30m
         slo: api-metrics-read-100M-latency-slo
@@ -2410,6 +2553,7 @@ spec:
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 2h
         slo: api-metrics-read-100M-latency-slo
@@ -2427,6 +2571,7 @@ spec:
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
+        service: observatorium-api
         severity: warning
         short_burnrate_window: 6h
         slo: api-metrics-read-100M-latency-slo
@@ -2441,17 +2586,17 @@ spec:
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_window
-    - expr: sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"}
-        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{code=~"^2..$",le="",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"})
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-production",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"})
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_availability
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_requests_total
-    - expr: sum(up_custom_query_duration_seconds_count{code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
-        - sum(up_custom_query_duration_seconds_bucket{code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="query-path-sli-1M-samples"})
       labels:
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_errors_total

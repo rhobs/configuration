@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-production
-    service: observatorium-api
+    pyrra.dev/service: observatorium-api
   name: api-rules-raw-read-availability-slo
 spec:
   alerting:

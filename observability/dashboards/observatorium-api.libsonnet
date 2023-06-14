@@ -5,14 +5,14 @@ function(datasource, namespace) {
     availabilityPanel(
       createGridPos(3, 12, 0, 1),
       114,
-      'sum(rate(http_request_duration_seconds_bucket{job="$job",handler=~"query|query_legacy",le="1"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="$job",handler=~"query|query_legacy"}[28d]))',
+      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler=~"query|query_legacy",le="1"}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler=~"query|query_legacy"}[28d]))',
       '0.95,0.96',
       'Availability 1s [28d] > 95%',
     ),
     availabilityPanel(
       createGridPos(3, 12, 12, 1),
       128,
-      'sum(rate(http_request_duration_seconds_bucket{job="$job",handler="query",le="3",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="$job",handler="query"}[28d]))',
+      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="query",le="3",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="query"}[28d]))',
       '0.99,0.992',
       'Availability 3s [28d] > 99%',
     ),
@@ -50,14 +50,14 @@ function(datasource, namespace) {
     availabilityPanel(
       createGridPos(3, 12, 0, 13),
       118,
-      'sum(rate(http_request_duration_seconds_bucket{job="$job",handler="query_range",le="60",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="$job",handler="query_range"}[28d]))',
+      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="query_range",le="60",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="query_range"}[28d]))',
       '0.90,0.92',
       'Availability 60s [28d] > 90%',
     ),
     availabilityPanel(
       createGridPos(3, 12, 12, 13),
       119,
-      'sum(increase(http_request_duration_seconds_bucket{job="$job",handler="query_range",le="120",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{job="$job",handler="query_range"}[28d]))',
+      'sum(increase(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="query_range",le="120",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="query_range"}[28d]))',
       '0.99,0.992',
       'Availability 120s [28d] > 99%',
     ),
@@ -95,14 +95,14 @@ function(datasource, namespace) {
     availabilityPanel(
       createGridPos(3, 12, 0, 25),
       138,
-      'sum(rate(http_request_duration_seconds_bucket{job="$job",handler="rules-raw",le="60",method="PUT",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{job="$job",handler="rules-raw"}[28d]))',
+      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules-raw",le="60",method="PUT",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules-raw"}[28d]))',
       '0.95,0.96',
       'Availability (write) 60s [28d] > 95%',
     ),
     availabilityPanel(
       createGridPos(3, 12, 12, 25),
       140,
-      'sum(increase(http_request_duration_seconds_bucket{job="$job",handler="rules-raw",method="GET",le="60",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{job="$job",handler="rules-raw"}[28d]))',
+      'sum(increase(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules-raw",method="GET",le="60",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules-raw"}[28d]))',
       '0.90,0.92',
       'Availability (read) 60s [28d] > 90%',
     ),
@@ -303,21 +303,21 @@ function(datasource, namespace) {
   local targetsQueryDuration =
     [
       {
-        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job", handler=~"query|query_legacy",code!~"5.."}[5m])))',
+        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job", handler=~"query|query_legacy",code!~"5.."}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '99th',
         refId: 'A',
       },
       {
-        expr: 'histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",handler=~"query|query_legacy",code!~"5.."}[5m])))',
+        expr: 'histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler=~"query|query_legacy",code!~"5.."}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '95th',
         refId: 'B',
       },
       {
-        expr: 'histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job", handler=~"query|query_legacy",code!~"5.."}[5m])))',
+        expr: 'histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job", handler=~"query|query_legacy",code!~"5.."}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '50th',
@@ -327,7 +327,7 @@ function(datasource, namespace) {
   local targetsAllQuery =
     [
       {
-        expr: 'sum by (code) (rate(http_requests_total{job="$job", handler=~"$handler"}[5m]))',
+        expr: 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job", handler=~"$handler"}[5m]))',
         legendFormat: '{{ code }}',
         refId: 'A',
       },
@@ -335,7 +335,7 @@ function(datasource, namespace) {
   local targetsAllQueryErr =
     [
       {
-        expr: 'sum by (code) (rate(http_requests_total{job="$job", handler=~"$handler",code=~"5.."}[5m]))\n/\nscalar(sum(rate(http_requests_total{job="$job", handler=~"$handler"}[5m])))',
+        expr: 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job", handler=~"$handler",code=~"5.."}[5m]))\n/\nscalar(sum(rate(http_requests_total{namespace="$namespace", job="$job", handler=~"$handler"}[5m])))',
         legendFormat: '{{ code }}',
         refId: 'A',
       },
@@ -343,28 +343,28 @@ function(datasource, namespace) {
   local targetsAllQueryDuration =
     [
       {
-        expr: 'histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",handler=~"$handler",code!~"5.."}[5m])))',
+        expr: 'histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler=~"$handler",code!~"5.."}[5m])))',
         legendFormat: 'p50',
         refId: 'C',
       },
       {
-        expr: 'histogram_quantile(0.90, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",handler=~"$handler",code!~"5.."}[5m])))',
+        expr: 'histogram_quantile(0.90, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler=~"$handler",code!~"5.."}[5m])))',
         legendFormat: 'p90',
         refId: 'B',
       },
       {
-        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",handler=~"$handler",code!~"5.."}[5m])))',
+        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler=~"$handler",code!~"5.."}[5m])))',
         legendFormat: 'p99',
         refId: 'A',
       },
     ],
 
-  local query = 'sum by (code) (rate(http_requests_total{job="$job", handler=~"query|query_legacy"}[5m]))',
+  local query = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job", handler=~"query|query_legacy"}[5m]))',
   local legendQuery = '{{code}}',
-  local errQuery = 'sum by (code) (rate(http_requests_total{job="$job", handler=~"query|query_legacy",code=~"5.."}[5m]))\n/\nscalar(sum(rate(http_requests_total{job="observatorium-observatorium-api",handler=~"query|query_legacy"}[5m])))',
+  local errQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job", handler=~"query|query_legacy",code=~"5.."}[5m]))\n/\nscalar(sum(rate(http_requests_total{namespace="$namespace", job="$job",handler=~"query|query_legacy"}[5m])))',
   local errLegendQuery = '{{code}}',
-  local rangeQuery = 'sum by (code) (rate(http_requests_total{job="$job",handler="query_range"}[5m]))',
-  local rangeQueryErr = 'sum by (code) (rate(http_requests_total{job="$job",handler="query_range",code=~"5.."}[5m])) / \nscalar(sum(rate(http_requests_total{job="$job",handler="query_range"}[5m])))',
+  local rangeQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="query_range"}[5m]))',
+  local rangeQueryErr = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="query_range",code=~"5.."}[5m])) / \nscalar(sum(rate(http_requests_total{namespace="$namespace", job="$job",handler="query_range"}[5m])))',
   local defaultAliasColors = {
     '200': 'dark-green',
     '429': 'dark-orange',
@@ -374,8 +374,8 @@ function(datasource, namespace) {
     '2xx': 'semi-dark-green',
     '5xx': 'semi-dark-red',
   },
-  local rulesQuery = 'sum by (code) (rate(http_requests_total{job="$job",handler="rules-raw"}[5m]))',
-  local rulesQueryErr = 'sum by (code) (rate(http_requests_total{job="$job",handler="rules-raw",code=~"5.."}[5m])) / scalar(sum(rate(http_requests_total{job="$job",handler="rules-raw"}[5m])))',
+  local rulesQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw"}[5m]))',
+  local rulesQueryErr = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw",code=~"5.."}[5m])) / scalar(sum(rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw"}[5m])))',
 
   local redPanel(gridPos, id, seriesOverrides, stack, targets, title, yaxes, fill=10, lineWidth=0, aliasColors=defaultAliasColors, pointRadius=5, paceLength=true, repeatDirection=true, sVars=false, allHandler=false, text='query_legacy', value='query_legacy', repeatPanelId=132) =
     {
@@ -591,7 +591,7 @@ function(datasource, namespace) {
   local targetsQueryRangeDuration =
     [
       {
-        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",code!~"5..",handler="query_range"}[5m])))',
+        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="query_range"}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '99th',
@@ -605,7 +605,7 @@ function(datasource, namespace) {
         refId: 'B',
       },
       {
-        expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",code!~"5..",handler="query_range"}[5m])))',
+        expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="query_range"}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '50th',
@@ -615,21 +615,21 @@ function(datasource, namespace) {
   local targetsRulesRawDuration =
     [
       {
-        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",code!~"5..",handler="rules-raw"}[5m])))',
+        expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="rules-raw"}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '99th',
         refId: 'A',
       },
       {
-        expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",code!~"5..",handler="rules-raw"}[5m])))',
+        expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="rules-raw"}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '90th',
         refId: 'B',
       },
       {
-        expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{job="$job",code!~"5..",handler="rules-raw"}[5m])))',
+        expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="rules-raw"}[5m])))',
         format: 'time_series',
         intervalFactor: 1,
         legendFormat: '50th',
@@ -733,6 +733,35 @@ function(datasource, namespace) {
               regex: '/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/',
               skipUrlSync: false,
               type: 'datasource',
+            },
+            {
+              allValue: null,
+              current: {
+                text: namespace,
+                value: namespace,
+              },
+              datasource: '$datasource',
+              definition: 'label_values(kube_pod_info, namespace)',
+              hide: 0,
+              includeAll: false,
+              label: 'namespace',
+              multi: true,
+              name: 'namespace',
+              options: [
+
+              ],
+              query: 'label_values(kube_pod_info, namespace)',
+              refresh: 1,
+              regex: '^telemeter.*|observatorium-.*',
+              skipUrlSync: false,
+              sort: 2,
+              tagValuesQuery: '',
+              tags: [
+
+              ],
+              tagsQuery: '',
+              type: 'query',
+              useTags: false,
             },
             {
               allValue: null,

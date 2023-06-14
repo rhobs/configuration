@@ -257,7 +257,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
             },
             {
               alert: 'NeverFiringAlert',
-              expr: 'vector(0)',
+              expr: 'vector(0) = 1',
               'for': '1m',
               annotations: {
                 description: 'Does not fire!',
@@ -282,7 +282,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
             },
             {
               record: 'NeverRecord',
-              expr: 'vector(0)',
+              expr: 'vector(0) = 1',
               labels: {
                 test: 'slo-record',
               },

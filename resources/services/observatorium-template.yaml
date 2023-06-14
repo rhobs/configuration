@@ -485,7 +485,7 @@ objects:
         annotations:
           description: Does not fire!
           message: Alert not fired.
-        expr: vector(0)
+        expr: vector(0) = 1
         for: 1m
         labels:
           severity: page
@@ -496,7 +496,7 @@ objects:
         labels:
           test: slo-record
         record: AlwaysRecord
-      - expr: vector(0)
+      - expr: vector(0) = 1
         labels:
           test: slo-record
         record: NeverRecord

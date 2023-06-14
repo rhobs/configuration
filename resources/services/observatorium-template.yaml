@@ -231,12 +231,6 @@ objects:
                 key: client-id
                 name: ${APPSRE_RELOADER_SECRET_NAME}
                 optional: true
-          - name: RHOC_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${RHOC_RELOADER_SECRET_NAME}
-                optional: true
           - name: RHOBS_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
@@ -265,12 +259,6 @@ objects:
               secretKeyRef:
                 key: client-secret
                 name: ${APPSRE_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHOC_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${RHOC_RELOADER_SECRET_NAME}
                 optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
@@ -497,7 +485,7 @@ objects:
         annotations:
           description: Does not fire!
           message: Alert not fired.
-        expr: vector(0)
+        expr: vector(0) = 1
         for: 1m
         labels:
           severity: page
@@ -508,7 +496,7 @@ objects:
         labels:
           test: slo-record
         record: AlwaysRecord
-      - expr: vector(0)
+      - expr: vector(0) = 1
         labels:
           test: slo-record
         record: NeverRecord
@@ -759,15 +747,6 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-psiocp-staging"
-      - "name": "observatorium-rhoc"
-        "roles":
-        - "rhoc-metrics-write"
-        - "rhoc-metrics-read"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-rhoc-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-rhoc"
       - "name": "observatorium-odfms-write"
         "roles":
         - "odfms-metrics-write"
@@ -809,6 +788,12 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform-read"
+      - "name": "observatorium-hypershift-platform-qe-read"
+        "roles":
+        - "hypershift-platform-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift-platform-qe-read"
       - "name": "observatorium-hypershift-platform-staging"
         "roles":
         - "hypershift-platform-staging-metrics-write"
@@ -822,6 +807,12 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform-staging-read"
+      - "name": "observatorium-hypershift-platform-staging-qe-read"
+        "roles":
+        - "hypershift-platform-staging-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-hypershift-platform-staging-qe-read"
       - "name": "observatorium-dptp-reader"
         "roles":
         - "dptp-logs-read"
@@ -856,6 +847,18 @@ objects:
           "name": "service-account-observatorium-rhtap-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhtap"
+      - "name": "observatorium-rhel-read"
+        "roles":
+        - "rhel-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhel-read-staging"
+      - "name": "observatorium-rhel-write"
+        "roles":
+        - "rhel-metrics-write"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-observatorium-rhel-write-staging"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -983,20 +986,6 @@ objects:
         - "metrics"
         "tenants":
         - "psiocp"
-      - "name": "rhoc-metrics-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "rhoc"
-      - "name": "rhoc-metrics-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "metrics"
-        "tenants":
-        - "rhoc"
       - "name": "odfms-metrics-write"
         "permissions":
         - "write"
@@ -1095,6 +1084,20 @@ objects:
         - "metrics"
         "tenants":
         - "rhtap"
+      - "name": "rhel-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhel"
+      - "name": "rhel-metrics-write"
+        "permissions":
+        - "write"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "rhel"
   kind: ConfigMap
   metadata:
     annotations:
@@ -1710,7 +1713,7 @@ parameters:
 - name: SLEEP_DURATION_SECONDS
   value: "15"
 - name: MANAGED_TENANTS
-  value: rhobs,osd,appsre,rhoc
+  value: rhobs,osd,appsre
 - name: RHOBS_RELOADER_SECRET_NAME
   value: rhobs-tenant
 - name: OSD_RELOADER_SECRET_NAME
@@ -1721,8 +1724,6 @@ parameters:
   value: rhobs-hypershift-platform-tenant
 - name: APPSRE_RELOADER_SECRET_NAME
   value: observatorium-appsre
-- name: RHOC_RELOADER_SECRET_NAME
-  value: observatorium-rhoc-staging
 - name: LOG_RULES_ENABLED
   value: "true"
 - name: OBSCTL_RELOADER_IMAGE

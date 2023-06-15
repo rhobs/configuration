@@ -231,6 +231,12 @@ objects:
                 key: client-id
                 name: ${APPSRE_RELOADER_SECRET_NAME}
                 optional: true
+          - name: RHTAP_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: ${RHTAP_RELOADER_SECRET_NAME}
+                optional: true
           - name: RHOBS_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
@@ -259,6 +265,12 @@ objects:
               secretKeyRef:
                 key: client-secret
                 name: ${APPSRE_RELOADER_SECRET_NAME}
+                optional: true
+          - name: RHTAP_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: ${RHTAP_RELOADER_SECRET_NAME}
                 optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
@@ -1724,6 +1736,8 @@ parameters:
   value: rhobs-hypershift-platform-tenant
 - name: APPSRE_RELOADER_SECRET_NAME
   value: observatorium-appsre
+- name: RHTAP_RELOADER_SECRET_NAME
+  value: observatorium-rhtap
 - name: LOG_RULES_ENABLED
   value: "true"
 - name: OBSCTL_RELOADER_IMAGE

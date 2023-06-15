@@ -89,53 +89,6 @@ local config = {
         scrape_timeout: '1m',
       },
       {
-        job_name: 'loki',
-        kubernetes_sd_configs: [{
-          namespaces: { names: ['${OBSERVATORIUM_LOGS_NAMESPACE}'] },
-          role: 'pod',
-        }],
-        profiling_config: {
-          pprof_config: {
-            fgprof: {
-              enabled: true,
-              path: '/debug/fgprof',
-              delta: true,
-            },
-          },
-        },
-        relabel_configs: [
-          {
-            action: 'keep',
-            regex: 'observatorium-loki-.+',
-            source_labels: ['__meta_kubernetes_pod_name'],
-          },
-          {
-            action: 'keep',
-            regex: 'observatorium-loki-.+',
-            source_labels: ['__meta_kubernetes_pod_container_name'],
-          },
-          {
-            action: 'keep',
-            regex: 'metrics',
-            source_labels: ['__meta_kubernetes_pod_container_port_name'],
-          },
-          {
-            source_labels: ['__meta_kubernetes_namespace'],
-            target_label: 'namespace',
-          },
-          {
-            source_labels: ['__meta_kubernetes_pod_name'],
-            target_label: 'pod',
-          },
-          {
-            source_labels: ['__meta_kubernetes_pod_container_name'],
-            target_label: 'container',
-          },
-        ],
-        scrape_interval: '30s',
-        scrape_timeout: '1m',
-      },
-      {
         job_name: 'telemeter',
         kubernetes_sd_configs: [{
           namespaces: { names: [config.namespaces.telemeter] },

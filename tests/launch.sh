@@ -4,6 +4,7 @@
 
 set -e
 set -o pipefail
+set -x
 
 role() {
     oc apply -f observatorium-cluster-role.yaml
@@ -24,7 +25,7 @@ dex() {
 observatorium_tools(){
     oc apply -f loki-operator.yaml
     sleep 30 # wait till clusterserviceversion becomes available
-    oc wait --for=jsonpath='{.status.phase}'=Succeeded clusterserviceversions loki-operator.v5.6.6 --namespace openshift-operators-redhat --timeout=60s
+    oc wait --for=jsonpath='{.status.phase}'=Succeeded $(oc get clusterserviceversion --namespace openshift-operators-redhat --output name | grep -E 'loki-operator.v5.6.*') --namespace openshift-operators-redhat --timeout=60s
     oc create ns observatorium-tools || true
     oc apply --namespace observatorium-tools -f observatorium-tools-network-policy.yaml
     oc process --param-file=logging.test.env -f ../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
@@ -33,7 +34,7 @@ observatorium_tools(){
 logging(){
     oc apply -f logging-operator.yaml
     sleep 30 # wait till clusterserviceversion becomes available
-    oc wait --for=jsonpath='{.status.phase}'=Succeeded clusterserviceversions cluster-logging.v5.6.6 --namespace openshift-logging
+    oc wait --for=jsonpath='{.status.phase}'=Succeeded $(oc get clusterserviceversion --namespace openshift-logging --output name | grep -E 'cluster-logging.v5.6.*') --namespace openshift-logging --timeout=60s
     oc apply --namespace openshift-logging -f clusterlogging.yaml
     oc apply --namespace openshift-logging -f clusterlogforwader.yaml
 }

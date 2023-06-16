@@ -234,7 +234,7 @@ objects:
           - name: RHTAP_CLIENT_ID
             valueFrom:
               secretKeyRef:
-                key: client_id
+                key: client-id
                 name: ${RHTAP_RELOADER_SECRET_NAME}
                 optional: true
           - name: RHOBS_CLIENT_SECRET
@@ -269,7 +269,7 @@ objects:
           - name: RHTAP_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                key: client_secret
+                key: client-secret
                 name: ${RHTAP_RELOADER_SECRET_NAME}
                 optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}

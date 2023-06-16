@@ -24,7 +24,7 @@ spec:
       grouping: null
       total:
         metric: thanos_alert_sender_alerts_dropped_total{container="thanos-rule",
-          namespace="observatorium-metrics-production", code!~"^4..$"}
+          namespace="observatorium-metrics-production"}
   target: "95"
   window: 28d
 status: {}

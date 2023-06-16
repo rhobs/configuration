@@ -24,7 +24,7 @@ spec:
       grouping: null
       total:
         metric: client_api_requests_total{client="reload", container="thanos-rule-syncer",
-          namespace="observatorium-metrics-stage", code!~"^4..$"}
+          namespace="observatorium-metrics-stage"}
   target: "95"
   window: 28d
 status: {}

@@ -31,18 +31,6 @@ const (
 	rhobsp02ue1Production rhobsInstanceEnv = "rhobsp02ue1-production" // MST production Observatorium instance on rhobsp02ue1 cluster.
 )
 
-// isStage as the name suggests returns if the rhobsInstanceEnv is a staging environment.
-func (envName rhobsInstanceEnv) isStage() bool {
-	switch envName {
-	case telemeterStaging, mstStage:
-		return true
-	case telemeterProduction, mstProduction, rhobsp02ue1Production:
-		return false
-	default:
-		panic(envName + " is not a RHOBS env")
-	}
-}
-
 var (
 	// Reusable k8s type metas.
 
@@ -692,16 +680,14 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 			}
 		}
 	}
-	// We do not want to page on staging environments, i.e, no "critical" alerts.
-	// There isn't a way to control the alert severity in Pyrra configs yet, but ideally should be.
-	// Pending PR: https://github.com/pyrra-dev/pyrra/pull/617
-	if envName.isStage() {
-		for i := range grp {
-			for j := range grp[i].Rules {
-				if v, ok := grp[i].Rules[j].Labels["severity"]; ok {
-					if v == "critical" {
-						grp[i].Rules[j].Labels["severity"] = "high"
-					}
+	// We do not want to page on SLO alerts until we're comfortable with how frequently
+	// they fire.
+	// Ticket: https://issues.redhat.com/browse/RHOBS-781
+	for i := range grp {
+		for j := range grp[i].Rules {
+			if v, ok := grp[i].Rules[j].Labels["severity"]; ok {
+				if v == "critical" {
+					grp[i].Rules[j].Labels["severity"] = "high"
 				}
 			}
 		}

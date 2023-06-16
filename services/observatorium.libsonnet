@@ -216,8 +216,8 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       {
         tenant: 'RHTAP',
         secret: '${RHTAP_RELOADER_SECRET_NAME}',
-        idKey: 'client_id',
-        secretKey: 'client_secret',
+        idKey: 'client-id',
+        secretKey: 'client-secret',
         // Marking as optional here, as appsre tenant only exists on mst,
         // so this should not block pod start.
         optional: true,

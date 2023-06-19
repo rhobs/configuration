@@ -25,6 +25,6 @@ spec:
       total:
         metric: alertmanager_notifications_failed_total{service="observatorium-alertmanager",
           namespace="observatorium-mst-stage"}
-  target: "95"
+  target: "99"
   window: 28d
 status: {}

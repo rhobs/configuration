@@ -24,7 +24,7 @@ spec:
       grouping: null
       total:
         metric: alertmanager_notifications_failed_total{service="observatorium-alertmanager",
-          namespace="observatorium-metrics-stage", code!~"^4..$"}
-  target: "99.5"
+          namespace="observatorium-metrics-stage"}
+  target: "95"
   window: 28d
 status: {}

@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-production
-    service: observatorium-api
+    pyrra.dev/service: observatorium-api
   name: api-rules-read-availability-slo
 spec:
   alerting:
@@ -24,7 +24,7 @@ spec:
       grouping: null
       total:
         metric: http_requests_total{job="observatorium-observatorium-mst-api", handler="rules",
-          method="GET", group="metricsv1", code!~"^4..$"}
-  target: "99.5"
+          method="GET", group="metricsv1"}
+  target: "95"
   window: 28d
 status: {}

@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: telemeter-production
-    service: observatorium-api
+    pyrra.dev/service: observatorium-api
   name: api-alerting-availability-slo
 spec:
   alerting:
@@ -24,7 +24,7 @@ spec:
       grouping: null
       total:
         metric: thanos_alert_sender_alerts_dropped_total{container="thanos-rule",
-          namespace="observatorium-metrics-production", code!~"^4..$"}
-  target: "99.5"
+          namespace="observatorium-metrics-production"}
+  target: "95"
   window: 28d
 status: {}

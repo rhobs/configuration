@@ -111,6 +111,13 @@ objects:
           - --whitelist={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
+          - --whitelist={__name__="cluster:console_auth_login_failures_total:sum"}
+          - --whitelist={__name__="cluster:console_auth_login_requests_total:sum"}
+          - --whitelist={__name__="cluster:console_auth_login_successes_total:sum"}
+          - --whitelist={__name__="cluster:console_auth_logout_requests_total:sum"}
+          - --whitelist={__name__="cluster:console_customization_perspectives_info:max"}
+          - --whitelist={__name__="cluster:console_plugins_info:max"}
+          - --whitelist={__name__="cluster:console_usage_users:max"}
           - --whitelist={__name__="cluster:cpu_usage_cores:sum"}
           - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
           - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}
@@ -361,6 +368,13 @@ objects:
           - --whitelist={__name__="cluster:apiserver_current_inflight_requests:sum:max_over_time:2m"}
           - --whitelist={__name__="cluster:capacity_cpu_cores:sum"}
           - --whitelist={__name__="cluster:capacity_memory_bytes:sum"}
+          - --whitelist={__name__="cluster:console_auth_login_failures_total:sum"}
+          - --whitelist={__name__="cluster:console_auth_login_requests_total:sum"}
+          - --whitelist={__name__="cluster:console_auth_login_successes_total:sum"}
+          - --whitelist={__name__="cluster:console_auth_logout_requests_total:sum"}
+          - --whitelist={__name__="cluster:console_customization_perspectives_info:max"}
+          - --whitelist={__name__="cluster:console_plugins_info:max"}
+          - --whitelist={__name__="cluster:console_usage_users:max"}
           - --whitelist={__name__="cluster:cpu_usage_cores:sum"}
           - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
           - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}

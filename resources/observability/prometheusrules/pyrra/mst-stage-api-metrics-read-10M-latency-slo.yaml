@@ -9,7 +9,7 @@ metadata:
   creationTimestamp: null
   labels:
     instance: mst-stage
-    service: observatorium-api
+    pyrra.dev/service: observatorium-api
   name: api-metrics-read-10M-latency-slo
 spec:
   alerting:
@@ -21,10 +21,10 @@ spec:
       grouping: null
       success:
         metric: up_custom_query_duration_seconds_bucket{query="query-path-sli-10M-samples",
-          namespace="observatorium-mst-stage", code=~"^2..$", le="30"}
+          namespace="observatorium-mst-stage", http_code=~"^2..$", le="30"}
       total:
         metric: up_custom_query_duration_seconds_count{query="query-path-sli-10M-samples",
-          namespace="observatorium-mst-stage", code=~"^2..$"}
+          namespace="observatorium-mst-stage", http_code=~"^2..$"}
   target: "90"
   window: 28d
 status: {}

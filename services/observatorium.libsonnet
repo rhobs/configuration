@@ -214,11 +214,11 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         optional: true,
       },
       {
-        tenant: 'RHOC',
-        secret: '${RHOC_RELOADER_SECRET_NAME}',
+        tenant: 'RHTAP',
+        secret: '${RHTAP_RELOADER_SECRET_NAME}',
         idKey: 'client-id',
         secretKey: 'client-secret',
-        // Marking as optional here, as rhoc tenant only exists on mst,
+        // Marking as optional here, as appsre tenant only exists on mst,
         // so this should not block pod start.
         optional: true,
       },
@@ -266,7 +266,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
             },
             {
               alert: 'NeverFiringAlert',
-              expr: 'vector(0)',
+              expr: 'vector(0) == 1',
               'for': '1m',
               annotations: {
                 description: 'Does not fire!',
@@ -291,7 +291,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
             },
             {
               record: 'NeverRecord',
-              expr: 'vector(0)',
+              expr: 'vector(0) == 1',
               labels: {
                 test: 'slo-record',
               },

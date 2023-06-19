@@ -8,8 +8,8 @@ metadata:
     pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning
   creationTimestamp: null
   labels:
+    pyrra.dev/service: telemeter
     route: telemeter-server-upload
-    service: telemeter
   name: rhobs-telemeter-server-metrics-upload-availability-slo
 spec:
   alerting:
@@ -23,8 +23,7 @@ spec:
           code=~"5.."}
       grouping: null
       total:
-        metric: haproxy_server_http_responses_total{route="telemeter-server-upload",
-          code!~"^4..$"}
-  target: "99.5"
+        metric: haproxy_server_http_responses_total{route="telemeter-server-upload"}
+  target: "95"
   window: 28d
 status: {}

@@ -13,7 +13,7 @@ spec:
   - interval: 2m30s
     name: api-logs-write-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[4w]))
+    - expr: sum by(code) (increase(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[4w]))
       labels:
         group: logsv1
         handler: push
@@ -26,7 +26,7 @@ spec:
         message: API logs /push handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
-      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"})
+      expr: absent(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"})
         == 1
       for: 2m
       labels:
@@ -38,56 +38,56 @@ spec:
   - interval: 30s
     name: api-logs-write-availability-slo
     rules:
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[5m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[5m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[5m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[5m]))
       labels:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
         slo: api-logs-write-availability-slo
       record: http_requests:burnrate5m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[30m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[30m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[30m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[30m]))
       labels:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
         slo: api-logs-write-availability-slo
       record: http_requests:burnrate30m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1h]))
       labels:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
         slo: api-logs-write-availability-slo
       record: http_requests:burnrate1h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[2h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[2h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[2h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[2h]))
       labels:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
         slo: api-logs-write-availability-slo
       record: http_requests:burnrate2h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[6h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[6h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[6h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[6h]))
       labels:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
         slo: api-logs-write-availability-slo
       record: http_requests:burnrate6h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[1d]))
       labels:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
         slo: api-logs-write-availability-slo
       record: http_requests:burnrate1d
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[4d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[4d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[4d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}[4d]))
       labels:
         group: logsv1
         handler: push
@@ -100,8 +100,8 @@ spec:
         message: API logs /push handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+      expr: http_requests:burnrate5m{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (14 * (1-0.95)) and http_requests:burnrate1h{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
         > (14 * (1-0.95))
       for: 2m
       labels:
@@ -118,8 +118,8 @@ spec:
         message: API logs /push handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+      expr: http_requests:burnrate30m{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (7 * (1-0.95)) and http_requests:burnrate6h{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
         > (7 * (1-0.95))
       for: 15m
       labels:
@@ -136,8 +136,8 @@ spec:
         message: API logs /push handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+      expr: http_requests:burnrate2h{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (2 * (1-0.95)) and http_requests:burnrate1d{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
         > (2 * (1-0.95))
       for: 1h
       labels:
@@ -154,8 +154,8 @@ spec:
         message: API logs /push handler is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPushAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
-        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+      expr: http_requests:burnrate6h{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
+        > (1 * (1-0.95)) and http_requests:burnrate4d{group="logsv1",handler="push",job="observatorium-observatorium-mst-api",slo="api-logs-write-availability-slo"}
         > (1 * (1-0.95))
       for: 3h
       labels:
@@ -178,11 +178,11 @@ spec:
         slo: api-logs-write-availability-slo
       record: pyrra_window
     - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"}
-        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"})
+        or vector(0)) / sum(http_requests:increase4w{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-write-availability-slo
       record: pyrra_availability
-    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler="push",job="observatorium-observatorium-mst-api"})
+    - expr: sum(http_requests_total{group="logsv1",handler="push",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-write-availability-slo
       record: pyrra_requests_total
@@ -194,7 +194,7 @@ spec:
   - interval: 2m30s
     name: api-logs-query-availability-slo-increase
     rules:
-    - expr: sum by(code, handler) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4w]))
+    - expr: sum by(code, handler) (increase(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4w]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
@@ -206,7 +206,7 @@ spec:
         message: API logs /query, /labels, or /label_values handler is burning too
           much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
+      expr: absent(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
         == 1
       for: 2m
       labels:
@@ -217,50 +217,50 @@ spec:
   - interval: 30s
     name: api-logs-query-availability-slo
     rules:
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[5m]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[5m]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[5m]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[5m]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate5m
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[30m]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[30m]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[30m]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[30m]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate30m
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1h]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1h]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1h]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1h]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate1h
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[2h]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[2h]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[2h]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[2h]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate2h
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[6h]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[6h]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[6h]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[6h]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate6h
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1d]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1d]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1d]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[1d]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-availability-slo
       record: http_requests:burnrate1d
-    - expr: sum by(code, handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4d]))
-        / sum by(code, handler) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4d]))
+    - expr: sum by(handler) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4d]))
+        / sum by(handler) (rate(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}[4d]))
       labels:
         group: logsv1
         job: observatorium-observatorium-mst-api
@@ -272,8 +272,8 @@ spec:
         message: API logs /query, /labels, or /label_values handler is burning too
           much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate5m{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (14 * (1-0.95)) and http_requests:burnrate1h{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (14 * (1-0.95))
       for: 2m
       labels:
@@ -289,8 +289,8 @@ spec:
         message: API logs /query, /labels, or /label_values handler is burning too
           much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate30m{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (7 * (1-0.95)) and http_requests:burnrate6h{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (7 * (1-0.95))
       for: 15m
       labels:
@@ -306,8 +306,8 @@ spec:
         message: API logs /query, /labels, or /label_values handler is burning too
           much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate2h{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (2 * (1-0.95)) and http_requests:burnrate1d{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (2 * (1-0.95))
       for: 1h
       labels:
@@ -323,8 +323,8 @@ spec:
         message: API logs /query, /labels, or /label_values handler is burning too
           much error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
-        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+      expr: http_requests:burnrate6h{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
+        > (1 * (1-0.95)) and http_requests:burnrate4d{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api",slo="api-logs-query-availability-slo"}
         > (1 * (1-0.95))
       for: 3h
       labels:
@@ -346,11 +346,11 @@ spec:
         slo: api-logs-query-availability-slo
       record: pyrra_window
     - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"}
-        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
+        or vector(0)) / sum(http_requests:increase4w{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-query-availability-slo
       record: pyrra_availability
-    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
+    - expr: sum(http_requests_total{group="logsv1",handler=~"query|label|labels|label_values",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-query-availability-slo
       record: pyrra_requests_total
@@ -362,7 +362,7 @@ spec:
   - interval: 2m30s
     name: api-logs-query-range-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4w]))
+    - expr: sum by(code) (increase(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4w]))
       labels:
         group: logsv1
         handler: query_range
@@ -375,7 +375,7 @@ spec:
         message: API logs /query_range handler is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
-      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"})
+      expr: absent(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"})
         == 1
       for: 2m
       labels:
@@ -387,56 +387,56 @@ spec:
   - interval: 30s
     name: api-logs-query-range-availability-slo
     rules:
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[5m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[5m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[5m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[5m]))
       labels:
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-range-availability-slo
       record: http_requests:burnrate5m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[30m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[30m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[30m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[30m]))
       labels:
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-range-availability-slo
       record: http_requests:burnrate30m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1h]))
       labels:
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-range-availability-slo
       record: http_requests:burnrate1h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[2h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[2h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[2h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[2h]))
       labels:
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-range-availability-slo
       record: http_requests:burnrate2h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[6h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[6h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[6h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[6h]))
       labels:
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-range-availability-slo
       record: http_requests:burnrate6h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[1d]))
       labels:
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
         slo: api-logs-query-range-availability-slo
       record: http_requests:burnrate1d
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}[4d]))
       labels:
         group: logsv1
         handler: query_range
@@ -449,8 +449,8 @@ spec:
         message: API logs /query_range handler is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+      expr: http_requests:burnrate5m{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (14 * (1-0.95)) and http_requests:burnrate1h{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
         > (14 * (1-0.95))
       for: 2m
       labels:
@@ -467,8 +467,8 @@ spec:
         message: API logs /query_range handler is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+      expr: http_requests:burnrate30m{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (7 * (1-0.95)) and http_requests:burnrate6h{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
         > (7 * (1-0.95))
       for: 15m
       labels:
@@ -485,8 +485,8 @@ spec:
         message: API logs /query_range handler is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+      expr: http_requests:burnrate2h{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (2 * (1-0.95)) and http_requests:burnrate1d{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
         > (2 * (1-0.95))
       for: 1h
       labels:
@@ -503,8 +503,8 @@ spec:
         message: API logs /query_range handler is burning too much error budget to
           guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsQueryRangeAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
-        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+      expr: http_requests:burnrate6h{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
+        > (1 * (1-0.95)) and http_requests:burnrate4d{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api",slo="api-logs-query-range-availability-slo"}
         > (1 * (1-0.95))
       for: 3h
       labels:
@@ -527,11 +527,11 @@ spec:
         slo: api-logs-query-range-availability-slo
       record: pyrra_window
     - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"}
-        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"})
+        or vector(0)) / sum(http_requests:increase4w{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-query-range-availability-slo
       record: pyrra_availability
-    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"})
+    - expr: sum(http_requests_total{group="logsv1",handler="query_range",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-query-range-availability-slo
       record: pyrra_requests_total
@@ -543,7 +543,7 @@ spec:
   - interval: 2m30s
     name: api-logs-tail-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[4w]))
+    - expr: sum by(code) (increase(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[4w]))
       labels:
         group: logsv1
         handler: tail
@@ -556,7 +556,7 @@ spec:
         message: API logs /tail is burning too much error budget to guarantee availability
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
-      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"})
+      expr: absent(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"})
         == 1
       for: 2m
       labels:
@@ -568,56 +568,56 @@ spec:
   - interval: 30s
     name: api-logs-tail-availability-slo
     rules:
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[5m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[5m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[5m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[5m]))
       labels:
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-tail-availability-slo
       record: http_requests:burnrate5m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[30m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[30m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[30m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[30m]))
       labels:
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-tail-availability-slo
       record: http_requests:burnrate30m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1h]))
       labels:
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-tail-availability-slo
       record: http_requests:burnrate1h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[2h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[2h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[2h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[2h]))
       labels:
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-tail-availability-slo
       record: http_requests:burnrate2h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[6h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[6h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[6h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[6h]))
       labels:
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-tail-availability-slo
       record: http_requests:burnrate6h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[1d]))
       labels:
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-tail-availability-slo
       record: http_requests:burnrate1d
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[4d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[4d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[4d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}[4d]))
       labels:
         group: logsv1
         handler: tail
@@ -630,8 +630,8 @@ spec:
         message: API logs /tail is burning too much error budget to guarantee availability
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+      expr: http_requests:burnrate5m{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (14 * (1-0.95)) and http_requests:burnrate1h{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
         > (14 * (1-0.95))
       for: 2m
       labels:
@@ -648,8 +648,8 @@ spec:
         message: API logs /tail is burning too much error budget to guarantee availability
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+      expr: http_requests:burnrate30m{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (7 * (1-0.95)) and http_requests:burnrate6h{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
         > (7 * (1-0.95))
       for: 15m
       labels:
@@ -666,8 +666,8 @@ spec:
         message: API logs /tail is burning too much error budget to guarantee availability
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+      expr: http_requests:burnrate2h{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (2 * (1-0.95)) and http_requests:burnrate1d{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
         > (2 * (1-0.95))
       for: 1h
       labels:
@@ -684,8 +684,8 @@ spec:
         message: API logs /tail is burning too much error budget to guarantee availability
           SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
-        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+      expr: http_requests:burnrate6h{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
+        > (1 * (1-0.95)) and http_requests:burnrate4d{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api",slo="api-logs-tail-availability-slo"}
         > (1 * (1-0.95))
       for: 3h
       labels:
@@ -708,11 +708,11 @@ spec:
         slo: api-logs-tail-availability-slo
       record: pyrra_window
     - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"}
-        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"})
+        or vector(0)) / sum(http_requests:increase4w{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-tail-availability-slo
       record: pyrra_availability
-    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"})
+    - expr: sum(http_requests_total{group="logsv1",handler="tail",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-tail-availability-slo
       record: pyrra_requests_total
@@ -724,7 +724,7 @@ spec:
   - interval: 2m30s
     name: api-logs-prom-tail-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[4w]))
+    - expr: sum by(code) (increase(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[4w]))
       labels:
         group: logsv1
         handler: prom_tail
@@ -737,7 +737,7 @@ spec:
         message: API logs /prom_tail is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
-      expr: absent(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"})
+      expr: absent(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"})
         == 1
       for: 2m
       labels:
@@ -749,56 +749,56 @@ spec:
   - interval: 30s
     name: api-logs-prom-tail-availability-slo
     rules:
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[5m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[5m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[5m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[5m]))
       labels:
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-prom-tail-availability-slo
       record: http_requests:burnrate5m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[30m]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[30m]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[30m]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[30m]))
       labels:
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-prom-tail-availability-slo
       record: http_requests:burnrate30m
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1h]))
       labels:
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-prom-tail-availability-slo
       record: http_requests:burnrate1h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[2h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[2h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[2h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[2h]))
       labels:
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-prom-tail-availability-slo
       record: http_requests:burnrate2h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[6h]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[6h]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[6h]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[6h]))
       labels:
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-prom-tail-availability-slo
       record: http_requests:burnrate6h
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[1d]))
       labels:
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         slo: api-logs-prom-tail-availability-slo
       record: http_requests:burnrate1d
-    - expr: sum by(code) (rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[4d]))
-        / sum by(code) (rate(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[4d]))
+    - expr: sum(rate(http_requests_total{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[4d]))
+        / sum(rate(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}[4d]))
       labels:
         group: logsv1
         handler: prom_tail
@@ -811,8 +811,8 @@ spec:
         message: API logs /prom_tail is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate5m{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (14 * (1-0.95)) and http_requests:burnrate1h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+      expr: http_requests:burnrate5m{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (14 * (1-0.95)) and http_requests:burnrate1h{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
         > (14 * (1-0.95))
       for: 2m
       labels:
@@ -829,8 +829,8 @@ spec:
         message: API logs /prom_tail is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate30m{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (7 * (1-0.95)) and http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+      expr: http_requests:burnrate30m{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (7 * (1-0.95)) and http_requests:burnrate6h{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
         > (7 * (1-0.95))
       for: 15m
       labels:
@@ -847,8 +847,8 @@ spec:
         message: API logs /prom_tail is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate2h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (2 * (1-0.95)) and http_requests:burnrate1d{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+      expr: http_requests:burnrate2h{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (2 * (1-0.95)) and http_requests:burnrate1d{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
         > (2 * (1-0.95))
       for: 1h
       labels:
@@ -865,8 +865,8 @@ spec:
         message: API logs /prom_tail is burning too much error budget to guarantee
           availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APILogsPromTailAvailabilityErrorBudgetBurning
-      expr: http_requests:burnrate6h{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
-        > (1 * (1-0.95)) and http_requests:burnrate4d{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+      expr: http_requests:burnrate6h{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
+        > (1 * (1-0.95)) and http_requests:burnrate4d{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api",slo="api-logs-prom-tail-availability-slo"}
         > (1 * (1-0.95))
       for: 3h
       labels:
@@ -889,11 +889,11 @@ spec:
         slo: api-logs-prom-tail-availability-slo
       record: pyrra_window
     - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"}
-        or vector(0)) / sum(http_requests:increase4w{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"})
+        or vector(0)) / sum(http_requests:increase4w{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-prom-tail-availability-slo
       record: pyrra_availability
-    - expr: sum(http_requests_total{code!~"^4..$",group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"})
+    - expr: sum(http_requests_total{group="logsv1",handler="prom_tail",job="observatorium-observatorium-mst-api"})
       labels:
         slo: api-logs-prom-tail-availability-slo
       record: pyrra_requests_total
@@ -948,7 +948,6 @@ spec:
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
-        le: "5"
         severity: high
         slo: api-logs-write-latency-slo
   - interval: 30s

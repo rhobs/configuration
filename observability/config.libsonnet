@@ -40,7 +40,13 @@ local var = import 'utils.jsonnet';
       instance_name_filter: var.instance_name_filter,
     },
   },
-
+  alertmanager: (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/config.libsonnet') {
+    _config+:: {
+      alertmanagerClusterLabels: 'namespace,job',
+      alertmanagerNameLabels: 'pod',
+      alertmanagerCriticalIntegrationsRegEx: 'slack|pagerduty|email|webhook',
+    },
+  },
   loki: {
     local withDatasource = function(ds) ds + (
       if ds.name == 'datasource' then {

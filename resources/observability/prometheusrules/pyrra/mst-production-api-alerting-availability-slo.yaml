@@ -25,6 +25,6 @@ spec:
       total:
         metric: thanos_alert_sender_alerts_dropped_total{container="thanos-rule",
           namespace="observatorium-mst-production"}
-  target: "95"
+  target: "99"
   window: 28d
 status: {}

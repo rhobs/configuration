@@ -24,6 +24,6 @@ spec:
       grouping: null
       total:
         metric: haproxy_server_http_responses_total{route="telemeter-server-upload"}
-  target: "95"
+  target: "99"
   window: 28d
 status: {}

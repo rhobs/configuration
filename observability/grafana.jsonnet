@@ -16,7 +16,6 @@ local memcached = (import 'github.com/grafana/jsonnet-libs/memcached-mixin/mixin
 local alertmanager = (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/dashboards/overview.libsonnet') +
                      config.alertmanager;
 
-
 local obsDatasource = 'telemeter-prod-01-prometheus';
 local obsNamespace = 'telemeter-production';
 local obsTraces = 'observatorium-traces';

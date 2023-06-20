@@ -156,6 +156,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     version: '${OBSCTL_RELOADER_IMAGE_TAG}',
     image: '%s:%s' % ['${OBSCTL_RELOADER_IMAGE}', cfg.version],
     replicas: 1,
+    logLevel: 'debug',
     commonLabels+:: {
       'app.kubernetes.io/name': 'rules-obsctl-reloader',
       'app.kubernetes.io/component': 'rules-obsctl-reloader',

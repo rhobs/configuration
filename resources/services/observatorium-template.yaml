@@ -191,6 +191,8 @@ objects:
       spec:
         containers:
         - args:
+          - --log.level=debug
+          - --web.internal.listen=0.0.0.0:8081
           - --sleep-duration-seconds=${SLEEP_DURATION_SECONDS}
           - --observatorium-api-url=${OBSERVATORIUM_URL}
           - --managed-tenants=${MANAGED_TENANTS}
@@ -323,6 +325,26 @@ objects:
   - kind: ServiceAccount
     name: rules-obsctl-reloader
 - apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
+    name: rules-obsctl-reloader
+  spec:
+    ports:
+    - name: internal
+      port: 8081
+      targetPort: 8081
+    selector:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
   kind: ServiceAccount
   metadata:
     labels:
@@ -332,6 +354,20 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
     name: rules-obsctl-reloader
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    name: rules-obsctl-reloader
+  spec:
+    endpoints:
+    - port: internal
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-obsctl-reloader
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-obsctl-reloader
+        app.kubernetes.io/part-of: observatorium
+        app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1743,7 +1779,7 @@ parameters:
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
-  value: ad1ed3a
+  value: 7b279a1
 - name: METRICS_WRITE_SERVICE_NAME
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT

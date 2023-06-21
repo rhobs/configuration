@@ -1,0 +1,90 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-tools-tracing
+  labels:
+    app: tempo-operator
+description: |
+  This template deploys Tempo via a TempoStack CR.
+parameters:
+  - name: NAMESPACE
+    description: The namespace where Tempo will be installed.
+    required: true
+    value: observatorium-tools
+  - name: TENANT_NAME
+    value: application
+  - name: TENANT_ID
+    value: 42ffe36a-c2c9-4cfc-b876-72ca5036aca7
+  - name: S3_ACCESS_KEY_ID
+  - name: S3_SECRET_ACCESS_KEY
+  - name: S3_BUCKET_NAME
+  - name: S3_BUCKET_ENDPOINT
+    value: s3.us-east-1.amazonaws.com
+  - name: TEMPO_STORAGE_SECRET_NAME
+    description: The Secret name to use for Tempo storage
+    required: true
+    value: observatorium-tempo
+objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${TEMPO_STORAGE_SECRET_NAME}
+      namespace: ${NAMESPACE}
+    type: Opaque
+    stringData:
+      access_key_id: ${S3_ACCESS_KEY_ID}
+      access_key_secret: ${S3_SECRET_ACCESS_KEY}
+      bucket: ${S3_BUCKET_NAME}
+      endpoint: ${S3_BUCKET_ENDPOINT}
+  - apiVersion: tempo.grafana.com/v1alpha1
+    kind: TempoStack
+    metadata:
+      name: observatorium-tempostack
+      namespace: ${NAMESPACE}
+    spec:
+      storage:
+        secret:
+          name: ${TEMPO_STORAGE_SECRET_NAME}
+          type: s3
+      tenants:
+        mode: openshift
+        authentication:
+          - tenantName: application
+            tenantId: "1610b0c3-c509-4592-a256-a1871353dbfa"
+      template:
+        gateway:
+          enabled: true
+        queryFrontend:
+          jaegerQuery:
+            enabled: true
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: rhobs-tempo-traces-reader
+      namespace: ${NAMESPACE}
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: rhobs-tracecollector-tempostack-tracing
+    rules:
+      - apiGroups:
+          - 'tempo.grafana.com'
+        resources:
+          - application
+        resourceNames:
+          - traces
+        verbs:
+          - 'create'
+          - 'get'
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: rhobs-tracecollector-tempostack-tracing
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: rhobs-tracecollector-tempostack-tracing
+    subjects:
+      - kind: ServiceAccount
+        name: tracecollector
+        namespace: ${NAMESPACE}

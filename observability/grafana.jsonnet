@@ -58,7 +58,7 @@ local dashboards =
   { 'grafana-dashboard-slo-mst-stage.configmap': (import 'dashboards/slo.libsonnet')('mst', 'stage', 'MST Stage SLOs') } +
   { 'grafana-dashboard-tracing-otel.configmap': (import 'dashboards/opentelemetry.libsonnet')(obsDatasource, obsTraces) } +
   { 'grafana-dashboard-tracing-jaeger.configmap': (import 'dashboards/tracing.libsonnet')(obsDatasource, obsTraces) } +
-  { 'grafana-dashboard-rhobs-instance-utilization.configmap': (import 'dashboards/rhobs-instance-utilization.libsonnet')() };
+  { 'grafana-dashboard-rhobs-instance-utilization-overview.configmap': (import 'dashboards/rhobs-instance-utilization-overview.libsonnet')() };
 {
   [name]: dashboards[name] {
     metadata+: {

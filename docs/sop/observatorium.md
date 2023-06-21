@@ -60,7 +60,9 @@
   * [ThanosReceiveHighHashringFileRefreshFailures](#thanosreceivehighhashringfilerefreshfailures)
   * [ThanosReceiveConfigReloadFailure](#thanosreceiveconfigreloadfailure)
   * [ThanosReceiveNoUpload](#thanosreceivenoupload)
-  * [ThanosReceiveTrafficBelowThreshold](#thanosreceivetrafficbelowthreshold)
+  * [ThanosReceiveLimitsConfigReloadFailure](#thanosreceivelimitsconfigreloadfailure)
+  * [ThanosReceiveLimitsHighMetaMonitoringQueriesFailureRate](#thanosreceivelimitshighmetamonitoringqueriesfailurerate)
+  * [ThanosReceiveTenantLimitedByHeadSeries](#thanosreceivetenantlimitedbyheadseries)
   * [Thanos Store Gateway](#thanos-store-gateway)
   * [ThanosStoreGrpcErrorRate](#thanosstoregrpcerrorrate)
   * [ThanosStoreSeriesGateLatencyHigh](#thanosstoreseriesgatelatencyhigh)
@@ -1408,15 +1410,40 @@ Thanos Receives failed to reload the latest configuration files.
 
 NOTE: This must be done with a 4.x version of the oc client.
 
-## ThanosReceiveTrafficBelowThreshold
+## ThanosReceiveLimitsConfigReloadFailure
 
 ### Impact
 
-If there is an unusual drop in traffic/ingestion rate, a _symptom_ is that some data loss may happen or that data is not correctly forwarded to Thanos Receive. As a consequence, less data is forwarded to Object Storage.
+Observatorium is not rate limiting remote writes correctly.
 
 ### Summary
 
-Thanos Receive is experiencing low average 1h ingestion rate relative to average 12h ingestion rate. This may indicate an unusual low amount of data being received.
+Thanos Receives component failed to reload the latest write limits configuration files. New write limits are not applied. Also, if running instances need to be restarted, they will not be able to start.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium MST in staging [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces)
+
+### Steps
+
+- Inspect one of the Thanos receive pods logs to find the error message when reloading the configuration. It should contain `error reloading tenant limits config`
+job events in the OpenShift console or login to the cluster and run `oc get events -n observatorium-metrics-production --sort-by='{.lastTimestamp}'` to find the latest events.
+- Using the event description about the failure to load the limits configuration, fix the issue by updating the limits configuration file using the `THANOS_RECEIVE_LIMIT_CONFIG` template parameter configured in `app-interface` repos in the `saas.yml` file.
+- If a fix is not possible, revert the change that caused the issue so that the pod is able to restart if needed.
+
+## ThanosReceiveLimitsHighMetaMonitoringQueriesFailureRate
+
+### Impact
+
+Observatorium is not applying head series limits correctly.
+
+### Summary
+
+Thanos Receives component failed to retrieve current head series count for each tenant using the configured meta-monitoring. As the head series count is not updated, the service is unable to apply rate limiting correctly.
 
 ### Severity
 
@@ -1424,22 +1451,38 @@ Thanos Receive is experiencing low average 1h ingestion rate relative to average
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/project-details/all-namespaces) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
-- Edit access to the Observatorium namespaces:
-  - `observatorium-metrics-stage`
-  - `observatorium-metrics-production`
-  - `observatorium-mst-stage`
-  - `observatorium-mst-production`
+- Console access to the cluster that runs Observatorium MST in staging [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces)
 
 ### Steps
 
-- Check on the status of Thanos Receive:
-  1. Check [Thanos Receive dashboard](https://grafana.app-sre.devshift.net/d/916a852b00ccc5ed81056644718fa4fb/thanos-receive?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-mst-production&var-job=All&var-pod=All&var-interval=5m) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)). Check for the `Rate` and `error` panels. The gRPC rows refer to the gRPC Store API.
-  2. Check Thanos Receive logs
-- Check on the status of Observatorium API:
-  1. Check [Observatorium API dashboard](https://grafana.app-sre.devshift.net/d/Tg-mH0rizaSJDKSADX/api?orgId=1&refresh=1m&var-datasource=telemeter-prod-01-prometheus&var-namespace=observatorium-metrics-production&var-handler=All) (selecting the desired namespace (`observatorium-metrics-production` or `observatorium-mst-production`)).
-  2. Check API logs for potential errors
-- Reach out to Observability Team and ping @observatorium-support at [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+- Inspect one of the Thanos receive pods logs to find the error message when failing to query meta-monitoring. It should contain `failed to query meta-monitoring`.
+- If the cause is an invalid url or query configuration, update the limits configuration file using the `THANOS_RECEIVE_LIMIT_CONFIG` template parameter configured in `app-interface` repos in the `saas.yml` file. Update the values of the `meta_monitoring_url` and `meta_monitoring_limit_query` keys.
+- If the cause comes from the meta-monitoring service, signal the issue to app-sre team.
+
+## ThanosReceiveTenantLimitedByHeadSeries 
+
+### Impact
+
+A tenant has its write requests limited due to high number of head series. Such tenant cannot make write requests containing new metrics.
+
+### Summary
+
+A tenant is writing too many metrics with high cardinality. This is causing high number of head series that is limited through the `head_series_limit` configuration option. Some metrics are not ingested and may be lost.
+
+### Severity
+
+`medium`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium MST in staging [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces)) 
+
+### Steps
+
+- Increase the `head_series_limit` value in the limits configuration using the `THANOS_RECEIVE_LIMIT_CONFIG` template parameter configured in `app-interface` repos in the `saas.yml` file. If the tenant has no custom limits, add the tenant to the `tenants` object with an increased limit value.
+- Once the change is merged, the new configuration is automatically deployed and reloaded by thanos receive.
+- check the `thanos_receive_head_series_limited_requests_total` metric to see if the tenant is still being limited. If so, increase the limit again: `sum(rate(thanos_receive_head_series_limited_requests_total{tenant="<tenant>"}[5m])) by (job)`.
+- After the incident is resolved, if the new limit is too big to ensure the stability of the system, contact the client to adapt their remote write configuration to conform to the limits.
 
 ## Thanos Store Gateway
 

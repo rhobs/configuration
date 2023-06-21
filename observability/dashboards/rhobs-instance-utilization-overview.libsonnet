@@ -105,7 +105,7 @@ function() {
               'kube_pod_container_status_restarts_total{namespace="$namespace", container=\'thanos-query-frontend\'}',
             ],
             [
-              'pod {{pod}}',
+              'pod {{instance}}',
             ]
           ) +
           { yaxes: g.yaxes('count'), gridPos: { x: 12, y: 7, w: 6, h: 6 } }

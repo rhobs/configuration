@@ -736,7 +736,7 @@ data:
            "expr": "kube_pod_container_status_restarts_total{namespace=\"$namespace\", container='thanos-query-frontend'}",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "pod {{pod}}",
+           "legendFormat": "pod {{instance}}",
            "legendLink": null,
            "step": 10
           }

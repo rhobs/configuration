@@ -13,7 +13,7 @@ function() {
       label='interval',
       current='5m',
     ),
-  local instanceTemplate =
+  local namespaceTemplate =
     template.new(
       name='namespace',
       datasource='$datasource',
@@ -112,7 +112,7 @@ function() {
         )
       ) + {
         templating+: {
-          list+: [instanceTemplate, intervalTemplate],
+          list+: [namespaceTemplate, intervalTemplate],
         },
       },
   },

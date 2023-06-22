@@ -1,0 +1,228 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhelemeter
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      k8s-app: rhelemeter-server
+    name: rhelemeter-server-ca
+  stringData:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      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
+      E6/lvbR33zc=
+      -----END CERTIFICATE-----
+  type: Opaque
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: rhelemeter-server
+  spec:
+    replicas: ${{REPLICAS}}
+    selector:
+      matchLabels:
+        k8s-app: rhelemeter-server
+    template:
+      metadata:
+        labels:
+          k8s-app: rhelemeter-server
+      spec:
+        containers:
+        - command:
+          - /usr/bin/rhelemeter-server
+          - --listen=0.0.0.0:8443
+          - --listen-internal=0.0.0.0:8081
+          - --tls-key=/etc/pki/service/tls.key
+          - --tls-crt=/etc/pki/service/tls.crt
+          - --tls-ca-crt=/etc/pki/ca/ca.crt
+          - --internal-tls-key=/etc/pki/service/tls.key
+          - --internal-tls-crt=/etc/pki/service/tls.crt
+          - --oidc-issuer=$(OIDC_ISSUER)
+          - --client-id=$(CLIENT_ID)
+          - --client-secret=$(CLIENT_SECRET)
+          - --log-level=${RHELEMETER_LOG_LEVEL}
+          - --limit-bytes=5242880
+          - --tenant-id=${RHELEMETER_TENANT_ID}
+          - --forward-url=${RHELEMETER_FORWARD_URL}
+          env:
+          - name: OIDC_ISSUER
+            valueFrom:
+              secretKeyRef:
+                key: oidc_issuer
+                name: rhelemeter-server
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client_secret
+                name: rhelemeter-server
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client_id
+                name: rhelemeter-server
+          image: ${IMAGE}:${IMAGE_TAG}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+              scheme: HTTPS
+          name: rhelemeter-server
+          ports:
+          - containerPort: 8443
+            name: external
+          - containerPort: 8081
+            name: internal
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8081
+              scheme: HTTPS
+          resources:
+            limits:
+              cpu: ${RHELEMETER_SERVER_CPU_LIMIT}
+              memory: ${RHELEMETER_SERVER_MEMORY_LIMIT}
+            requests:
+              cpu: ${RHELEMETER_SERVER_CPU_REQUEST}
+              memory: ${RHELEMETER_SERVER_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/pki/service
+            name: rhelemeter-server-tls
+            readOnly: false
+          - mountPath: /etc/pki/ca
+            name: secret-rhelemeter-server-ca
+            readOnly: false
+        serviceAccountName: rhelemeter-server
+        volumes:
+        - name: secret-rhelemeter-server
+          secret:
+            secretName: rhelemeter-server
+        - name: rhelemeter-server-tls
+          secret:
+            secretName: rhelemeter-server-shared
+        - name: secret-rhelemeter-server-ca
+          secret:
+            secretName: rhelemeter-server-ca
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      k8s-app: rhelemeter-server
+    name: rhelemeter-server
+  stringData:
+    client_id: ${RHELEMETER_CLIENT_ID}
+    client_secret: ${RHELEMETER_CLIENT_SECRET}
+    oidc_issuer: ${RHELEMETER_OIDC_ISSUER}
+  type: Opaque
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: rhelemeter-server-shared
+    labels:
+      k8s-app: rhelemeter-server
+    name: rhelemeter-server
+  spec:
+    clusterIP: None
+    ports:
+    - name: external
+      port: 8443
+      targetPort: external
+    - name: internal
+      port: 8081
+      targetPort: internal
+    selector:
+      k8s-app: rhelemeter-server
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: rhelemeter-server
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      endpoint: metrics
+      k8s-app: rhelemeter-server
+      prometheus: app-sre
+    name: rhelemeter-server
+  spec:
+    endpoints:
+    - interval: 60s
+      port: internal
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true
+    jobLabel: k8s-app
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
+    selector:
+      matchLabels:
+        k8s-app: rhelemeter-server
+parameters:
+- name: NAMESPACE
+  value: rhelemeter
+- name: IMAGE_TAG
+  value: 82f71d3
+- name: IMAGE
+  value: quay.io/app-sre/telemeter
+- name: REPLICAS
+  value: "2"
+- name: RHELEMETER_TENANT_ID
+  value: rhel
+- name: RHELEMETER_FORWARD_URL
+  value: ""
+- name: RHELEMETER_OIDC_ISSUER
+  value: ""
+- name: RHELEMETER_CLIENT_ID
+  value: ""
+- name: RHELEMETER_CLIENT_SECRET
+  value: ""
+- name: RHELEMETER_LOG_LEVEL
+  value: warn
+- name: RHELEMETER_SERVER_CPU_LIMIT
+  value: "1"
+- name: RHELEMETER_SERVER_CPU_REQUEST
+  value: 100m
+- name: RHELEMETER_SERVER_MEMORY_LIMIT
+  value: 1Gi
+- name: RHELEMETER_SERVER_MEMORY_REQUEST
+  value: 500Mi

@@ -128,7 +128,7 @@ migrate-vendor:
 
 .PHONY: manifests
 manifests: migrate-vendor format $(JSONNET_VENDOR_DIR)
-manifests: resources/services/telemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
+manifests: resources/services/telemeter-template.yaml resources/services/rhelemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml resources/crds/observatorium-logs-crds-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml 
 	$(MAKE) clean
@@ -153,6 +153,10 @@ tests/dex-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 resources/services/telemeter-template.yaml: $(wildcard services/telemeter-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running telemeter templates"
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/telemeter-template.jsonnet | $(GOJSONTOYAML) > $@
+
+resources/services/rhelemeter-template.yaml: $(wildcard services/telemeter-*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+	@echo ">>>>> Running rhelemeter templates"
+	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/rhelemeter-template.jsonnet | $(GOJSONTOYAML) > $@
 
 resources/services/observatorium-tenants-template.yaml: services/observatorium-tenants-template.jsonnet $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running observatorium mst tenants templates"

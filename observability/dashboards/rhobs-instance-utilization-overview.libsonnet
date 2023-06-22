@@ -90,7 +90,7 @@ function() {
           g.panel('CPU Usage') +
           g.queryPanel(
             [
-              'rate(process_cpu_seconds_total{job="observatorium-thanos-query-frontend", namespace="$namespace"}[5m]) * 100',
+              'rate(process_cpu_seconds_total{job="observatorium-thanos-query-frontend", namespace="$namespace"}[$interval]) * 100',
             ],
             [
               'cpu usage system {{instance}}',
@@ -102,7 +102,7 @@ function() {
           g.panel('Pod/Container Restarts') +
           g.queryPanel(
             [
-              'kube_pod_container_status_restarts_total{namespace="$namespace", container=\'thanos-query-frontend\'}',
+              'increase(kube_pod_container_status_restarts_total{namespace="$namespace", container=\'thanos-query-frontend\'}[$interval])',
             ],
             [
               'pod {{instance}}',

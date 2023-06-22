@@ -641,7 +641,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "rate(process_cpu_seconds_total{job=\"observatorium-thanos-query-frontend\", namespace=\"$namespace\"}[5m]) * 100",
+           "expr": "rate(process_cpu_seconds_total{job=\"observatorium-thanos-query-frontend\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "cpu usage system {{instance}}",
@@ -733,7 +733,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "kube_pod_container_status_restarts_total{namespace=\"$namespace\", container='thanos-query-frontend'}",
+           "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"$namespace\", container='thanos-query-frontend'}[$interval])",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "pod {{instance}}",

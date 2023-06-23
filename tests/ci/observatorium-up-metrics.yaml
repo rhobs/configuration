@@ -37,7 +37,7 @@ spec:
             cpu: 50m
             memory: 50Mi
           requests:
-            cpu: 50m
+            cpu: 30m
             memory: 50Mi
         volumeMounts:
         - mountPath: /var/shared

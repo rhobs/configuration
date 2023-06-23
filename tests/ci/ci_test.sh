@@ -22,6 +22,7 @@ ns() {
     oc create ns observatorium-metrics || true
     oc create ns observatorium || true
     oc create ns telemeter || true
+    oc create ns rhelemeter || true
     oc create ns observatorium-logs || true
     oc create ns observatorium-mst || true
 }
@@ -85,6 +86,13 @@ telemeter() {
     oc process --param-file=telemeter.ci.env \
         -f ../../resources/services/telemeter-template.yaml | \
         oc apply --namespace telemeter -f -
+}
+
+rhelemeter() {
+    oc wait --for=jsonpath='{.status.phase}=Active' namespace/rhelemeter --timeout=5s
+    oc process -f --param-file=rhelemeter.test.ci.env \
+        -f ../../resources/services/rhelemeter-template.yaml | \
+        oc apply --namespace rhelemeter -f -
 }
 
 observatorium_logs() {
@@ -158,6 +166,7 @@ ci.deploy() {
     observatorium
     observatorium_metrics
     telemeter
+    rhelemeter
     observatorium_logs
     observatorium_tools
 }

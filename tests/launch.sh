@@ -4,7 +4,6 @@
 
 set -e
 set -o pipefail
-set -x
 
 role() {
     oc apply -f observatorium-cluster-role.yaml
@@ -72,8 +71,14 @@ telemeter() {
     oc process --param-file=telemeter.test.env -f ../resources/services/telemeter-template.yaml | oc apply --namespace telemeter -f -
 }
 
+rhelemeter() {
+    oc create ns rhelemeter || true
+    oc process --param-file=rhelemeter.test.env -f ../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
+}
+
 teardown() {
     oc delete ns telemeter || true
+    oc delete ns rhelemeter || true
     oc delete ns observatorium-metrics || true
     oc delete ns observatorium || true
     oc delete ns minio || true
@@ -97,6 +102,7 @@ deploy)
     observatorium_tools
     observatorium_metrics
     telemeter
+    rhelemeter
     observatorium_logs
     observatorium
     logging

@@ -128,7 +128,7 @@ migrate-vendor:
 
 .PHONY: manifests
 manifests: migrate-vendor format $(JSONNET_VENDOR_DIR)
-manifests: resources/services/telemeter-template.yaml resources/services/rhelemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/minio-template.yaml tests/dex-template.yaml
+manifests: resources/services/telemeter-template.yaml resources/services/rhelemeter-template.yaml resources/services/jaeger-template.yaml resources/services/parca-template.yaml tests/deploy/manifests/minio-template.yaml tests/deploy/manifests/dex-template.yaml
 manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml resources/crds/observatorium-logs-crds-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml 
 	$(MAKE) clean
@@ -142,11 +142,11 @@ resources/services/jaeger-template.yaml: $(wildcard services/jaeger-*) $(JSONNET
 	@echo ">>>>> Running jaeger-template"
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/jaeger-template.jsonnet | $(GOJSONTOYAML) > $@
 
-tests/minio-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+tests/deploy/manifests/minio-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running minio-template"
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/minio-template.jsonnet | $(GOJSONTOYAML) > $@
 
-tests/dex-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
+tests/deploy/manifests/dex-template.yaml: $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running dex-template"
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/dex-template.jsonnet | $(GOJSONTOYAML) > $@
 

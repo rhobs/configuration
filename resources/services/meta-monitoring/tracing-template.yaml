@@ -11,10 +11,6 @@ parameters:
     description: The namespace where Tempo will be installed.
     required: true
     value: observatorium-tools
-  - name: TENANT_NAME
-    value: application
-  - name: TENANT_ID
-    value: 42ffe36a-c2c9-4cfc-b876-72ca5036aca7
   - name: S3_ACCESS_KEY_ID
   - name: S3_SECRET_ACCESS_KEY
   - name: S3_BUCKET_NAME

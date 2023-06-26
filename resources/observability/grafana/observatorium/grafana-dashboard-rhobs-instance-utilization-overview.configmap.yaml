@@ -207,7 +207,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (namespace,  job, handler, code) (rate(thanos_query_frontend_queries_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", op=\"query_range\"}[$interval]))",
+           "expr": "sum by (namespace,  job, handler, code) (rate(thanos_query_frontend_queries_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",

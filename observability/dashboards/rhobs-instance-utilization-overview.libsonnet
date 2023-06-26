@@ -39,7 +39,6 @@ function() {
   },
 
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
-  local queryFrontendOpSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'op=~".*"']),
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')
@@ -52,22 +51,16 @@ function() {
           { gridPos: { x: 0, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
-          g.panel('Rate of queries', 'Shows rate of queries passing through Query Frontend') +
-          g.httpQpsPanel('thanos_query_frontend_queries_total', queryFrontendOpSelector, thanos.queryFrontend.dashboard.dimensions + ',op') +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { gridPos: { x: 6, y: 1, w: 6, h: 6 } },
-        )
-        .addPanel(
           g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Query Frontend.') +
           g.httpErrPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { gridPos: { x: 12, y: 1, w: 6, h: 6 } },
+          { gridPos: { x: 6, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { gridPos: { x: 18, y: 1, w: 6, h: 6 } },
+          { gridPos: { x: 12, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('Memory Used') +
@@ -80,7 +73,7 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('MB'), gridPos: { x: 0, y: 7, w: 6, h: 6 } },
+          { yaxes: g.yaxes('MB'), gridPos: { x: 18, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('CPU Usage') +
@@ -93,7 +86,7 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('percent'), gridPos: { x: 6, y: 7, w: 6, h: 6 } },
+          { yaxes: g.yaxes('percent'), gridPos: { x: 0, y: 7, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('Pod/Container Restarts') +
@@ -106,7 +99,7 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('count'), gridPos: { x: 12, y: 7, w: 6, h: 6 } }
+          { yaxes: g.yaxes('count'), gridPos: { x: 6, y: 7, w: 6, h: 6 } }
         )
         .addPanel(
           g.panel('Network Usage') +
@@ -121,7 +114,7 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('MB'), gridPos: { x: 18, y: 7, w: 6, h: 6 } }
+          { yaxes: g.yaxes('MB'), gridPos: { x: 12, y: 7, w: 6, h: 6 } }
         )
         + { gridPos: { x: 0, y: 0, w: 24, h: 1 } },
       ) + {

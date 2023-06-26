@@ -145,123 +145,6 @@ data:
         },
         {
          "aliasColors": {
-
-         },
-         "bars": false,
-         "dashLength": 10,
-         "dashes": false,
-         "datasource": "$datasource",
-         "description": "Shows rate of queries passing through Query Frontend",
-         "fill": 10,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 6,
-          "y": 1
-         },
-         "id": 2,
-         "legend": {
-          "avg": false,
-          "current": false,
-          "max": false,
-          "min": false,
-          "show": true,
-          "total": false,
-          "values": false
-         },
-         "lines": true,
-         "linewidth": 0,
-         "links": [
-          {
-           "dashboard": "Thanos / Query Frontend",
-           "includeVars": true,
-           "keepTime": true,
-           "title": "Thanos / Query Frontend",
-           "type": "dashboard"
-          }
-         ],
-         "nullPointMode": "null as zero",
-         "percentage": false,
-         "pointradius": 5,
-         "points": false,
-         "renderer": "flot",
-         "seriesOverrides": [
-          {
-           "alias": "/1../",
-           "color": "#EAB839"
-          },
-          {
-           "alias": "/2../",
-           "color": "#37872D"
-          },
-          {
-           "alias": "/3../",
-           "color": "#E0B400"
-          },
-          {
-           "alias": "/4../",
-           "color": "#1F60C4"
-          },
-          {
-           "alias": "/5../",
-           "color": "#C4162A"
-          }
-         ],
-         "spaceLength": 10,
-         "span": 1,
-         "stack": true,
-         "steppedLine": false,
-         "targets": [
-          {
-           "expr": "sum by (namespace,  job, op, handler, code) (rate(thanos_query_frontend_queries_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", op=~\".*\"}[$interval]))",
-           "format": "time_series",
-           "intervalFactor": 2,
-           "legendFormat": "{{namespace}} {{job}} {{op}} {{handler}} {{code}}",
-           "step": 10
-          }
-         ],
-         "thresholds": [
-
-         ],
-         "timeFrom": null,
-         "timeShift": null,
-         "title": "Rate of queries",
-         "tooltip": {
-          "shared": false,
-          "sort": 0,
-          "value_type": "individual"
-         },
-         "type": "graph",
-         "xaxis": {
-          "buckets": null,
-          "mode": "time",
-          "name": null,
-          "show": true,
-          "values": [
-
-          ]
-         },
-         "yaxes": [
-          {
-           "format": "short",
-           "label": null,
-           "logBase": 1,
-           "max": null,
-           "min": 0,
-           "show": true
-          },
-          {
-           "format": "short",
-           "label": null,
-           "logBase": 1,
-           "max": null,
-           "min": null,
-           "show": false
-          }
-         ]
-        },
-        {
-         "aliasColors": {
           "error": "#E24D42"
          },
          "bars": false,
@@ -273,10 +156,10 @@ data:
          "gridPos": {
           "h": 6,
           "w": 6,
-          "x": 12,
+          "x": 6,
           "y": 1
          },
-         "id": 3,
+         "id": 2,
          "legend": {
           "avg": false,
           "current": false,
@@ -370,10 +253,10 @@ data:
          "gridPos": {
           "h": 6,
           "w": 6,
-          "x": 18,
+          "x": 12,
           "y": 1
          },
-         "id": 4,
+         "id": 3,
          "legend": {
           "avg": false,
           "current": false,
@@ -507,10 +390,10 @@ data:
          "gridPos": {
           "h": 6,
           "w": 6,
-          "x": 0,
-          "y": 7
+          "x": 18,
+          "y": 1
          },
-         "id": 5,
+         "id": 4,
          "legend": {
           "avg": false,
           "current": false,
@@ -605,10 +488,10 @@ data:
          "gridPos": {
           "h": 6,
           "w": 6,
-          "x": 6,
+          "x": 0,
           "y": 7
          },
-         "id": 6,
+         "id": 5,
          "legend": {
           "avg": false,
           "current": false,
@@ -703,10 +586,10 @@ data:
          "gridPos": {
           "h": 6,
           "w": 6,
-          "x": 12,
+          "x": 6,
           "y": 7
          },
-         "id": 7,
+         "id": 6,
          "legend": {
           "avg": false,
           "current": false,
@@ -801,10 +684,10 @@ data:
          "gridPos": {
           "h": 6,
           "w": 6,
-          "x": 18,
+          "x": 12,
           "y": 7
          },
-         "id": 8,
+         "id": 7,
          "legend": {
           "avg": false,
           "current": false,

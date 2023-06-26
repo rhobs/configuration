@@ -11,6 +11,9 @@ local rhelemeter = (import 'rhelemeter.libsonnet') {
       oidcIssuer: '${RHELEMETER_OIDC_ISSUER}',
       clientID: '${RHELEMETER_CLIENT_ID}',
       clientSecret: '${RHELEMETER_CLIENT_SECRET}',
+      externalMtlsCa: '${RHELEMETER_EXTERNAL_MTLS_CA}',
+      externalMtlsKey: '${RHELEMETER_EXTERNAL_MTLS_KEY}',
+      externalMtlsCrt: '${RHELEMETER_EXTERNAL_MTLS_CRT}',
       resourceLimits:: {
         cpu: '${RHELEMETER_SERVER_CPU_LIMIT}',
         memory: '${RHELEMETER_SERVER_MEMORY_LIMIT}',

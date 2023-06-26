@@ -39,6 +39,7 @@ function() {
   },
 
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
+  local queryFrontendOpSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'op=~".*"']),
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')
@@ -52,7 +53,7 @@ function() {
         )
         .addPanel(
           g.panel('Rate of queries', 'Shows rate of queries passing through Query Frontend') +
-          g.httpQpsPanel('thanos_query_frontend_queries_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
+          g.httpQpsPanel('thanos_query_frontend_queries_total', queryFrontendOpSelector, thanos.queryFrontend.dashboard.dimensions + ',op') +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { gridPos: { x: 6, y: 1, w: 6, h: 6 } },
         )

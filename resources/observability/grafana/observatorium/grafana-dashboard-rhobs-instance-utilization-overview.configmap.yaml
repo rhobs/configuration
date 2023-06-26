@@ -539,50 +539,10 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "go_memstats_alloc_bytes{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\"}",
+           "expr": "(container_memory_working_set_bytes{container=\"observatorium-thanos-query-frontend\", namespace=\"$namespace\"}[$interval]) / (1024 * 1024)",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "alloc all {{instance}}",
-           "legendLink": null,
-           "step": 10
-          },
-          {
-           "expr": "go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\"}",
-           "format": "time_series",
-           "intervalFactor": 2,
-           "legendFormat": "alloc heap {{instance}}",
-           "legendLink": null,
-           "step": 10
-          },
-          {
-           "expr": "rate(go_memstats_alloc_bytes_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\"}[30s])",
-           "format": "time_series",
-           "intervalFactor": 2,
-           "legendFormat": "alloc rate all {{instance}}",
-           "legendLink": null,
-           "step": 10
-          },
-          {
-           "expr": "rate(go_memstats_heap_alloc_bytes{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\"}[30s])",
-           "format": "time_series",
-           "intervalFactor": 2,
-           "legendFormat": "alloc rate heap {{instance}}",
-           "legendLink": null,
-           "step": 10
-          },
-          {
-           "expr": "go_memstats_stack_inuse_bytes{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\"}",
-           "format": "time_series",
-           "intervalFactor": 2,
-           "legendFormat": "inuse heap {{instance}}",
-           "legendLink": null,
-           "step": 10
-          },
-          {
-           "expr": "go_memstats_heap_inuse_bytes{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\"}",
-           "format": "time_series",
-           "intervalFactor": 2,
-           "legendFormat": "inuse stack {{instance}}",
+           "legendFormat": "memory usage system {{pod}}",
            "legendLink": null,
            "step": 10
           }
@@ -610,7 +570,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "bytes",
+           "format": "MB",
            "label": null,
            "logBase": 1,
            "max": null,

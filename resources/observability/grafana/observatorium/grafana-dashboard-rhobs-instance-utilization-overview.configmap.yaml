@@ -539,7 +539,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "(container_memory_working_set_bytes{container=\"observatorium-thanos-query-frontend\", namespace=\"$namespace\"}[$interval]) / (1024 * 1024)",
+           "expr": "(container_memory_working_set_bytes{container=\"thanos-query-frontend\", namespace=\"$namespace\"}) / (1024 * 1024)",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",

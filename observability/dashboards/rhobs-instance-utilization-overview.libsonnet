@@ -72,7 +72,7 @@ function() {
           g.panel('Memory Used') +
           g.queryPanel(
             [
-              '(container_memory_working_set_bytes{container="observatorium-thanos-query-frontend", namespace="$namespace"}[$interval]) / (1024 * 1024)',
+              '(container_memory_working_set_bytes{container="thanos-query-frontend", namespace="$namespace"}) / (1024 * 1024)',
             ],
             [
               'memory usage system {{pod}}',

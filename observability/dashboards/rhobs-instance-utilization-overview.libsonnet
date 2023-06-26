@@ -89,7 +89,7 @@ function() {
               'rate(process_cpu_seconds_total{job="observatorium-thanos-query-frontend", namespace="$namespace"}[$interval]) * 100',
             ],
             [
-              'cpu usage system {{instance}}',
+              'cpu usage system {{pod}}',
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
@@ -102,12 +102,28 @@ function() {
               'increase(kube_pod_container_status_restarts_total{namespace="$namespace", container=\'thanos-query-frontend\'}[$interval])',
             ],
             [
-              'pod {{instance}}',
+              'pod {{pod}}',
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('count'), gridPos: { x: 12, y: 7, w: 6, h: 6 } }
         )
+        .addPanel(
+          g.panel('Network Usage') +
+          g.queryPanel(
+            [
+              'rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval]) / (1024 * 1024)',
+              'rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval]) / (1024 * 1024)',
+            ],
+            [
+              'receive bytes pod {{pod}}',
+              'transmit bytes pod {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { yaxes: g.yaxes('MB'), gridPos: { x: 18, y: 7, w: 6, h: 6 } }
+        )
+        + { gridPos: { x: 0, y: 0, w: 24, h: 1 } },
       ) + {
         templating+: {
           list+: [namespaceTemplate, intervalTemplate],

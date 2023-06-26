@@ -18,6 +18,12 @@ data:
      "rows": [
       {
        "collapse": false,
+       "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+       },
        "height": "250px",
        "panels": [
         {
@@ -640,7 +646,7 @@ data:
            "expr": "rate(process_cpu_seconds_total{job=\"observatorium-thanos-query-frontend\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "cpu usage system {{instance}}",
+           "legendFormat": "cpu usage system {{pod}}",
            "legendLink": null,
            "step": 10
           }
@@ -738,7 +744,7 @@ data:
            "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"$namespace\", container='thanos-query-frontend'}[$interval])",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "pod {{instance}}",
+           "legendFormat": "pod {{pod}}",
            "legendLink": null,
            "step": 10
           }
@@ -767,6 +773,112 @@ data:
          "yaxes": [
           {
            "format": "count",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 7
+         },
+         "id": 8,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-query-frontend-.*\"}[$interval]) / (1024 * 1024)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "receive bytes pod {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "rate(container_network_transmit_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-query-frontend-.*\"}[$interval]) / (1024 * 1024)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "transmit bytes pod {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Network Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "MB",
            "label": null,
            "logBase": 1,
            "max": null,

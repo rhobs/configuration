@@ -49,7 +49,13 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -160,7 +166,13 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -271,7 +283,13 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -362,7 +380,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -493,7 +517,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -625,7 +655,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -717,7 +753,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,

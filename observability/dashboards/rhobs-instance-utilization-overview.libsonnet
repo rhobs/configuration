@@ -31,6 +31,7 @@ function() {
     selector: error 'must provide selector for Thanos Query Frontend dashboard',
     title: error 'must provide title for Thanos Query Frontend dashboard',
     dashboard:: {
+      title: config.queryFrontend.gittitle,
       selector: std.join(', ', config.dashboard.selector + ['job=~"observatorium-thanos-query-frontend"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
       pod: 'observatorium-thanos-query-frontend.*',
@@ -47,21 +48,25 @@ function() {
         .addPanel(
           g.panel('Rate of requests', 'Shows rate of requests against Query Frontend for the given time.') +
           g.httpQpsPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { gridPos: { x: 0, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('Rate of queries', 'Shows rate of queries passing through Query Frontend') +
           g.httpQpsPanel('thanos_query_frontend_queries_total', queryFrontendOpSelector, thanos.queryFrontend.dashboard.dimensions) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { gridPos: { x: 6, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Query Frontend.') +
           g.httpErrPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { gridPos: { x: 12, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
           g.panel('Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { gridPos: { x: 18, y: 1, w: 6, h: 6 } },
         )
         .addPanel(
@@ -84,6 +89,7 @@ function() {
               'inuse stack {{instance}}',
             ]
           ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('bytes'), gridPos: { x: 0, y: 7, w: 6, h: 6 } },
         )
         .addPanel(
@@ -96,6 +102,7 @@ function() {
               'cpu usage system {{instance}}',
             ]
           ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('percent'), gridPos: { x: 6, y: 7, w: 6, h: 6 } },
         )
         .addPanel(
@@ -108,6 +115,7 @@ function() {
               'pod {{instance}}',
             ]
           ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('count'), gridPos: { x: 12, y: 7, w: 6, h: 6 } }
         )
       ) + {

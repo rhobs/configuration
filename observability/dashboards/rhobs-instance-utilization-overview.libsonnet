@@ -39,6 +39,7 @@ function() {
   },
 
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
+
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')

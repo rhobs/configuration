@@ -27,7 +27,7 @@
       },
     },
 
-    caSecret+: {
+    externalMtlsSecret+: {
       data+:: {
       },
     },

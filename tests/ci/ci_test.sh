@@ -11,7 +11,7 @@ check_status() {
 }
 
 prereq() {
-    oc apply -f pre-requisites.yaml
+    oc apply -f manifests/pre-requisites.yaml
     oc create -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
     oc create -f https://raw.githubusercontent.com/grafana/loki/main/operator/bundle/openshift/manifests/loki.grafana.com_lokistacks.yaml
 }
@@ -29,75 +29,75 @@ ns() {
 
 minio() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/minio --timeout=5s
-    oc process --param-file=minio.test.ci.env -f ../minio-template.yaml | \
+    oc process --param-file=env/minio.test.ci.env -f ../deploy/manifests/minio-template.yaml | \
         oc apply -n minio -f -
 }
 
 dex() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/dex --timeout=5s
-    oc process --param-file=dex.test.ci.env -f ../dex-template.yaml | \
+    oc process --param-file=env/dex.test.ci.env -f ../deploy/manifests/dex-template.yaml | \
         oc apply -n dex -f -
 }
 
 observatorium_metrics() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-metrics --timeout=5s
-    oc process -f ../observatorium-metrics-thanos-objectstorage-secret-template.yaml | \
+    oc process -f ../deploy/manifests/observatorium-metrics-thanos-objectstorage-secret-template.yaml | \
          oc apply --namespace observatorium-metrics -f -
-    oc apply -f ../observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
-    oc apply -f ../observatorium-cluster-role.yaml
-    oc apply -f ../observatorium-cluster-role-binding.yaml
-    oc apply --namespace observatorium-metrics -f ../observatorium-service-account.yaml
-    oc process --param-file=observatorium-metrics.ci.env \
+    oc apply -f ../deploy/manifests/observatorium-alertmanager-config-secret.yaml --namespace observatorium-metrics
+    oc apply -f ../deploy/manifests/observatorium-cluster-role.yaml
+    oc apply -f ../deploy/manifests/observatorium-cluster-role-binding.yaml
+    oc apply --namespace observatorium-metrics -f ../deploy/manifests/observatorium-service-account.yaml
+    oc process --param-file=env/observatorium-metrics.ci.env \
         -f ../../resources/services/observatorium-metrics-template.yaml | \
         oc apply --namespace observatorium-metrics -f -
-    oc process --param-file=observatorium-metric-federation-rule.test.ci.env \
+    oc process --param-file=env/observatorium-metric-federation-rule.test.ci.env \
         -f ../../resources/services/metric-federation-rule-template.yaml| \
         oc apply --namespace observatorium-metrics -f -
 }
 
 observatorium_tools(){
     oc create ns observatorium-tools || true
-    oc apply --namespace observatorium-tools -f ../observatorium-tools-network-policy.yaml
-    oc process --param-file=logging.test.ci.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
+    oc apply --namespace observatorium-tools -f ../deploy/manifests/observatorium-tools-network-policy.yaml
+    oc process --param-file=env/logging.test.ci.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
 }
 
 observatorium() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium --timeout=5s
-    oc apply -f ../observatorium-rules-objstore-secret.yaml --namespace observatorium
-    oc apply -f ../observatorium-rhobs-tenant-secret.yaml --namespace observatorium
-    oc apply --namespace observatorium -f ../observatorium-service-account.yaml
-    oc apply -f ../observatorium-parca-secret.yaml --namespace observatorium
+    oc apply -f ../deploy/manifests/observatorium-rules-objstore-secret.yaml --namespace observatorium
+    oc apply -f ../deploy/manifests/observatorium-rhobs-tenant-secret.yaml --namespace observatorium
+    oc apply --namespace observatorium -f ../deploy/manifests/observatorium-service-account.yaml
+    oc apply -f ../deploy/manifests/observatorium-parca-secret.yaml --namespace observatorium
     oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | \
         oc apply -f -
-    oc process --param-file=observatorium.test.ci.env \
+    oc process --param-file=env/observatorium.test.ci.env \
         -f ../../resources/services/observatorium-template.yaml | \
         oc apply --namespace observatorium -f -
-    oc process --param-file=observatorium-parca.test.ci.env \
+    oc process --param-file=env/observatorium-parca.test.ci.env \
         -f ../../resources/services/parca-template.yaml| \
         oc apply --namespace observatorium -f -
-    oc process --param-file=observatorium-jaeger.test.ci.env \
+    oc process --param-file=env/observatorium-jaeger.test.ci.env \
         -f ../../resources/services/jaeger-template.yaml| \
         oc apply --namespace observatorium -f -
 }
 
 telemeter() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/telemeter --timeout=5s
-    oc apply --namespace telemeter -f ../telemeter-token-refersher-oidc-secret.yaml
-    oc process --param-file=telemeter.ci.env \
+    oc apply --namespace telemeter -f ../deploy/manifests/telemeter-token-refersher-oidc-secret.yaml
+    oc process --param-file=env/telemeter.ci.env \
         -f ../../resources/services/telemeter-template.yaml | \
         oc apply --namespace telemeter -f -
 }
 
 rhelemeter() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/rhelemeter --timeout=5s
-    oc process -f --param-file=rhelemeter.test.ci.env \
+    oc process -f --param-file=env/rhelemeter.test.ci.env \
         -f ../../resources/services/rhelemeter-template.yaml | \
         oc apply --namespace rhelemeter -f -
 }
 
 observatorium_logs() {
-    oc apply --namespace observatorium-logs -f ../observatorium-logs-secret.yaml
-    oc process --param-file=observatorium-logs.test.ci.env -f \
+    oc apply --namespace observatorium-logs -f ../deploy/manifests/observatorium-logs-secret.yaml
+    oc process --param-file=env/observatorium-logs.test.ci.env -f \
         ../../resources/services/observatorium-logs-template.yaml | \
         oc apply --namespace observatorium-logs -f -
 }
@@ -112,17 +112,17 @@ run_test() {
             check_status $res $namespace
         done
     done
-    oc apply -n observatorium -f test-tenant.yaml
-    oc apply -n observatorium -f rbac.yaml
+    oc apply -n observatorium -f manifests/test-tenant.yaml
+    oc apply -n observatorium -f manifests/rbac.yaml
     oc rollout restart deployment/observatorium-observatorium-api -n observatorium
     check_status deployment/observatorium-observatorium-api observatorium
-    oc apply -n observatorium -f observatorium-up-metrics.yaml
+    oc apply -n observatorium -f manifests/observatorium-up-metrics.yaml
     oc wait --for=condition=complete --timeout=5m \
         -n observatorium job/observatorium-up-metrics || {
         must_gather "$ARTIFACT_DIR" 
         exit 1
     }
-    oc apply -n observatorium-logs -f observatorium-up-logs.yaml
+    oc apply -n observatorium-logs -f manifests/observatorium-up-logs.yaml
     oc wait --for=condition=complete --timeout=5m \
         -n observatorium-logs job/observatorium-up-logs || {
         must_gather "$ARTIFACT_DIR"

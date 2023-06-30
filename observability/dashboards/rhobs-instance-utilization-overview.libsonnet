@@ -37,6 +37,20 @@ function() {
       pod: 'observatorium-thanos-query-frontend.*',
     },
   },
+
+  rule:: {
+    yStart: 8,
+    selector: error 'must provide selector for Thanos Rule dashboard',
+    title: error 'must provide title for Thanos Rule dashboard',
+    dashboard:: {
+      title: config.rule.title,
+      selector: std.join(', ', config.dashboard.selector + ['job=~"observatorium-thanos-rule"']),
+      dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'observatorium-thanos-rule.*',
+      container: 'thanos-rule',
+    },
+  },
+
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
 
   receive:: {
@@ -228,6 +242,136 @@ function() {
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
         )
+        + { gridPos: { x: 0, y: 0, w: 24, h: 1 } },
+      )
+      .addRow(
+        g.row('Thanos Rule Overview')
+        // First line (y=1): evaluations metrics
+        .addPanel(
+          g.panel('Total evaluations', 'Displays the rate of total rule evaluations,') +
+          g.queryPanel(
+            'sum by (job, rule_group) (rate(prometheus_rule_evaluations_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
+            '{{rule_group}}'
+          ) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
+          { gridPos: { x: 0, y: thanos.rule.yStart + 1, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('Failed evaluations', 'Displays the rate of rule evaluation failures, grouped by rule group.') +
+          g.queryPanel(
+            'sum by (job, rule_group) (rate(prometheus_rule_evaluation_failures_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
+            '{{rule_group}}'
+          ) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
+          { gridPos: { x: 6, y: thanos.rule.yStart + 1, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('Evaluations with warnings') +
+          g.queryPanel(
+            'sum by (job, strategy) (rate(thanos_rule_evaluation_with_warnings_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
+            '{{rule_group}}'
+          ) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
+          { gridPos: { x: 12, y: thanos.rule.yStart + 1, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('Too slow evaluations', 'Displays the total time of rule group evaluations that took longer than their scheduled interval.') +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
+          g.queryPanel(
+            'sum by(job, rule_group) (prometheus_rule_group_last_duration_seconds{%(selector)s}) / sum by(job, rule_group) (prometheus_rule_group_interval_seconds{%(selector)s})' % thanos.rule.dashboard,
+            '{{rule_group}}'
+          ) +
+          { gridPos: { x: 18, y: thanos.rule.yStart + 1, w: 6, h: 6 } },
+        )
+        // Second line (y=7): alerts push to aler manager metrics
+        .addPanel(
+          g.panel('Rate of sent alerts', 'Shows the rate of total alerts sent by Thanos.') +
+          g.queryPanel('sum by (job) (rate(thanos_alert_sender_alerts_sent_total{%(selector)s}[$interval]))' % thanos.rule.dashboard, '{{job}}') +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
+          { gridPos: { x: 0, y: thanos.rule.yStart + 7, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('Rate of send alerts errors', 'Displays the ratio of error rate to total alerts sent rate by Thanos.') +
+          g.queryPanel(
+            'sum by (job) (rate(thanos_alert_sender_errors_total{%(selector)s}[$interval])) / sum by (job) (rate(thanos_alert_sender_alerts_sent_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
+            '{{job}}'
+          ) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
+          { gridPos: { x: 6, y: thanos.rule.yStart + 7, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('Duration od send alerts', 'Displays the 50th, 90th, and 99th percentile latency of alert requests sent by Thanos.') +
+          g.queryPanel(
+            [
+              'histogram_quantile(0.50, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{%(selector)s}[$interval])))' % thanos.rule.dashboard,
+              'histogram_quantile(0.90, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{%(selector)s}[$interval])))' % thanos.rule.dashboard,
+              'histogram_quantile(0.99, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{%(selector)s}[$interval])))' % thanos.rule.dashboard,
+            ],
+            [
+              'p50',
+              'p90',
+              'p99',
+            ]
+          ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { gridPos: { x: 12, y: thanos.rule.yStart + 7, w: 6, h: 6 } },
+        )
+        // Third line (y=13): CPU, memory, network resource usage and restarts
+        .addPanel(
+          g.panel('Memory Used') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="thanos-rule", namespace="$namespace"}) / (1024 * 1024)',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { yaxes: g.yaxes('MB'), gridPos: { x: 0, y: thanos.rule.yStart + 13, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{%(selector)s}[$interval]) * 100' % thanos.rule.dashboard,
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { yaxes: g.yaxes('percent'), gridPos: { x: 6, y: thanos.rule.yStart + 13, w: 6, h: 6 } },
+        )
+        .addPanel(
+          g.panel('Network Usage') +
+          g.queryPanel(
+            [
+              'rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"%(pod)s"}[$interval]) / (1024 * 1024)' % thanos.rule.dashboard,
+              'rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"%(pod)s"}[$interval]) / (1024 * 1024)' % thanos.rule.dashboard,
+            ],
+            [
+              'receive bytes pod {{pod}}',
+              'transmit bytes pod {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { yaxes: g.yaxes('MB'), gridPos: { x: 12, y: thanos.rule.yStart + 13, w: 6, h: 6 } }
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'increase(kube_pod_container_status_restarts_total{namespace="$namespace", container="%(container)s"}[$interval])' % thanos.rule.dashboard,
+            ],
+            [
+              'pod {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { yaxes: g.yaxes('count'), gridPos: { x: 18, y: thanos.rule.yStart + 13, w: 6, h: 6 } }
+        )
+        + { gridPos: { x: 0, y: thanos.rule.yStart, w: 24, h: 1 } },
       ) + {
         templating+: {
           list+: [namespaceTemplate, intervalTemplate],

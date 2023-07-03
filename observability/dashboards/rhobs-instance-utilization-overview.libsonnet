@@ -92,8 +92,8 @@ function() {
           g.panel('Concurrency gate utilization') +
           g.queryPanel(
             [
-              'max by (pod) http_inflight_requests{handler="receive", namespace="$namespace"}',
-              'max by (pod) thanos_receive_write_request_concurrency_write_request_limit{namespace="$namespace"}',
+              'max by (pod) (http_inflight_requests{handler="receive", namespace="$namespace"})',
+              'max by (pod) (thanos_receive_write_request_concurrency_write_request_limit{namespace="$namespace"})',
             ],
             [
               'concurrency gate used {{pod}}',

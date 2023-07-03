@@ -784,7 +784,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "max by (pod) http_inflight_requests{handler=\"receive\", namespace=\"$namespace\"}",
+           "expr": "max by (pod) (http_inflight_requests{handler=\"receive\", namespace=\"$namespace\"})",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "concurrency gate used {{pod}}",
@@ -792,7 +792,7 @@ data:
            "step": 10
           },
           {
-           "expr": "max by (pod) thanos_receive_write_request_concurrency_write_request_limit{namespace=\"$namespace\"}",
+           "expr": "max by (pod) (thanos_receive_write_request_concurrency_write_request_limit{namespace=\"$namespace\"})",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "concurrency gate limit {{pod}}",

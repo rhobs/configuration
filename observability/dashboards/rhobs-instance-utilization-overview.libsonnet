@@ -37,31 +37,143 @@ function() {
       pod: 'observatorium-thanos-query-frontend.*',
     },
   },
-
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
+
+  receive:: {
+    selector: error 'must provide selector for Thanos Receive dashboard',
+    title: error 'must provide title for Thanos Receive dashboard',
+    dashboard:: {
+      title: config.receive.title,
+      selector: std.join(', ', config.dashboard.selector + ['job=~"observatorium-thanos-receive.*"']),
+      dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'observatorium-thanos-receive.*',
+    },
+  },
+  local receiveHandlerSelector = utils.joinLabels([thanos.receive.dashboard.selector, 'handler="receive"']),
 
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')
+      .addRow(
+        g.row('Receive Overview')
+        .addPanel(
+          g.panel('Rate of requests', 'Shows rate of requests against Receive for the given time') +
+          g.httpQpsPanel('http_requests_total', receiveHandlerSelector, thanos.receive.dashboard.dimensions) +
+          g.addDashboardLink(thanos.receive.dashboard.title) +
+          g.stack
+        )
+        .addPanel(
+          g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Receive.') +
+          g.httpErrPanel('http_requests_total', receiveHandlerSelector, thanos.receive.dashboard.dimensions) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Duration', 'Shows how long has it taken to handle requests in quantiles.') +
+          g.latencyPanel('http_request_duration_seconds', receiveHandlerSelector, thanos.receive.dashboard.dimensions) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Replication request count', 'Shows the number of replication requests against Receive.') +
+          g.grpcRequestsPanel('grpc_client_handled_total', 'grpc_type="unary", grpc_method="RemoteWrite"', thanos.receive.dashboard.dimensions) +
+          g.addDashboardLink(thanos.receive.dashboard.title) +
+          g.stack
+        )
+        .addPanel(
+          g.panel('Replication request duration', 'Shows how long has it taken to handle replication requests in quantiles.') +
+          g.latencyPanel('grpc_client_handling_seconds', 'grpc_type="unary", grpc_method="RemoteWrite"', thanos.receive.dashboard.dimensions) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Replication request errors', 'Shows the number of replication request errors.') +
+          g.grpcErrorsPanel('grpc_client_handled_total', 'grpc_type="unary", grpc_method="RemoteWrite"', thanos.receive.dashboard.dimensions) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Concurrency gate utilization') +
+          g.queryPanel(
+            [
+              'max by (pod) http_inflight_requests{handler="receive", namespace="$namespace"}',
+              'max by (pod) thanos_receive_write_request_concurrency_write_request_limit{namespace="$namespace"}',
+            ],
+            [
+              'concurrency gate used {{pod}}',
+              'concurrency gate limit {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Memory Used', 'Memory working set') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="thanos-receive", namespace="$namespace"})',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.receive.dashboard.title) +
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{job="observatorium-thanos-receive-default", namespace="$namespace"}[$interval]) * 100',
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-receive"})',
+            ],
+            [
+              'pod restart count {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.receive.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Network Traffic') +
+          g.queryPanel(
+            [
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval])) * -1',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval]))',
+            ],
+            [
+              'network traffic in {{pod}}',
+              'network traffic out {{pod}}',
+            ]
+          ) +
+          g.stack +
+          g.addDashboardLink(thanos.receive.dashboard.title) +
+          { yaxes: g.yaxes('binBps') }
+        )
+      )
       .addRow(
         g.row('Query Frontend Overview')
         .addPanel(
           g.panel('Rate of requests', 'Shows rate of requests against Query Frontend for the given time.') +
           g.httpQpsPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { gridPos: { x: 0, y: 1, w: 6, h: 6 } },
+          g.stack
         )
         .addPanel(
           g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Query Frontend.') +
           g.httpErrPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { gridPos: { x: 6, y: 1, w: 6, h: 6 } },
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
           g.panel('Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { gridPos: { x: 12, y: 1, w: 6, h: 6 } },
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
           g.panel('Memory Used') +
@@ -74,7 +186,8 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('MB'), gridPos: { x: 18, y: 1, w: 6, h: 6 } },
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
         )
         .addPanel(
           g.panel('CPU Usage') +
@@ -86,8 +199,7 @@ function() {
               'cpu usage system {{pod}}',
             ]
           ) +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('percent'), gridPos: { x: 0, y: 7, w: 6, h: 6 } },
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
           g.panel('Pod/Container Restarts') +
@@ -99,8 +211,7 @@ function() {
               'pod {{pod}}',
             ]
           ) +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('count'), gridPos: { x: 6, y: 7, w: 6, h: 6 } }
+          g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
           g.panel('Network Usage') +
@@ -115,9 +226,8 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
-          { yaxes: g.yaxes('MB'), gridPos: { x: 12, y: 7, w: 6, h: 6 } }
+          { yaxes: g.yaxes('binBps') }
         )
-        + { gridPos: { x: 0, y: 0, w: 24, h: 1 } },
       ) + {
         templating+: {
           list+: [namespaceTemplate, intervalTemplate],

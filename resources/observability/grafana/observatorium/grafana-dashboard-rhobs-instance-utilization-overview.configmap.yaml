@@ -1161,7 +1161,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-receive-.*\"}[$interval])) * -1",
+           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-receive-.*\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
@@ -1607,7 +1607,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "(container_memory_working_set_bytes{container=\"thanos-query-frontend\", namespace=\"$namespace\"}) / (1024 * 1024)",
+           "expr": "(container_memory_working_set_bytes{container=\"thanos-query-frontend\", namespace=\"$namespace\"})",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
@@ -1883,7 +1883,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-query-frontend-.*\"}[$interval]) / (1024 * 1024)",
+           "expr": "rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-query-frontend-.*\"}[$interval])",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "receive bytes pod {{pod}}",
@@ -1891,7 +1891,7 @@ data:
            "step": 10
           },
           {
-           "expr": "rate(container_network_transmit_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-query-frontend-.*\"}[$interval]) / (1024 * 1024)",
+           "expr": "rate(container_network_transmit_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-query-frontend-.*\"}[$interval])",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "transmit bytes pod {{pod}}",

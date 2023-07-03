@@ -144,7 +144,7 @@ function() {
           g.panel('Network Traffic') +
           g.queryPanel(
             [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval])) * -1',
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval]))',
               'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval]))',
             ],
             [
@@ -179,7 +179,7 @@ function() {
           g.panel('Memory Used') +
           g.queryPanel(
             [
-              '(container_memory_working_set_bytes{container="thanos-query-frontend", namespace="$namespace"}) / (1024 * 1024)',
+              '(container_memory_working_set_bytes{container="thanos-query-frontend", namespace="$namespace"})',
             ],
             [
               'memory usage system {{pod}}',
@@ -217,8 +217,8 @@ function() {
           g.panel('Network Usage') +
           g.queryPanel(
             [
-              'rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval]) / (1024 * 1024)',
-              'rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval]) / (1024 * 1024)',
+              'rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval])',
+              'rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval])',
             ],
             [
               'receive bytes pod {{pod}}',

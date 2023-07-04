@@ -84,7 +84,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"observatorium-thanos-receive.*\", handler=\"receive\"}[$interval]))",
+           "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
@@ -176,7 +176,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"observatorium-thanos-receive.*\", handler=\"receive\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"observatorium-thanos-receive.*\", handler=\"receive\"}[$interval]))",
+           "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "step": 10
@@ -284,7 +284,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-receive.*\", handler=\"receive\"}[$interval]))) * 1",
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))) * 1",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p50 {{namespace}} {{job}}",
@@ -294,7 +294,7 @@ data:
            "step": 10
           },
           {
-           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-receive.*\", handler=\"receive\"}[$interval]))) * 1",
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))) * 1",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p90 {{namespace}} {{job}}",
@@ -304,7 +304,7 @@ data:
            "step": 10
           },
           {
-           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-receive.*\", handler=\"receive\"}[$interval]))) * 1",
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"receive\"}[$interval]))) * 1",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p99 {{namespace}} {{job}}",
@@ -1227,12 +1227,6 @@ data:
       },
       {
        "collapse": false,
-       "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-       },
        "height": "250px",
        "panels": [
         {
@@ -1299,7 +1293,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\"}[$interval]))",
+           "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query-frontend\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
@@ -1391,7 +1385,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\"}[$interval]))",
+           "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query-frontend\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query-frontend\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "step": 10
@@ -1499,7 +1493,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\"}[$interval]))) * 1",
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query-frontend\"}[$interval]))) * 1",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p50 {{namespace}} {{job}}",
@@ -1509,7 +1503,7 @@ data:
            "step": 10
           },
           {
-           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\"}[$interval]))) * 1",
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query-frontend\"}[$interval]))) * 1",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p90 {{namespace}} {{job}}",
@@ -1519,7 +1513,7 @@ data:
            "step": 10
           },
           {
-           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-query-frontend\", handler=\"query-frontend\"}[$interval]))) * 1",
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query-frontend\"}[$interval]))) * 1",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p99 {{namespace}} {{job}}",
@@ -1955,12 +1949,6 @@ data:
       },
       {
        "collapse": false,
-       "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 8
-       },
        "height": "250px",
        "panels": [
         {
@@ -2014,7 +2002,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluations_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluations_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
@@ -2113,7 +2101,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluation_failures_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluation_failures_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
@@ -2211,7 +2199,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, strategy) (rate(thanos_rule_evaluation_with_warnings_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "expr": "sum by (job, strategy) (rate(thanos_rule_evaluation_with_warnings_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
@@ -2310,7 +2298,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job, rule_group) (prometheus_rule_group_last_duration_seconds{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}) / sum by(job, rule_group) (prometheus_rule_group_interval_seconds{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"})",
+           "expr": "sum by(job, rule_group) (prometheus_rule_group_last_duration_seconds{namespace=\"$namespace\", job=~\"$job\"}) / sum by(job, rule_group) (prometheus_rule_group_interval_seconds{namespace=\"$namespace\", job=~\"$job\"})",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
@@ -2409,7 +2397,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "expr": "sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -2508,7 +2496,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job) (rate(thanos_alert_sender_errors_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])) / sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "expr": "sum by (job) (rate(thanos_alert_sender_errors_total{namespace=\"$namespace\", job=~\"$job\"}[$interval])) / sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -2607,7 +2595,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "histogram_quantile(0.50, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])))",
+           "expr": "histogram_quantile(0.50, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval])))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p50",
@@ -2615,7 +2603,7 @@ data:
            "step": 10
           },
           {
-           "expr": "histogram_quantile(0.90, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])))",
+           "expr": "histogram_quantile(0.90, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval])))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p90",
@@ -2623,7 +2611,7 @@ data:
            "step": 10
           },
           {
-           "expr": "histogram_quantile(0.99, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])))",
+           "expr": "histogram_quantile(0.99, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval])))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "p99",
@@ -2819,7 +2807,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "rate(process_cpu_seconds_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]) * 100",
+           "expr": "rate(process_cpu_seconds_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]) * 100",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
@@ -3078,6 +3066,1534 @@ data:
        "showTitle": true,
        "title": "Thanos Rule Overview",
        "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows rate of handled Unary gRPC requests from queriers.",
+         "fill": 10,
+         "id": 30,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "/Aborted/",
+           "color": "#EAB839"
+          },
+          {
+           "alias": "/AlreadyExists/",
+           "color": "#37872D"
+          },
+          {
+           "alias": "/FailedPrecondition/",
+           "color": "#E0B400"
+          },
+          {
+           "alias": "/Unimplemented/",
+           "color": "#E0B400"
+          },
+          {
+           "alias": "/InvalidArgument/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/NotFound/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/PermissionDenied/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/Unauthenticated/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/Canceled/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/DataLoss/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/DeadlineExceeded/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/Internal/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/OutOfRange/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/ResourceExhausted/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/Unavailable/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/Unknown/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/OK/",
+           "color": "#37872D"
+          },
+          {
+           "alias": "error",
+           "color": "#C4162A"
+          }
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Unary gRPC Rate",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+          "error": "#E24D42"
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows ratio of errors compared to the total number of handled requests from queriers.",
+         "fill": 10,
+         "id": 31,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace, job, grpc_code) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Unary gRPC Errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percentunit",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows how long has it taken to handle requests from queriers, in quantiles.",
+         "fill": 1,
+         "id": 32,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "p99",
+           "color": "#FA6400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p90",
+           "color": "#E0B400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p50",
+           "color": "#37872D",
+           "fill": 10,
+           "fillGradient": 0
+          }
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"unary\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Unary gRPC Duration",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows rate of handled Streamed gRPC requests from queriers.",
+         "fill": 10,
+         "id": 33,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "/Aborted/",
+           "color": "#EAB839"
+          },
+          {
+           "alias": "/AlreadyExists/",
+           "color": "#37872D"
+          },
+          {
+           "alias": "/FailedPrecondition/",
+           "color": "#E0B400"
+          },
+          {
+           "alias": "/Unimplemented/",
+           "color": "#E0B400"
+          },
+          {
+           "alias": "/InvalidArgument/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/NotFound/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/PermissionDenied/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/Unauthenticated/",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/Canceled/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/DataLoss/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/DeadlineExceeded/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/Internal/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/OutOfRange/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/ResourceExhausted/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/Unavailable/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/Unknown/",
+           "color": "#C4162A"
+          },
+          {
+           "alias": "/OK/",
+           "color": "#37872D"
+          },
+          {
+           "alias": "error",
+           "color": "#C4162A"
+          }
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace,  job, grpc_method, grpc_code) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{namespace}} {{job}} {{grpc_method}} {{grpc_code}}",
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Sreamed gRPC Rate",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+          "error": "#E24D42"
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows ratio of errors compared to the total number of handled requests from queriers.",
+         "fill": 10,
+         "id": 34,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace, job, grpc_code) (rate(grpc_server_handled_total{grpc_code=~\"Unknown|ResourceExhausted|Internal|Unavailable|DataLoss\",namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval])) / ignoring (grpc_code) group_left() sum by (namespace, job) (rate(grpc_server_handled_total{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Sreamed gRPC Errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percentunit",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows how long has it taken to handle requests from queriers, in quantiles.",
+         "fill": 1,
+         "id": 35,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "p99",
+           "color": "#FA6400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p90",
+           "color": "#E0B400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p50",
+           "color": "#37872D",
+           "fill": 10,
+           "fillGradient": 0
+          }
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", grpc_type=\"server_stream\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Sreamed gRPC Duration",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Show the size of data touched",
+         "fill": 1,
+         "id": 36,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.99, sum by (le) (rate(thanos_bucket_store_series_data_touched{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "P99: {{data_type}} / {{job}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "sum by (namespace, job, data_type) (rate(thanos_bucket_store_series_data_touched_sum{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])) / sum by (namespace, job, data_type) (rate(thanos_bucket_store_series_data_touched_count{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "mean: {{data_type}} / {{job}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.50, sum by (le) (rate(thanos_bucket_store_series_data_touched{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "P50: {{data_type}} / {{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Data Touched",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "bytes",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows how long has it taken to get all series.",
+         "fill": 1,
+         "id": 37,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "p99",
+           "color": "#FA6400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p90",
+           "color": "#E0B400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p50",
+           "color": "#37872D",
+           "fill": 10,
+           "fillGradient": 0
+          }
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(thanos_bucket_store_series_get_all_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(thanos_bucket_store_series_get_all_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(thanos_bucket_store_series_get_all_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Get All",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows how long has it taken to merge series.",
+         "fill": 1,
+         "id": 38,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "p99",
+           "color": "#FA6400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p90",
+           "color": "#E0B400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p50",
+           "color": "#37872D",
+           "fill": 10,
+           "fillGradient": 0
+          }
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(thanos_bucket_store_series_merge_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(thanos_bucket_store_series_merge_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(thanos_bucket_store_series_merge_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Merge",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Memory working set",
+         "fill": 10,
+         "id": 39,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "(container_memory_working_set_bytes{container=\"thanos-store\", namespace=\"$namespace\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "memory usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Memory Used",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "bytes",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "id": 40,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(process_cpu_seconds_total{job=~\"observatorium-thanos-store-.*\", namespace=\"$namespace\"}[$interval]) * 100",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "cpu usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "CPU Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "id": 41,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (kube_pod_container_status_restarts_total{namespace=\"$namespace\", container=\"thanos-store\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "pod restart count {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Pod/Container Restarts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 10,
+         "id": 42,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Store",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Store",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 0,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-store-.*\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic in {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-store-.*\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic out {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Network Traffic",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "binBps",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Store Gateway Overview",
+       "titleSize": "h6"
       }
      ],
      "schemaVersion": 14,
@@ -3119,6 +4635,33 @@ data:
 
         ],
         "query": "label_values(thanos_status, namespace)",
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [
+
+        ],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+       },
+       {
+        "allValue": ".+",
+        "current": {
+         "text": "",
+         "value": ""
+        },
+        "datasource": "$datasource",
+        "hide": 0,
+        "includeAll": true,
+        "label": "job",
+        "multi": false,
+        "name": "job",
+        "options": [
+
+        ],
+        "query": "label_values(up{namespace=\"$namespace\", job=~\"observatorium-thanos-.*|observatorium-ruler-query.*\"}, job)",
         "refresh": 2,
         "regex": "",
         "sort": 1,

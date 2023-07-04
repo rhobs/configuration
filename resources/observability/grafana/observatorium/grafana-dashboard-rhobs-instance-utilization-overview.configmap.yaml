@@ -1227,6 +1227,12 @@ data:
       },
       {
        "collapse": false,
+       "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+       },
        "height": "250px",
        "panels": [
         {
@@ -1945,6 +1951,1132 @@ data:
        "repeatRowId": null,
        "showTitle": true,
        "title": "Query Frontend Overview",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 8
+       },
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Displays the rate of total rule evaluations,",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 9
+         },
+         "id": 19,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Rule",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Rule",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluations_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{rule_group}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Total evaluations",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Displays the rate of rule evaluation failures, grouped by rule group.",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 9
+         },
+         "id": 20,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Rule",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Rule",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluation_failures_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{rule_group}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Failed evaluations",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 9
+         },
+         "id": 21,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Rule",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Rule",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job, strategy) (rate(thanos_rule_evaluation_with_warnings_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{rule_group}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Evaluations with warnings",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Displays the total time of rule group evaluations that took longer than their scheduled interval.",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 9
+         },
+         "id": 22,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Rule",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Rule",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job, rule_group) (prometheus_rule_group_last_duration_seconds{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}) / sum by(job, rule_group) (prometheus_rule_group_interval_seconds{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{rule_group}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Too slow evaluations",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows the rate of total alerts sent by Thanos.",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 15
+         },
+         "id": 23,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Rule",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Rule",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Rate of sent alerts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Displays the ratio of error rate to total alerts sent rate by Thanos.",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 15
+         },
+         "id": 24,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Rule",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Rule",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job) (rate(thanos_alert_sender_errors_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])) / sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Rate of send alerts errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Displays the 50th, 90th, and 99th percentile latency of alert requests sent by Thanos.",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 15
+         },
+         "id": 25,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval])))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Duration od send alerts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 21
+         },
+         "id": 26,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "(container_memory_working_set_bytes{container=\"thanos-rule\", namespace=\"$namespace\"}) / (1024 * 1024)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "memory usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Memory Used",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "MB",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 21
+         },
+         "id": 27,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(process_cpu_seconds_total{namespace=\"$namespace\", job=~\"observatorium-thanos-rule\"}[$interval]) * 100",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "cpu usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "CPU Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percent",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 21
+         },
+         "id": 28,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-rule.*\"}[$interval]) / (1024 * 1024)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "receive bytes pod {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "rate(container_network_transmit_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-thanos-rule.*\"}[$interval]) / (1024 * 1024)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "transmit bytes pod {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Network Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "MB",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 21
+         },
+         "id": 29,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"$namespace\", container=\"thanos-rule\"}[$interval])",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "pod {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Pod/Container Restarts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "count",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Thanos Rule Overview",
        "titleSize": "h6"
       }
      ],

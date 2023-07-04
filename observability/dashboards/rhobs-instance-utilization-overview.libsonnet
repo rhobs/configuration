@@ -1,20 +1,20 @@
 local config = (import '../config.libsonnet').thanos;
 local utils = import 'github.com/thanos-io/thanos/mixin/lib/utils.libsonnet';
 local g = import 'github.com/thanos-io/thanos/mixin/lib/thanos-grafana-builder/builder.libsonnet';
-local grafana = import 'grafonnet/grafana.libsonnet';
+local template = import 'grafonnet/template.libsonnet';
 
 function() {
 
   local thanos = self,
   local intervalTemplate =
-    grafana.template.interval(
+    template.interval(
       'interval',
       '5m,10m,30m,1h,6h,12h,auto',
       label='interval',
       current='5m',
     ),
   local namespaceTemplate =
-    grafana.template.new(
+    template.new(
       name='namespace',
       datasource='$datasource',
       query='label_values(thanos_status, namespace)',
@@ -27,7 +27,7 @@ function() {
       sort=1
     ),
   local jobTemplate =
-    grafana.template.new(
+    template.new(
       name='job',
       datasource='$datasource',
       query='label_values(up{namespace="$namespace", job=~"observatorium-thanos-.*|observatorium-ruler-query.*"}, job)',

@@ -4234,10 +4234,10 @@ data:
          "linewidth": 0,
          "links": [
           {
-           "dashboard": "Thanos / Receive",
+           "dashboard": "Thanos / Store",
            "includeVars": true,
            "keepTime": true,
-           "title": "Thanos / Receive",
+           "title": "Thanos / Store",
            "type": "dashboard"
           }
          ],
@@ -4326,10 +4326,10 @@ data:
          "linewidth": 1,
          "links": [
           {
-           "dashboard": "Thanos / Receive",
+           "dashboard": "Thanos / Store",
            "includeVars": true,
            "keepTime": true,
-           "title": "Thanos / Receive",
+           "title": "Thanos / Store",
            "type": "dashboard"
           }
          ],
@@ -4418,10 +4418,10 @@ data:
          "linewidth": 1,
          "links": [
           {
-           "dashboard": "Thanos / Receive",
+           "dashboard": "Thanos / Store",
            "includeVars": true,
            "keepTime": true,
-           "title": "Thanos / Receive",
+           "title": "Thanos / Store",
            "type": "dashboard"
           }
          ],
@@ -4510,10 +4510,10 @@ data:
          "linewidth": 0,
          "links": [
           {
-           "dashboard": "Thanos / Receive",
+           "dashboard": "Thanos / Store",
            "includeVars": true,
            "keepTime": true,
-           "title": "Thanos / Receive",
+           "title": "Thanos / Store",
            "type": "dashboard"
           }
          ],

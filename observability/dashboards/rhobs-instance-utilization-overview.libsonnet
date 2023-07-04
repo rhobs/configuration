@@ -463,7 +463,7 @@ function() {
               'memory usage system {{pod}}',
             ]
           ) +
-          g.addDashboardLink(thanos.receive.dashboard.title) +
+          g.addDashboardLink(thanos.store.dashboard.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
@@ -477,7 +477,7 @@ function() {
               'cpu usage system {{pod}}',
             ]
           ) +
-          g.addDashboardLink(thanos.receive.dashboard.title)
+          g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
           g.panel('Pod/Container Restarts') +
@@ -489,7 +489,7 @@ function() {
               'pod restart count {{pod}}',
             ]
           ) +
-          g.addDashboardLink(thanos.receive.dashboard.title)
+          g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
           g.panel('Network Traffic') +
@@ -504,7 +504,7 @@ function() {
             ]
           ) +
           g.stack +
-          g.addDashboardLink(thanos.receive.dashboard.title) +
+          g.addDashboardLink(thanos.store.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
         )
       ) + {

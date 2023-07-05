@@ -52,6 +52,18 @@ function() {
   },
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
 
+  query:: {
+    selector: error 'must provide selector for Thanos Query dashboard',
+    title: error 'must provide title for Thanos Query dashboard',
+    dashboard:: {
+      title: config.queryFrontend.title,
+      selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
+      dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+    },
+  },
+  local queryHandlerSelector = utils.joinLabels([thanos.query.dashboard.selector, 'handler="query"']),
+  local queryRangeHandlerSelector = utils.joinLabels([thanos.query.dashboard.selector, 'handler="query_range"']),
+
   rule:: {
     yStart: 8,
     selector: error 'must provide selector for Thanos Rule dashboard',
@@ -265,6 +277,100 @@ function() {
             ]
           ) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          { yaxes: g.yaxes('binBps') }
+        )
+      )
+      .addRow(
+        g.row('Query Overview')
+        .addPanel(
+          g.panel('Instant Query Rate', 'Shows rate of requests against /query for the given time.') +
+          g.httpQpsPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Instant Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query.') +
+          g.httpErrPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Instant Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
+          g.latencyPanel('http_request_duration_seconds', queryHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Range Query Rate', 'Shows rate of requests against /query_range for the given time range.') +
+          g.httpQpsPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Range Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query_range.') +
+          g.httpErrPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Range Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
+          g.latencyPanel('http_request_duration_seconds', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Concurrent Capacity', 'Shows available capacity of processing queries in parallel.') +
+          g.queryPanel(
+            'max_over_time(thanos_query_concurrent_gate_queries_max{%s}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{%s}[$__rate_interval])' % [thanos.query.dashboard.selector, thanos.query.dashboard.selector],
+            '{{job}} - {{pod}}'
+          )
+        )
+        .addPanel(
+          g.panel('Memory Used', 'Memory working set') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="thanos-query", namespace="$namespace"})',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.query.dashboard.title) +
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{job=~"observatorium-thanos-query", namespace="$namespace"}[$interval]) * 100',
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-query"})',
+            ],
+            [
+              'pod restart count {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Network Traffic') +
+          g.queryPanel(
+            [
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", container="thanos-query"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", container="thanos-query"}[$interval]))',
+            ],
+            [
+              'network traffic in {{pod}}',
+              'network traffic out {{pod}}',
+            ]
+          ) +
+          g.stack +
+          g.addDashboardLink(thanos.query.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
         )
       )

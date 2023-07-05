@@ -1959,6 +1959,1150 @@ data:
          "dashLength": 10,
          "dashes": false,
          "datasource": "$datasource",
+         "description": "Shows rate of requests against /query for the given time.",
+         "fill": 10,
+         "id": 19,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "/1../",
+           "color": "#EAB839"
+          },
+          {
+           "alias": "/2../",
+           "color": "#37872D"
+          },
+          {
+           "alias": "/3../",
+           "color": "#E0B400"
+          },
+          {
+           "alias": "/4../",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/5../",
+           "color": "#C4162A"
+          }
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Instant Query Rate",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+          "error": "#E24D42"
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows ratio of errors compared to the total number of handled requests against /query.",
+         "fill": 10,
+         "id": 20,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Instant Query Errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percentunit",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows how long has it taken to handle requests in quantiles.",
+         "fill": 1,
+         "id": 21,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "p99",
+           "color": "#FA6400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p90",
+           "color": "#E0B400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p50",
+           "color": "#37872D",
+           "fill": 10,
+           "fillGradient": 0
+          }
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Instant Query Duration",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows rate of requests against /query_range for the given time range.",
+         "fill": 10,
+         "id": 22,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "/1../",
+           "color": "#EAB839"
+          },
+          {
+           "alias": "/2../",
+           "color": "#37872D"
+          },
+          {
+           "alias": "/3../",
+           "color": "#E0B400"
+          },
+          {
+           "alias": "/4../",
+           "color": "#1F60C4"
+          },
+          {
+           "alias": "/5../",
+           "color": "#C4162A"
+          }
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace,  job, handler, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{namespace}} {{job}} {{handler}} {{code}}",
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Range Query Rate",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+          "error": "#E24D42"
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows ratio of errors compared to the total number of handled requests against /query_range.",
+         "fill": 10,
+         "id": 23,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (namespace, job, code) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\",code=~\"5..\"}[$interval])) / ignoring (code) group_left() sum by (namespace, job) (rate(http_requests_total{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Range Query Errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percentunit",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows how long has it taken to handle requests in quantiles.",
+         "fill": 1,
+         "id": 24,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+          {
+           "alias": "p99",
+           "color": "#FA6400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p90",
+           "color": "#E0B400",
+           "fill": 1,
+           "fillGradient": 1
+          },
+          {
+           "alias": "p50",
+           "color": "#37872D",
+           "fill": 10,
+           "fillGradient": 0
+          }
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "histogram_quantile(0.50, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p50 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.90, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p90 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          },
+          {
+           "expr": "histogram_quantile(0.99, sum by (namespace, job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", job=~\"$job\", handler=\"query_range\"}[$interval]))) * 1",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "p99 {{namespace}} {{job}}",
+           "logBase": 10,
+           "max": null,
+           "min": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Range Query Duration",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows available capacity of processing queries in parallel.",
+         "fill": 1,
+         "id": 25,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "max_over_time(thanos_query_concurrent_gate_queries_max{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}} - {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Concurrent Capacity",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Memory working set",
+         "fill": 10,
+         "id": 26,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "(container_memory_working_set_bytes{container=\"thanos-query\", namespace=\"$namespace\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "memory usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Memory Used",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "bytes",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "id": 27,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(process_cpu_seconds_total{job=~\"observatorium-thanos-query\", namespace=\"$namespace\"}[$interval]) * 100",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "cpu usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "CPU Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "id": 28,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (kube_pod_container_status_restarts_total{namespace=\"$namespace\", container=\"thanos-query\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "pod restart count {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Pod/Container Restarts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 10,
+         "id": 29,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Thanos / Query Frontend",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Thanos / Query Frontend",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{namespace=\"$namespace\", container=\"thanos-query\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic in {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{namespace=\"$namespace\", container=\"thanos-query\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic out {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Network Traffic",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "binBps",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Query Overview",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
          "description": "Displays the rate of total rule evaluations,",
          "fill": 1,
          "gridPos": {
@@ -1967,7 +3111,7 @@ data:
           "x": 0,
           "y": 9
          },
-         "id": 19,
+         "id": 30,
          "legend": {
           "avg": false,
           "current": false,
@@ -2066,7 +3210,7 @@ data:
           "x": 6,
           "y": 9
          },
-         "id": 20,
+         "id": 31,
          "legend": {
           "avg": false,
           "current": false,
@@ -2164,7 +3308,7 @@ data:
           "x": 12,
           "y": 9
          },
-         "id": 21,
+         "id": 32,
          "legend": {
           "avg": false,
           "current": false,
@@ -2263,7 +3407,7 @@ data:
           "x": 18,
           "y": 9
          },
-         "id": 22,
+         "id": 33,
          "legend": {
           "avg": false,
           "current": false,
@@ -2362,7 +3506,7 @@ data:
           "x": 0,
           "y": 15
          },
-         "id": 23,
+         "id": 34,
          "legend": {
           "avg": false,
           "current": false,
@@ -2461,7 +3605,7 @@ data:
           "x": 6,
           "y": 15
          },
-         "id": 24,
+         "id": 35,
          "legend": {
           "avg": false,
           "current": false,
@@ -2560,7 +3704,7 @@ data:
           "x": 12,
           "y": 15
          },
-         "id": 25,
+         "id": 36,
          "legend": {
           "avg": false,
           "current": false,
@@ -2674,7 +3818,7 @@ data:
           "x": 0,
           "y": 21
          },
-         "id": 26,
+         "id": 37,
          "legend": {
           "avg": false,
           "current": false,
@@ -2772,7 +3916,7 @@ data:
           "x": 6,
           "y": 21
          },
-         "id": 27,
+         "id": 38,
          "legend": {
           "avg": false,
           "current": false,
@@ -2870,7 +4014,7 @@ data:
           "x": 12,
           "y": 21
          },
-         "id": 28,
+         "id": 39,
          "legend": {
           "avg": false,
           "current": false,
@@ -2976,7 +4120,7 @@ data:
           "x": 18,
           "y": 21
          },
-         "id": 29,
+         "id": 40,
          "legend": {
           "avg": false,
           "current": false,
@@ -3081,7 +4225,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of handled Unary gRPC requests from queriers.",
          "fill": 10,
-         "id": 30,
+         "id": 41,
          "legend": {
           "avg": false,
           "current": false,
@@ -3244,7 +4388,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests from queriers.",
          "fill": 10,
-         "id": 31,
+         "id": 42,
          "legend": {
           "avg": false,
           "current": false,
@@ -3335,7 +4479,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests from queriers, in quantiles.",
          "fill": 1,
-         "id": 32,
+         "id": 43,
          "legend": {
           "avg": false,
           "current": false,
@@ -3467,7 +4611,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of handled Streamed gRPC requests from queriers.",
          "fill": 10,
-         "id": 33,
+         "id": 44,
          "legend": {
           "avg": false,
           "current": false,
@@ -3630,7 +4774,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests from queriers.",
          "fill": 10,
-         "id": 34,
+         "id": 45,
          "legend": {
           "avg": false,
           "current": false,
@@ -3721,7 +4865,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests from queriers, in quantiles.",
          "fill": 1,
-         "id": 35,
+         "id": 46,
          "legend": {
           "avg": false,
           "current": false,
@@ -3853,7 +4997,7 @@ data:
          "datasource": "$datasource",
          "description": "Show the size of data touched",
          "fill": 1,
-         "id": 36,
+         "id": 47,
          "legend": {
           "avg": false,
           "current": false,
@@ -3956,7 +5100,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to get all series.",
          "fill": 1,
-         "id": 37,
+         "id": 48,
          "legend": {
           "avg": false,
           "current": false,
@@ -4088,7 +5232,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to merge series.",
          "fill": 1,
-         "id": 38,
+         "id": 49,
          "legend": {
           "avg": false,
           "current": false,
@@ -4220,7 +5364,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 39,
+         "id": 50,
          "legend": {
           "avg": false,
           "current": false,
@@ -4312,7 +5456,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 40,
+         "id": 51,
          "legend": {
           "avg": false,
           "current": false,
@@ -4404,7 +5548,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 41,
+         "id": 52,
          "legend": {
           "avg": false,
           "current": false,
@@ -4496,7 +5640,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 42,
+         "id": 53,
          "legend": {
           "avg": false,
           "current": false,

@@ -1,4 +1,5 @@
 local config = (import '../config.libsonnet').thanos;
+local am = (import '../config.libsonnet').alertmanager;
 local utils = import 'github.com/thanos-io/thanos/mixin/lib/utils.libsonnet';
 local g = import 'github.com/thanos-io/thanos/mixin/lib/thanos-grafana-builder/builder.libsonnet';
 local template = import 'grafonnet/template.libsonnet';
@@ -611,6 +612,77 @@ function() {
           ) +
           g.stack +
           g.addDashboardLink(thanos.store.dashboard.title) +
+          { yaxes: g.yaxes('binBps') }
+        )
+      )
+      .addRow(
+        g.row('Alertmanager Overview')
+        .addPanel(
+          g.panel('Alerts receive rate', 'rate of successful and invalid alerts received by the Alertmanager') +
+          g.queryPanel(
+            [
+              'sum(rate(alertmanager_alerts_received_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+              'sum(rate(alertmanager_alerts_invalid_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+            ],
+            [
+              'alerts received {{pod}}',
+              'alerts invalid {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Memory Used', 'Memory working set') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="observatorium-alertmanager", namespace="$namespace"})',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title) +
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{job=~"observatorium-alertmanager.*", namespace="$namespace"}[$interval]) * 100',
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="observatorium-alertmanager"})',
+            ],
+            [
+              'pod restart count {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Network Traffic') +
+          g.queryPanel(
+            [
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+            ],
+            [
+              'network traffic in {{pod}}',
+              'network traffic out {{pod}}',
+            ]
+          ) +
+          g.stack +
+          g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('binBps') }
         )
       ) + {

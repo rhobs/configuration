@@ -2074,6 +2074,8 @@ objects:
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --receive.local-endpoint=$(NAME).observatorium-thanos-receive-default.$(NAMESPACE).svc.cluster.local:10901
           - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
+          - --store.limits.request-samples=${THANOS_RECEIVE_STORE_LIMITS_REQUEST_SAMPLES}
+          - --store.limits.request-series=${THANOS_RECEIVE_STORE_LIMITS_REQUEST_SERIES}
           - |-
             --tracing.config="config":
               "sampler_param": 2
@@ -4704,6 +4706,10 @@ parameters:
   value: hashmod
 - name: THANOS_RECEIVE_LIMIT_CONFIG
   value: '{"write":{"default":{"request":{"samples_limit":0,"series_limit":0,"size_bytes_limit":0}},"global":{"max_concurrency":0}}}'
+- name: THANOS_RECEIVE_STORE_LIMITS_REQUEST_SAMPLES
+  value: "0"
+- name: THANOS_RECEIVE_STORE_LIMITS_REQUEST_SERIES
+  value: "0"
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

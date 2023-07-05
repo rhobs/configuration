@@ -823,6 +823,10 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         name: receiveLimitsCM.name,
         key: receiveLimitsCM.key,
       },
+      storeLimits: {
+        requestSamples: '${THANOS_RECEIVE_STORE_LIMITS_REQUEST_SAMPLES}',
+        requestSeries: '${THANOS_RECEIVE_STORE_LIMITS_REQUEST_SERIES}',
+      },
     }),
 
     receiversServiceMonitor:: {

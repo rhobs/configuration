@@ -6895,9 +6895,841 @@ data:
          "dashLength": 10,
          "dashes": false,
          "datasource": "$datasource",
-         "description": "rate of successful and invalid alerts received by the Alertmanager",
+         "description": "Shows count of gRPC requests to gubernator",
          "fill": 1,
          "id": 65,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum(rate(gubernator_grpc_request_counts{namespace=\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "gRPC requests {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Rate of gRPC requests",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows count of errors in gRPC requests to gubernator",
+         "fill": 1,
+         "id": 66,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum(rate(gubernator_grpc_request_counts{status=\"failed\",namespace=\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "gRPC request errors {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Rate of errors in gRPC requests",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows duration of gRPC requests to gubernator",
+         "fill": 1,
+         "id": 67,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "gubernator_grpc_request_duration{quantile=\"0.99\", namespace=\"$namespace\",job=~\"$job\"}",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "P99: {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "gubernator_grpc_request_duration{quantile=\"0.5\", namespace=\"$namespace\",job=~\"$job\"}",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "P50: {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Duration of gRPC requests",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "s",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows the number of rate checks in the local queue",
+         "fill": 1,
+         "id": 68,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "gubernator_pool_queue_length{namespace=\"$namespace\",job=~\"$job\"}",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "local queue size {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Local queue of rate checks",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows the number of rate checks in the peer queue",
+         "fill": 1,
+         "id": 69,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "gubernator_queue_length{namespace=\"$namespace\",job=~\"$job\"}",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "peer queue size {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Peer queue of rate checks",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Memory working set",
+         "fill": 10,
+         "id": 70,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Alertmanager / Overview",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Alertmanager / Overview",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "(container_memory_working_set_bytes{container=\"observatorium-alertmanager\", namespace=\"$namespace\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "memory usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Memory Used",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "bytes",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "id": 71,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Alertmanager / Overview",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Alertmanager / Overview",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(process_cpu_seconds_total{job=~\"observatorium-alertmanager.*\", namespace=\"$namespace\"}[$interval]) * 100",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "cpu usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "CPU Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 1,
+         "id": 72,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Alertmanager / Overview",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Alertmanager / Overview",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (kube_pod_container_status_restarts_total{namespace=\"$namespace\", container=\"observatorium-alertmanager\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "pod restart count {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Pod/Container Restarts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "fill": 10,
+         "id": 73,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Alertmanager / Overview",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Alertmanager / Overview",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 1,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-alertmanager.*\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic in {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{namespace=\"$namespace\", pod=~\"observatorium-alertmanager.*\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic out {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Network Traffic",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "binBps",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Gubernator Overview",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "rate of successful and invalid alerts received by the Alertmanager",
+         "fill": 1,
+         "id": 74,
          "legend": {
           "avg": false,
           "current": false,
@@ -6998,7 +7830,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 66,
+         "id": 75,
          "legend": {
           "avg": false,
           "current": false,
@@ -7090,7 +7922,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 67,
+         "id": 76,
          "legend": {
           "avg": false,
           "current": false,
@@ -7182,7 +8014,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 68,
+         "id": 77,
          "legend": {
           "avg": false,
           "current": false,
@@ -7274,7 +8106,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 69,
+         "id": 78,
          "legend": {
           "avg": false,
           "current": false,

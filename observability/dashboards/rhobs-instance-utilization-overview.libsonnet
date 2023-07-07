@@ -103,6 +103,17 @@ function() {
   local grpcServerStreamSelector = utils.joinLabels([thanos.store.dashboard.selector, 'grpc_type="server_stream"']),
   local dataSizeDimensions = utils.joinLabels([thanos.store.dashboard.dimensions, 'data_type']),
 
+  gubernator+:: {
+    selector: error 'must provide selector for Gubernator dashboard',
+    title: error 'must provide title for Gubernator dashboard',
+    dashboard:: {
+      title: 'Observatorium - Gubernator',
+      selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
+      dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'observatorium-gubernator',
+    },
+  },
+
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')
@@ -707,6 +718,121 @@ function() {
           ) +
           g.stack +
           g.addDashboardLink(thanos.store.dashboard.title) +
+          { yaxes: g.yaxes('binBps') }
+        )
+      )
+      .addRow(
+        g.row('Gubernator Overview')
+        .addPanel(
+          g.panel('Rate of gRPC requests', 'Shows count of gRPC requests to gubernator') +
+          g.queryPanel(
+            [
+              'sum(rate(gubernator_grpc_request_counts{namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+            ],
+            [
+              'gRPC requests {{pod}}',
+            ]
+          )
+        )
+        .addPanel(
+          g.panel('Rate of errors in gRPC requests', 'Shows count of errors in gRPC requests to gubernator') +
+          g.queryPanel(
+            [
+              'sum(rate(gubernator_grpc_request_counts{status="failed",namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+            ],
+            [
+              'gRPC request errors {{pod}}',
+            ]
+          )
+        )
+        .addPanel(
+          g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') +
+          g.queryPanel(
+            [
+              'gubernator_grpc_request_duration{quantile="0.99", namespace="$namespace",job=~"$job"}',
+              'gubernator_grpc_request_duration{quantile="0.5", namespace="$namespace",job=~"$job"}',
+            ],
+            [
+              'P99: {{pod}}',
+              'P50: {{pod}}',
+            ]
+          ) +
+          { yaxes: g.yaxes('s') },
+        )
+        .addPanel(
+          g.panel('Local queue of rate checks', 'Shows the number of rate checks in the local queue') +
+          g.queryPanel(
+            [
+              'gubernator_pool_queue_length{namespace="$namespace",job=~"$job"}',
+            ],
+            [
+              'local queue size {{pod}}',
+            ]
+          )
+        )
+        .addPanel(
+          g.panel('Peer queue of rate checks', 'Shows the number of rate checks in the peer queue') +
+          g.queryPanel(
+            [
+              'gubernator_queue_length{namespace="$namespace",job=~"$job"}',
+            ],
+            [
+              'peer queue size {{pod}}',
+            ]
+          )
+        )
+        .addPanel(
+          g.panel('Memory Used', 'Memory working set') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="observatorium-alertmanager", namespace="$namespace"})',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title) +
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{job=~"observatorium-alertmanager.*", namespace="$namespace"}[$interval]) * 100',
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="observatorium-alertmanager"})',
+            ],
+            [
+              'pod restart count {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Network Traffic') +
+          g.queryPanel(
+            [
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+            ],
+            [
+              'network traffic in {{pod}}',
+              'network traffic out {{pod}}',
+            ]
+          ) +
+          g.stack +
+          g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('binBps') }
         )
       )

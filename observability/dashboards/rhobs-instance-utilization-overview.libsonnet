@@ -1,4 +1,5 @@
 local config = (import '../config.libsonnet').thanos;
+local am = (import '../config.libsonnet').alertmanager;
 local utils = import 'github.com/thanos-io/thanos/mixin/lib/utils.libsonnet';
 local g = import 'github.com/thanos-io/thanos/mixin/lib/thanos-grafana-builder/builder.libsonnet';
 local template = import 'grafonnet/template.libsonnet';
@@ -56,7 +57,7 @@ function() {
     selector: error 'must provide selector for Thanos Query dashboard',
     title: error 'must provide title for Thanos Query dashboard',
     dashboard:: {
-      title: config.queryFrontend.title,
+      title: config.query.title,
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
     },
@@ -361,8 +362,103 @@ function() {
           g.panel('Network Traffic') +
           g.queryPanel(
             [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", container="thanos-query"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", container="thanos-query"}[$interval]))',
+              //added container="thanos-query" to the query to avoid pods from query-frontend
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", container="thanos-query", pod=~"observatorium-thanos-query-.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", container="thanos-query", pod=~"observatorium-thanos-query-.*"}[$interval]))',
+            ],
+            [
+              'network traffic in {{pod}}',
+              'network traffic out {{pod}}',
+            ]
+          ) +
+          g.stack +
+          g.addDashboardLink(thanos.query.dashboard.title) +
+          { yaxes: g.yaxes('binBps') }
+        )
+      )
+      .addRow(
+        g.row('Ruler - Query Overview')
+        .addPanel(
+          g.panel('Instant Query Rate', 'Shows rate of requests against /query for the given time.') +
+          g.httpQpsPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Instant Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query.') +
+          g.httpErrPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Instant Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
+          g.latencyPanel('http_request_duration_seconds', queryHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Range Query Rate', 'Shows rate of requests against /query_range for the given time range.') +
+          g.httpQpsPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Range Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query_range.') +
+          g.httpErrPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Range Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
+          g.latencyPanel('http_request_duration_seconds', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Concurrent Capacity', 'Shows available capacity of processing queries in parallel.') +
+          g.queryPanel(
+            'max_over_time(thanos_query_concurrent_gate_queries_max{%s}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{%s}[$__rate_interval])' % [thanos.query.dashboard.selector, thanos.query.dashboard.selector],
+            '{{job}} - {{pod}}'
+          )
+        )
+        .addPanel(
+          g.panel('Memory Used', 'Memory working set') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="thanos-query", namespace="$namespace"})',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.query.dashboard.title) +
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{job=~"observatorium-thanos-query", namespace="$namespace"}[$interval]) * 100',
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-query"})',
+            ],
+            [
+              'pod restart count {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(thanos.query.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Network Traffic') +
+          g.queryPanel(
+            [
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-ruler-query-.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-ruler-query-.*"}[$interval]))',
             ],
             [
               'network traffic in {{pod}}',
@@ -611,6 +707,77 @@ function() {
           ) +
           g.stack +
           g.addDashboardLink(thanos.store.dashboard.title) +
+          { yaxes: g.yaxes('binBps') }
+        )
+      )
+      .addRow(
+        g.row('Alertmanager Overview')
+        .addPanel(
+          g.panel('Alerts receive rate', 'rate of successful and invalid alerts received by the Alertmanager') +
+          g.queryPanel(
+            [
+              'sum(rate(alertmanager_alerts_received_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+              'sum(rate(alertmanager_alerts_invalid_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+            ],
+            [
+              'alerts received {{pod}}',
+              'alerts invalid {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Memory Used', 'Memory working set') +
+          g.queryPanel(
+            [
+              '(container_memory_working_set_bytes{container="observatorium-alertmanager", namespace="$namespace"})',
+            ],
+            [
+              'memory usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title) +
+          { yaxes: g.yaxes('bytes') } +
+          g.stack
+        )
+        .addPanel(
+          g.panel('CPU Usage') +
+          g.queryPanel(
+            [
+              'rate(process_cpu_seconds_total{job=~"observatorium-alertmanager.*", namespace="$namespace"}[$interval]) * 100',
+            ],
+            [
+              'cpu usage system {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Pod/Container Restarts') +
+          g.queryPanel(
+            [
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="observatorium-alertmanager"})',
+            ],
+            [
+              'pod restart count {{pod}}',
+            ]
+          ) +
+          g.addDashboardLink(am.title)
+        )
+        .addPanel(
+          g.panel('Network Traffic') +
+          g.queryPanel(
+            [
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+            ],
+            [
+              'network traffic in {{pod}}',
+              'network traffic out {{pod}}',
+            ]
+          ) +
+          g.stack +
+          g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('binBps') }
         )
       ) + {

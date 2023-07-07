@@ -41,6 +41,7 @@ local var = import 'utils.jsonnet';
     },
   },
   alertmanager: (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/config.libsonnet') {
+    title: 'Alertmanager / Overview',
     _config+:: {
       alertmanagerClusterLabels: 'namespace,job',
       alertmanagerNameLabels: 'pod',

@@ -105,12 +105,10 @@ function() {
 
   gubernator+:: {
     selector: error 'must provide selector for Gubernator dashboard',
-    title: error 'must provide title for Gubernator dashboard',
     dashboard:: {
       title: 'Observatorium - Gubernator',
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
-      pod: 'observatorium-gubernator',
     },
   },
 

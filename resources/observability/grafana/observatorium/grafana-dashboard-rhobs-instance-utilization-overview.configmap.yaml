@@ -6791,7 +6791,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -6878,7 +6877,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -6965,7 +6963,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7060,7 +7057,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7147,7 +7143,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7223,13 +7218,7 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-          {
-           "dashboard": "Alertmanager / Overview",
-           "includeVars": true,
-           "keepTime": true,
-           "title": "Alertmanager / Overview",
-           "type": "dashboard"
-          }
+
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7240,7 +7229,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -7315,13 +7303,7 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-          {
-           "dashboard": "Alertmanager / Overview",
-           "includeVars": true,
-           "keepTime": true,
-           "title": "Alertmanager / Overview",
-           "type": "dashboard"
-          }
+
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7332,7 +7314,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7407,13 +7388,7 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-          {
-           "dashboard": "Alertmanager / Overview",
-           "includeVars": true,
-           "keepTime": true,
-           "title": "Alertmanager / Overview",
-           "type": "dashboard"
-          }
+
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7424,7 +7399,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7499,13 +7473,7 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-          {
-           "dashboard": "Alertmanager / Overview",
-           "includeVars": true,
-           "keepTime": true,
-           "title": "Alertmanager / Overview",
-           "type": "dashboard"
-          }
+
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7516,7 +7484,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [

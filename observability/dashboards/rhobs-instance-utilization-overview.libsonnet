@@ -715,7 +715,7 @@ function() {
       .addRow(
         g.row('Gubernator Overview')
         .addPanel(
-          g.panel('Rate of gRPC requests', 'Shows count of gRPC requests to gubernator') +
+          g.panel('Rate of gRPC requests', 'Shows count of gRPC requests to gubernator') { span:: 0 } +
           g.queryPanel(
             [
               'sum(rate(gubernator_grpc_request_counts{namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
@@ -727,7 +727,7 @@ function() {
           g.stack
         )
         .addPanel(
-          g.panel('Rate of errors in gRPC requests', 'Shows count of errors in gRPC requests to gubernator') +
+          g.panel('Rate of errors in gRPC requests', 'Shows count of errors in gRPC requests to gubernator') { span:: 0 } +
           g.queryPanel(
             [
               'sum(rate(gubernator_grpc_request_counts{status="failed",namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
@@ -739,7 +739,7 @@ function() {
           g.stack
         )
         .addPanel(
-          g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') +
+          g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') { span:: 0 } +
           g.queryPanel(
             [
               'gubernator_grpc_request_duration{quantile="0.99", namespace="$namespace",job=~"$job"}',
@@ -753,7 +753,7 @@ function() {
           { yaxes: g.yaxes('s') },
         )
         .addPanel(
-          g.panel('Local queue of rate checks', 'Shows the number of rate checks in the local queue') +
+          g.panel('Local queue of rate checks', 'Shows the number of rate checks in the local queue') { span:: 0 } +
           g.queryPanel(
             [
               'gubernator_pool_queue_length{namespace="$namespace",job=~"$job"}',
@@ -764,7 +764,7 @@ function() {
           )
         )
         .addPanel(
-          g.panel('Peer queue of rate checks', 'Shows the number of rate checks in the peer queue') +
+          g.panel('Peer queue of rate checks', 'Shows the number of rate checks in the peer queue') { span:: 0 } +
           g.queryPanel(
             [
               'gubernator_queue_length{namespace="$namespace",job=~"$job"}',
@@ -775,7 +775,7 @@ function() {
           )
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') +
+          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
           g.queryPanel(
             [
               '(container_memory_working_set_bytes{container="gubernator", namespace="$namespace"})',
@@ -784,12 +784,11 @@ function() {
               'memory usage system {{pod}}',
             ]
           ) +
-          g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') +
+          g.panel('CPU Usage') { span:: 0 } +
           g.queryPanel(
             [
               'rate(container_cpu_usage_seconds_total{pod=~"observatorium-gubernator.*", namespace="$namespace"}[$interval]) * 100',
@@ -797,11 +796,10 @@ function() {
             [
               'cpu usage system {{pod}}',
             ]
-          ) +
-          g.addDashboardLink(am.title)
+          )
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') +
+          g.panel('Pod/Container Restarts') { span:: 0 } +
           g.queryPanel(
             [
               'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="gubernator"})',
@@ -809,11 +807,10 @@ function() {
             [
               'pod restart count {{pod}}',
             ]
-          ) +
-          g.addDashboardLink(am.title)
+          )
         )
         .addPanel(
-          g.panel('Network Traffic') +
+          g.panel('Network Traffic') { span:: 0 } +
           g.queryPanel(
             [
               'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-gubernator.*"}[$interval]))',
@@ -825,7 +822,6 @@ function() {
             ]
           ) +
           g.stack +
-          g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('binBps') }
         )
       )

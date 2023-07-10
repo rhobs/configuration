@@ -79,7 +79,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -171,7 +170,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -279,7 +277,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -465,7 +462,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -574,7 +570,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -689,7 +684,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -779,7 +773,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -880,7 +873,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -972,7 +964,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -1064,7 +1055,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -1156,7 +1146,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -1288,7 +1277,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -1380,7 +1368,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -1488,7 +1475,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -1602,7 +1588,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -1694,7 +1679,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -1786,7 +1770,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -1878,7 +1861,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -2010,7 +1992,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -2102,7 +2083,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -2210,7 +2190,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -2344,7 +2323,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -2436,7 +2414,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -2544,7 +2521,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -2653,7 +2629,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -2746,7 +2721,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -2838,7 +2812,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -2930,7 +2903,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -3022,7 +2994,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -3154,7 +3125,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -3246,7 +3216,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -3354,7 +3323,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -3488,7 +3456,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -3580,7 +3547,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -3688,7 +3654,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -3797,7 +3762,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -3890,7 +3854,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -3982,7 +3945,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4074,7 +4036,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4166,7 +4127,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -4249,12 +4209,6 @@ data:
          "datasource": "$datasource",
          "description": "Displays the rate of total rule evaluations,",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 0,
-          "y": 9
-         },
          "id": 41,
          "legend": {
           "avg": false,
@@ -4285,7 +4239,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4348,12 +4301,6 @@ data:
          "datasource": "$datasource",
          "description": "Displays the rate of rule evaluation failures, grouped by rule group.",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 6,
-          "y": 9
-         },
          "id": 42,
          "legend": {
           "avg": false,
@@ -4384,7 +4331,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4446,12 +4392,6 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 12,
-          "y": 9
-         },
          "id": 43,
          "legend": {
           "avg": false,
@@ -4482,7 +4422,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4545,12 +4484,6 @@ data:
          "datasource": "$datasource",
          "description": "Displays the total time of rule group evaluations that took longer than their scheduled interval.",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 18,
-          "y": 9
-         },
          "id": 44,
          "legend": {
           "avg": false,
@@ -4581,7 +4514,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4644,12 +4576,6 @@ data:
          "datasource": "$datasource",
          "description": "Shows the rate of total alerts sent by Thanos.",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 0,
-          "y": 15
-         },
          "id": 45,
          "legend": {
           "avg": false,
@@ -4680,7 +4606,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4743,12 +4668,6 @@ data:
          "datasource": "$datasource",
          "description": "Displays the ratio of error rate to total alerts sent rate by Thanos.",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 6,
-          "y": 15
-         },
          "id": 46,
          "legend": {
           "avg": false,
@@ -4779,7 +4698,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4842,12 +4760,6 @@ data:
          "datasource": "$datasource",
          "description": "Displays the 50th, 90th, and 99th percentile latency of alert requests sent by Thanos.",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 12,
-          "y": 15
-         },
          "id": 47,
          "legend": {
           "avg": false,
@@ -4878,7 +4790,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -4956,12 +4867,6 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 0,
-          "y": 21
-         },
          "id": 48,
          "legend": {
           "avg": false,
@@ -4992,7 +4897,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -5054,12 +4958,6 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 6,
-          "y": 21
-         },
          "id": 49,
          "legend": {
           "avg": false,
@@ -5090,7 +4988,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -5152,12 +5049,6 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 12,
-          "y": 21
-         },
          "id": 50,
          "legend": {
           "avg": false,
@@ -5188,7 +5079,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -5258,12 +5148,6 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "gridPos": {
-          "h": 6,
-          "w": 6,
-          "x": 18,
-          "y": 21
-         },
          "id": 51,
          "legend": {
           "avg": false,
@@ -5294,7 +5178,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 1,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -5470,7 +5353,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -5562,7 +5444,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -5670,7 +5551,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -5856,7 +5736,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -5948,7 +5827,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -6056,7 +5934,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -6165,7 +6042,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -6291,7 +6167,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -6423,7 +6298,6 @@ data:
           }
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -6538,7 +6412,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -6630,7 +6503,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -6722,7 +6594,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -6814,7 +6685,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 0,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -6927,7 +6797,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 2,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7028,7 +6897,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 2,
          "stack": true,
          "steppedLine": false,
          "targets": [
@@ -7120,7 +6988,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 2,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7212,7 +7079,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 2,
          "stack": false,
          "steppedLine": false,
          "targets": [
@@ -7304,7 +7170,6 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 2,
          "stack": true,
          "steppedLine": false,
          "targets": [

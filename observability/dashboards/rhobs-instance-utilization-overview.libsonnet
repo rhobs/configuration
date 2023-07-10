@@ -730,7 +730,8 @@ function() {
             [
               'gRPC requests {{pod}}',
             ]
-          )
+          ) +
+          g.stack
         )
         .addPanel(
           g.panel('Rate of errors in gRPC requests', 'Shows count of errors in gRPC requests to gubernator') +
@@ -741,7 +742,8 @@ function() {
             [
               'gRPC request errors {{pod}}',
             ]
-          )
+          ) +
+          g.stack
         )
         .addPanel(
           g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') +
@@ -783,7 +785,7 @@ function() {
           g.panel('Memory Used', 'Memory working set') +
           g.queryPanel(
             [
-              '(container_memory_working_set_bytes{container="observatorium-alertmanager", namespace="$namespace"})',
+              '(container_memory_working_set_bytes{container="gubernator", namespace="$namespace"})',
             ],
             [
               'memory usage system {{pod}}',
@@ -797,7 +799,7 @@ function() {
           g.panel('CPU Usage') +
           g.queryPanel(
             [
-              'rate(process_cpu_seconds_total{job=~"observatorium-alertmanager.*", namespace="$namespace"}[$interval]) * 100',
+              'rate(container_cpu_usage_seconds_total{pod=~"observatorium-gubernator.*", namespace="$namespace"}[$interval]) * 100',
             ],
             [
               'cpu usage system {{pod}}',
@@ -809,7 +811,7 @@ function() {
           g.panel('Pod/Container Restarts') +
           g.queryPanel(
             [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="observatorium-alertmanager"})',
+              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="gubernator"})',
             ],
             [
               'pod restart count {{pod}}',
@@ -821,8 +823,8 @@ function() {
           g.panel('Network Traffic') +
           g.queryPanel(
             [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-gubernator.*"}[$interval]))',
+              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-gubernator.*"}[$interval]))',
             ],
             [
               'network traffic in {{pod}}',

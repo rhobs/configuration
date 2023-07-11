@@ -90,7 +90,7 @@
 
 ## Quick Links
 
-- [RHOBS instance utilization dashboard](https://grafana.app-sre.devshift.net/d/8-QwLUwVz/rhobs-instance-utilization?orgId=1)
+- [RHOBS instance utilization dashboard](https://grafana.app-sre.devshift.net/d/dsqU07jVz/rhobs-instance-utilization-overview?orgId=1&refresh=10s)
 
 ### SLO Dashboards
 

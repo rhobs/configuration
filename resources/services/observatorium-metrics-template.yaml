@@ -2526,6 +2526,24 @@ objects:
           app.kubernetes.io/tracing: jaeger-agent
           app.kubernetes.io/version: ${THANOS_IMAGE_TAG}
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-rule
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                namespaces:
+                - ${NAMESPACE}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - rule

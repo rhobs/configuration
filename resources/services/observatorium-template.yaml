@@ -1189,6 +1189,18 @@ objects:
           app.kubernetes.io/tracing: jaeger-agent
           app.kubernetes.io/version: ${OBSERVATORIUM_API_IMAGE_TAG}
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - observatorium-api
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - --web.listen=0.0.0.0:8080
@@ -1483,6 +1495,18 @@ objects:
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: ${GUBERNATOR_IMAGE_TAG}
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - gubernator
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - env:
           - name: GUBER_K8S_NAMESPACE

@@ -250,8 +250,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "4a4394f8ac8824d8cf054b32b4b155ebdc0c54a3",
-      "sum": "D6bB+ETuZ53udACsGUX7o6XmOUGP8h/uj+wNmk0DNMU=",
+      "version": "7afc79f5db2d952e41462afe98c40e7cd13e2362",
+      "sum": "HBkOxudsp1b5XmmCYGu9Yuv+UGFLimHi+fttA/rVTP4=",
       "name": "rules-objstore"
     },
     {
@@ -415,8 +415,8 @@
           "subdir": "jsonnet/kube-thanos"
         }
       },
-      "version": "04c9e46115453d8fbea669c8e7114d318c2203c3",
-      "sum": "jMhuRUaHRBHZgiUlCbVmKe/1C8Qhge9kRgSZSvcj6Uk="
+      "version": "ac261330bb819523d2caba81b4e82add166436c7",
+      "sum": "sN9PqW93Kh+jyf5kvRKQgotY3xbRIU/h22TcNO2KTag="
     },
     {
       "source": {

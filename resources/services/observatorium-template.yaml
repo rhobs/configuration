@@ -399,6 +399,18 @@ objects:
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: ${RULES_OBJSTORE_IMAGE_TAG}
       spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - rules-objstore
+                topologyKey: kubernetes.io/hostname
+              weight: 100
         containers:
         - args:
           - --debug.name=rules-objstore

@@ -347,6 +347,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       memoryLimitMb: '${THANOS_STORE_INDEX_CACHE_MEMORY_LIMIT_MB}',
       maxItemSize: '5m',
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      affinity: true,
       resources: {
         memcached: {
           requests: {
@@ -396,6 +397,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       connectionLimit: '${THANOS_STORE_BUCKET_CACHE_CONNECTION_LIMIT}',
       memoryLimitMb: '${THANOS_STORE_BUCKET_CACHE_MEMORY_LIMIT_MB}',
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      affinity: true,
       resources: {
         memcached: {
           requests: {

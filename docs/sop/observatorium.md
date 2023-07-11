@@ -90,6 +90,8 @@
 
 ## Quick Links
 
+- [Instance utilization summary dashboard](https://grafana.app-sre.devshift.net/d/8-QwLUwVz/rhobs-instance-utilization?orgId=1)
+
 ### SLO Dashboards
 
 #### Telemeter

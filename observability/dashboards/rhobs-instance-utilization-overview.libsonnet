@@ -42,24 +42,24 @@ function() {
     ),
 
   queryFrontend:: {
-    selector: error 'must provide selector for Thanos Query Frontend dashboard',
-    title: error 'must provide title for Thanos Query Frontend dashboard',
     dashboard:: {
       title: config.queryFrontend.title,
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
       pod: 'observatorium-thanos-query-frontend.*',
+      container: 'thanos-query-frontend',
     },
   },
   local queryFrontendHandlerSelector = utils.joinLabels([thanos.queryFrontend.dashboard.selector, 'handler="query-frontend"']),
 
   query:: {
-    selector: error 'must provide selector for Thanos Query dashboard',
-    title: error 'must provide title for Thanos Query dashboard',
     dashboard:: {
       title: config.query.title,
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      queryPod: 'observatorium-thanos-query.*',
+      rulerQueryPod: 'observatorium-ruler-query.*',
+      container: 'thanos-query',
     },
   },
   local queryHandlerSelector = utils.joinLabels([thanos.query.dashboard.selector, 'handler="query"']),
@@ -67,8 +67,6 @@ function() {
 
   rule:: {
     yStart: 8,
-    selector: error 'must provide selector for Thanos Rule dashboard',
-    title: error 'must provide title for Thanos Rule dashboard',
     dashboard:: {
       title: config.rule.title,
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
@@ -79,38 +77,102 @@ function() {
   },
 
   receive:: {
-    selector: error 'must provide selector for Thanos Receive dashboard',
-    title: error 'must provide title for Thanos Receive dashboard',
     dashboard:: {
       title: config.receive.title,
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
       pod: 'observatorium-thanos-receive.*',
+      container: 'thanos-receive',
     },
   },
   local receiveHandlerSelector = utils.joinLabels([thanos.receive.dashboard.selector, 'handler="receive"']),
 
-  store+:: {
-    selector: error 'must provide selector for Thanos Store dashboard',
-    title: error 'must provide title for Thanos Store dashboard',
+  store:: {
     dashboard:: {
       title: config.store.title,
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'observatorium-thanos-store.*',
+      container: 'thanos-store',
     },
   },
   local grpcUnarySelector = utils.joinLabels([thanos.store.dashboard.selector, 'grpc_type="unary"']),
   local grpcServerStreamSelector = utils.joinLabels([thanos.store.dashboard.selector, 'grpc_type="server_stream"']),
   local dataSizeDimensions = utils.joinLabels([thanos.store.dashboard.dimensions, 'data_type']),
 
-  gubernator+:: {
-    selector: error 'must provide selector for Gubernator dashboard',
+  gubernator:: {
     dashboard:: {
       title: 'Observatorium - Gubernator',
       selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
       dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'observatorium-gubernator.*',
+      container: 'gubernator',
     },
   },
+
+  alertmanager:: {
+    dashboard:: {
+      selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
+      dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'observatorium-alertmanager.*',
+      container: 'observatorium-alertmanager',
+    },
+  },
+
+  local memoryUsagePanel(container, pod) =
+    g.panel('Memory Used', 'Memory working set') { span:: 0 } +
+    g.queryPanel(
+      [
+        '(container_memory_working_set_bytes{container="%s", pod=~"%s", namespace="$namespace"})' % [
+          container,
+          pod,
+        ],
+      ],
+      [
+        'memory usage system {{pod}}',
+      ]
+    ) { span:: 0 },
+
+  local cpuUsagePanel(container, pod) =
+    g.panel('CPU Usage') { span:: 0 } +
+    g.queryPanel(
+      [
+        'rate(process_cpu_seconds_total{container="%s", pod=~"%s", namespace="$namespace"}[$interval]) * 100' % [
+          container,
+          pod,
+        ],
+      ],
+      [
+        'cpu usage system {{pod}}',
+      ]
+    ) { span:: 0 },
+
+  local podRestartPanel(container, pod) =
+    g.panel('Pod/Container Restarts') { span:: 0 } +
+    g.queryPanel(
+      [
+        'sum by (pod) (kube_pod_container_status_restarts_total{container="%s", pod=~"%s", namespace="$namespace",})' % [
+          container,
+          pod,
+        ],
+      ],
+      [
+        'pod restart count {{pod}}',
+      ]
+    ) { span:: 0 },
+
+  local networkUsagePanel(pod) =
+    g.panel('Network Usage') { span:: 0 } +
+    g.queryPanel(
+      [
+        'sum by (pod) (rate(container_network_receive_bytes_total{pod=~"%s", namespace="$namespace"}[$interval]))' % pod,
+        'sum by (pod) (rate(container_network_transmit_bytes_total{pod=~"%s", namespace="$namespace"}[$interval]))' % pod,
+      ],
+      [
+        'network traffic in {{pod}}',
+        'network traffic out {{pod}}',
+      ]
+    ) { span:: 0 },
 
   dashboard:: {
     data:
@@ -164,59 +226,25 @@ function() {
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="thanos-receive", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          memoryUsagePanel(thanos.receive.dashboard.container, thanos.receive.dashboard.pod) +
           g.addDashboardLink(thanos.receive.dashboard.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{job="observatorium-thanos-receive-default", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          cpuUsagePanel(thanos.receive.dashboard.container, thanos.receive.dashboard.pod) +
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-receive"})',
-            ],
-            [
-              'pod restart count {{pod}}',
-            ]
-          ) { span:: 0 } +
+          podRestartPanel(thanos.receive.dashboard.container, thanos.receive.dashboard.pod) +
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
         .addPanel(
-          g.panel('Network Traffic') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-receive-.*"}[$interval]))',
-            ],
-            [
-              'network traffic in {{pod}}',
-              'network traffic out {{pod}}',
-            ]
-          ) { span:: 0 } +
+          networkUsagePanel(thanos.receive.dashboard.pod) +
           g.stack +
           g.addDashboardLink(thanos.receive.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Query Frontend Overview')
@@ -237,58 +265,24 @@ function() {
           g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
-          g.panel('Memory Used') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="thanos-query-frontend", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          memoryUsagePanel(thanos.queryFrontend.dashboard.container, thanos.queryFrontend.dashboard.pod) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{job="observatorium-thanos-query-frontend", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          cpuUsagePanel(thanos.queryFrontend.dashboard.container, thanos.queryFrontend.dashboard.pod) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'increase(kube_pod_container_status_restarts_total{namespace="$namespace", container=\'thanos-query-frontend\'}[$interval])',
-            ],
-            [
-              'pod {{pod}}',
-            ]
-          ) { span:: 0 } +
+          podRestartPanel(thanos.queryFrontend.dashboard.container, thanos.queryFrontend.dashboard.pod) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
-          g.panel('Network Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval])',
-              'rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-query-frontend-.*"}[$interval])',
-            ],
-            [
-              'receive bytes pod {{pod}}',
-              'transmit bytes pod {{pod}}',
-            ]
-          ) { span:: 0 } +
+          networkUsagePanel(thanos.queryFrontend.dashboard.pod) +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Query Overview')
@@ -330,60 +324,25 @@ function() {
           ) { span:: 0 }
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="thanos-query", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          memoryUsagePanel(thanos.query.dashboard.container, thanos.query.dashboard.queryPod) +
           g.addDashboardLink(thanos.query.dashboard.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{job=~"observatorium-thanos-query", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          cpuUsagePanel(thanos.query.dashboard.container, thanos.query.dashboard.queryPod) +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-query"})',
-            ],
-            [
-              'pod restart count {{pod}}',
-            ]
-          ) { span:: 0 } +
+          podRestartPanel(thanos.query.dashboard.container, thanos.query.dashboard.queryPod) +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Network Traffic') { span:: 0 } +
-          g.queryPanel(
-            [
-              //added container="thanos-query" to the query to avoid pods from query-frontend
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", container="thanos-query", pod=~"observatorium-thanos-query-.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", container="thanos-query", pod=~"observatorium-thanos-query-.*"}[$interval]))',
-            ],
-            [
-              'network traffic in {{pod}}',
-              'network traffic out {{pod}}',
-            ]
-          ) +
+          networkUsagePanel(thanos.query.dashboard.queryPod) +
           g.stack +
           g.addDashboardLink(thanos.query.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Ruler - Query Overview')
@@ -425,59 +384,25 @@ function() {
           ) { span:: 0 }
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="thanos-query", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          memoryUsagePanel(thanos.query.dashboard.container, thanos.query.dashboard.rulerQueryPod) +
           g.addDashboardLink(thanos.query.dashboard.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{job=~"observatorium-thanos-query", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          cpuUsagePanel(thanos.query.dashboard.container, thanos.query.dashboard.rulerQueryPod) +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-query"})',
-            ],
-            [
-              'pod restart count {{pod}}',
-            ]
-          ) { span:: 0 } +
+          podRestartPanel(thanos.query.dashboard.container, thanos.query.dashboard.rulerQueryPod) +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Network Traffic') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-ruler-query-.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-ruler-query-.*"}[$interval]))',
-            ],
-            [
-              'network traffic in {{pod}}',
-              'network traffic out {{pod}}',
-            ]
-          ) { span:: 0 } +
+          networkUsagePanel(thanos.query.dashboard.rulerQueryPod) +
           g.stack +
           g.addDashboardLink(thanos.query.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Thanos Rule Overview')
@@ -542,63 +467,29 @@ function() {
               'p99',
             ]
           ) { span:: 0 } +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title)
+          g.addDashboardLink(thanos.rule.dashboard.title)
         )
         // Third line (y=13): CPU, memory, network resource usage and restarts
         .addPanel(
-          g.panel('Memory Used') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="thanos-rule", namespace="$namespace"}) / (1024 * 1024)',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          memoryUsagePanel(thanos.rule.dashboard.container, thanos.rule.dashboard.pod) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
           { yaxes: g.yaxes('MB') },
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{%(selector)s}[$interval]) * 100' % thanos.rule.dashboard,
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          cpuUsagePanel(thanos.rule.dashboard.container, thanos.rule.dashboard.pod) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
           { yaxes: g.yaxes('percent') },
         )
         .addPanel(
-          g.panel('Network Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"%(pod)s"}[$interval]) / (1024 * 1024)' % thanos.rule.dashboard,
-              'rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"%(pod)s"}[$interval]) / (1024 * 1024)' % thanos.rule.dashboard,
-            ],
-            [
-              'receive bytes pod {{pod}}',
-              'transmit bytes pod {{pod}}',
-            ]
-          ) { span:: 0 } +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          networkUsagePanel(thanos.rule.dashboard.pod) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
           { yaxes: g.yaxes('MB') }
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'increase(kube_pod_container_status_restarts_total{namespace="$namespace", container="%(container)s"}[$interval])' % thanos.rule.dashboard,
-            ],
-            [
-              'pod {{pod}}',
-            ]
-          ) { span:: 0 } +
-          g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
+          podRestartPanel(thanos.rule.dashboard.container, thanos.rule.dashboard.pod) +
+          g.addDashboardLink(thanos.rule.dashboard.title) +
           { yaxes: g.yaxes('count') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Store Gateway Overview')
@@ -658,59 +549,25 @@ function() {
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="thanos-store", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          memoryUsagePanel(thanos.store.dashboard.container, thanos.store.dashboard.pod) +
           g.addDashboardLink(thanos.store.dashboard.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{job=~"observatorium-thanos-store-.*", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          cpuUsagePanel(thanos.store.dashboard.container, thanos.store.dashboard.pod) +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="thanos-store"})',
-            ],
-            [
-              'pod restart count {{pod}}',
-            ]
-          ) { span:: 0 } +
+          podRestartPanel(thanos.store.dashboard.container, thanos.store.dashboard.pod) +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Network Traffic') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-store-.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-thanos-store-.*"}[$interval]))',
-            ],
-            [
-              'network traffic in {{pod}}',
-              'network traffic out {{pod}}',
-            ]
-          ) { span:: 0 } +
+          networkUsagePanel(thanos.store.dashboard.pod) +
           g.stack +
           g.addDashboardLink(thanos.store.dashboard.title) +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Gubernator Overview')
@@ -775,55 +632,21 @@ function() {
           )
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="gubernator", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) +
+          memoryUsagePanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(container_cpu_usage_seconds_total{pod=~"observatorium-gubernator.*", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          )
+          cpuUsagePanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="gubernator"})',
-            ],
-            [
-              'pod restart count {{pod}}',
-            ]
-          )
+          podRestartPanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod)
         )
         .addPanel(
-          g.panel('Network Traffic') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-gubernator.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-gubernator.*"}[$interval]))',
-            ],
-            [
-              'network traffic in {{pod}}',
-              'network traffic out {{pod}}',
-            ]
-          ) +
+          networkUsagePanel(thanos.gubernator.dashboard.pod) +
           g.stack +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       )
       .addRow(
         g.row('Alertmanager Overview')
@@ -842,59 +665,25 @@ function() {
           g.addDashboardLink(am.title)
         )
         .addPanel(
-          g.panel('Memory Used', 'Memory working set') { span:: 0 } +
-          g.queryPanel(
-            [
-              '(container_memory_working_set_bytes{container="observatorium-alertmanager", namespace="$namespace"})',
-            ],
-            [
-              'memory usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          memoryUsagePanel(thanos.alertmanager.dashboard.container, thanos.alertmanager.dashboard.pod) +
           g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
-          g.panel('CPU Usage') { span:: 0 } +
-          g.queryPanel(
-            [
-              'rate(process_cpu_seconds_total{job=~"observatorium-alertmanager.*", namespace="$namespace"}[$interval]) * 100',
-            ],
-            [
-              'cpu usage system {{pod}}',
-            ]
-          ) { span:: 0 } +
+          cpuUsagePanel(thanos.alertmanager.dashboard.container, thanos.alertmanager.dashboard.pod) +
           g.addDashboardLink(am.title)
         )
         .addPanel(
-          g.panel('Pod/Container Restarts') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (kube_pod_container_status_restarts_total{namespace="$namespace", container="observatorium-alertmanager"})',
-            ],
-            [
-              'pod restart count {{pod}}',
-            ]
-          ) { span:: 0 } +
+          podRestartPanel(thanos.alertmanager.dashboard.container, thanos.alertmanager.dashboard.pod) +
           g.addDashboardLink(am.title)
         )
         .addPanel(
-          g.panel('Network Traffic') { span:: 0 } +
-          g.queryPanel(
-            [
-              'sum by (pod) (rate(container_network_receive_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
-              'sum by (pod) (rate(container_network_transmit_bytes_total{namespace="$namespace", pod=~"observatorium-alertmanager.*"}[$interval]))',
-            ],
-            [
-              'network traffic in {{pod}}',
-              'network traffic out {{pod}}',
-            ]
-          ) { span:: 0 } +
+          networkUsagePanel(thanos.alertmanager.dashboard.pod) +
           g.stack +
           g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('binBps') }
-        )
+        ) { collapse: true }
       ) + {
         templating+: {
           list+: [namespaceTemplate, jobTemplate, intervalTemplate],

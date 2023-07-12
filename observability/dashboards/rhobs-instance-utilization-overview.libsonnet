@@ -120,7 +120,7 @@ function() {
   },
 
   local memoryUsagePanel(container, pod) =
-    g.panel('Memory Used', 'Memory working set') { span:: 0 } +
+    g.panel('Memory Used', 'Memory working set') +
     g.queryPanel(
       [
         '(container_memory_working_set_bytes{container="%s", pod=~"%s", namespace="$namespace"})' % [
@@ -134,7 +134,7 @@ function() {
     ) { span:: 0 },
 
   local cpuUsagePanel(container, pod) =
-    g.panel('CPU Usage') { span:: 0 } +
+    g.panel('CPU Usage') +
     g.queryPanel(
       [
         'rate(process_cpu_seconds_total{container="%s", pod=~"%s", namespace="$namespace"}[$interval]) * 100' % [
@@ -148,7 +148,7 @@ function() {
     ) { span:: 0 },
 
   local podRestartPanel(container, pod) =
-    g.panel('Pod/Container Restarts') { span:: 0 } +
+    g.panel('Pod/Container Restarts') +
     g.queryPanel(
       [
         'sum by (pod) (kube_pod_container_status_restarts_total{container="%s", pod=~"%s", namespace="$namespace",})' % [
@@ -162,7 +162,7 @@ function() {
     ) { span:: 0 },
 
   local networkUsagePanel(pod) =
-    g.panel('Network Usage') { span:: 0 } +
+    g.panel('Network Usage') +
     g.queryPanel(
       [
         'sum by (pod) (rate(container_network_receive_bytes_total{pod=~"%s", namespace="$namespace"}[$interval]))' % pod,
@@ -180,13 +180,13 @@ function() {
       .addRow(
         g.row('Receive Overview')
         .addPanel(
-          g.panel('Rate of requests', 'Shows rate of requests against Receive for the given time') { span:: 0 } +
+          g.panel('Rate of requests', 'Shows rate of requests against Receive for the given time') +
           g.httpQpsPanel('http_requests_total', receiveHandlerSelector, thanos.receive.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.receive.dashboard.title) +
           g.stack
         )
         .addPanel(
-          g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Receive.') { span:: 0 } +
+          g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Receive.') +
           g.httpErrPanel('http_requests_total', receiveHandlerSelector, thanos.receive.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
@@ -196,23 +196,23 @@ function() {
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
         .addPanel(
-          g.panel('Replication request count', 'Shows the number of replication requests against Receive.') { span:: 0 } +
+          g.panel('Replication request count', 'Shows the number of replication requests against Receive.') +
           g.grpcRequestsPanel('grpc_client_handled_total', 'grpc_type="unary", grpc_method="RemoteWrite"', thanos.receive.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.receive.dashboard.title) +
           g.stack
         )
         .addPanel(
-          g.panel('Replication request duration', 'Shows how long has it taken to handle replication requests in quantiles.') { span:: 0 } +
+          g.panel('Replication request duration', 'Shows how long has it taken to handle replication requests in quantiles.') +
           g.latencyPanel('grpc_client_handling_seconds', 'grpc_type="unary", grpc_method="RemoteWrite"', thanos.receive.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
         .addPanel(
-          g.panel('Replication request errors', 'Shows the number of replication request errors.') { span:: 0 } +
+          g.panel('Replication request errors', 'Shows the number of replication request errors.') +
           g.grpcErrorsPanel('grpc_client_handled_total', 'grpc_type="unary", grpc_method="RemoteWrite"', thanos.receive.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.receive.dashboard.title)
         )
         .addPanel(
-          g.panel('Concurrency gate utilization') { span:: 0 } +
+          g.panel('Concurrency gate utilization') +
           g.queryPanel(
             [
               'max by (pod) (http_inflight_requests{handler="receive", namespace="$namespace"})',
@@ -249,18 +249,18 @@ function() {
       .addRow(
         g.row('Query Frontend Overview')
         .addPanel(
-          g.panel('Rate of requests', 'Shows rate of requests against Query Frontend for the given time.') { span:: 0 } +
+          g.panel('Rate of requests', 'Shows rate of requests against Query Frontend for the given time.') +
           g.httpQpsPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title) +
           g.stack
         )
         .addPanel(
-          g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Query Frontend.') { span:: 0 } +
+          g.panel('Errors', 'Shows ratio of errors compared to the total number of handled requests against Query Frontend.') +
           g.httpErrPanel('http_requests_total', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
         .addPanel(
-          g.panel('Duration', 'Shows how long has it taken to handle requests in quantiles.') { span:: 0 } +
+          g.panel('Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryFrontendHandlerSelector, thanos.queryFrontend.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.queryFrontend.dashboard.title)
         )
@@ -287,37 +287,37 @@ function() {
       .addRow(
         g.row('Query Overview')
         .addPanel(
-          g.panel('Instant Query Rate', 'Shows rate of requests against /query for the given time.') { span:: 0 } +
+          g.panel('Instant Query Rate', 'Shows rate of requests against /query for the given time.') +
           g.httpQpsPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Instant Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query.') { span:: 0 } +
+          g.panel('Instant Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query.') +
           g.httpErrPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Instant Query Duration', 'Shows how long has it taken to handle requests in quantiles.') { span:: 0 } +
+          g.panel('Instant Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Range Query Rate', 'Shows rate of requests against /query_range for the given time range.') { span:: 0 } +
+          g.panel('Range Query Rate', 'Shows rate of requests against /query_range for the given time range.') +
           g.httpQpsPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Range Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query_range.') { span:: 0 } +
+          g.panel('Range Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query_range.') +
           g.httpErrPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Range Query Duration', 'Shows how long has it taken to handle requests in quantiles.') { span:: 0 } +
+          g.panel('Range Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Concurrent Capacity', 'Shows available capacity of processing queries in parallel.') { span:: 0 } +
+          g.panel('Concurrent Capacity', 'Shows available capacity of processing queries in parallel.') +
           g.queryPanel(
             'max_over_time(thanos_query_concurrent_gate_queries_max{%s}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{%s}[$__rate_interval])' % [thanos.query.dashboard.selector, thanos.query.dashboard.selector],
             '{{job}} - {{pod}}'
@@ -347,37 +347,37 @@ function() {
       .addRow(
         g.row('Ruler - Query Overview')
         .addPanel(
-          g.panel('Instant Query Rate', 'Shows rate of requests against /query for the given time.') { span:: 0 } +
+          g.panel('Instant Query Rate', 'Shows rate of requests against /query for the given time.') +
           g.httpQpsPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Instant Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query.') { span:: 0 } +
+          g.panel('Instant Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query.') +
           g.httpErrPanel('http_requests_total', queryHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Instant Query Duration', 'Shows how long has it taken to handle requests in quantiles.') { span:: 0 } +
+          g.panel('Instant Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Range Query Rate', 'Shows rate of requests against /query_range for the given time range.') { span:: 0 } +
+          g.panel('Range Query Rate', 'Shows rate of requests against /query_range for the given time range.') +
           g.httpQpsPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Range Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query_range.') { span:: 0 } +
+          g.panel('Range Query Errors', 'Shows ratio of errors compared to the total number of handled requests against /query_range.') +
           g.httpErrPanel('http_requests_total', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Range Query Duration', 'Shows how long has it taken to handle requests in quantiles.') { span:: 0 } +
+          g.panel('Range Query Duration', 'Shows how long has it taken to handle requests in quantiles.') +
           g.latencyPanel('http_request_duration_seconds', queryRangeHandlerSelector, thanos.query.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.query.dashboard.title)
         )
         .addPanel(
-          g.panel('Concurrent Capacity', 'Shows available capacity of processing queries in parallel.') { span:: 0 } +
+          g.panel('Concurrent Capacity', 'Shows available capacity of processing queries in parallel.') +
           g.queryPanel(
             'max_over_time(thanos_query_concurrent_gate_queries_max{%s}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{%s}[$__rate_interval])' % [thanos.query.dashboard.selector, thanos.query.dashboard.selector],
             '{{job}} - {{pod}}'
@@ -408,7 +408,7 @@ function() {
         g.row('Thanos Rule Overview')
         // First line (y=1): evaluations metrics
         .addPanel(
-          g.panel('Total evaluations', 'Displays the rate of total rule evaluations,') { span:: 0 } +
+          g.panel('Total evaluations', 'Displays the rate of total rule evaluations,') +
           g.queryPanel(
             'sum by (job, rule_group) (rate(prometheus_rule_evaluations_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
             '{{rule_group}}'
@@ -416,7 +416,7 @@ function() {
           g.addDashboardLink(thanos.rule.dashboard.title)
         )
         .addPanel(
-          g.panel('Failed evaluations', 'Displays the rate of rule evaluation failures, grouped by rule group.') { span:: 0 } +
+          g.panel('Failed evaluations', 'Displays the rate of rule evaluation failures, grouped by rule group.') +
           g.queryPanel(
             'sum by (job, rule_group) (rate(prometheus_rule_evaluation_failures_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
             '{{rule_group}}'
@@ -424,7 +424,7 @@ function() {
           g.addDashboardLink(thanos.rule.dashboard.title)
         )
         .addPanel(
-          g.panel('Evaluations with warnings') { span:: 0 } +
+          g.panel('Evaluations with warnings') +
           g.queryPanel(
             'sum by (job, strategy) (rate(thanos_rule_evaluation_with_warnings_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
             '{{rule_group}}'
@@ -432,7 +432,7 @@ function() {
           g.addDashboardLink(thanos.rule.dashboard.title)
         )
         .addPanel(
-          g.panel('Too slow evaluations', 'Displays the total time of rule group evaluations that took longer than their scheduled interval.') { span:: 0 } +
+          g.panel('Too slow evaluations', 'Displays the total time of rule group evaluations that took longer than their scheduled interval.') +
           g.addDashboardLink(thanos.rule.dashboard.title) +
           g.queryPanel(
             'sum by(job, rule_group) (prometheus_rule_group_last_duration_seconds{%(selector)s}) / sum by(job, rule_group) (prometheus_rule_group_interval_seconds{%(selector)s})' % thanos.rule.dashboard,
@@ -441,12 +441,12 @@ function() {
         )
         // Second line (y=7): alerts push to aler manager metrics
         .addPanel(
-          g.panel('Rate of sent alerts', 'Shows the rate of total alerts sent by Thanos.') { span:: 0 } +
+          g.panel('Rate of sent alerts', 'Shows the rate of total alerts sent by Thanos.') +
           g.queryPanel('sum by (job) (rate(thanos_alert_sender_alerts_sent_total{%(selector)s}[$interval]))' % thanos.rule.dashboard, '{{job}}') { span:: 0 } +
           g.addDashboardLink(thanos.rule.dashboard.title)
         )
         .addPanel(
-          g.panel('Rate of send alerts errors', 'Displays the ratio of error rate to total alerts sent rate by Thanos.') { span:: 0 } +
+          g.panel('Rate of send alerts errors', 'Displays the ratio of error rate to total alerts sent rate by Thanos.') +
           g.queryPanel(
             'sum by (job) (rate(thanos_alert_sender_errors_total{%(selector)s}[$interval])) / sum by (job) (rate(thanos_alert_sender_alerts_sent_total{%(selector)s}[$interval]))' % thanos.rule.dashboard,
             '{{job}}'
@@ -454,7 +454,7 @@ function() {
           g.addDashboardLink(thanos.rule.dashboard.title)
         )
         .addPanel(
-          g.panel('Duration od send alerts', 'Displays the 50th, 90th, and 99th percentile latency of alert requests sent by Thanos.') { span:: 0 } +
+          g.panel('Duration od send alerts', 'Displays the 50th, 90th, and 99th percentile latency of alert requests sent by Thanos.') +
           g.queryPanel(
             [
               'histogram_quantile(0.50, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{%(selector)s}[$interval])))' % thanos.rule.dashboard,
@@ -494,37 +494,37 @@ function() {
       .addRow(
         g.row('Store Gateway Overview')
         .addPanel(
-          g.panel('Unary gRPC Rate', 'Shows rate of handled Unary gRPC requests from queriers.') { span:: 0 } +
+          g.panel('Unary gRPC Rate', 'Shows rate of handled Unary gRPC requests from queriers.') +
           g.grpcRequestsPanel('grpc_server_handled_total', grpcUnarySelector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Unary gRPC Errors', 'Shows ratio of errors compared to the total number of handled requests from queriers.') { span:: 0 } +
+          g.panel('Unary gRPC Errors', 'Shows ratio of errors compared to the total number of handled requests from queriers.') +
           g.grpcErrorsPanel('grpc_server_handled_total', grpcUnarySelector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Unary gRPC Duration', 'Shows how long has it taken to handle requests from queriers, in quantiles.') { span:: 0 } +
+          g.panel('Unary gRPC Duration', 'Shows how long has it taken to handle requests from queriers, in quantiles.') +
           g.latencyPanel('grpc_server_handling_seconds', grpcUnarySelector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Sreamed gRPC Rate', 'Shows rate of handled Streamed gRPC requests from queriers.') { span:: 0 } +
+          g.panel('Sreamed gRPC Rate', 'Shows rate of handled Streamed gRPC requests from queriers.') +
           g.grpcRequestsPanel('grpc_server_handled_total', grpcServerStreamSelector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Sreamed gRPC Errors', 'Shows ratio of errors compared to the total number of handled requests from queriers.') { span:: 0 } +
+          g.panel('Sreamed gRPC Errors', 'Shows ratio of errors compared to the total number of handled requests from queriers.') +
           g.grpcErrorsPanel('grpc_server_handled_total', grpcServerStreamSelector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Sreamed gRPC Duration', 'Shows how long has it taken to handle requests from queriers, in quantiles.') { span:: 0 } +
+          g.panel('Sreamed gRPC Duration', 'Shows how long has it taken to handle requests from queriers, in quantiles.') +
           g.latencyPanel('grpc_server_handling_seconds', grpcServerStreamSelector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Data Touched', 'Show the size of data touched') { span:: 0 } +
+          g.panel('Data Touched', 'Show the size of data touched') +
           g.queryPanel(
             [
               'histogram_quantile(0.99, sum by (le) (rate(thanos_bucket_store_series_data_touched{%s}[$__rate_interval])))' % thanos.store.dashboard.selector,
@@ -539,12 +539,12 @@ function() {
           { yaxes: g.yaxes('bytes') }
         )
         .addPanel(
-          g.panel('Get All', 'Shows how long has it taken to get all series.') { span:: 0 } +
+          g.panel('Get All', 'Shows how long has it taken to get all series.') +
           g.latencyPanel('thanos_bucket_store_series_get_all_duration_seconds', thanos.store.dashboard.selector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
         .addPanel(
-          g.panel('Merge', 'Shows how long has it taken to merge series.') { span:: 0 } +
+          g.panel('Merge', 'Shows how long has it taken to merge series.') +
           g.latencyPanel('thanos_bucket_store_series_merge_duration_seconds', thanos.store.dashboard.selector, thanos.store.dashboard.dimensions) { span:: 0 } +
           g.addDashboardLink(thanos.store.dashboard.title)
         )
@@ -572,7 +572,7 @@ function() {
       .addRow(
         g.row('Gubernator Overview')
         .addPanel(
-          g.panel('Rate of gRPC requests', 'Shows count of gRPC requests to gubernator') { span:: 0 } +
+          g.panel('Rate of gRPC requests', 'Shows count of gRPC requests to gubernator') +
           g.queryPanel(
             [
               'sum(rate(gubernator_grpc_request_counts{namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
@@ -580,7 +580,7 @@ function() {
             [
               'gRPC requests {{pod}}',
             ]
-          ) +
+          ) { span:: 0 } +
           g.stack
         )
         .addPanel(
@@ -592,11 +592,11 @@ function() {
             [
               'gRPC request errors {{pod}}',
             ]
-          ) +
+          ) { span:: 0 } +
           g.stack
         )
         .addPanel(
-          g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') { span:: 0 } +
+          g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') +
           g.queryPanel(
             [
               'gubernator_grpc_request_duration{quantile="0.99", namespace="$namespace",job=~"$job"}',
@@ -606,11 +606,11 @@ function() {
               'P99: {{pod}}',
               'P50: {{pod}}',
             ]
-          ) +
+          ) { span:: 0 } +
           { yaxes: g.yaxes('s') },
         )
         .addPanel(
-          g.panel('Local queue of rate checks', 'Shows the number of rate checks in the local queue') { span:: 0 } +
+          g.panel('Local queue of rate checks', 'Shows the number of rate checks in the local queue') +
           g.queryPanel(
             [
               'gubernator_pool_queue_length{namespace="$namespace",job=~"$job"}',
@@ -618,10 +618,10 @@ function() {
             [
               'local queue size {{pod}}',
             ]
-          )
+          ) { span:: 0 }
         )
         .addPanel(
-          g.panel('Peer queue of rate checks', 'Shows the number of rate checks in the peer queue') { span:: 0 } +
+          g.panel('Peer queue of rate checks', 'Shows the number of rate checks in the peer queue') +
           g.queryPanel(
             [
               'gubernator_queue_length{namespace="$namespace",job=~"$job"}',
@@ -629,7 +629,7 @@ function() {
             [
               'peer queue size {{pod}}',
             ]
-          )
+          ) { span:: 0 }
         )
         .addPanel(
           memoryUsagePanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod) +
@@ -651,7 +651,7 @@ function() {
       .addRow(
         g.row('Alertmanager Overview')
         .addPanel(
-          g.panel('Alerts receive rate', 'rate of successful and invalid alerts received by the Alertmanager') { span:: 0 } +
+          g.panel('Alerts receive rate', 'rate of successful and invalid alerts received by the Alertmanager') +
           g.queryPanel(
             [
               'sum(rate(alertmanager_alerts_received_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',

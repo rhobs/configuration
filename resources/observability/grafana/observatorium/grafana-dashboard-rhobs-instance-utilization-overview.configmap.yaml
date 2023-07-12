@@ -8064,6 +8064,22 @@ data:
         "type": "datasource"
        },
        {
+        "current": {
+         "text": "default",
+         "value": "default"
+        },
+        "hide": 0,
+        "label": null,
+        "name": "datasource",
+        "options": [
+
+        ],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/",
+        "type": "datasource"
+       },
+       {
         "allValue": ".+",
         "current": {
          "text": "",

@@ -686,7 +686,12 @@ function() {
         ) { collapse: true }
       ) + {
         templating+: {
-          list+: [namespaceTemplate, jobTemplate, intervalTemplate],
+          list+: [
+            if variable.name == 'datasource'
+            then variable { regex: config.dashboard.instance_name_filter }
+            else variable
+            for variable in super.list
+          ] + [namespaceTemplate, jobTemplate, intervalTemplate],
         },
       },
   },

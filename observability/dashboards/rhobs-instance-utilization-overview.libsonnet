@@ -122,7 +122,7 @@ function() {
 
   alerts:: {
     dashboard:: {
-      selector: std.join(', ', config.dashboard.selector + ['service=~"observatorium.*|telemeter.*|deployment-validation-operator"']),
+      selector: std.join(', ', ['service=~"observatorium.*|telemeter.*|deployment-validation-operator"']),
     },
   },
 
@@ -187,7 +187,7 @@ function() {
       .addRow(
         g.row('Alerting Overview')
         .addPanel(
-          grafana.statPanel.new('Current alerts by state', 'Current alert count by state for Observatorium services') {
+          grafana.statPanel.new('Current firing alerts by service', 'Count of alerts currently firing by service') {
             span: 0,
             options+: {
               reduceOptions+: {
@@ -202,7 +202,7 @@ function() {
             },
           }
           .addTarget({
-            expr: 'count(ALERTS{service=~"observatorium.*"}) by (alertstate)',
+            expr: 'count(ALERTS{%s, alertstate="firing"}) by (service)' % thanos.alerts.dashboard.selector,
             legendFormat: '{{alertstate}}',
             datasource: { type: 'prometheus', uid: '${datasource}' },
           })

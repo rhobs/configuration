@@ -120,6 +120,12 @@ function() {
     },
   },
 
+  alerts:: {
+    dashboard:: {
+      selector: std.join(', ', config.dashboard.selector + ['service=~"observatorium.*|telemeter.*"']),
+    },
+  },
+
   local memoryUsagePanel(container, pod) =
     g.panel('Memory Used', 'Memory working set') +
     g.queryPanel(
@@ -205,10 +211,12 @@ function() {
           g.panel('Currently firing alerts by severity', 'Shows the number of currently open alerts by severity') { span: 0 } +
           g.queryPanel(
             [
-              'count(ALERTS{service=~"observatorium.*", alertstate="firing"}) by (alertname, severity)',
+              'count(ALERTS{%s, alertstate="firing", namespace!=""}) by (namespace, alertname, severity)' % thanos.alerts.dashboard.selector,
+              'count(ALERTS{%s, alertstate="firing", namespace=""}) by (alertname, severity)' % thanos.alerts.dashboard.selector,
             ],
             [
-              '{{severity}} -  {{alertname}}',
+              '{{namespace}} - {{severity}} -  {{alertname}}',
+              '(unknown namespace) - {{severity}} -  {{alertname}}',
             ]
           )
         )

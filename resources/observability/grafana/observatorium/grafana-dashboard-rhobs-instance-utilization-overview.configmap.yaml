@@ -114,10 +114,18 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "count(ALERTS{service=~\"observatorium.*\", alertstate=\"firing\"}) by (alertname, severity)",
+           "expr": "count(ALERTS{namespace=\"$namespace\", service=~\"observatorium.*|telemeter.*\", alertstate=\"firing\", namespace!=\"\"}) by (namespace, alertname, severity)",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "{{severity}} -  {{alertname}}",
+           "legendFormat": "{{namespace}} - {{severity}} -  {{alertname}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "count(ALERTS{namespace=\"$namespace\", service=~\"observatorium.*|telemeter.*\", alertstate=\"firing\", namespace=\"\"}) by (alertname, severity)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "(unknown namespace) - {{severity}} -  {{alertname}}",
            "legendLink": null,
            "step": 10
           }

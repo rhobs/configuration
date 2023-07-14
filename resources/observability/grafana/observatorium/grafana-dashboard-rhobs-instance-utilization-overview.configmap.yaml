@@ -84,7 +84,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Shows the number of currently open alerts by severity",
-         "fill": 1,
+         "fill": 10,
          "id": 2,
          "legend": {
           "avg": false,
@@ -96,7 +96,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 1,
+         "linewidth": 0,
          "links": [
 
          ],
@@ -110,7 +110,7 @@ data:
          ],
          "spaceLength": 10,
          "span": 6,
-         "stack": false,
+         "stack": true,
          "steppedLine": false,
          "targets": [
           {

@@ -218,7 +218,8 @@ function() {
               '{{namespace}} - {{severity}} -  {{alertname}}',
               '(unknown namespace) - {{severity}} -  {{alertname}}',
             ]
-          )
+          ) +
+          g.stack
         )
       )
       .addRow(

@@ -114,7 +114,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "count(ALERTS{namespace=\"$namespace\", service=~\"observatorium.*|telemeter.*\", alertstate=\"firing\", namespace!=\"\"}) by (namespace, alertname, severity)",
+           "expr": "count(ALERTS{namespace=\"$namespace\", service=~\"observatorium.*|telemeter.*|deployment-validation-operator\", alertstate=\"firing\", namespace!=\"\"}) by (namespace, alertname, severity)",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{namespace}} - {{severity}} -  {{alertname}}",
@@ -122,7 +122,7 @@ data:
            "step": 10
           },
           {
-           "expr": "count(ALERTS{namespace=\"$namespace\", service=~\"observatorium.*|telemeter.*\", alertstate=\"firing\", namespace=\"\"}) by (alertname, severity)",
+           "expr": "count(ALERTS{namespace=\"$namespace\", service=~\"observatorium.*|telemeter.*|deployment-validation-operator\", alertstate=\"firing\", namespace=\"\"}) by (alertname, severity)",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "(unknown namespace) - {{severity}} -  {{alertname}}",

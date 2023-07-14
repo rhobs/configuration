@@ -122,7 +122,7 @@ function() {
 
   alerts:: {
     dashboard:: {
-      selector: std.join(', ', config.dashboard.selector + ['service=~"observatorium.*|telemeter.*"']),
+      selector: std.join(', ', config.dashboard.selector + ['service=~"observatorium.*|telemeter.*|deployment-validation-operator"']),
     },
   },
 

@@ -71,7 +71,7 @@ data:
            "refId": "A"
           }
          ],
-         "title": "Alerts by state",
+         "title": "Current alerts by state",
          "transparent": false,
          "type": "stat"
         },
@@ -135,7 +135,7 @@ data:
          ],
          "timeFrom": null,
          "timeShift": null,
-         "title": "Currently firing alerts by severity",
+         "title": "Firing alerts by namespace and severity over time",
          "tooltip": {
           "shared": false,
           "sort": 0,

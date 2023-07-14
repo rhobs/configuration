@@ -187,7 +187,7 @@ function() {
       .addRow(
         g.row('Alerting Overview')
         .addPanel(
-          grafana.statPanel.new('Alerts by state', 'Current alert count by state for Observatorium services') {
+          grafana.statPanel.new('Current alerts by state', 'Current alert count by state for Observatorium services') {
             span: 0,
             options+: {
               reduceOptions+: {
@@ -208,7 +208,7 @@ function() {
           })
         )
         .addPanel(
-          g.panel('Currently firing alerts by severity', 'Shows the number of currently open alerts by severity') { span: 0 } +
+          g.panel('Firing alerts by namespace and severity over time', 'Shows the number of currently open alerts by severity') { span: 0 } +
           g.queryPanel(
             [
               'count(ALERTS{%s, alertstate="firing", namespace!=""}) by (namespace, alertname, severity)' % thanos.alerts.dashboard.selector,

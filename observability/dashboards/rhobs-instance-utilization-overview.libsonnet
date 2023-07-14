@@ -3,6 +3,7 @@ local am = (import '../config.libsonnet').alertmanager;
 local utils = import 'github.com/thanos-io/thanos/mixin/lib/utils.libsonnet';
 local g = import 'github.com/thanos-io/thanos/mixin/lib/thanos-grafana-builder/builder.libsonnet';
 local template = import 'grafonnet/template.libsonnet';
+local grafana = import 'grafonnet/grafana.libsonnet';
 
 function() {
 
@@ -177,6 +178,41 @@ function() {
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')
+      .addRow(
+        g.row('Alerting Overview')
+        .addPanel(
+          grafana.statPanel.new('Alerts by state', 'Current alert count by state for Observatorium services') {
+            span: 0,
+            options+: {
+              reduceOptions+: {
+                calcs: [
+                  'lastNotNull',
+                ],
+                fields: '',
+                values: false,
+              },
+              textMode: 'value_and_name',
+              justifyMode: 'center',
+            },
+          }
+          .addTarget({
+            expr: 'count(ALERTS{service=~"observatorium.*"}) by (alertstate)',
+            legendFormat: '{{alertstate}}',
+            datasource: { type: 'prometheus', uid: '${datasource}' },
+          })
+        )
+        .addPanel(
+          g.panel('Currently firing alerts by severity', 'Shows the number of currently open alerts by severity') { span: 0 } +
+          g.queryPanel(
+            [
+              'count(ALERTS{service=~"observatorium.*", alertstate="firing"}) by (alertname, severity)',
+            ],
+            [
+              '{{severity}} -  {{alertname}}',
+            ]
+          )
+        )
+      )
       .addRow(
         g.row('Receive Overview')
         .addPanel(

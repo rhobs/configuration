@@ -17,6 +17,160 @@ data:
      "refresh": "10s",
      "rows": [
       {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "datasource": null,
+         "description": "Current alert count by state for Observatorium services",
+         "fieldConfig": {
+          "defaults": {
+           "links": [
+
+           ],
+           "mappings": [
+
+           ],
+           "thresholds": {
+            "mode": "absolute",
+            "steps": [
+
+            ]
+           },
+           "unit": "none"
+          }
+         },
+         "id": 1,
+         "links": [
+
+         ],
+         "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "center",
+          "orientation": "auto",
+          "reduceOptions": {
+           "calcs": [
+            "lastNotNull"
+           ],
+           "fields": "",
+           "values": false
+          },
+          "textMode": "value_and_name"
+         },
+         "pluginVersion": "7",
+         "span": 6,
+         "targets": [
+          {
+           "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+           },
+           "expr": "count(ALERTS{service=~\"observatorium.*\"}) by (alertstate)",
+           "legendFormat": "{{alertstate}}",
+           "refId": "A"
+          }
+         ],
+         "title": "Alerts by state",
+         "transparent": false,
+         "type": "stat"
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Shows the number of currently open alerts by severity",
+         "fill": 1,
+         "id": 2,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 6,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "count(ALERTS{service=~\"observatorium.*\", alertstate=\"firing\"}) by (alertname, severity)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{severity}} -  {{alertname}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Currently firing alerts by severity",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Alerting Overview",
+       "titleSize": "h6"
+      },
+      {
        "collapse": true,
        "height": "250px",
        "panels": [
@@ -30,7 +184,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of requests against Receive for the given time",
          "fill": 10,
-         "id": 1,
+         "id": 3,
          "legend": {
           "avg": false,
           "current": false,
@@ -140,7 +294,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests against Receive.",
          "fill": 10,
-         "id": 2,
+         "id": 4,
          "legend": {
           "avg": false,
           "current": false,
@@ -230,7 +384,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests in quantiles.",
          "fill": 1,
-         "id": 3,
+         "id": 5,
          "legend": {
           "avg": false,
           "current": false,
@@ -361,7 +515,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows the number of replication requests against Receive.",
          "fill": 10,
-         "id": 4,
+         "id": 6,
          "legend": {
           "avg": false,
           "current": false,
@@ -523,7 +677,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle replication requests in quantiles.",
          "fill": 1,
-         "id": 5,
+         "id": 7,
          "legend": {
           "avg": false,
           "current": false,
@@ -654,7 +808,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows the number of replication request errors.",
          "fill": 10,
-         "id": 6,
+         "id": 8,
          "legend": {
           "avg": false,
           "current": false,
@@ -743,7 +897,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 7,
+         "id": 9,
          "legend": {
           "avg": false,
           "current": false,
@@ -843,7 +997,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 8,
+         "id": 10,
          "legend": {
           "avg": false,
           "current": false,
@@ -934,7 +1088,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 9,
+         "id": 11,
          "legend": {
           "avg": false,
           "current": false,
@@ -1025,7 +1179,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 10,
+         "id": 12,
          "legend": {
           "avg": false,
           "current": false,
@@ -1116,7 +1270,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 11,
+         "id": 13,
          "legend": {
           "avg": false,
           "current": false,
@@ -1228,7 +1382,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of requests against Query Frontend for the given time.",
          "fill": 10,
-         "id": 12,
+         "id": 14,
          "legend": {
           "avg": false,
           "current": false,
@@ -1338,7 +1492,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests against Query Frontend.",
          "fill": 10,
-         "id": 13,
+         "id": 15,
          "legend": {
           "avg": false,
           "current": false,
@@ -1428,7 +1582,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests in quantiles.",
          "fill": 1,
-         "id": 14,
+         "id": 16,
          "legend": {
           "avg": false,
           "current": false,
@@ -1559,7 +1713,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 15,
+         "id": 17,
          "legend": {
           "avg": false,
           "current": false,
@@ -1650,7 +1804,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 16,
+         "id": 18,
          "legend": {
           "avg": false,
           "current": false,
@@ -1741,7 +1895,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 17,
+         "id": 19,
          "legend": {
           "avg": false,
           "current": false,
@@ -1832,7 +1986,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 18,
+         "id": 20,
          "legend": {
           "avg": false,
           "current": false,
@@ -1944,7 +2098,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of requests against /query for the given time.",
          "fill": 10,
-         "id": 19,
+         "id": 21,
          "legend": {
           "avg": false,
           "current": false,
@@ -2054,7 +2208,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests against /query.",
          "fill": 10,
-         "id": 20,
+         "id": 22,
          "legend": {
           "avg": false,
           "current": false,
@@ -2144,7 +2298,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests in quantiles.",
          "fill": 1,
-         "id": 21,
+         "id": 23,
          "legend": {
           "avg": false,
           "current": false,
@@ -2275,7 +2429,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of requests against /query_range for the given time range.",
          "fill": 10,
-         "id": 22,
+         "id": 24,
          "legend": {
           "avg": false,
           "current": false,
@@ -2385,7 +2539,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests against /query_range.",
          "fill": 10,
-         "id": 23,
+         "id": 25,
          "legend": {
           "avg": false,
           "current": false,
@@ -2475,7 +2629,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests in quantiles.",
          "fill": 1,
-         "id": 24,
+         "id": 26,
          "legend": {
           "avg": false,
           "current": false,
@@ -2606,7 +2760,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows available capacity of processing queries in parallel.",
          "fill": 1,
-         "id": 25,
+         "id": 27,
          "legend": {
           "avg": false,
           "current": false,
@@ -2692,7 +2846,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 26,
+         "id": 28,
          "legend": {
           "avg": false,
           "current": false,
@@ -2783,7 +2937,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 27,
+         "id": 29,
          "legend": {
           "avg": false,
           "current": false,
@@ -2874,7 +3028,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 28,
+         "id": 30,
          "legend": {
           "avg": false,
           "current": false,
@@ -2965,7 +3119,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 29,
+         "id": 31,
          "legend": {
           "avg": false,
           "current": false,
@@ -3077,7 +3231,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of requests against /query for the given time.",
          "fill": 10,
-         "id": 30,
+         "id": 32,
          "legend": {
           "avg": false,
           "current": false,
@@ -3187,7 +3341,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests against /query.",
          "fill": 10,
-         "id": 31,
+         "id": 33,
          "legend": {
           "avg": false,
           "current": false,
@@ -3277,7 +3431,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests in quantiles.",
          "fill": 1,
-         "id": 32,
+         "id": 34,
          "legend": {
           "avg": false,
           "current": false,
@@ -3408,7 +3562,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of requests against /query_range for the given time range.",
          "fill": 10,
-         "id": 33,
+         "id": 35,
          "legend": {
           "avg": false,
           "current": false,
@@ -3518,7 +3672,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests against /query_range.",
          "fill": 10,
-         "id": 34,
+         "id": 36,
          "legend": {
           "avg": false,
           "current": false,
@@ -3608,7 +3762,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests in quantiles.",
          "fill": 1,
-         "id": 35,
+         "id": 37,
          "legend": {
           "avg": false,
           "current": false,
@@ -3739,7 +3893,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows available capacity of processing queries in parallel.",
          "fill": 1,
-         "id": 36,
+         "id": 38,
          "legend": {
           "avg": false,
           "current": false,
@@ -3825,7 +3979,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 37,
+         "id": 39,
          "legend": {
           "avg": false,
           "current": false,
@@ -3916,7 +4070,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 38,
+         "id": 40,
          "legend": {
           "avg": false,
           "current": false,
@@ -4007,7 +4161,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 39,
+         "id": 41,
          "legend": {
           "avg": false,
           "current": false,
@@ -4098,7 +4252,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 40,
+         "id": 42,
          "legend": {
           "avg": false,
           "current": false,
@@ -4210,7 +4364,7 @@ data:
          "datasource": "$datasource",
          "description": "Displays the rate of total rule evaluations,",
          "fill": 1,
-         "id": 41,
+         "id": 43,
          "legend": {
           "avg": false,
           "current": false,
@@ -4302,7 +4456,7 @@ data:
          "datasource": "$datasource",
          "description": "Displays the rate of rule evaluation failures, grouped by rule group.",
          "fill": 1,
-         "id": 42,
+         "id": 44,
          "legend": {
           "avg": false,
           "current": false,
@@ -4393,7 +4547,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 43,
+         "id": 45,
          "legend": {
           "avg": false,
           "current": false,
@@ -4485,7 +4639,7 @@ data:
          "datasource": "$datasource",
          "description": "Displays the total time of rule group evaluations that took longer than their scheduled interval.",
          "fill": 1,
-         "id": 44,
+         "id": 46,
          "legend": {
           "avg": false,
           "current": false,
@@ -4577,7 +4731,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows the rate of total alerts sent by Thanos.",
          "fill": 1,
-         "id": 45,
+         "id": 47,
          "legend": {
           "avg": false,
           "current": false,
@@ -4669,7 +4823,7 @@ data:
          "datasource": "$datasource",
          "description": "Displays the ratio of error rate to total alerts sent rate by Thanos.",
          "fill": 1,
-         "id": 46,
+         "id": 48,
          "legend": {
           "avg": false,
           "current": false,
@@ -4761,7 +4915,7 @@ data:
          "datasource": "$datasource",
          "description": "Displays the 50th, 90th, and 99th percentile latency of alert requests sent by Thanos.",
          "fill": 1,
-         "id": 47,
+         "id": 49,
          "legend": {
           "avg": false,
           "current": false,
@@ -4869,7 +5023,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 1,
-         "id": 48,
+         "id": 50,
          "legend": {
           "avg": false,
           "current": false,
@@ -4960,7 +5114,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 49,
+         "id": 51,
          "legend": {
           "avg": false,
           "current": false,
@@ -5051,7 +5205,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 50,
+         "id": 52,
          "legend": {
           "avg": false,
           "current": false,
@@ -5150,7 +5304,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 51,
+         "id": 53,
          "legend": {
           "avg": false,
           "current": false,
@@ -5254,7 +5408,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of handled Unary gRPC requests from queriers.",
          "fill": 10,
-         "id": 52,
+         "id": 54,
          "legend": {
           "avg": false,
           "current": false,
@@ -5416,7 +5570,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests from queriers.",
          "fill": 10,
-         "id": 53,
+         "id": 55,
          "legend": {
           "avg": false,
           "current": false,
@@ -5506,7 +5660,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests from queriers, in quantiles.",
          "fill": 1,
-         "id": 54,
+         "id": 56,
          "legend": {
           "avg": false,
           "current": false,
@@ -5637,7 +5791,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows rate of handled Streamed gRPC requests from queriers.",
          "fill": 10,
-         "id": 55,
+         "id": 57,
          "legend": {
           "avg": false,
           "current": false,
@@ -5799,7 +5953,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows ratio of errors compared to the total number of handled requests from queriers.",
          "fill": 10,
-         "id": 56,
+         "id": 58,
          "legend": {
           "avg": false,
           "current": false,
@@ -5889,7 +6043,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to handle requests from queriers, in quantiles.",
          "fill": 1,
-         "id": 57,
+         "id": 59,
          "legend": {
           "avg": false,
           "current": false,
@@ -6020,7 +6174,7 @@ data:
          "datasource": "$datasource",
          "description": "Show the size of data touched",
          "fill": 1,
-         "id": 58,
+         "id": 60,
          "legend": {
           "avg": false,
           "current": false,
@@ -6122,7 +6276,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to get all series.",
          "fill": 1,
-         "id": 59,
+         "id": 61,
          "legend": {
           "avg": false,
           "current": false,
@@ -6253,7 +6407,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows how long has it taken to merge series.",
          "fill": 1,
-         "id": 60,
+         "id": 62,
          "legend": {
           "avg": false,
           "current": false,
@@ -6384,7 +6538,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 61,
+         "id": 63,
          "legend": {
           "avg": false,
           "current": false,
@@ -6475,7 +6629,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 62,
+         "id": 64,
          "legend": {
           "avg": false,
           "current": false,
@@ -6566,7 +6720,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 63,
+         "id": 65,
          "legend": {
           "avg": false,
           "current": false,
@@ -6657,7 +6811,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 64,
+         "id": 66,
          "legend": {
           "avg": false,
           "current": false,
@@ -6769,7 +6923,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows count of gRPC requests to gubernator",
          "fill": 10,
-         "id": 65,
+         "id": 67,
          "legend": {
           "avg": false,
           "current": false,
@@ -6855,7 +7009,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows count of errors in gRPC requests to gubernator",
          "fill": 10,
-         "id": 66,
+         "id": 68,
          "legend": {
           "avg": false,
           "current": false,
@@ -6941,7 +7095,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows duration of gRPC requests to gubernator",
          "fill": 1,
-         "id": 67,
+         "id": 69,
          "legend": {
           "avg": false,
           "current": false,
@@ -7035,7 +7189,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows the number of rate checks in the local queue",
          "fill": 1,
-         "id": 68,
+         "id": 70,
          "legend": {
           "avg": false,
           "current": false,
@@ -7121,7 +7275,7 @@ data:
          "datasource": "$datasource",
          "description": "Shows the number of rate checks in the peer queue",
          "fill": 1,
-         "id": 69,
+         "id": 71,
          "legend": {
           "avg": false,
           "current": false,
@@ -7207,7 +7361,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 70,
+         "id": 72,
          "legend": {
           "avg": false,
           "current": false,
@@ -7292,7 +7446,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 71,
+         "id": 73,
          "legend": {
           "avg": false,
           "current": false,
@@ -7377,7 +7531,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 72,
+         "id": 74,
          "legend": {
           "avg": false,
           "current": false,
@@ -7462,7 +7616,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 73,
+         "id": 75,
          "legend": {
           "avg": false,
           "current": false,
@@ -7568,7 +7722,7 @@ data:
          "datasource": "$datasource",
          "description": "rate of successful and invalid alerts received by the Alertmanager",
          "fill": 1,
-         "id": 74,
+         "id": 76,
          "legend": {
           "avg": false,
           "current": false,
@@ -7668,7 +7822,7 @@ data:
          "datasource": "$datasource",
          "description": "Memory working set",
          "fill": 10,
-         "id": 75,
+         "id": 77,
          "legend": {
           "avg": false,
           "current": false,
@@ -7759,7 +7913,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 76,
+         "id": 78,
          "legend": {
           "avg": false,
           "current": false,
@@ -7850,7 +8004,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 1,
-         "id": 77,
+         "id": 79,
          "legend": {
           "avg": false,
           "current": false,
@@ -7941,7 +8095,7 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "fill": 10,
-         "id": 78,
+         "id": 80,
          "legend": {
           "avg": false,
           "current": false,

@@ -217,8 +217,8 @@ spec:
     - alert: SLOMetricAbsent
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API /query handler endpoint for rules evaluation is burning too much
+          error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       expr: absent(http_requests_total{handler="query",job="observatorium-ruler-query"})
         == 1
@@ -291,8 +291,8 @@ spec:
     - alert: APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API /query handler endpoint for rules evaluation is burning too much
+          error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate5m{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
@@ -309,8 +309,8 @@ spec:
     - alert: APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API /query handler endpoint for rules evaluation is burning too much
+          error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate30m{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
@@ -327,8 +327,8 @@ spec:
     - alert: APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API /query handler endpoint for rules evaluation is burning too much
+          error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate2h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
@@ -345,8 +345,8 @@ spec:
     - alert: APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: API /query handler is burning too much error budget to guarantee
-          availability SLOs.
+        message: API /query handler endpoint for rules evaluation is burning too much
+          error budget to guarantee availability SLOs.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulerQueryAvailabilityErrorBudgetBurning
       expr: http_requests:burnrate6h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
@@ -2569,6 +2569,217 @@ spec:
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-mst-production",query="rule-query-path-sli-10M-samples"})
       labels:
         slo: api-metrics-rule-read-10M-latency-slo
+      record: pyrra_errors_total
+  - interval: 2m30s
+    name: api-metrics-rule-read-100M-latency-slo-increase
+    rules:
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[4w]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:increase4w
+    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[4w]))
+      labels:
+        le: "120"
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:increase4w
+    - alert: SLOMetricAbsent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query endpoint for rules evaluation is burning too much error
+          budget for 100M samples, to guarantee latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulenReadLatency100MErrorBudgetBurning
+      expr: absent(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"})
+        == 1
+      for: 2m
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        severity: high
+        slo: api-metrics-rule-read-100M-latency-slo
+    - alert: SLOMetricAbsent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query endpoint for rules evaluation is burning too much error
+          budget for 100M samples, to guarantee latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulenReadLatency100MErrorBudgetBurning
+      expr: absent(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"})
+        == 1
+      for: 2m
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        severity: high
+        slo: api-metrics-rule-read-100M-latency-slo
+  - interval: 30s
+    name: api-metrics-rule-read-100M-latency-slo
+    rules:
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[5m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[5m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[5m]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate5m
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[30m]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[30m])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[30m]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate30m
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[1h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[1h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[1h]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate1h
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[2h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[2h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[2h]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate2h
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[6h]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[6h])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[6h]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate6h
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[1d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[1d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[1d]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate1d
+    - expr: (sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[4d]))
+        - sum(rate(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[4d])))
+        / sum(rate(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"}[4d]))
+      labels:
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: up_custom_query_duration_seconds:burnrate4d
+    - alert: APIMetricsRulenReadLatency100MErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query endpoint for rules evaluation is burning too much error
+          budget for 100M samples, to guarantee latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulenReadLatency100MErrorBudgetBurning
+      expr: up_custom_query_duration_seconds:burnrate5m{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (14 * (1-0.9)) and up_custom_query_duration_seconds:burnrate1h{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (14 * (1-0.9))
+      for: 2m
+      labels:
+        long_burnrate_window: 1h
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        severity: high
+        short_burnrate_window: 5m
+        slo: api-metrics-rule-read-100M-latency-slo
+    - alert: APIMetricsRulenReadLatency100MErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query endpoint for rules evaluation is burning too much error
+          budget for 100M samples, to guarantee latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulenReadLatency100MErrorBudgetBurning
+      expr: up_custom_query_duration_seconds:burnrate30m{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (7 * (1-0.9)) and up_custom_query_duration_seconds:burnrate6h{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (7 * (1-0.9))
+      for: 15m
+      labels:
+        long_burnrate_window: 6h
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        severity: high
+        short_burnrate_window: 30m
+        slo: api-metrics-rule-read-100M-latency-slo
+    - alert: APIMetricsRulenReadLatency100MErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query endpoint for rules evaluation is burning too much error
+          budget for 100M samples, to guarantee latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulenReadLatency100MErrorBudgetBurning
+      expr: up_custom_query_duration_seconds:burnrate2h{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (2 * (1-0.9)) and up_custom_query_duration_seconds:burnrate1d{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (2 * (1-0.9))
+      for: 1h
+      labels:
+        long_burnrate_window: 1d
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        severity: warning
+        short_burnrate_window: 2h
+        slo: api-metrics-rule-read-100M-latency-slo
+    - alert: APIMetricsRulenReadLatency100MErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: API /query endpoint for rules evaluation is burning too much error
+          budget for 100M samples, to guarantee latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulenReadLatency100MErrorBudgetBurning
+      expr: up_custom_query_duration_seconds:burnrate6h{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (1 * (1-0.9)) and up_custom_query_duration_seconds:burnrate4d{namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        > (1 * (1-0.9))
+      for: 3h
+      labels:
+        long_burnrate_window: 4d
+        namespace: observatorium-mst-production
+        query: rule-query-path-sli-1M-samples
+        service: observatorium-api
+        severity: warning
+        short_burnrate_window: 6h
+        slo: api-metrics-rule-read-100M-latency-slo
+  - interval: 30s
+    name: api-metrics-rule-read-100M-latency-slo-generic
+    rules:
+    - expr: "0.9"
+      labels:
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: pyrra_objective
+    - expr: 2419200
+      labels:
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: pyrra_window
+    - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
+        or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"})
+      labels:
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: pyrra_availability
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"})
+      labels:
+        slo: api-metrics-rule-read-100M-latency-slo
+      record: pyrra_requests_total
+    - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"})
+        - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-mst-production",query="rule-query-path-sli-1M-samples"})
+      labels:
+        slo: api-metrics-rule-read-100M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
     name: api-metrics-read-1M-latency-slo-increase

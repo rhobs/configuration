@@ -96,6 +96,7 @@ objects:
           - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="acm_managed_cluster_info"}
+          - --whitelist={__name__="apiserver_list_watch_request_success_total:rate:sum", verb=~"LIST|WATCH"}
           - --whitelist={__name__="appsvcs:cores_by_product:sum"}
           - --whitelist={__name__="cam_app_workload_migrations"}
           - --whitelist={__name__="cco_credentials_mode"}
@@ -239,6 +240,7 @@ objects:
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
+          - --whitelist={__name__="profile:cluster_monitoring_operator_collection_profile:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhoam_7d_slo_percentile:max"}
           - --whitelist={__name__="rhoam_7d_slo_remaining_error_budget:max"}
@@ -353,6 +355,7 @@ objects:
           - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="acm_managed_cluster_info"}
+          - --whitelist={__name__="apiserver_list_watch_request_success_total:rate:sum", verb=~"LIST|WATCH"}
           - --whitelist={__name__="appsvcs:cores_by_product:sum"}
           - --whitelist={__name__="cam_app_workload_migrations"}
           - --whitelist={__name__="cco_credentials_mode"}
@@ -496,6 +499,7 @@ objects:
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
+          - --whitelist={__name__="profile:cluster_monitoring_operator_collection_profile:max"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhoam_7d_slo_percentile:max"}
           - --whitelist={__name__="rhoam_7d_slo_remaining_error_budget:max"}

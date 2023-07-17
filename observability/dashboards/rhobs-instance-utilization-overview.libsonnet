@@ -3,6 +3,7 @@ local am = (import '../config.libsonnet').alertmanager;
 local utils = import 'github.com/thanos-io/thanos/mixin/lib/utils.libsonnet';
 local g = import 'github.com/thanos-io/thanos/mixin/lib/thanos-grafana-builder/builder.libsonnet';
 local template = import 'grafonnet/template.libsonnet';
+local grafana = import 'grafonnet/grafana.libsonnet';
 
 function() {
 
@@ -119,6 +120,12 @@ function() {
     },
   },
 
+  alerts:: {
+    dashboard:: {
+      selector: std.join(', ', ['service=~"observatorium.*|telemeter.*"']),
+    },
+  },
+
   local memoryUsagePanel(container, pod) =
     g.panel('Memory Used', 'Memory working set') +
     g.queryPanel(
@@ -177,6 +184,44 @@ function() {
   dashboard:: {
     data:
       g.dashboard('RHOBS Instance Utilization Overview')
+      .addRow(
+        g.row('Alerting Overview')
+        .addPanel(
+          grafana.statPanel.new('Current firing alerts by service', 'Count of alerts currently firing by service') {
+            span: 0,
+            options+: {
+              reduceOptions+: {
+                calcs: [
+                  'lastNotNull',
+                ],
+                fields: '',
+                values: false,
+              },
+              textMode: 'value_and_name',
+              justifyMode: 'center',
+            },
+          }
+          .addTarget({
+            expr: 'count(ALERTS{%s, alertstate="firing"}) by (service)' % thanos.alerts.dashboard.selector,
+            legendFormat: '{{alertstate}}',
+            datasource: { type: 'prometheus', uid: '${datasource}' },
+          })
+        )
+        .addPanel(
+          g.panel('Firing alerts by namespace and severity over time', 'Shows the number of currently open alerts by severity') { span: 0 } +
+          g.queryPanel(
+            [
+              'count(ALERTS{%s, alertstate="firing", namespace!=""}) by (namespace, alertname, severity)' % thanos.alerts.dashboard.selector,
+              'count(ALERTS{%s, alertstate="firing", namespace=""}) by (alertname, severity)' % thanos.alerts.dashboard.selector,
+            ],
+            [
+              '{{namespace}} - {{severity}} -  {{alertname}}',
+              '(unknown namespace) - {{severity}} -  {{alertname}}',
+            ]
+          ) +
+          g.stack
+        )
+      )
       .addRow(
         g.row('Receive Overview')
         .addPanel(

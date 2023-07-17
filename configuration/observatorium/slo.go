@@ -456,7 +456,7 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				description:         "API /query endpoint for rules evaluation is burning too much error budget for 100M samples, to guarantee latency SLOs.",
 				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"rule-query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\", le=\"120\"}",
 				totalExpr:           "up_custom_query_duration_seconds_count{query=\"rule-query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\"}",
-				alertName:           "APIMetricsRuleReadLatency100MErrorBudgetBurning",
+				alertName:           "APIMetricsRulenReadLatency100MErrorBudgetBurning",
 				sloType:             sloTypeLatency,
 			},
 			{

@@ -9,7 +9,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
   local request_logging = std.manifestYamlDoc({
     grpc: {
       options: {
-        level: 'DEBUG',
+        level: 'INFO',
         decision: {
           log_start: true,
           log_end: true,

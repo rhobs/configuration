@@ -6,6 +6,17 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
 local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
 
 {
+  local request_logging = std.manifestYamlDoc({
+    grpc: {
+      options: {
+        level: 'DEBUG',
+        decision: {
+          log_start: true,
+          log_end: true,
+        },
+      },
+    },
+  }),
   local s3EnvVars = [
     {
       name: 'AWS_ACCESS_KEY_ID',
@@ -92,7 +103,10 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                   // Temporary workaround on high cardinality blocks for 2w.
                   // Since we have only 2w retention, there is no point in having 2w blocks.
                   // See: https://issues.redhat.com/browse/OBS-437
-                  args+: ['--debug.max-compaction-level=3'] + disableDownsamplingFlag,
+                  args+: [
+                    '--debug.max-compaction-level=3',
+                    '--request.logging-config=' + request_logging,
+                  ] + disableDownsamplingFlag,
                 } else c
                 for c in super.containers
               ],
@@ -127,6 +141,9 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     failureThreshold: 10,
                     periodSeconds: 120,
                   },
+                  args+: [
+                    '--request.logging-config=' + request_logging,
+                  ],
                 } else c
                 for c in super.containers
               ],
@@ -171,6 +188,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                         '--store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}',
                         '--store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}',
                         '--max-time=${THANOS_STORE_MAX_TIME}',
+                        '--request.logging-config=' + request_logging,
                       ],
                     } else c
                     for c in super.containers
@@ -191,6 +209,9 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
               containers: [
                 if c.name == 'thanos-receive-controller' then c {
                   securityContext: {},
+                  args+: [
+                    '--request.logging-config=' + request_logging,
+                  ],
                 } else c
                 for c in super.containers
               ],
@@ -268,6 +289,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                     '--grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}',
                     '--query.promql-engine=${THANOS_QUERIER_ENGINE}',
                     '--query.max-concurrent=${THANOS_QUERIER_MAX_CONCURRENT}',
+                    '--request.logging-config=' + request_logging,
                   ],
                 } else c
                 for c in super.containers
@@ -431,6 +453,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                           '--labels.max-retries-per-request=%s' % '${THANOS_QUERY_FRONTEND_MAX_RETRIES}',
                           '--labels.default-time-range=336h',
                           '--cache-compression-type=snappy',
+                          '--request.logging-config=' + request_logging,
                         ],
                 } else c
                 for c in super.containers
@@ -458,6 +481,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                         '--receive.grpc-compression=none',
                         '--receive.hashrings-algorithm=${THANOS_RECEIVE_HASHRINGS_ALGORITHM}',
                         '--receive.hashrings-file-refresh-interval=5s',
+                        '--request.logging-config=' + request_logging,
                       ],
                       env+: s3EnvVars + [{
                         name: 'DEBUG',

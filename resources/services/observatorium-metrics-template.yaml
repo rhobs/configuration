@@ -144,6 +144,13 @@ objects:
           - --downsample.concurrency=1
           - --deduplication.replica-label=replica
           - --debug.max-compaction-level=3
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           - ${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}
           env:
           - name: OBJSTORE_CONFIG
@@ -1171,6 +1178,13 @@ objects:
           - --grpc.proxy-strategy=${THANOS_QUERIER_PROXY_STRATEGY}
           - --query.promql-engine=${THANOS_QUERIER_ENGINE}
           - --query.max-concurrent=${THANOS_QUERIER_MAX_CONCURRENT}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
@@ -1495,6 +1509,13 @@ objects:
           - --labels.max-retries-per-request=${THANOS_QUERY_FRONTEND_MAX_RETRIES}
           - --labels.default-time-range=336h
           - --cache-compression-type=snappy
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
@@ -1825,6 +1846,13 @@ objects:
           - --configmap-generated-name=observatorium-thanos-receive-controller-tenants-generated
           - --file-name=hashrings.json
           - --namespace=$(NAMESPACE)
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: NAMESPACE
             valueFrom:
@@ -2085,6 +2113,13 @@ objects:
           - --receive.grpc-compression=none
           - --receive.hashrings-algorithm=${THANOS_RECEIVE_HASHRINGS_ALGORITHM}
           - --receive.hashrings-file-refresh-interval=5s
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: NAME
             valueFrom:
@@ -2567,6 +2602,13 @@ objects:
               "sampler_type": "ratelimiting"
               "service_name": "thanos-rule"
             "type": "JAEGER"
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: NAME
             valueFrom:
@@ -3143,6 +3185,13 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3400,6 +3449,13 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3657,6 +3713,13 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3914,6 +3977,13 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4171,6 +4241,13 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4428,6 +4505,13 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
+          - |-
+            --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": true
+                "level": "DEBUG"
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:

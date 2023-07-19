@@ -3,7 +3,9 @@
 set -euo pipefail
 
 ARTIFACT_DIR="${ARTIFACT_DIR:-/tmp/artifacts}"
+NS=(minio dex observatorium observatorium-metrics telemeter observatorium-logs observatorium-mst observatorium-tools rhelemeter)
 check_status() {
+    echo "checking rollout status of $1 inside $2 namespace"
     oc rollout status $1 -n $2 --timeout=5m || {
         must_gather "$ARTIFACT_DIR"
         exit 1
@@ -17,14 +19,9 @@ prereq() {
 }
 
 ns() {
-    oc create ns minio || true
-    oc create ns dex || true
-    oc create ns observatorium-metrics || true
-    oc create ns observatorium || true
-    oc create ns telemeter || true
-    oc create ns rhelemeter || true
-    oc create ns observatorium-logs || true
-    oc create ns observatorium-mst || true
+    for ns in "${NS[@]}"; do
+        oc create ns $ns || true
+    done
 }
 
 minio() {
@@ -56,7 +53,7 @@ observatorium_metrics() {
 }
 
 observatorium_tools(){
-    oc create ns observatorium-tools || true
+    oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-tools --timeout=5s
     oc apply --namespace observatorium-tools -f ../deploy/manifests/observatorium-tools-network-policy.yaml
     oc process --param-file=env/logging.test.ci.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
 }
@@ -90,12 +87,13 @@ telemeter() {
 
 rhelemeter() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/rhelemeter --timeout=5s
-    oc process -f --param-file=env/rhelemeter.test.ci.env \
-        -f ../../resources/services/rhelemeter-template.yaml | \
-        oc apply --namespace rhelemeter -f -
+    oc process -f --param-file=env/rhelemeter.test.ci.env -p RHELEMETER_EXTERNAL_MTLS_CA="$(cat ../deploy/manifests/rhelemeter_certs/ca.crt)" \
+        RHELEMETER_EXTERNAL_MTLS_CRT="$(cat ../deploy/manifests/rhelemeter_certs/tls.crt)" RHELEMETER_EXTERNAL_MTLS_KEY="$(cat ../deploy/manifests/rhelemeter_certs/tls.key)" \
+        -f ../../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
 }
 
 observatorium_logs() {
+    oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-logs --timeout=5s
     oc apply --namespace observatorium-logs -f ../deploy/manifests/observatorium-logs-secret.yaml
     oc process --param-file=env/observatorium-logs.test.ci.env -f \
         ../../resources/services/observatorium-logs-template.yaml | \
@@ -103,13 +101,13 @@ observatorium_logs() {
 }
 
 run_test() {
-    for namespace in minio dex observatorium observatorium-metrics observatorium-logs telemeter ; do
+    for ns in "${NS[@]}" ; do
         resources=$(
-            oc get statefulsets -o name -n $namespace
-            oc get deployments -o name -n $namespace
+            oc get statefulsets -o name -n $ns
+            oc get deployments -o name -n $ns
         )
         for res in $resources; do
-            check_status $res $namespace
+            check_status $res $ns
         done
     done
     oc apply -n observatorium -f manifests/test-tenant.yaml
@@ -133,19 +131,19 @@ run_test() {
 must_gather() {
     local artifact_dir="$1"
 
-    for namespace in minio dex observatorium observatorium-metrics telemeter; do
-        mkdir -p "$artifact_dir/$namespace"
+    for ns in "${NS[@]}"; do
+        mkdir -p "$artifact_dir/$ns"
 
-        for name in $(oc get pods -n "$namespace" -o jsonpath='{.items[*].metadata.name}') ; do
-            oc -n "$namespace" describe pod "$name" > "$artifact_dir/$namespace/$name.describe"
-            oc -n "$namespace" get pod "$name" -o yaml > "$artifact_dir/$namespace/$name.yaml"
+        for name in $(oc get pods -n "$ns" -o jsonpath='{.items[*].metadata.name}') ; do
+            oc -n "$ns" describe pod "$name" > "$artifact_dir/$ns/$name.describe"
+            oc -n "$ns" get pod "$name" -o yaml > "$artifact_dir/$ns/$name.yaml"
 
-            for initContainer in $(oc -n "$namespace" get pod "$name" -o jsonpath='{.spec.initContainers[*].name}') ; do
-                oc -n "$namespace" logs "$name" -c "$initContainer" > "$artifact_dir/$namespace/$name-$initContainer.logs"
+            for initContainer in $(oc -n "$ns" get pod "$name" -o jsonpath='{.spec.initContainers[*].name}') ; do
+                oc -n "$ns" logs "$name" -c "$initContainer" > "$artifact_dir/$ns/$name-$initContainer.logs"
             done
 
-            for container in $(oc -n "$namespace" get pod "$name" -o jsonpath='{.spec.containers[*].name}') ; do
-                oc -n "$namespace" logs "$name" -c "$container" > "$artifact_dir/$namespace/$name-$container.logs"
+            for container in $(oc -n "$ns" get pod "$name" -o jsonpath='{.spec.containers[*].name}') ; do
+                oc -n "$ns" logs "$name" -c "$container" > "$artifact_dir/$ns/$name-$container.logs"
             done
         done
     done

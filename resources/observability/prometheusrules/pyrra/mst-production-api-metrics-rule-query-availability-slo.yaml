@@ -1,0 +1,29 @@
+apiVersion: v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  annotations:
+    pyrra.dev/dashboard: https://grafana.app-sre.devshift.net/d/283e7002d85c08126681241df2fdb22b/mst-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+    pyrra.dev/message: API /query handler endpoint for rules evaluation is burning
+      too much error budget to guarantee availability SLOs.
+    pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#APIMetricsRulerQueryAvailabilityErrorBudgetBurning
+  creationTimestamp: null
+  labels:
+    instance: mst-production
+    pyrra.dev/service: observatorium-api
+  name: api-metrics-rule-query-availability-slo
+spec:
+  alerting:
+    name: APIMetricsRulerQueryAvailabilityErrorBudgetBurning
+  description: API /query handler endpoint for rules evaluation is burning too much
+    error budget to guarantee availability SLOs.
+  indicator:
+    ratio:
+      errors:
+        metric: http_requests_total{job="observatorium-ruler-query", handler="query",
+          code=~"^5..$"}
+      grouping: null
+      total:
+        metric: http_requests_total{job="observatorium-ruler-query", handler="query"}
+  target: "99"
+  window: 28d
+status: {}

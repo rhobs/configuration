@@ -204,76 +204,6 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: RHOBS_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client_id
-                name: ${RHOBS_RELOADER_SECRET_NAME}
-          - name: OSD_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${OSD_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM-STAGING_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}
-                optional: true
-          - name: APPSRE_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${APPSRE_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHTAP_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${RHTAP_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHOBS_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client_secret
-                name: ${RHOBS_RELOADER_SECRET_NAME}
-          - name: OSD_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${OSD_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM-STAGING_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}
-                optional: true
-          - name: APPSRE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${APPSRE_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHTAP_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${RHTAP_RELOADER_SECRET_NAME}
-                optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: obsctl-reloader
@@ -303,6 +233,14 @@ objects:
     resources:
     - alertingrules
     - recordingrules
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - secrets
     verbs:
     - get
     - list

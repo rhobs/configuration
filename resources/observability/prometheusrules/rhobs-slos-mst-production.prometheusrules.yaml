@@ -35,7 +35,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-write-availability-slo
   - interval: 30s
     name: api-metrics-write-availability-slo
@@ -229,7 +229,7 @@ spec:
         handler: query
         job: observatorium-observatorium-mst-api
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-query-availability-slo
   - interval: 30s
     name: api-metrics-query-availability-slo
@@ -423,7 +423,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-query-range-availability-slo
   - interval: 30s
     name: api-metrics-query-range-availability-slo
@@ -619,7 +619,7 @@ spec:
         job: observatorium-observatorium-mst-api
         method: PUT
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-rules-raw-write-availability-slo
   - interval: 30s
     name: api-rules-raw-write-availability-slo
@@ -826,7 +826,7 @@ spec:
         job: observatorium-observatorium-mst-api
         method: GET
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-rules-raw-read-availability-slo
   - interval: 30s
     name: api-rules-raw-read-availability-slo
@@ -1033,7 +1033,7 @@ spec:
         job: observatorium-observatorium-mst-api
         method: GET
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-rules-read-availability-slo
   - interval: 30s
     name: api-rules-read-availability-slo
@@ -1236,7 +1236,7 @@ spec:
       labels:
         namespace: observatorium-mst-production
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-rules-sync-availability-slo
   - interval: 30s
     name: api-rules-sync-availability-slo
@@ -1419,7 +1419,7 @@ spec:
       labels:
         namespace: observatorium-mst-production
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-alerting-availability-slo
   - interval: 30s
     name: api-alerting-availability-slo
@@ -1594,7 +1594,7 @@ spec:
       labels:
         namespace: observatorium-mst-production
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-alerting-notif-availability-slo
   - interval: 30s
     name: api-alerting-notif-availability-slo
@@ -1775,7 +1775,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-write-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -1791,7 +1791,7 @@ spec:
         handler: receive
         job: observatorium-observatorium-mst-api
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-write-latency-slo
   - interval: 30s
     name: api-metrics-write-latency-slo
@@ -1998,7 +1998,7 @@ spec:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-read-1M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -2013,7 +2013,7 @@ spec:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-read-1M-latency-slo
   - interval: 30s
     name: api-metrics-read-1M-latency-slo
@@ -2209,7 +2209,7 @@ spec:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-read-10M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -2224,7 +2224,7 @@ spec:
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-read-10M-latency-slo
   - interval: 30s
     name: api-metrics-read-10M-latency-slo
@@ -2420,7 +2420,7 @@ spec:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-read-100M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -2435,7 +2435,7 @@ spec:
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-read-100M-latency-slo
   - interval: 30s
     name: api-metrics-read-100M-latency-slo

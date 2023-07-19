@@ -735,8 +735,15 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 	// We do not want to page on SLO alerts until we're comfortable with how frequently
 	// they fire.
 	// Ticket: https://issues.redhat.com/browse/RHOBS-781
+	// We also do not want to send noise to app-sre Slack when the SLOMetricAbsent alert
+	// fires, as the metrics we use for the SLOs are sometimes unitialized for a long time.
+	// For example, some SLOS on API endpoints with low traffic sometimes trigger this.
 	for i := range grp {
 		for j := range grp[i].Rules {
+			if grp[i].Rules[j].Alert == "SLOMetricAbsent" {
+				grp[i].Rules[j].Labels["severity"] = "medium"
+				continue
+			}
 			if v, ok := grp[i].Rules[j].Labels["severity"]; ok {
 				if v == "critical" {
 					grp[i].Rules[j].Labels["severity"] = "high"

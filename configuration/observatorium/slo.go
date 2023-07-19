@@ -297,6 +297,20 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				alertName:           "APIMetricsWriteAvailabilityErrorBudgetBurning",
 				sloType:             sloTypeAvailability,
 			},
+			// Queriers are deployed as separate instances for adhoc and rule queries.
+			// The read availability SLO is split to reflect this deployment topology.
+			{
+				name: "api-metrics-rule-query-availability-slo",
+				labels: map[string]string{
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
+				},
+				description:         "API /query handler endpoint for rules evaluation is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"observatorium-ruler-query\", handler=\"query\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"observatorium-ruler-query\", handler=\"query\"}",
+				alertName:           "APIMetricsRulerQueryAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
 			{
 				name: "api-metrics-query-availability-slo",
 				labels: map[string]string{
@@ -405,6 +419,44 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
 				totalExpr:           "http_request_duration_seconds_count{job=\"" + apiJobSelector[envName] + "\", handler=\"receive\", group=\"metricsv1\", code=~\"^2..$\"}",
 				alertName:           "APIMetricsWriteLatencyErrorBudgetBurning",
+				sloType:             sloTypeLatency,
+			},
+			// Queriers are deployed as separate instances for adhoc and rule queries.
+			// The read latencies SLO are split to reflect this deployment topology.
+			{
+				name: "api-metrics-rule-read-1M-latency-slo",
+				labels: map[string]string{
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
+				},
+				description:         "API /query endpoint for rules evaluation is burning too much error budget for 1M samples, to guarantee latency SLOs.",
+				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"rule-query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\", le=\"10\"}",
+				totalExpr:           "up_custom_query_duration_seconds_count{query=\"rule-query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\"}",
+				alertName:           "APIMetricsRuleReadLatency1MErrorBudgetBurning",
+				sloType:             sloTypeLatency,
+			},
+			{
+				name: "api-metrics-rule-read-10M-latency-slo",
+				labels: map[string]string{
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
+				},
+				description:         "API /query endpoint for rules evaluation is burning too much error budget for 100M samples, to guarantee latency SLOs.",
+				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"rule-query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\", le=\"30\"}",
+				totalExpr:           "up_custom_query_duration_seconds_count{query=\"rule-query-path-sli-10M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\"}",
+				alertName:           "APIMetricsRuleReadLatency10MErrorBudgetBurning",
+				sloType:             sloTypeLatency,
+			},
+			{
+				name: "api-metrics-rule-read-100M-latency-slo",
+				labels: map[string]string{
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
+				},
+				description:         "API /query endpoint for rules evaluation is burning too much error budget for 100M samples, to guarantee latency SLOs.",
+				successOrErrorsExpr: "up_custom_query_duration_seconds_bucket{query=\"rule-query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\", le=\"120\"}",
+				totalExpr:           "up_custom_query_duration_seconds_count{query=\"rule-query-path-sli-1M-samples\", namespace=\"" + upNS[envName] + "\", http_code=~\"^2..$\"}",
+				alertName:           "APIMetricsRulenReadLatency100MErrorBudgetBurning",
 				sloType:             sloTypeLatency,
 			},
 			{

@@ -204,76 +204,6 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: RHOBS_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client_id
-                name: ${RHOBS_RELOADER_SECRET_NAME}
-          - name: OSD_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${OSD_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM-STAGING_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}
-                optional: true
-          - name: APPSRE_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${APPSRE_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHTAP_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                key: client-id
-                name: ${RHTAP_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHOBS_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client_secret
-                name: ${RHOBS_RELOADER_SECRET_NAME}
-          - name: OSD_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${OSD_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM-STAGING_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${HYPERSHIFT_PLATFORM_STAGING_RELOADER_SECRET_NAME}
-                optional: true
-          - name: HYPERSHIFT-PLATFORM_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME}
-                optional: true
-          - name: APPSRE_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${APPSRE_RELOADER_SECRET_NAME}
-                optional: true
-          - name: RHTAP_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                key: client-secret
-                name: ${RHTAP_RELOADER_SECRET_NAME}
-                optional: true
           image: ${OBSCTL_RELOADER_IMAGE}:${OBSCTL_RELOADER_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: obsctl-reloader
@@ -303,6 +233,14 @@ objects:
     resources:
     - alertingrules
     - recordingrules
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - secrets
     verbs:
     - get
     - list
@@ -650,6 +588,118 @@ objects:
         - configMap:
             name: observatorium-observatorium-up
           name: query-config
+- apiVersion: v1
+  data:
+    queries.yaml: |-
+      "queries":
+      - "name": "rule-query-path-sli-1M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[1h])"
+      - "name": "rule-query-path-sli-10M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[10h])"
+      - "name": "rule-query-path-sli-100M-samples"
+        "query": "avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=\"0fc2b00e-201b-4c17-b9f2-19d91adc4fd2\"}[100h])"
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2022-03-24-098c31a
+    name: observatorium-observatorium-up-ruler
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2022-03-24-098c31a
+    name: observatorium-observatorium-up-ruler
+  spec:
+    replicas: ${{UP_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: blackbox-prober
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: observatorium-up
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: master-2022-03-24-098c31a
+      spec:
+        containers:
+        - args:
+          - --duration=0
+          - --log.level=debug
+          - --endpoint-type=metrics
+          - --queries-file=/etc/up/queries.yaml
+          - --endpoint-read=http://observatorium-ruler-query.${OBSERVATORIUM_METRICS_NAMESPACE}.svc:9090
+          image: quay.io/observatorium/up:master-2022-03-24-098c31a
+          name: observatorium-up
+          ports:
+          - containerPort: 8080
+            name: http
+          resources:
+            limits:
+              cpu: ${UP_CPU_LIMIT}
+              memory: ${UP_MEMORY_LIMIT}
+            requests:
+              cpu: ${UP_CPU_REQUEST}
+              memory: ${UP_MEMORY_REQUEST}
+          volumeMounts:
+          - mountPath: /etc/up/
+            name: query-config
+            readOnly: false
+        volumes:
+        - configMap:
+            name: observatorium-observatorium-up-ruler
+          name: query-config
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: master-2022-03-24-098c31a
+    name: observatorium-observatorium-up-ruler
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    labels:
+      prometheus: app-sre
+    name: observatorium-up-ruler
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:

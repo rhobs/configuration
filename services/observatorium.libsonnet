@@ -659,6 +659,59 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     },
   },
 
+  upRuler:: up({
+    local cfg = self,
+    name: obs.config.name + '-' + cfg.commonLabels['app.kubernetes.io/name'] + '-' + 'ruler',
+    namespace: obs.config.namespaces.default,
+    commonLabels+:: obs.config.commonLabels,
+    version: 'master-2022-03-24-098c31a',
+    image: 'quay.io/observatorium/up:' + cfg.version,
+    replicas: 1,
+    endpointType: 'metrics',
+    readEndpoint: 'http://%s.%s.svc:9090' % [obs.thanos.rulerQuery.service.metadata.name, obs.config.namespaces.metrics],
+    queryConfig: (import '../configuration/observatorium/queries-ruler.libsonnet'),
+    serviceMonitor: true,
+    resources: {
+      requests: {
+        cpu: '${UP_CPU_REQUEST}',
+        memory: '${UP_MEMORY_REQUEST}',
+      },
+      limits: {
+        cpu: '${UP_CPU_LIMIT}',
+        memory: '${UP_MEMORY_LIMIT}',
+      },
+    },
+  }) {
+    deployment+: {
+      spec+: {
+        replicas: '${{UP_REPLICAS}}',
+      },
+    },
+    serviceMonitor+: {
+      metadata+: {
+        name: 'observatorium-up-ruler',
+        labels+: {
+          prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
+        },
+      },
+      spec+: {
+        namespaceSelector: {
+          // NOTICE:
+          // When using the ${{PARAMETER_NAME}} syntax only a single parameter reference is allowed and leading/trailing characters are not permitted.
+          // The resulting value will be unquoted unless, after substitution is performed, the result is not a valid json object.
+          // If the result is not a valid json value, the resulting value will be quoted and treated as a standard string.
+          matchNames: '${{NAMESPACES}}',
+        },
+      },
+    },
+    configmap+: {
+      metadata+: {
+        annotations+: { 'qontract.recycle': 'true' },
+      },
+    },
+  },
+
 
   avalanche:: {
 
@@ -717,6 +770,10 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     ['observatorium-up-' + name]: obs.up[name]
     for name in std.objectFields(obs.up)
     if obs.up[name] != null
+  } + {
+    ['observatorium-up-ruler-' + name]: obs.upRuler[name]
+    for name in std.objectFields(obs.upRuler)
+    if obs.upRuler[name] != null
   } + {
     ['observatorium-cache-' + name]: obs.memcached[name]
     for name in std.objectFields(obs.memcached)

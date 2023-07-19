@@ -440,7 +440,7 @@ function(instanceName, environment, dashboardName) {
       'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",group="metricsv1",handler=~"receive"}[28d]))' % instance.apiJob,
       3
     ) +
-    titleRow('API > Metrics Read > Availability') +
+    titleRow('API > Metrics Read > Ad Hoc > Availability') +
     availabilityRow(
       '99.5% of valid /query requests return successfully',
       0.995,
@@ -455,7 +455,7 @@ function(instanceName, environment, dashboardName) {
       'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code!~"4.+"}[28d]))' % instance.apiJob,
       5
     ) +
-    titleRow('API > Metrics Read > Latency') +
+    titleRow('API > Metrics Read > Ad Hoc > Latency') +
     latencyRow(
       '90% of valid requests that process 1M samples return < 10s',
       0.9,
@@ -481,6 +481,42 @@ function(instanceName, environment, dashboardName) {
       'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples",le="120"}[28d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples"}[1d])' % instance.upNamespace,
       'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
+      8
+    ) +
+    titleRow('API > Metrics Read > Rule > Availability') +
+    availabilityRow(
+      '99.5% of valid /query requests return successfully',
+      0.995,
+      'sum(rate(http_requests_total{job="observatorium-ruler-query",handler="query",code=~"5.+"}[28d]))',
+      'sum(rate(http_requests_total{job="observatorium-ruler-query",handler="query",code!~"4.+"}[28d]))',
+      4
+    ) +
+    titleRow('API > Metrics Read > Rule > Latency') +
+    latencyRow(
+      '90% of valid requests that process 1M samples return < 10s',
+      0.9,
+      10,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-1M-samples",le="10"}[28d]))' % instance.upNamespace,
+      'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-1M-samples"}[1d])' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-1M-samples"}[28d]))' % instance.upNamespace,
+      6
+    ) +
+    latencyRow(
+      '90% of valid requests that process 10M samples return < 30s',
+      0.9,
+      30,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-10M-samples",le="30"}[28d]))' % instance.upNamespace,
+      'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-10M-samples"}[1d])' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-10M-samples"}[28d]))' % instance.upNamespace,
+      7
+    ) +
+    latencyRow(
+      '90% of valid requests that process 100M samples return < 120s',
+      0.9,
+      120,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-100M-samples",le="120"}[28d]))' % instance.upNamespace,
+      'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-100M-samples"}[1d])' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
       8
     ) +
     titleRow('API > Rules Write (/rules/raw) > Availability') +

@@ -985,7 +985,7 @@ spec:
         handler: query
         job: observatorium-ruler-query
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-query-availability-slo
   - interval: 30s
     name: api-metrics-rule-query-availability-slo
@@ -2937,7 +2937,7 @@ spec:
         namespace: observatorium-production
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-read-1M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -2952,7 +2952,7 @@ spec:
         namespace: observatorium-production
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-read-1M-latency-slo
   - interval: 30s
     name: api-metrics-rule-read-1M-latency-slo
@@ -3148,7 +3148,7 @@ spec:
         namespace: observatorium-production
         query: rule-query-path-sli-10M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-read-10M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -3163,7 +3163,7 @@ spec:
         namespace: observatorium-production
         query: rule-query-path-sli-10M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-read-10M-latency-slo
   - interval: 30s
     name: api-metrics-rule-read-10M-latency-slo
@@ -3359,7 +3359,7 @@ spec:
         namespace: observatorium-production
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-read-100M-latency-slo
     - alert: SLOMetricAbsent
       annotations:
@@ -3374,7 +3374,7 @@ spec:
         namespace: observatorium-production
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: high
+        severity: medium
         slo: api-metrics-rule-read-100M-latency-slo
   - interval: 30s
     name: api-metrics-rule-read-100M-latency-slo

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ARTIFACT_DIR="${ARTIFACT_DIR:-/tmp/artifacts}"
-NS=(minio dex observatorium observatorium-metrics telemeter observatorium-logs observatorium-mst observatorium-tools rhelemeter)
+NS=(minio dex observatorium observatorium-metrics telemeter observatorium-mst observatorium-tools observatorium-logs rhelemeter)
 check_status() {
     echo "checking rollout status of $1 inside $2 namespace"
     oc rollout status $1 -n $2 --timeout=5m || {
@@ -92,14 +92,6 @@ rhelemeter() {
         -f ../../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
 }
 
-observatorium_logs() {
-    oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-logs --timeout=5s
-    oc apply --namespace observatorium-logs -f ../deploy/manifests/observatorium-logs-secret.yaml
-    oc process --param-file=env/observatorium-logs.test.ci.env -f \
-        ../../resources/services/observatorium-logs-template.yaml | \
-        oc apply --namespace observatorium-logs -f -
-}
-
 run_test() {
     for ns in "${NS[@]}" ; do
         resources=$(
@@ -118,12 +110,6 @@ run_test() {
     oc wait --for=condition=complete --timeout=5m \
         -n observatorium job/observatorium-up-metrics || {
         must_gather "$ARTIFACT_DIR" 
-        exit 1
-    }
-    oc apply -n observatorium-logs -f manifests/observatorium-up-logs.yaml
-    oc wait --for=condition=complete --timeout=5m \
-        -n observatorium-logs job/observatorium-up-logs || {
-        must_gather "$ARTIFACT_DIR"
         exit 1
     }
 }
@@ -165,7 +151,6 @@ ci.deploy() {
     observatorium_metrics
     telemeter
     rhelemeter
-    observatorium_logs
     observatorium_tools
 }
 

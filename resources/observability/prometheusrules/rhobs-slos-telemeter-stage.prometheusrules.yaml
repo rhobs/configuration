@@ -133,7 +133,7 @@ spec:
         long_burnrate_window: 1d
         route: telemeter-server-upload
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
     - alert: TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning
@@ -150,7 +150,7 @@ spec:
         long_burnrate_window: 4d
         route: telemeter-server-upload
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
   - interval: 30s
@@ -301,7 +301,7 @@ spec:
         long_burnrate_window: 1d
         route: telemeter-server-metrics-v1-receive
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
     - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
@@ -318,7 +318,7 @@ spec:
         long_burnrate_window: 4d
         route: telemeter-server-metrics-v1-receive
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
   - interval: 30s
@@ -511,7 +511,7 @@ spec:
         job: telemeter-server
         long_burnrate_window: 1d
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
     - alert: TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning
@@ -529,7 +529,7 @@ spec:
         job: telemeter-server
         long_burnrate_window: 4d
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
   - interval: 30s
@@ -722,7 +722,7 @@ spec:
         job: telemeter-server
         long_burnrate_window: 1d
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
     - alert: TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
@@ -740,7 +740,7 @@ spec:
         job: telemeter-server
         long_burnrate_window: 4d
         service: telemeter
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
   - interval: 30s
@@ -915,7 +915,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 1d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-write-availability-slo
     - alert: APIMetricsWriteAvailabilityErrorBudgetBurning
@@ -934,7 +934,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 4d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-write-availability-slo
   - interval: 30s
@@ -1097,7 +1097,7 @@ spec:
         job: observatorium-ruler-query
         long_burnrate_window: 1d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-rule-query-availability-slo
     - alert: APIMetricsRulerQueryAvailabilityErrorBudgetBurning
@@ -1115,7 +1115,7 @@ spec:
         job: observatorium-ruler-query
         long_burnrate_window: 4d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-rule-query-availability-slo
   - interval: 30s
@@ -1290,7 +1290,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 1d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-query-availability-slo
     - alert: APIMetricsQueryAvailabilityErrorBudgetBurning
@@ -1309,7 +1309,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 4d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-query-availability-slo
   - interval: 30s
@@ -1484,7 +1484,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 1d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-query-range-availability-slo
     - alert: APIMetricsQueryRangeAvailabilityErrorBudgetBurning
@@ -1503,7 +1503,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 4d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-query-range-availability-slo
   - interval: 30s
@@ -1690,7 +1690,7 @@ spec:
         long_burnrate_window: 1d
         method: PUT
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-rules-raw-write-availability-slo
     - alert: APIRulesRawWriteAvailabilityErrorBudgetBurning
@@ -1710,7 +1710,7 @@ spec:
         long_burnrate_window: 4d
         method: PUT
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-rules-raw-write-availability-slo
   - interval: 30s
@@ -1897,7 +1897,7 @@ spec:
         long_burnrate_window: 1d
         method: GET
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-rules-raw-read-availability-slo
     - alert: APIRulesRawReadAvailabilityErrorBudgetBurning
@@ -1917,7 +1917,7 @@ spec:
         long_burnrate_window: 4d
         method: GET
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-rules-raw-read-availability-slo
   - interval: 30s
@@ -2104,7 +2104,7 @@ spec:
         long_burnrate_window: 1d
         method: GET
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-rules-read-availability-slo
     - alert: APIRulesReadAvailabilityErrorBudgetBurning
@@ -2124,7 +2124,7 @@ spec:
         long_burnrate_window: 4d
         method: GET
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-rules-read-availability-slo
   - interval: 30s
@@ -2291,7 +2291,7 @@ spec:
         long_burnrate_window: 1d
         namespace: observatorium-metrics-stage
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-rules-sync-availability-slo
     - alert: APIRulesSyncAvailabilityErrorBudgetBurning
@@ -2308,7 +2308,7 @@ spec:
         long_burnrate_window: 4d
         namespace: observatorium-metrics-stage
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-rules-sync-availability-slo
   - interval: 30s
@@ -2467,7 +2467,7 @@ spec:
         long_burnrate_window: 1d
         namespace: observatorium-metrics-stage
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-alerting-availability-slo
     - alert: APIAlertmanagerAvailabilityErrorBudgetBurning
@@ -2484,7 +2484,7 @@ spec:
         long_burnrate_window: 4d
         namespace: observatorium-metrics-stage
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-alerting-availability-slo
   - interval: 30s
@@ -2635,7 +2635,7 @@ spec:
         long_burnrate_window: 1d
         namespace: observatorium-metrics-stage
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-alerting-notif-availability-slo
     - alert: APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning
@@ -2652,7 +2652,7 @@ spec:
         long_burnrate_window: 4d
         namespace: observatorium-metrics-stage
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-alerting-notif-availability-slo
   - interval: 30s
@@ -2859,7 +2859,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 1d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-write-latency-slo
     - alert: APIMetricsWriteLatencyErrorBudgetBurning
@@ -2878,7 +2878,7 @@ spec:
         job: observatorium-observatorium-api
         long_burnrate_window: 4d
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-write-latency-slo
   - interval: 30s
@@ -3071,7 +3071,7 @@ spec:
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-rule-read-1M-latency-slo
     - alert: APIMetricsRuleReadLatency1MErrorBudgetBurning
@@ -3089,7 +3089,7 @@ spec:
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-rule-read-1M-latency-slo
   - interval: 30s
@@ -3282,7 +3282,7 @@ spec:
         namespace: observatorium-stage
         query: rule-query-path-sli-10M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-rule-read-10M-latency-slo
     - alert: APIMetricsRuleReadLatency10MErrorBudgetBurning
@@ -3300,7 +3300,7 @@ spec:
         namespace: observatorium-stage
         query: rule-query-path-sli-10M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-rule-read-10M-latency-slo
   - interval: 30s
@@ -3493,7 +3493,7 @@ spec:
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-rule-read-100M-latency-slo
     - alert: APIMetricsRulenReadLatency100MErrorBudgetBurning
@@ -3511,7 +3511,7 @@ spec:
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-rule-read-100M-latency-slo
   - interval: 30s
@@ -3704,7 +3704,7 @@ spec:
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-read-1M-latency-slo
     - alert: APIMetricsReadLatency1MErrorBudgetBurning
@@ -3722,7 +3722,7 @@ spec:
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-read-1M-latency-slo
   - interval: 30s
@@ -3915,7 +3915,7 @@ spec:
         namespace: observatorium-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-read-10M-latency-slo
     - alert: APIMetricsReadLatency10MErrorBudgetBurning
@@ -3933,7 +3933,7 @@ spec:
         namespace: observatorium-stage
         query: query-path-sli-10M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-read-10M-latency-slo
   - interval: 30s
@@ -4126,7 +4126,7 @@ spec:
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-metrics-read-100M-latency-slo
     - alert: APIMetricsReadLatency100MErrorBudgetBurning
@@ -4144,7 +4144,7 @@ spec:
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
         service: observatorium-api
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-metrics-read-100M-latency-slo
   - interval: 30s

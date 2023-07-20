@@ -97,7 +97,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'RHTAP_RELOADER_SECRET_NAME', value: 'observatorium-rhtap' },
     { name: 'LOG_RULES_ENABLED', value: 'true' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
-    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: '7b279a1' },
+    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: '6743d93' },
     { name: 'METRICS_WRITE_SERVICE_NAME', value: obs.thanos.receiversService.metadata.name },
     { name: 'METRICS_WRITE_SERVICE_PORT', value: std.toString(obs.thanos.receiversService.spec.ports[2].port) },
     // AMS Org IDs

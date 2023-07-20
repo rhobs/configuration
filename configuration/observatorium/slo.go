@@ -745,8 +745,11 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 				continue
 			}
 			if v, ok := grp[i].Rules[j].Labels["severity"]; ok {
-				if v == "critical" {
+				switch v {
+				case "critical":
 					grp[i].Rules[j].Labels["severity"] = "high"
+				case "warning":
+					grp[i].Rules[j].Labels["severity"] = "medium"
 				}
 			}
 		}

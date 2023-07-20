@@ -145,7 +145,7 @@ spec:
         handler: push
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-logs-write-availability-slo
     - alert: APILogsPushAvailabilityErrorBudgetBurning
@@ -163,7 +163,7 @@ spec:
         handler: push
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-logs-write-availability-slo
   - interval: 30s
@@ -314,7 +314,7 @@ spec:
         group: logsv1
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-logs-query-availability-slo
     - alert: APILogsQueryAvailabilityErrorBudgetBurning
@@ -331,7 +331,7 @@ spec:
         group: logsv1
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-logs-query-availability-slo
   - interval: 30s
@@ -494,7 +494,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-logs-query-range-availability-slo
     - alert: APILogsQueryRangeAvailabilityErrorBudgetBurning
@@ -512,7 +512,7 @@ spec:
         handler: query_range
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-logs-query-range-availability-slo
   - interval: 30s
@@ -675,7 +675,7 @@ spec:
         handler: tail
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-logs-tail-availability-slo
     - alert: APILogsTailAvailabilityErrorBudgetBurning
@@ -693,7 +693,7 @@ spec:
         handler: tail
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-logs-tail-availability-slo
   - interval: 30s
@@ -856,7 +856,7 @@ spec:
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-logs-prom-tail-availability-slo
     - alert: APILogsPromTailAvailabilityErrorBudgetBurning
@@ -874,7 +874,7 @@ spec:
         handler: prom_tail
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-logs-prom-tail-availability-slo
   - interval: 30s
@@ -1067,7 +1067,7 @@ spec:
         handler: push
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
-        severity: warning
+        severity: medium
         short_burnrate_window: 2h
         slo: api-logs-write-latency-slo
     - alert: APILogsPushLatencyErrorBudgetBurning
@@ -1085,7 +1085,7 @@ spec:
         handler: push
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
-        severity: warning
+        severity: medium
         short_burnrate_window: 6h
         slo: api-logs-write-latency-slo
   - interval: 30s

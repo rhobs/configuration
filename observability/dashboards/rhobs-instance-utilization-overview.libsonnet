@@ -25,7 +25,7 @@ function() {
       current='',
       hide='',
       refresh=2,
-      includeAll=true,
+      includeAll=false,
       sort=1
     ),
   local jobTemplate =
@@ -38,7 +38,7 @@ function() {
       current='',
       hide='',
       refresh=2,
-      includeAll=true,
+      includeAll=false,
       sort=1
     ),
 

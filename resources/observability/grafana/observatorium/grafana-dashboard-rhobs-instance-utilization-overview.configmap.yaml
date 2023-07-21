@@ -8249,7 +8249,7 @@ data:
         },
         "datasource": "$datasource",
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "namespace",
         "multi": false,
         "name": "namespace",

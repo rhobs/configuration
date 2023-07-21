@@ -8276,7 +8276,7 @@ data:
         },
         "datasource": "$datasource",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "job",
         "multi": false,
         "name": "job",

@@ -76,6 +76,7 @@ local dashboards =
   { 'grafana-dashboard-tracing-jaeger.configmap': (import 'dashboards/tracing.libsonnet')(obsDatasource, obsTraces) } +
   { 'grafana-dashboard-rhobs-instance-utilization-overview.configmap': (import 'dashboards/rhobs-instance-utilization-overview.libsonnet')() } +
   { 'grafana-dashboard-rules-objstore.configmap': (import 'dashboards/rules-objstore.libsonnet')() };
+  { 'grafana-dashboard-observatorium-gubernator.configmap': (import 'dashboards/observatorium-gubernator.libsonnet')() };
 {
   [name]: dashboards[name] {
     metadata+: {

@@ -90,25 +90,25 @@ function(datasource, namespace) {
       0,
       1,
     ),
-    // /rules/raw
-    titleRow(createGridPos(1, 24, 0, 24), 136, '/rules/raw', false),
+    // rules
+    titleRow(createGridPos(1, 24, 0, 24), 147, '/rules', false),
     availabilityPanel(
       createGridPos(3, 12, 0, 25),
-      138,
-      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules-raw",le="60",method="PUT",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules-raw"}[28d]))',
+      148,
+      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules",le="60",method="PUT",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules"}[28d]))',
       '0.95,0.96',
       'Availability (write) 60s [28d] > 95%',
     ),
     availabilityPanel(
       createGridPos(3, 12, 12, 25),
-      140,
-      'sum(increase(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules-raw",method="GET",le="60",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules-raw"}[28d]))',
+      149,
+      'sum(increase(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules",method="GET",le="60",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules"}[28d]))',
       '0.90,0.92',
       'Availability (read) 60s [28d] > 90%',
     ),
     redPanel(
       createGridPos(8, 8, 0, 28),
-      142,
+      150,
       seriesOverridesQueryRange,
       true,
       targetsQuery(rulesQuery, legendQuery),
@@ -117,15 +117,60 @@ function(datasource, namespace) {
     ),
     redPanel(
       createGridPos(8, 8, 8, 28),
-      144,
+      151,
       seriesOverridesQueryErrs,
       false,
-      targetsQuery(rulesQueryErr, errLegendQuery),
+      targetsQuery(rulesErrQuery, errLegendQuery),
       'Errors',
       yaxesQueryErr('0', showShort=true),
     ),
     redPanel(
       createGridPos(8, 8, 16, 28),
+      152,
+      seriesOverridesQueryDuration,
+      false,
+      targetsRulesDuration,
+      'Duration',
+      yaxesQueryDuration(true),
+      0,
+      1,
+    ),
+    // /rules/raw
+    titleRow(createGridPos(1, 24, 0, 32), 136, '/rules/raw', false),
+    availabilityPanel(
+      createGridPos(3, 12, 0, 33),
+      138,
+      'sum(rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules-raw",le="60",method="PUT",code!~"5.."}[28d]))\n/\nsum(rate(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules-raw"}[28d]))',
+      '0.95,0.96',
+      'Availability (write) 60s [28d] > 95%',
+    ),
+    availabilityPanel(
+      createGridPos(3, 12, 12, 33),
+      140,
+      'sum(increase(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",handler="rules-raw",method="GET",le="60",code!~"5.."}[28d]))\n/\nsum(increase(http_request_duration_seconds_count{namespace="$namespace", job="$job",handler="rules-raw"}[28d]))',
+      '0.90,0.92',
+      'Availability (read) 60s [28d] > 90%',
+    ),
+    redPanel(
+      createGridPos(8, 8, 0, 36),
+      142,
+      seriesOverridesQueryRange,
+      true,
+      targetsQuery(rulesRawQuery, legendQuery),
+      'Requests',
+      yaxesQuery,
+    ),
+    redPanel(
+      createGridPos(8, 8, 8, 36),
+      144,
+      seriesOverridesQueryErrs,
+      false,
+      targetsQuery(rulesRawErrQuery, errLegendQuery),
+      'Errors',
+      yaxesQueryErr('0', showShort=true),
+    ),
+    redPanel(
+      createGridPos(8, 8, 16, 36),
       146,
       seriesOverridesQueryDuration,
       false,
@@ -136,9 +181,9 @@ function(datasource, namespace) {
       1,
     ),
     // RED for $handler
-    titleRow(createGridPos(1, 24, 0, 36), 130, 'RED for $handler', true),
+    titleRow(createGridPos(1, 24, 0, 44), 130, 'RED for $handler', true),
     redPanel(
-      createGridPos(6, 8, 0, 37),
+      createGridPos(6, 8, 0, 45),
       132,
       seriesOverridesAllQuery,
       true,
@@ -152,7 +197,7 @@ function(datasource, namespace) {
       sVars=true,
     ),
     redPanel(
-      createGridPos(6, 8, 8, 37),
+      createGridPos(6, 8, 8, 45),
       133,
       seriesOverridesAllQueryErrs,
       true,
@@ -165,7 +210,7 @@ function(datasource, namespace) {
       sVars=true,
     ),
     redPanel(
-      createGridPos(6, 8, 16, 37),
+      createGridPos(6, 8, 16, 45),
       134,
       seriesOverridesAllQueryDuration,
       false,
@@ -374,8 +419,10 @@ function(datasource, namespace) {
     '2xx': 'semi-dark-green',
     '5xx': 'semi-dark-red',
   },
-  local rulesQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw"}[5m]))',
-  local rulesQueryErr = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw",code=~"5.."}[5m])) / scalar(sum(rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw"}[5m])))',
+  local rulesQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules"}[5m]))',
+  local rulesErrQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules",code=~"5.."}[5m])) / scalar(sum(rate(http_requests_total{namespace="$namespace", job="$job",handler="rules"}[5m])))',
+  local rulesRawQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw"}[5m]))',
+  local rulesRawErrQuery = 'sum by (code) (rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw",code=~"5.."}[5m])) / scalar(sum(rate(http_requests_total{namespace="$namespace", job="$job",handler="rules-raw"}[5m])))',
 
   local redPanel(gridPos, id, seriesOverrides, stack, targets, title, yaxes, fill=10, lineWidth=0, aliasColors=defaultAliasColors, pointRadius=5, paceLength=true, repeatDirection=true, sVars=false, allHandler=false, text='query_legacy', value='query_legacy', repeatPanelId=132) =
     {
@@ -612,6 +659,29 @@ function(datasource, namespace) {
         refId: 'C',
       },
     ],
+  local targetsRulesDuration = [
+    {
+      expr: 'histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="rules"}[5m])))',
+      format: 'time_series',
+      intervalFactor: 1,
+      legendFormat: '99th',
+      refId: 'A',
+    },
+    {
+      expr: 'histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="rules"}[5m])))',
+      format: 'time_series',
+      intervalFactor: 1,
+      legendFormat: '90th',
+      refId: 'B',
+    },
+    {
+      expr: 'histogram_quantile(0.5, sum by (le) (rate(http_request_duration_seconds_bucket{namespace="$namespace", job="$job",code!~"5..",handler="rules"}[5m])))',
+      format: 'time_series',
+      intervalFactor: 1,
+      legendFormat: '50th',
+      refId: 'C',
+    },
+  ],
   local targetsRulesRawDuration =
     [
       {

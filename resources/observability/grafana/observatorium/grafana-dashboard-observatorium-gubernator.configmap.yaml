@@ -28,6 +28,12 @@ data:
          "dashLength": 10,
          "dashes": false,
          "datasource": "$datasource",
+         "description": "Rate of gRPC requests to the API per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
          "fill": 10,
          "id": 1,
          "legend": {
@@ -53,15 +59,15 @@ data:
 
          ],
          "spaceLength": 10,
-         "span": 12,
+         "span": 3,
          "stack": true,
          "steppedLine": false,
          "targets": [
           {
-           "expr": "rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=\".*/GetRateLimits\"}[$interval])",
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetRateLimits\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "rate of requests",
+           "legendFormat": "{{job}}",
            "legendLink": null,
            "step": 10
           }
@@ -71,7 +77,283 @@ data:
          ],
          "timeFrom": null,
          "timeShift": null,
-         "title": "Rate of requests",
+         "title": "Requests",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of failed gRPC requests to the API per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 2,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetRateLimits\", status=\"failed\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{status}} {{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Latency of gRPC requests to the API per percentiles",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "ms"
+          }
+         },
+         "fill": 10,
+         "id": 3,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetRateLimits\"}) * 1000",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{quantile}}th percentile",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Latencies",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of requests that resulted in rate limiting (over the limit) per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 4,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (rate(gubernator_over_limit_counter{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Over Limit requests rate",
          "tooltip": {
           "shared": false,
           "sort": 0,
@@ -111,7 +393,1547 @@ data:
        "repeatIteration": null,
        "repeatRowId": null,
        "showTitle": true,
-       "title": "gRPC Requests GetRateLimits",
+       "title": "GetRateLimits API",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of gRPC requests to the API per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 5,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 4,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetPeerRateLimits\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Requests",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of failed gRPC requests to the API per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 6,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 4,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetPeerRateLimits\", status=\"failed\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{status}} {{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Latency of gRPC requests to the API per percentiles",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "ms"
+          }
+         },
+         "fill": 10,
+         "id": 7,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 4,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetPeerRateLimits\"}) * 1000",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{quantile}}th percentile",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Latencies",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "GetPeerRateLimits API",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "The getRateLimitsBatch() queue length in PeerClient.  This represents rate checks queued by for batching to a remote peer.",
+         "fieldConfig": {
+          "defaults": {
+           "unit": ""
+          }
+         },
+         "fill": 10,
+         "id": 8,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 6,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (rate(gubernator_queue_length{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "getRateLimitsBatch queue length",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "The number of GetRateLimit requests queued up in GubernatorPool workers.",
+         "fieldConfig": {
+          "defaults": {
+           "unit": ""
+          }
+         },
+         "fill": 10,
+         "id": 9,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 6,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (rate(gubernator_pool_queue_length{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "GetRateLimit queue length",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Queues",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of cache requests per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 10,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Requests",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of cache misses per second",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 11,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (rate(gubernator_cache_access_count{{\"container\": \"container=\\\"gubernator\\\"\", \"job\": \"job=\\\"$job\\\"\", \"ns\": \"namespace=\\\"$namespace\\\"\", \"nsAndJob\": \"namespace=\\\"$namespace\\\", job=\\\"$job\\\"\", \"pod\": \"pod=~\\\"observatorium-gubernator-.*\\\"\"}, type=\"miss\"}[$interval])) / sum by(job) (rate(gubernator_cache_access_count{{\"container\": \"container=\\\"gubernator\\\"\", \"job\": \"job=\\\"$job\\\"\", \"ns\": \"namespace=\\\"$namespace\\\"\", \"nsAndJob\": \"namespace=\\\"$namespace\\\", job=\\\"$job\\\"\", \"pod\": \"pod=~\\\"observatorium-gubernator-.*\\\"\"}}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Misses",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "The number of items in LRU Cache which holds the rate limits.",
+         "fieldConfig": {
+          "defaults": {
+           "unit": ""
+          }
+         },
+         "fill": 10,
+         "id": 12,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (gubernator_cache_size{namespace=\"$namespace\", job=\"$job\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Size",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of cache items which were evicted while unexpired per second.",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "reqps"
+          }
+         },
+         "fill": 10,
+         "id": 13,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by(job) (rate(gubernator_unexpired_evictions_count{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Unexpired evictions",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Cache",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Latency of batch send operations to a remote peer per percentiles",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "ms"
+          }
+         },
+         "fill": 10,
+         "id": 14,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 4,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "avg by(quantile, job) (gubernator_batch_send_duration{namespace=\"$namespace\", job=\"$job\"}) * 1000",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{quantile}}th percentile",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Batch",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Latency of of GLOBAL broadcasts to peers per percentiles",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "ms"
+          }
+         },
+         "fill": 10,
+         "id": 15,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 4,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "avg by(quantile, job) (gubernator_broadcast_durations{namespace=\"$namespace\", job=\"$job\"}) * 1000",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{quantile}}th percentile {{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Broadcast",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Latency of of GLOBAL async sends per percentiles",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "ms"
+          }
+         },
+         "fill": 10,
+         "id": 16,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 4,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "avg by(quantile, job) (gubernator_async_durations{namespace=\"$namespace\", job=\"$job\"}) * 1000",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{quantile}}th percentile {{job}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Async",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Other latencies",
+       "titleSize": "h6"
+      },
+      {
+       "collapse": false,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Memory usage of the Gubernator process",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "MiB"
+          }
+         },
+         "fill": 10,
+         "id": 17,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "(container_memory_working_set_bytes{container=\"gubernator\", pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\") / 1024^2",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "memory usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Memory Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "CPU usage of the Gubernator process",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "percent"
+          }
+         },
+         "fill": 10,
+         "id": 18,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "rate(process_cpu_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"}[$interval]) * 100",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "cpu usage system {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "CPU Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Number of times the pod/container has restarted",
+         "fieldConfig": {
+          "defaults": {
+           "unit": ""
+          }
+         },
+         "fill": 10,
+         "id": 19,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"gubernator\", pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"})",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "pod restart count {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Pod/Container Restarts",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Network usage of the Gubernator process",
+         "fieldConfig": {
+          "defaults": {
+           "unit": "binBps"
+          }
+         },
+         "fill": 10,
+         "id": 20,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "span": 3,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic in {{pod}}",
+           "legendLink": null,
+           "step": 10
+          },
+          {
+           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"}[$interval]))",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "network traffic out {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Network Usage",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Resources usage",
        "titleSize": "h6"
       }
      ],
@@ -196,7 +2018,7 @@ data:
         "options": [
 
         ],
-        "query": "label_values(up{namespace=\"$namespace\", job=~\"observatorium-gubernator.*\"}, job)",
+        "query": "label_values(up{namespace=\"$namespace\", job=\"observatorium-gubernator\"}, job)",
         "refresh": 2,
         "regex": "",
         "sort": 1,

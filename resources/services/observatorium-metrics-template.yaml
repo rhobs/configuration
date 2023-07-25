@@ -149,6 +149,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           - ${THANOS_COMPACTOR_RETENTION_DISABLE_DOWNSAMPLING}
@@ -588,6 +594,12 @@ objects:
           - --query.max-concurrent=${THANOS_RULER_QUERIER_MAX_CONCURRENT}
           - |-
             --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
               "options":
                 "decision":
                   "log_end": true
@@ -1190,6 +1202,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           env:
@@ -1518,6 +1536,12 @@ objects:
           - --cache-compression-type=snappy
           - |-
             --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
               "options":
                 "decision":
                   "log_end": true
@@ -1858,6 +1882,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           env:
@@ -2122,6 +2152,12 @@ objects:
           - --receive.hashrings-file-refresh-interval=5s
           - |-
             --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
               "options":
                 "decision":
                   "log_end": true
@@ -2611,6 +2647,12 @@ objects:
             "type": "JAEGER"
           - |-
             --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
               "options":
                 "decision":
                   "log_end": true
@@ -3197,6 +3239,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           env:
@@ -3458,6 +3506,12 @@ objects:
           - --max-time=${THANOS_STORE_MAX_TIME}
           - |-
             --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
               "options":
                 "decision":
                   "log_end": true
@@ -3725,6 +3779,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           env:
@@ -3986,6 +4046,12 @@ objects:
           - --max-time=${THANOS_STORE_MAX_TIME}
           - |-
             --request.logging-config="grpc":
+              "options":
+                "decision":
+                  "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
               "options":
                 "decision":
                   "log_end": true
@@ -4253,6 +4319,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           env:
@@ -4517,6 +4589,12 @@ objects:
               "options":
                 "decision":
                   "log_end": true
+                  "log_start": false
+                "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
+            "http":
+              "options":
+                "decision":
+                  "log_end": true
                   "log_start": true
                 "level": "${THANOS_REQUEST_LOGGING_LEVEL}"
           env:
@@ -4738,7 +4816,7 @@ parameters:
 - name: THANOS_COMPACTOR_CPU_REQUEST
   value: 100m
 - name: THANOS_COMPACTOR_LOG_LEVEL
-  value: info
+  value: debug
 - name: THANOS_COMPACTOR_RETENTION_RESOLUTION_RAW
   value: 14d
 - name: THANOS_COMPACTOR_RETENTION_RESOLUTION_FIVE_MINUTES
@@ -4766,7 +4844,7 @@ parameters:
 - name: THANOS_QUERIER_CPU_REQUEST
   value: 100m
 - name: THANOS_QUERIER_LOG_LEVEL
-  value: info
+  value: debug
 - name: THANOS_QUERIER_MEMORY_LIMIT
   value: 1Gi
 - name: THANOS_QUERIER_MEMORY_REQUEST
@@ -4822,7 +4900,7 @@ parameters:
 - name: THANOS_RECEIVE_DEBUG_ENV
   value: ""
 - name: THANOS_RECEIVE_LOG_LEVEL
-  value: info
+  value: debug
 - name: THANOS_RECEIVE_MEMORY_LIMIT
   value: 1Gi
 - name: THANOS_RECEIVE_MEMORY_REQUEST
@@ -4850,7 +4928,7 @@ parameters:
 - name: THANOS_RULER_CPU_REQUEST
   value: 500m
 - name: THANOS_RULER_LOG_LEVEL
-  value: info
+  value: debug
 - name: THANOS_RULER_MEMORY_LIMIT
   value: 4Gi
 - name: THANOS_RULER_MEMORY_REQUEST
@@ -4918,7 +4996,7 @@ parameters:
 - name: THANOS_STORE_INDEX_CACHE_REPLICAS
   value: "3"
 - name: THANOS_STORE_LOG_LEVEL
-  value: info
+  value: debug
 - name: THANOS_STORE_MEMORY_LIMIT
   value: 8Gi
 - name: THANOS_STORE_MEMORY_REQUEST
@@ -4946,4 +5024,4 @@ parameters:
 - name: THANOS_VOLCANO_MEMORY_REQUEST
   value: 256Mi
 - name: THANOS_REQUEST_LOGGING_LEVEL
-  value: INFO
+  value: DEBUG

@@ -11,6 +11,15 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
       options: {
         level: '${THANOS_REQUEST_LOGGING_LEVEL}',
         decision: {
+          log_start: false,
+          log_end: true,
+        },
+      },
+    },
+    http: {
+      options: {
+        level: '${THANOS_REQUEST_LOGGING_LEVEL}',
+        decision: {
           log_start: true,
           log_end: true,
         },

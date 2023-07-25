@@ -346,6 +346,11 @@ objects:
                             expr:
                               description: The LogQL expression to evaluate. Every evaluation cycle this is evaluated at the current time, and all resultant time series become pending/firing alerts.
                               type: string
+                            labels:
+                              additionalProperties:
+                                type: string
+                              description: Labels to add to each recording rule.
+                              type: object
                             record:
                               description: The name of the time series to output to. Must be a valid metric name.
                               type: string

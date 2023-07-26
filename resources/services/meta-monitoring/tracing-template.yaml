@@ -14,6 +14,14 @@ parameters:
   - name: S3_ACCESS_KEY_ID
   - name: S3_SECRET_ACCESS_KEY
   - name: S3_BUCKET_NAME
+  - name: OTELCOL_LIMIT_CHECK_INTERVAL
+    value: "1s"
+  - name: OTELCOL_LIMIT_PERCENTAGE
+    value: "80"
+  - name: OTELCOL_LIMIT_SPIKE_PERCENTAGE
+    value: "50"
+  - name: OTELCOL_REPLICAS
+    value: "1"
   - name: S3_BUCKET_ENDPOINT
     value: s3.us-east-1.amazonaws.com
   - name: TEMPO_STORAGE_SECRET_NAME
@@ -56,12 +64,42 @@ objects:
   - apiVersion: v1
     kind: ServiceAccount
     metadata:
-      name: rhobs-tempo-traces-reader
+      name: rhobs-tempo-trace-reader
       namespace: ${NAMESPACE}
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:
-      name: rhobs-tracecollector-tempostack-tracing
+      name: rhobs-trace-reader-tempostack-tracing
+    rules:
+      - apiGroups:
+          - 'tempo.grafana.com'
+        resources:
+          - application
+        resourceNames:
+          - traces
+        verbs:
+          - 'get'
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: rhobs-trace-reader-tempostack-tracing
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: rhobs-trace-reader-tempostack-tracing
+    subjects:
+      - kind: ServiceAccount
+        name: rhobs-tempo-trace-reader
+        namespace: ${NAMESPACE}
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: rhobs-tempo-trace-writer
+      namespace: ${NAMESPACE}
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: rhobs-trace-writer-tempostack-tracing
     rules:
       - apiGroups:
           - 'tempo.grafana.com'
@@ -71,16 +109,139 @@ objects:
           - traces
         verbs:
           - 'create'
-          - 'get'
   - apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRoleBinding
     metadata:
-      name: rhobs-tracecollector-tempostack-tracing
+      name: rhobs-trace-writer-tempostack-tracing
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: ClusterRole
-      name: rhobs-tracecollector-tempostack-tracing
+      name: rhobs-trace-writer-tempostack-tracing
     subjects:
       - kind: ServiceAccount
-        name: tracecollector
+        name: rhobs-tempo-trace-writer
         namespace: ${NAMESPACE}
+        # ClusterRole for the resourcedetection processor
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: otel-collector-resource-detection
+    rules:
+      - apiGroups:
+          - 'config.openshift.io'
+        resources:
+          - 'infrastructures'
+          - 'infrastructures/status'
+        verbs:
+          - 'get'
+          - 'watch'
+          - 'list'
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: otel-collector-resource-detection
+    roleRef:
+      kind: ClusterRole
+      name: otel-collector-resource-detection
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: rhobs-tempo-trace-writer
+        namespace: ${NAMESPACE}
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: otel-collector-k8sattributesprocessor
+    rules:
+      - apiGroups: [""]
+        resources: ["pods", "namespaces"]
+        verbs: ["get", "watch", "list"]
+      - apiGroups: ["apps"]
+        resources: ["replicasets"]
+        verbs: ["get", "list", "watch"]
+      - apiGroups: ["extensions"]
+        resources: ["replicasets"]
+        verbs: ["get", "list", "watch"]
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: otel-collector-k8sattributesprocessor
+    roleRef:
+      kind: ClusterRole
+      name: otel-collector-k8sattributesprocessor
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: rhobs-tempo-trace-writer
+        namespace: ${NAMESPACE}
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: ${NAMESPACE}
+      annotations:
+        service.beta.openshift.io/inject-cabundle: "true"
+      name: otelcol-cabundle
+  - apiVersion: opentelemetry.io/v1alpha1
+    kind: OpenTelemetryCollector
+    metadata:
+      name: otel-trace-writer
+      namespace: ${NAMESPACE}
+    spec:
+      serviceAccount: rhobs-tempo-trace-writer
+      replicas: ${{OTELCOL_REPLICAS}}
+      volumeMounts:
+        - mountPath: /etc/pki/ca-trust/source/service-ca
+          name: cabundle-volume
+      volumes:
+        - configMap:
+            name: otelcol-cabundle
+          name: cabundle-volume
+      config: |
+          extensions:
+            bearertokenauth:
+              filename: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+
+          receivers:
+            otlp:
+              protocols:
+                grpc:
+            jaeger:
+              protocols:
+                thrift_binary:
+                thrift_compact:
+                thrift_http:
+                grpc:
+
+          processors:
+            k8sattributes:
+              # Allows automatic setting of spans, metrics and logs resource attributes with k8s metadata.
+              # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor
+            memory_limiter:
+              # Prevents out of memory situations on the collector
+              # https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/memorylimiterprocessor
+              check_interval: ${OTELCOL_LIMIT_CHECK_INTERVAL}
+              limit_percentage: ${OTELCOL_LIMIT_PERCENTAGE}
+              spike_limit_percentage: ${OTELCOL_LIMIT_SPIKE_PERCENTAGE}
+            resourcedetection:
+              # Adds information detected from the host to the traces
+              # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor
+              detectors: [openshift]
+
+          exporters:
+            # Export the application tenant traces to a Tempo instance
+            otlp/application:
+              endpoint: tempo-observatorium-tempostack-gateway.${NAMESPACE}.svc:8090
+              tls:
+                insecure: false
+                ca_file: "/etc/pki/ca-trust/source/service-ca/service-ca.crt"
+              auth:
+                authenticator: bearertokenauth
+              headers:
+                X-Scope-OrgID: "application"
+          service:
+            extensions: [bearertokenauth]
+            pipelines:
+              traces:
+                receivers: [otlp, jaeger]
+                processors: [memory_limiter, k8sattributes, resourcedetection]
+                exporters: [otlp/application]

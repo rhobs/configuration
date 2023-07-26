@@ -2,16 +2,16 @@ local g = import 'github.com/grafana/jsonnet-libs/grafana-builder/grafana.libson
 local template = import 'grafonnet/template.libsonnet';
 
 function() {
-  local panel(title, description='', unit='reqps') =
+  local panel(title, description='', unit='short') =
     g.panel(title) {
       description: description,
-      fieldConfig: {
-        defaults: {
-          unit: unit,
-        },
-      },
+      fill: 1,
+      fillGradient: 0,
+      linewidth: 1,
       span: 0,
-    } + g.stack,
+      stack: true,
+      yaxes: g.yaxes(unit),
+    },
 
   local datasourcesRegex = '/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/',
   local labelMatchers = {
@@ -31,7 +31,7 @@ function() {
 
   dashboard:: {
     data:
-      g.dashboard('Observatorium / Gubernator')
+      g.dashboard('Observatorium - Gubernator')
       .addTemplate('namespace', 'gubernator_check_counter', 'namespace')
       .addRow(
         g.row('GetRateLimits API')

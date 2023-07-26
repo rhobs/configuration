@@ -29,12 +29,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of gRPC requests to the API per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 1,
          "legend": {
           "avg": false,
@@ -46,7 +42,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -95,7 +91,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -121,12 +117,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of failed gRPC requests to the API per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 2,
          "legend": {
           "avg": false,
@@ -138,7 +130,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -187,7 +179,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -213,12 +205,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Latency of gRPC requests to the API per percentiles",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "ms"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 3,
          "legend": {
           "avg": false,
@@ -230,7 +218,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -279,7 +267,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "ms",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -305,12 +293,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of requests that resulted in rate limiting (over the limit) per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 4,
          "legend": {
           "avg": false,
@@ -322,7 +306,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -371,7 +355,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -409,12 +393,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of gRPC requests to the API per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 5,
          "legend": {
           "avg": false,
@@ -426,7 +406,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -475,7 +455,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -501,12 +481,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of failed gRPC requests to the API per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 6,
          "legend": {
           "avg": false,
@@ -518,7 +494,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -567,7 +543,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -593,12 +569,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Latency of gRPC requests to the API per percentiles",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "ms"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 7,
          "legend": {
           "avg": false,
@@ -610,7 +582,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -659,7 +631,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "ms",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -697,12 +669,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "The getRateLimitsBatch() queue length in PeerClient.  This represents rate checks queued by for batching to a remote peer.",
-         "fieldConfig": {
-          "defaults": {
-           "unit": ""
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 8,
          "legend": {
           "avg": false,
@@ -714,7 +682,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -763,7 +731,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -789,12 +757,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "The number of GetRateLimit requests queued up in GubernatorPool workers.",
-         "fieldConfig": {
-          "defaults": {
-           "unit": ""
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 9,
          "legend": {
           "avg": false,
@@ -806,7 +770,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -855,7 +819,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -893,12 +857,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of cache requests per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 10,
          "legend": {
           "avg": false,
@@ -910,7 +870,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -959,7 +919,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -985,12 +945,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of cache misses per second",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 11,
          "legend": {
           "avg": false,
@@ -1002,7 +958,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1051,7 +1007,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1077,12 +1033,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "The number of items in LRU Cache which holds the rate limits.",
-         "fieldConfig": {
-          "defaults": {
-           "unit": ""
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 12,
          "legend": {
           "avg": false,
@@ -1094,7 +1046,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1143,7 +1095,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1169,12 +1121,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Rate of cache items which were evicted while unexpired per second.",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "reqps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 13,
          "legend": {
           "avg": false,
@@ -1186,7 +1134,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1235,7 +1183,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "reqps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1273,12 +1221,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Latency of batch send operations to a remote peer per percentiles",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "ms"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 14,
          "legend": {
           "avg": false,
@@ -1290,7 +1234,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1339,7 +1283,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "ms",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1365,12 +1309,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Latency of of GLOBAL broadcasts to peers per percentiles",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "ms"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 15,
          "legend": {
           "avg": false,
@@ -1382,7 +1322,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1431,7 +1371,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "ms",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1457,12 +1397,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Latency of of GLOBAL async sends per percentiles",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "ms"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 16,
          "legend": {
           "avg": false,
@@ -1474,7 +1410,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1523,7 +1459,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "ms",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1561,12 +1497,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Memory usage of the Gubernator process",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "MiB"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 17,
          "legend": {
           "avg": false,
@@ -1578,7 +1510,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1627,7 +1559,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "MiB",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1653,12 +1585,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "CPU usage of the Gubernator process",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "percent"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 18,
          "legend": {
           "avg": false,
@@ -1670,7 +1598,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1719,7 +1647,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "percent",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1745,12 +1673,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Number of times the pod/container has restarted",
-         "fieldConfig": {
-          "defaults": {
-           "unit": ""
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 19,
          "legend": {
           "avg": false,
@@ -1762,7 +1686,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1811,7 +1735,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -1837,12 +1761,8 @@ data:
          "dashes": false,
          "datasource": "$datasource",
          "description": "Network usage of the Gubernator process",
-         "fieldConfig": {
-          "defaults": {
-           "unit": "binBps"
-          }
-         },
-         "fill": 10,
+         "fill": 1,
+         "fillGradient": 0,
          "id": 20,
          "legend": {
           "avg": false,
@@ -1854,7 +1774,7 @@ data:
           "values": false
          },
          "lines": true,
-         "linewidth": 0,
+         "linewidth": 1,
          "links": [
 
          ],
@@ -1911,7 +1831,7 @@ data:
          },
          "yaxes": [
           {
-           "format": "short",
+           "format": "binBps",
            "label": null,
            "logBase": 1,
            "max": null,
@@ -2034,7 +1954,7 @@ data:
       ]
      },
      "timezone": "utc",
-     "title": "Observatorium / Gubernator",
+     "title": "Observatorium - Gubernator",
      "uid": "",
      "version": 0
     }

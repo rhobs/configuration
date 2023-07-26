@@ -149,14 +149,14 @@ function() {
           panel('Broadcast', 'Latency of of GLOBAL broadcasts to peers per percentiles', 'ms') +
           g.queryPanel(
             'avg by(quantile, job) (gubernator_broadcast_durations{%(nsAndJob)s}) * 1000' % labelMatchers,
-            '{{quantile}}th percentile {{job}}',
+            '{{quantile}}th percentile',
           )
         )
         .addPanel(
           panel('Async', 'Latency of of GLOBAL async sends per percentiles', 'ms') +
           g.queryPanel(
             'avg by(quantile, job) (gubernator_async_durations{%(nsAndJob)s}) * 1000' % labelMatchers,
-            '{{quantile}}th percentile {{job}}',
+            '{{quantile}}th percentile',
           )
         )
       )

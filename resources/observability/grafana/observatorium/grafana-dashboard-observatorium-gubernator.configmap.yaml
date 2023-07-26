@@ -1343,7 +1343,7 @@ data:
            "expr": "avg by(quantile, job) (gubernator_broadcast_durations{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "{{quantile}}th percentile {{job}}",
+           "legendFormat": "{{quantile}}th percentile",
            "legendLink": null,
            "step": 10
           }
@@ -1431,7 +1431,7 @@ data:
            "expr": "avg by(quantile, job) (gubernator_async_durations{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
-           "legendFormat": "{{quantile}}th percentile {{job}}",
+           "legendFormat": "{{quantile}}th percentile",
            "legendLink": null,
            "step": 10
           }

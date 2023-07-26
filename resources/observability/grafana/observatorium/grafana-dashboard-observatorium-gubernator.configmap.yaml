@@ -1616,7 +1616,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "rate(process_cpu_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]) * 100",
+           "expr": "rate(container_cpu_usage_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",

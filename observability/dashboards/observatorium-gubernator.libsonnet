@@ -172,7 +172,7 @@ function() {
         .addPanel(
           panel('CPU Usage', 'CPU usage of the Gubernator process', 'percent') +
           g.queryPanel(
-            'rate(process_cpu_seconds_total{%(container)s, %(pod)s, %(ns)s}[$interval]) * 100' % labelMatchers,
+            'rate(container_cpu_usage_seconds_total{%(container)s, %(pod)s, %(ns)s}[$interval]) * 100' % labelMatchers,
             'cpu usage system {{pod}}',
           )
         )

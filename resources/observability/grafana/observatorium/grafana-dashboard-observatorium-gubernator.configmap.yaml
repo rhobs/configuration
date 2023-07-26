@@ -64,7 +64,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetRateLimits\"}[$interval]))",
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetRateLimits\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -156,7 +156,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetRateLimits\", status=\"failed\"}[$interval]))",
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetRateLimits\", status=\"failed\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{status}} {{job}}",
@@ -248,7 +248,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetRateLimits\"}) * 1000",
+           "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetRateLimits\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
@@ -340,7 +340,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (rate(gubernator_over_limit_counter{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "expr": "sum by(job) (rate(gubernator_over_limit_counter{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -444,7 +444,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetPeerRateLimits\"}[$interval]))",
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetPeerRateLimits\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -536,7 +536,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetPeerRateLimits\", status=\"failed\"}[$interval]))",
+           "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetPeerRateLimits\", status=\"failed\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{status}} {{job}}",
@@ -628,7 +628,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"$job\", method=~\".*/GetPeerRateLimits\"}) * 1000",
+           "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetPeerRateLimits\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
@@ -732,7 +732,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (rate(gubernator_queue_length{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "expr": "sum by(job) (rate(gubernator_queue_length{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -824,7 +824,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (rate(gubernator_pool_queue_length{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "expr": "sum by(job) (rate(gubernator_pool_queue_length{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -928,7 +928,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "expr": "sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -1020,7 +1020,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (rate(gubernator_cache_access_count{{\"container\": \"container=\\\"gubernator\\\"\", \"job\": \"job=\\\"$job\\\"\", \"ns\": \"namespace=\\\"$namespace\\\"\", \"nsAndJob\": \"namespace=\\\"$namespace\\\", job=\\\"$job\\\"\", \"pod\": \"pod=~\\\"observatorium-gubernator-.*\\\"\"}, type=\"miss\"}[$interval])) / sum by(job) (rate(gubernator_cache_access_count{{\"container\": \"container=\\\"gubernator\\\"\", \"job\": \"job=\\\"$job\\\"\", \"ns\": \"namespace=\\\"$namespace\\\"\", \"nsAndJob\": \"namespace=\\\"$namespace\\\", job=\\\"$job\\\"\", \"pod\": \"pod=~\\\"observatorium-gubernator-.*\\\"\"}}[$interval]))",
+           "expr": "sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"observatorium-gubernator\", type=\"miss\"}[$interval])) / sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -1112,7 +1112,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (gubernator_cache_size{namespace=\"$namespace\", job=\"$job\"})",
+           "expr": "sum by(job) (gubernator_cache_size{namespace=\"$namespace\", job=\"observatorium-gubernator\"})",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -1204,7 +1204,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by(job) (rate(gubernator_unexpired_evictions_count{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
+           "expr": "sum by(job) (rate(gubernator_unexpired_evictions_count{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{job}}",
@@ -1308,7 +1308,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "avg by(quantile, job) (gubernator_batch_send_duration{namespace=\"$namespace\", job=\"$job\"}) * 1000",
+           "expr": "avg by(quantile, job) (gubernator_batch_send_duration{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
@@ -1400,7 +1400,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "avg by(quantile, job) (gubernator_broadcast_durations{namespace=\"$namespace\", job=\"$job\"}) * 1000",
+           "expr": "avg by(quantile, job) (gubernator_broadcast_durations{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile {{job}}",
@@ -1492,7 +1492,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "avg by(quantile, job) (gubernator_async_durations{namespace=\"$namespace\", job=\"$job\"}) * 1000",
+           "expr": "avg by(quantile, job) (gubernator_async_durations{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile {{job}}",
@@ -1596,7 +1596,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "(container_memory_working_set_bytes{container=\"gubernator\", pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\") / 1024^2",
+           "expr": "container_memory_working_set_bytes{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"} / 1024^2",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
@@ -1688,7 +1688,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "rate(process_cpu_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"}[$interval]) * 100",
+           "expr": "rate(process_cpu_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
@@ -1780,7 +1780,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"gubernator\", pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"})",
+           "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"})",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
@@ -1872,7 +1872,7 @@ data:
          "steppedLine": false,
          "targets": [
           {
-           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"}[$interval]))",
+           "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
@@ -1880,7 +1880,7 @@ data:
            "step": 10
           },
           {
-           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-gubernator-.*\", namespace=\"$namespace\"}[$interval]))",
+           "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
            "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
@@ -1957,71 +1957,28 @@ data:
         ],
         "query": "prometheus",
         "refresh": 1,
-        "regex": "",
-        "type": "datasource"
-       },
-       {
-        "current": {
-         "text": "default",
-         "value": "default"
-        },
-        "hide": 0,
-        "label": null,
-        "name": "datasource",
-        "options": [
-
-        ],
-        "query": "prometheus",
-        "refresh": 1,
         "regex": "/^rhobs.*|telemeter-prod-01-prometheus|app-sre-stage-01-prometheus/",
         "type": "datasource"
        },
        {
-        "allValue": ".+",
+        "allValue": null,
         "current": {
-         "text": "",
-         "value": ""
+         "text": "prod",
+         "value": "prod"
         },
         "datasource": "$datasource",
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "namespace",
         "multi": false,
         "name": "namespace",
         "options": [
 
         ],
-        "query": "label_values(thanos_status, namespace)",
-        "refresh": 2,
+        "query": "label_values(gubernator_check_counter, namespace)",
+        "refresh": 1,
         "regex": "",
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tags": [
-
-        ],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-       },
-       {
-        "allValue": ".+",
-        "current": {
-         "text": "",
-         "value": ""
-        },
-        "datasource": "$datasource",
-        "hide": 0,
-        "includeAll": true,
-        "label": "job",
-        "multi": false,
-        "name": "job",
-        "options": [
-
-        ],
-        "query": "label_values(up{namespace=\"$namespace\", job=\"observatorium-gubernator\"}, job)",
-        "refresh": 2,
-        "regex": "",
-        "sort": 1,
+        "sort": 2,
         "tagValuesQuery": "",
         "tags": [
 

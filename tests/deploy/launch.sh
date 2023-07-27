@@ -4,7 +4,6 @@
 
 set -e
 set -o pipefail
-set -x
 
 role() {
     oc apply -f manifests/observatorium-cluster-role.yaml
@@ -80,7 +79,9 @@ telemeter() {
 
 rhelemeter() {
     oc create ns rhelemeter || true
-    oc process --param-file=env/rhelemeter.test.env -f ../../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
+    oc process --param-file=env/rhelemeter.test.env -p RHELEMETER_EXTERNAL_MTLS_CA="$(cat manifests/rhelemeter_certs/ca.crt)" \
+        RHELEMETER_EXTERNAL_MTLS_CRT="$(cat manifests/rhelemeter_certs/tls.crt)" RHELEMETER_EXTERNAL_MTLS_KEY="$(cat manifests/rhelemeter_certs/tls.key)" \
+        -f ../../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
 }
 
 teardown() {

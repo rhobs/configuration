@@ -9,6 +9,7 @@ In addition to replacing external dependencies, this directory also includes fil
 - The CPU / memory limits / requests are decreased so that RHOBS can be deployed on smaller clusters as well
 - The number of replicas for components is decreased as well in order for the deployment to not be too resources heavy
 - Some further object names (e.g. service accounts, images, secrets and storage-class) are replaced to work with local alternatives of the external dependencies
+- rhelemeter template that require external certs are replaced by dummy generated ones.
 
 These parameter files can be edited accordingly to accomodate your specific testing scenario.
 

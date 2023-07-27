@@ -16,6 +16,7 @@ This document provides an overview of the CI implementation that has been set up
   - CPU requests/limit, Memory request/limits and PVC storage are decreased so that RHOBS can be deployed on smaller clusters.
   - Number of replicas for components is decreased as well in order for the deployment to not be too resource heavy.
   - Objects names like service accounts, storage classes, secrets are replaced to work with local environment.
+  - Templates that require external certs are replaced by dummy generated ones.
   > :bulb: **Note:** These parameters can be edited accordingly and as per the requirement in `<namespace>.test.ci.env` files.
 
 ### Build Process

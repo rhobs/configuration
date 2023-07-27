@@ -1,0 +1,288 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-test-rbac
+objects:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${OBSERVATORIUM_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${OBSERVATORIUM_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${OBSERVATORIUM_METRICS_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${OBSERVATORIUM_METRICS_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${OBSERVATORIUM_LOGS_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${MINIO_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${MINIO_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${DEX_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${DEX_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${TELEMETER_NAMESPACE}
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - services
+    - endpoints
+    - pods
+    - deployments
+    - statefulsets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: ${TELEMETER_NAMESPACE}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: ${SERVICE_ACCOUNT_NAME}
+    namespace: ${NAMESPACE}
+parameters:
+- name: NAMESPACE
+  value: observatorium
+- name: OBSERVATORIUM_NAMESPACE
+  value: observatorium
+- name: OBSERVATORIUM_METRICS_NAMESPACE
+  value: observatorium-metrics
+- name: OBSERVATORIUM_LOGS_NAMESPACE
+  value: observatorium-logs
+- name: MINIO_NAMESPACE
+  value: minio
+- name: DEX_NAMESPACE
+  value: dex
+- name: TELEMETER_NAMESPACE
+  value: telemeter
+- name: SERVICE_ACCOUNT_NAME
+  value: rhobs-test-job

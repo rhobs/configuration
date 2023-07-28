@@ -6944,7 +6944,13 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-
+          {
+           "dashboard": "Observatorium - Gubernator",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - Gubernator",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7030,7 +7036,13 @@ data:
          "lines": true,
          "linewidth": 0,
          "links": [
-
+          {
+           "dashboard": "Observatorium - Gubernator",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - Gubernator",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7116,7 +7128,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Observatorium - Gubernator",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - Gubernator",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7210,7 +7228,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Observatorium - Gubernator",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - Gubernator",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -7296,7 +7320,13 @@ data:
          "lines": true,
          "linewidth": 1,
          "links": [
-
+          {
+           "dashboard": "Observatorium - Gubernator",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - Gubernator",
+           "type": "dashboard"
+          }
          ],
          "nullPointMode": "null as zero",
          "percentage": false,
@@ -8283,7 +8313,7 @@ data:
         "options": [
 
         ],
-        "query": "label_values(up{namespace=\"$namespace\", job=~\"observatorium-thanos-.*|observatorium-ruler-query.*\"}, job)",
+        "query": "label_values(up{namespace=\"$namespace\", job=~\"observatorium-thanos-.*|observatorium-ruler-query.*|observatorium-gubernator\"}, job)",
         "refresh": 2,
         "regex": "",
         "sort": 1,

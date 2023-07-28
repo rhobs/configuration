@@ -32,7 +32,7 @@ function() {
     template.new(
       name='job',
       datasource='$datasource',
-      query='label_values(up{namespace="$namespace", job=~"observatorium-thanos-.*|observatorium-ruler-query.*"}, job)',
+      query='label_values(up{namespace="$namespace", job=~"observatorium-thanos-.*|observatorium-ruler-query.*|observatorium-gubernator"}, job)',
       label='job',
       allValues='.+',
       current='',
@@ -618,6 +618,7 @@ function() {
         g.row('Gubernator Overview')
         .addPanel(
           g.panel('Rate of gRPC requests', 'Shows count of gRPC requests to gubernator') +
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           g.queryPanel(
             [
               'sum(rate(gubernator_grpc_request_counts{namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
@@ -630,6 +631,7 @@ function() {
         )
         .addPanel(
           g.panel('Rate of errors in gRPC requests', 'Shows count of errors in gRPC requests to gubernator') { span:: 0 } +
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           g.queryPanel(
             [
               'sum(rate(gubernator_grpc_request_counts{status="failed",namespace="$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
@@ -642,6 +644,7 @@ function() {
         )
         .addPanel(
           g.panel('Duration of gRPC requests', 'Shows duration of gRPC requests to gubernator') +
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           g.queryPanel(
             [
               'gubernator_grpc_request_duration{quantile="0.99", namespace="$namespace",job=~"$job"}',
@@ -656,6 +659,7 @@ function() {
         )
         .addPanel(
           g.panel('Local queue of rate checks', 'Shows the number of rate checks in the local queue') +
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           g.queryPanel(
             [
               'gubernator_pool_queue_length{namespace="$namespace",job=~"$job"}',
@@ -667,6 +671,7 @@ function() {
         )
         .addPanel(
           g.panel('Peer queue of rate checks', 'Shows the number of rate checks in the peer queue') +
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           g.queryPanel(
             [
               'gubernator_queue_length{namespace="$namespace",job=~"$job"}',
@@ -677,17 +682,21 @@ function() {
           ) { span:: 0 }
         )
         .addPanel(
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           memoryUsagePanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod) +
           { yaxes: g.yaxes('bytes') } +
           g.stack
         )
         .addPanel(
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           cpuUsagePanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod)
         )
         .addPanel(
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           podRestartPanel(thanos.gubernator.dashboard.container, thanos.gubernator.dashboard.pod)
         )
         .addPanel(
+          g.addDashboardLink(thanos.gubernator.dashboard.title) +
           networkUsagePanel(thanos.gubernator.dashboard.pod) +
           g.stack +
           { yaxes: g.yaxes('binBps') }

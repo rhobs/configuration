@@ -294,7 +294,7 @@ objects:
         app.kubernetes.io/name: parca
 parameters:
 - name: NAMESPACE
-  value: observatorium
+  value: observatorium-tools
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
 - name: OBSERVATORIUM_MST_NAMESPACE

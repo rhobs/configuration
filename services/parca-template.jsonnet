@@ -257,7 +257,7 @@ local proxyContainer = {
       parca.serviceMonitor,
     ],
     parameters: [
-      { name: 'NAMESPACE', value: 'observatorium' },
+      { name: 'NAMESPACE', value: 'observatorium-tools' },
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
       { name: 'OBSERVATORIUM_MST_NAMESPACE', value: 'observatorium-mst' },
       { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },

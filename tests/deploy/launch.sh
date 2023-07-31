@@ -31,6 +31,8 @@ observatorium_tools(){
     oc create ns observatorium-tools || true
     oc apply --namespace observatorium-tools -f manifests/observatorium-tools-network-policy.yaml
     oc process --param-file=env/logging.test.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
+    oc process --param-file=env/observatorium-parca.test.env -f ../../resources/services/meta-monitoring/profiling-template.yaml | oc apply --namespace observatorium-tools -f -
+
 }
 
 logging(){

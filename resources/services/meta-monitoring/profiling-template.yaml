@@ -1,0 +1,290 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: parca
+parameters:
+  - name: NAMESPACE
+    value: observatorium-tools
+  - name: ACCESS_KEY_ID
+  - name: SECRET_ACCESS_KEY
+  - name: S3_BUCKET_NAME
+    value: observatorium-parca
+  - name: S3_BUCKET_ENDPOINT
+    value: ''
+  - name: S3_BUCKET_REGION
+    value: ''
+  - name: SD_NAMESPACE_LIST
+    value: '["observatorium-tools"]'
+  - name: SD_REGEX
+    value: '(^observatorium-.*(compact|receive|store-shard-0).*-0$)'
+  - name: SCRAPE_INTERVAL
+    value: 1m
+  - name: SCRAPE_TIMEOUT
+    value: 5m
+  - name: IMAGE
+    value: quay.io/app-sre/parca
+  - name: IMAGE_TAG
+    value: v0.18.0
+  - name: PARCA_CPU_REQUEST
+    value: "1"
+  - name: PARCA_MEMORY_REQUEST
+    value: 4Gi
+  - name: PARCA_CPU_LIMITS
+    value: "2"
+  - name: PARCA_MEMORY_LIMITS
+    value: 8Gi
+  - name: OAUTH_PROXY_IMAGE
+    value: quay.io/openshift/origin-oauth-proxy
+  - name: OAUTH_PROXY_IMAGE_TAG
+    value: 4.14.0
+  - name: OAUTH_PROXY_COOKIE_SECRET
+    generate: expression
+    from: "[a-zA-Z0-9]{40}"
+objects:
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: parca
+      annotations:
+        serviceaccounts.openshift.io/oauth-redirectreference.application: >-
+          {"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"parca"}}
+    automountServiceAccountToken: true
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
+        app.kubernetes.io/version: ${IMAGE_TAG}
+      name: parca
+    spec:
+      ports:
+        - name: http
+          port: 10902
+          targetPort: 10902
+      selector:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: parca
+      annotations:
+        openshift.io/host.generated: 'true'
+    spec:
+      to:
+        kind: Service
+        name: parca
+        weight: 100
+      port:
+        targetPort: http
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: None
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+        qontract.recycle: "true"
+      labels:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
+        app.kubernetes.io/version: ${IMAGE_TAG}
+      name: parca
+    type: Opaque
+    stringData:
+      parca.yaml: |-
+        object_storage:
+          bucket:
+            type: S3
+            config:
+              bucket: ${S3_BUCKET_NAME}
+              endpoint: ${S3_BUCKET_ENDPOINT}
+              region: ${S3_BUCKET_REGION}
+              access_key: ${ACCESS_KEY_ID}
+              insecure: true
+              secret_key: ${SECRET_ACCESS_KEY}     
+              trace:
+                enable: false 
+        scrape_configs:
+        - job_name: rhobs
+          kubernetes_sd_configs:
+          - namespaces:
+              names: ${SD_NAMESPACE_LIST}
+            role: pod
+          relabel_configs:
+          - action: keep
+            regex: ${SD_REGEX}
+            source_labels:
+            - __meta_kubernetes_pod_name
+          - action: keep
+            regex: http
+            source_labels:
+            - __meta_kubernetes_pod_container_port_name
+          - source_labels:
+            - __meta_kubernetes_namespace
+            target_label: namespace
+          - source_labels:
+            - __meta_kubernetes_pod_name
+            target_label: pod
+          - source_labels:
+            - __meta_kubernetes_pod_container_name
+            target_label: container
+          scrape_interval: ${SCRAPE_INTERVAL}
+          scrape_timeout: ${SCRAPE_TIMEOUT}
+          tls_config:
+            insecure_skip_verify: true
+          profiling_config:
+               pprof_config:
+                 memory:
+                   enabled: true
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
+        app.kubernetes.io/version: ${IMAGE_TAG}
+      name: parca
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: observability
+          app.kubernetes.io/instance: parca
+          app.kubernetes.io/name: parca
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: observability
+            app.kubernetes.io/instance: parca
+            app.kubernetes.io/name: parca
+            app.kubernetes.io/version: ${IMAGE_TAG}
+        spec:
+          containers:
+            - args:
+                - /parca
+                - --http-address=:7070
+                - --config-path=/etc/parca/parca.yaml
+                - --log-level=info
+                - --debuginfod-upstream-servers=https://debuginfod.systemtap.org
+                - --enable-persistence
+              image: ${IMAGE}:${IMAGE_TAG}
+              livenessProbe:
+                exec:
+                  command:
+                    - /grpc_health_probe
+                    - -v
+                    - -addr=:7070
+                initialDelaySeconds: 5
+              name: parca
+              ports:
+                - containerPort: 7070
+                  name: http
+              readinessProbe:
+                exec:
+                  command:
+                    - /grpc_health_probe
+                    - -v
+                    - -addr=:7070
+                initialDelaySeconds: 10
+              resources:
+                limits:
+                  cpu: ${PARCA_CPU_LIMITS}
+                  memory: ${PARCA_MEMORY_LIMITS}
+                requests:
+                  cpu: ${PARCA_CPU_REQUEST}
+                  memory: ${PARCA_MEMORY_REQUEST}
+              terminationMessagePolicy: FallbackToLogsOnError
+              volumeMounts:
+                - mountPath: /etc/parca
+                  name: config
+                - mountPath: /var/lib/parca
+                  name: data
+                - mountPath: /data/metastore
+                  name: metastore
+            - args:
+                - -provider=openshift
+                - -https-address=
+                - -http-address=:10902
+                - -email-domain=*
+                - -upstream=http://localhost:7070
+                - -openshift-service-account=parca
+                - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}'
+                - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name": "${NAMESPACE}", "namespace": "${NAMESPACE}"}}'
+                - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+                - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
+                - -openshift-ca=/etc/pki/tls/cert.pem
+                - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+              image: ${OAUTH_PROXY_IMAGE}:${OAUTH_PROXY_IMAGE_TAG}
+              name: proxy
+              ports:
+                - containerPort: 10902
+                  name: https
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: 200Mi
+                requests:
+                  cpu: 100m
+                  memory: 100Mi
+          nodeSelector:
+            kubernetes.io/os: linux
+          serviceAccountName: parca
+          terminationGracePeriodSeconds: 120
+          volumes:
+            - secret:
+                secretName: parca
+              name: config
+            - emptyDir: {}
+              name: data
+            - emptyDir: {}
+              name: metastore
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      labels:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
+        app.kubernetes.io/version: ${IMAGE_TAG}
+      name: parca-pod-lister
+    rules:
+      - apiGroups:
+          - ''
+        resources:
+          - pods
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups: ["authentication.k8s.io"]
+        resources:
+          - tokenreviews
+        verbs: ["create"]
+      - apiGroups: ["authorization.k8s.io"]
+        resources:
+          - subjectaccessreviews
+        verbs: ["create"]
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      labels:
+        app.kubernetes.io/component: observability
+        app.kubernetes.io/instance: parca
+        app.kubernetes.io/name: parca
+        app.kubernetes.io/version: ${IMAGE_TAG}
+      name: parca-pod-lister
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: parca-pod-lister
+    subjects:
+      - kind: ServiceAccount
+        name: parca
+        namespace: ${NAMESPACE}
+

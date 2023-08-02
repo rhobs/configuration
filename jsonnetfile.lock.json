@@ -309,16 +309,6 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/parca-dev/parca.git",
-          "subdir": "deploy/lib/parca"
-        }
-      },
-      "version": "bc35eaf54ea6b9d7ea46b6c0fe2194084962765b",
-      "sum": "aK56fC0SsHbSg0WZfRiDTntO72QJqftVgORDae2ilyg="
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/prometheus-operator/kube-prometheus.git",
           "subdir": "jsonnet/kube-prometheus"
         }

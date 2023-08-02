@@ -31,6 +31,8 @@ observatorium_tools(){
     oc create ns observatorium-tools || true
     oc apply --namespace observatorium-tools -f manifests/observatorium-tools-network-policy.yaml
     oc process --param-file=env/logging.test.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
+    oc process --param-file=env/observatorium-parca.test.env -f ../../resources/services/meta-monitoring/profiling-template.yaml | oc apply --namespace observatorium-tools -f -
+
 }
 
 logging(){
@@ -58,10 +60,7 @@ observatorium() {
     oc apply -f manifests/observatorium-rules-objstore-secret.yaml --namespace observatorium
     oc apply -f manifests/observatorium-rhobs-tenant-secret.yaml --namespace observatorium
     oc apply --namespace observatorium -f manifests/observatorium-service-account.yaml
-    oc apply -f manifests/observatorium-parca-secret.yaml --namespace observatorium
-    rbac
     oc process --param-file=env/observatorium.test.env -f ../../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
-    oc process --param-file=env/observatorium-parca.test.env -f ../../resources/services/parca-template.yaml | oc apply --namespace observatorium -f -
     oc process --param-file=env/observatorium-jaeger.test.env -f ../../resources/services/jaeger-template.yaml | oc apply --namespace observatorium -f -
 }
 
@@ -98,11 +97,6 @@ teardown() {
     oc delete ns openshift-operators-redhat || true
 }
 
-rbac(){
-    # The below namespaces are just created for parca-observatorium-remote-ns-rbac-template. These can be removed once logging/tracing is deployed
-    oc create ns observatorium-mst || true
-    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | oc apply -f -
-}
 case $1 in
 deploy)
     minio

@@ -1,0 +1,97 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-thanos-bucket-replicate
+  labels:
+    app.kubernetes.io/name: thanos-bucket-replicate
+    app.kubernetes.io/part-of: observatorium
+description: |
+  Replicate data between object storage provider buckets
+parameters:
+  - name: NAME
+    description: The name of the Job.
+    value: 'thanos-bucket-replicate'
+  - name: NAMESPACE
+    description: The namespace where the Job should run.
+    value: 'observatorium-operations'
+  - name: SOURCE_OBJ_STORE_CONFIG_SECRET_NAME
+    value: 'thanos-bucket-replicate-config-source'
+  - name: DESTINATION_OBJ_STORE_CONFIG_SECRET_NAME
+    value: 'thanos-bucket-replicate-config-destination'
+  - name: COMPACTION_MIN
+    value: '0'
+  - name: COMPACTION_MAX
+    value: '100'
+  - name: MIN_TIME
+    value: '0000-01-01T00:00:00Z'
+  - name: MAX_TIME
+    value: '9999-12-31T23:59:59Z'
+  - name: TENANT_ID
+    value: 'rhobs'
+  - name: IMAGE_TAG
+    value: 'main-2023-08-01-e1a3ec1'
+  - name: LOG_LEVEL
+    value: 'info'
+  - name: CPU_REQUEST
+    value: '1'
+  - name: CPU_LIMIT
+    value: '2'
+  - name: MEMORY_REQUEST
+    value: '500Mi'
+  - name: MEMORY_LIMIT
+    value: '1Gi'
+objects:
+  - apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ${NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app.kubernetes.io/name: thanos-bucket-replicate
+        app.kubernetes.io/part-of: observatorium
+    spec:
+      parallelism: 1
+      backoffLimit: 1
+      template:
+        spec:
+          containers:
+            - name: thanos-bucket-replicate
+              image: quay.io/thanos/thanos:${IMAGE_TAG}
+              resources:
+                requests:
+                  memory: ${MEMORY_REQUEST}
+                  cpu: ${CPU_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+                  cpu: ${CPU_LIMIT}
+              ports:
+                - containerPort: 10902
+                  name: metrics
+              volumeMounts:
+                - name: obj-store-from-config
+                  readOnly: true
+                  mountPath: "/var/lib/thanos/bucket-replicate-config/from"
+                - name: obj-store-to-config
+                  readOnly: true
+                  mountPath: "/var/lib/thanos/bucket-replicate-config/to"
+              args:
+                - 'tools'
+                - 'bucket'
+                - 'replicate'
+                - '--log.level=${LOG_LEVEL}'
+                - '--objstore.config-file=/var/lib/thanos/bucket-replicate-config/from/config.yaml'
+                - '--objstore-to.config-file=/var/lib/thanos/bucket-replicate-config/to/config.yaml'
+                - '--single-run'
+                - '--matcher=tenant_id="${TENANT_ID}"'
+                - '--min-time=${MIN_TIME}'
+                - '--max-time=${MAX_TIME}'
+                - '--compaction-min=${COMPACTION_MIN}'
+                - '--compaction-max=${COMPACTION_MAX}'
+          restartPolicy: Never
+          volumes:
+            - name: obj-store-from-config
+              secret:
+                secretName: ${SOURCE_OBJ_STORE_CONFIG_SECRET_NAME}
+            - name: obj-store-to-config
+              secret:
+                secretName: ${DESTINATION_OBJ_STORE_CONFIG_SECRET_NAME}

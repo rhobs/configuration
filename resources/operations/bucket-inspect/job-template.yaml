@@ -1,0 +1,57 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-thanos-bucket-inspect
+  labels:
+    app.kubernetes.io/name: thanos-bucket-inspect
+    app.kubernetes.io/part-of: observatorium
+description: |
+  Inspect data in an object storage provider bucket
+parameters:
+  - name: NAME
+    description: The name of the Job.
+    value: 'thanos-bucket-inspect'
+  - name: NAMESPACE
+    description: The namespace where the Job should run.
+    value: 'observatorium-operations'
+  - name: OBJ_STORE_CONFIG_SECRET_NAME
+    value: 'thanos-bucket-inspect-config'
+  - name: TENANT_ID
+    value: 'rhobs'
+  - name: IMAGE_TAG
+    value: 'v0.31.0'
+  - name: LOG_LEVEL
+    value: 'info'
+objects:
+  - apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ${NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app.kubernetes.io/name: thanos-bucket-inspect
+        app.kubernetes.io/part-of: observatorium
+    spec:
+      backoffLimit: 4
+      template:
+        spec:
+          containers:
+            - name: thanos-bucket-inspect
+              image: quay.io/thanos/thanos:${IMAGE_TAG}
+              volumeMounts:
+                - name: obj-store-config
+                  readOnly: true
+                  mountPath: "/var/lib/thanos/bucket-inspect-config"
+              args:
+                - 'tools'
+                - 'bucket'
+                - 'inspect'
+                - '--log.level=${LOG_LEVEL}'
+                - '--objstore.config-file=/var/lib/thanos/bucket-inspect-config/config.yaml'
+                - '--selector=tenant_id="${TENANT_ID}"'
+          restartPolicy: Never
+          volumes:
+            - name: obj-store-config
+              secret:
+                secretName: ${OBJ_STORE_CONFIG_SECRET_NAME}
+

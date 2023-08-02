@@ -56,6 +56,7 @@ observatorium_tools(){
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/observatorium-tools --timeout=5s
     oc apply --namespace observatorium-tools -f ../deploy/manifests/observatorium-tools-network-policy.yaml
     oc process --param-file=env/logging.test.ci.env -f ../../resources/services/meta-monitoring/logging-template.yaml | oc apply --namespace observatorium-tools -f -
+    oc process --param-file=env/observatorium-parca.test.ci.env -f ../../resources/services/meta-monitoring/profiling-template.yaml | oc apply --namespace observatorium-tools -f -
 }
 
 observatorium() {
@@ -63,14 +64,8 @@ observatorium() {
     oc apply -f ../deploy/manifests/observatorium-rules-objstore-secret.yaml --namespace observatorium
     oc apply -f ../deploy/manifests/observatorium-rhobs-tenant-secret.yaml --namespace observatorium
     oc apply --namespace observatorium -f ../deploy/manifests/observatorium-service-account.yaml
-    oc apply -f ../deploy/manifests/observatorium-parca-secret.yaml --namespace observatorium
-    oc process -f ../../resources/services/parca-observatorium-remote-ns-rbac-template.yaml | \
-        oc apply -f -
     oc process --param-file=env/observatorium.test.ci.env \
         -f ../../resources/services/observatorium-template.yaml | \
-        oc apply --namespace observatorium -f -
-    oc process --param-file=env/observatorium-parca.test.ci.env \
-        -f ../../resources/services/parca-template.yaml| \
         oc apply --namespace observatorium -f -
     oc process --param-file=env/observatorium-jaeger.test.ci.env \
         -f ../../resources/services/jaeger-template.yaml| \

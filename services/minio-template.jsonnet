@@ -5,7 +5,7 @@ local minio = (import 'github.com/observatorium/observatorium/configuration/comp
   version:: '${IMAGE_TAG}',
   accessKey:: '${MINIO_ACCESS_KEY}',
   secretKey:: '${MINIO_SECRET_KEY}',
-  buckets:: ['thanos', 'loki', 'rules'],
+  buckets:: ['thanos', 'loki', 'rules', 'parca'],
   replicas: 1,
 }) + {
   deployment+: {

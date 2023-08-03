@@ -102,7 +102,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'METRICS_WRITE_SERVICE_PORT', value: std.toString(obs.thanos.receiversService.spec.ports[2].port) },
     // AMS Org IDs
     { name: 'CNVQE_ORGANIZATION_ID', value: '' },
-    { name: 'MANAGEDKAFKA_ORGANIZATION_ID', value: '' },
     { name: 'OSD_ORGANIZATION_ID', value: '' },
     { name: 'SD_OPS_ORGANIZATION_ID', value: '' },
   ],

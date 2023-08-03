@@ -526,7 +526,6 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       mappings: [
         'osd=${OSD_ORGANIZATION_ID}',
         'osd=${SD_OPS_ORGANIZATION_ID}',
-        'managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}',
         'cnvqe=${CNVQE_ORGANIZATION_ID}',
       ],
       memcached: '%s.%s.svc.cluster.local:%d' % [

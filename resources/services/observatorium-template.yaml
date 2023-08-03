@@ -1337,7 +1337,6 @@ objects:
           - --memcached.expire=${OPA_AMS_MEMCACHED_EXPIRE}
           - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
           - --ams.mappings=osd=${SD_OPS_ORGANIZATION_ID}
-          - --ams.mappings=managedkafka=${MANAGEDKAFKA_ORGANIZATION_ID}
           - --ams.mappings=cnvqe=${CNVQE_ORGANIZATION_ID}
           - --internal.tracing.endpoint=localhost:6831
           env:
@@ -1871,8 +1870,6 @@ parameters:
 - name: METRICS_WRITE_SERVICE_PORT
   value: "19291"
 - name: CNVQE_ORGANIZATION_ID
-  value: ""
-- name: MANAGEDKAFKA_ORGANIZATION_ID
   value: ""
 - name: OSD_ORGANIZATION_ID
   value: ""

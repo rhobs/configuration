@@ -96,29 +96,6 @@ function(params) {
     },
     {
       url: params.url,
-      name: 'receive-managedkafka',
-      headers: {
-        'THANOS-TENANT': '63e320cd-622a-4d05-9585-ffd48342633e',
-      },
-      write_relabel_configs: [
-        {
-          source_labels: ['tenant_id'],
-          regex: '63e320cd-622a-4d05-9585-ffd48342633e',
-          action: 'keep',
-        },
-      ],
-      queue_config: {
-        capacity: 120000,
-        max_shards: 50,
-        min_shards: 1,
-        max_samples_per_send: 40000,
-        batch_send_deadline: '5s',
-        min_backoff: '5s',
-        max_backoff: '5m',
-      },
-    },
-    {
-      url: params.url,
       name: 'receive-rhacs',
       headers: {
         'THANOS-TENANT': '1b9b6e43-9128-4bbf-bfff-3c120bbe6f11',

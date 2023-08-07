@@ -8,5 +8,5 @@ RUN go mod download
 
 COPY . .
 
-RUN go build ./tests/integration_tests/framework/cmd/rhobs-test
+RUN go build ./cmd/rhobs-test
 ENTRYPOINT [ "./rhobs-test" ]

@@ -8,6 +8,9 @@ EXAMPLES := examples
 OCP_MANIFESTS := $(EXAMPLES)/manifests/openshift
 DEV_MANIFESTS := $(EXAMPLES)/manifests/dev
 XARGS ?= $(shell which gxargs 2>/dev/null || which xargs)
+# Setting GOENV
+GOOS := $(shell go env GOOS)
+GOARCH := $(shell go env GOARCH)
 all: build
 build: rhobs-test
 
@@ -26,9 +29,8 @@ go-fmt:
 .PHONY: container-dev
 container-dev: kind
 	@docker build \
-		-f ../../../Dockerfile \
 		-t $(IMG):$(BRANCH)-$(BUILD_DATE)-$(TAG) \
-		../../../
+		.
 	docker tag $(IMG):$(BRANCH)-$(BUILD_DATE)-$(TAG) localhost:5001/rhobs-test:latest
 	docker push localhost:5001/rhobs-test:latest
 
@@ -45,14 +47,14 @@ test:
 .PHONY: local
 local: kind container-dev
 	kubectl apply -f $(DEV_MANIFESTS)/test-deployment.yaml
-	kubectl apply -f $(DEV_MANIFESTS)/rbac.yaml
-	kubectl apply -f $(DEV_MANIFESTS)/job.yaml
+	kubectl apply -f $(DEV_MANIFESTS)/test-rbac.yaml
+	kubectl apply -f $(DEV_MANIFESTS)/test-job.yaml
 
 .PHONY: local-faulty
 local-faulty: kind container-dev
-	kubectl apply -f $(DEV_MANIFESTS)/test-deployment-faulty-template.yaml
-	kubectl apply -f $(DEV_MANIFESTS)/rbac-template.yaml
-	kubectl apply -f $(DEV_MANIFESTS)/job-template.yaml
+	kubectl apply -f $(DEV_MANIFESTS)/test-deployment-faulty.yaml
+	kubectl apply -f $(DEV_MANIFESTS)/test-rbac.yaml
+	kubectl apply -f $(DEV_MANIFESTS)/test-job.yaml
 
 .PHONY: clean
 clean:
@@ -77,22 +79,20 @@ clean-test:
 
 .PHONY: container-build
 container-build:
-	docker buildx build \
-		-f ../../../Dockerfile \
-		--platform linux/amd64,linux/arm64 \
+	docker build \
+		--platform linux/$(GOARCH) \
 		--build-arg DOCKERFILE_PATH="/Dockerfile" \
 		-t $(IMG):$(BRANCH)-$(BUILD_DATE)-$(TAG) \
 		-t $(IMG):$(TAG) \
-		../../../
+		.
 .PHONY: container-build-push
 container-build-push:
-	@docker buildx build \
-		-f ../../../Dockerfile \
+	@docker build \
 		--push \
-		--platform linux/amd64,linux/arm64 \
+		--platform linux/$(GOARCH) \
 		-t $(IMG):$(BRANCH)-$(BUILD_DATE)-$(TAG) \
 		-t $(IMG):$(TAG) \
-		../../../
+		.
 .PHONY: ocp-manifests
 ocp-manifests: $(JSONNET) $(JSONNETFMT) $(GOJSONTOYAML)
 	echo "ocp manifests"

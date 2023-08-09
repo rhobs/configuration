@@ -1,0 +1,86 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test-job
+    namespace: default
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: default
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - deployments
+    - statefulsets
+    - services
+    - endpoints
+    - pods
+    - namespaces
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: default
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: rhobs-test-job
+    namespace: default
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: prometheus-example
+  rules:
+  - apiGroups:
+    - ""
+    - apps
+    resources:
+    - deployments
+    - statefulsets
+    - services
+    - endpoints
+    - pods
+    - namespaces
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: observability
+    name: rhobs-test
+    namespace: prometheus-example
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rhobs-test
+  subjects:
+  - kind: ServiceAccount
+    name: rhobs-test-job
+    namespace: default
+kind: List

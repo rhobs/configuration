@@ -1,0 +1,49 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-test-job
+objects:
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    labels:
+      app.kubernetes.io/component: test
+      app.kubernetes.io/instance: rhobs-test
+      app.kubernetes.io/name: ${JOB_NAME}
+    name: ${JOB_NAME}
+  spec:
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: test
+          app.kubernetes.io/instance: rhobs-test
+          app.kubernetes.io/name: ${JOB_NAME}
+      spec:
+        containers:
+        - args:
+          - --namespaces=${JOB_NAMESPACES}
+          - --interval=${JOB_INTERVAL}
+          - --timeout=${JOB_TIMEOUT}
+          image: ${JOB_IMAGE}:${JOB_IMAGE_TAG}
+          name: ${JOB_NAME}
+          resources: {}
+          volumeMounts: []
+        initContainers: []
+        restartPolicy: OnFailure
+        serviceAccountName: ${SERVICE_ACCOUNT_NAME}
+        volumes: []
+parameters:
+- name: JOB_NAMESPACES
+  value: observatorium,observatorium-metrics,observatorium-logs,minio,dex,telemeter
+- name: JOB_NAME
+  value: rhobs-test-job
+- name: JOB_INTERVAL
+  value: 10s
+- name: JOB_TIMEOUT
+  value: 1m
+- name: JOB_IMAGE
+  value: quay.io/app-sre/rhobs-test
+- name: JOB_IMAGE_TAG
+  value: latest
+- name: SERVICE_ACCOUNT_NAME
+  value: rhobs-test-job

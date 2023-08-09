@@ -1,0 +1,70 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: prometheus-example
+- apiVersion: v1
+  data:
+    prometheus.yml: |
+      global:
+        scrape_interval:     15s
+        evaluation_interval: 15s
+      scrape_configs:
+        - job_name: 'prometheus'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:9090']
+  kind: ConfigMap
+  metadata:
+    name: prometheus-example-app-config
+    namespace: prometheus-example
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: prometheus-example-app
+    name: prometheus-example-app
+    namespace: prometheus-example
+  spec:
+    replicas: 4
+    selector:
+      matchLabels:
+        app: prometheus-example-app
+    template:
+      metadata:
+        labels:
+          app: prometheus-example-app
+      spec:
+        containers:
+        - args:
+          - --config.file=/etc/prometheus/prometheus.yaml
+          image: prom/prometheus
+          name: prometheus-example-app
+          ports:
+          - containerPort: 9090
+            name: http
+          volumeMounts:
+          - mountPath: /etc/prometheus
+            name: config
+        volumes:
+        - configMap:
+            name: prometheus-example-app-config
+          name: config
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: prometheus-example-app
+    name: prometheus-example
+    namespace: prometheus-example
+  spec:
+    ports:
+    - name: http
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    selector:
+      app: prometheus-example-app
+    type: ClusterIP
+kind: List

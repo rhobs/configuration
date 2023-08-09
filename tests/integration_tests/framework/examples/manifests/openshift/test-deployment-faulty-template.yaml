@@ -1,0 +1,83 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: test-deployment
+objects:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: ${PROM_NAMESPACE}
+- apiVersion: v1
+  data:
+    prometheus.yml: |
+      global:
+        scrape_interval:     15s
+        evaluation_interval: 15s
+      scrape_configs:
+        - job_name: 'prometheus'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:9090']
+  kind: ConfigMap
+  metadata:
+    name: ${PROM_CONFIG_MAP}
+    namespace: ${PROM_NAMESPACE}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: prometheus-example-app
+    name: prometheus-example-app
+    namespace: ${PROM_NAMESPACE}
+  spec:
+    replicas: ${PROM_REPLICAS}
+    selector:
+      matchLabels:
+        app: prometheus-example-app
+    template:
+      metadata:
+        labels:
+          app: prometheus-example-app
+      spec:
+        containers:
+        - args:
+          - --config.file=/etc/prometheus/prometheus.yaml
+          image: ${PROM_IMAGE}
+          name: prometheus-example-app
+          ports:
+          - containerPort: 9090
+            name: http
+          volumeMounts:
+          - mountPath: /etc/prometheus
+            name: config
+        volume:
+        - configMap:
+            name: ${PROM_CONFIG_MAP}
+          name: config
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: prometheus-example-app
+    name: ${PROM_SERVICE_NAME}
+    namespace: ${PROM_NAMESPACE}
+  spec:
+    ports:
+    - name: http
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    selector:
+      app: prometheus-example-app
+    type: ClusterIP
+parameters:
+- name: PROM_NAMESPACE
+  value: prometheus-example
+- name: PROM_CONFIG_MAP
+  value: prometheus-example-app-config
+- name: PROM_IMAGE
+  value: prom/prometheus
+- name: PROM_REPLICAS
+  value: "4"
+- name: PROM_SERVICE_NAME
+  value: prometheus-example

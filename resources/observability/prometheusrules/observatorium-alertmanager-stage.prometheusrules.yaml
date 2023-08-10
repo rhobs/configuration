@@ -13,7 +13,7 @@ spec:
     rules:
     - alert: AlertmanagerFailedReload
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: Configuration has failed to load for {{$labels.pod}}.
         message: Configuration has failed to load for {{$labels.pod}}.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerfailedreload
@@ -28,7 +28,7 @@ spec:
         severity: high
     - alert: AlertmanagerMembersInconsistent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: Alertmanager {{$labels.pod}} has only found {{ $value }} members of the {{$labels.job}} cluster.
         message: Alertmanager {{$labels.pod}} has only found {{ $value }} members of the {{$labels.job}} cluster.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagermembersinconsistent
@@ -45,7 +45,7 @@ spec:
         severity: high
     - alert: AlertmanagerFailedToSendAlerts
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: Alertmanager {{$labels.pod}} failed to send {{ $value | humanizePercentage }} of notifications to {{ $labels.integration }}.
         message: Alertmanager {{$labels.pod}} failed to send {{ $value | humanizePercentage }} of notifications to {{ $labels.integration }}.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerfailedtosendalerts
@@ -63,7 +63,7 @@ spec:
         severity: medium
     - alert: AlertmanagerClusterFailedToSendAlerts
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
         message: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclusterfailedtosendalerts
@@ -81,7 +81,7 @@ spec:
         severity: high
     - alert: AlertmanagerClusterFailedToSendAlerts
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
         message: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclusterfailedtosendalerts
@@ -99,7 +99,7 @@ spec:
         severity: medium
     - alert: AlertmanagerConfigInconsistent
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: Alertmanager instances within the {{$labels.job}} cluster have different configurations.
         message: Alertmanager instances within the {{$labels.job}} cluster have different configurations.
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerconfiginconsistent
@@ -115,7 +115,7 @@ spec:
         severity: high
     - alert: AlertmanagerClusterDown
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have been up for less than half of the last 5m.'
         message: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have been up for less than half of the last 5m.'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclusterdown
@@ -137,7 +137,7 @@ spec:
         severity: high
     - alert: AlertmanagerClusterCrashlooping
       annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
         description: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have restarted at least 5 times in the last 10m.'
         message: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have restarted at least 5 times in the last 10m.'
         runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclustercrashlooping

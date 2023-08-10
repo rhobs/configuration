@@ -94,7 +94,7 @@ local appSREOverwrites(environment) = {
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
       else if
-        std.startsWith(name, 'alertmanager') then 'no-dashboard'
+        std.startsWith(name, 'alertmanager') then 'alertmanager-overview'
       else error 'no dashboard id for group %s' % name,
   },
 

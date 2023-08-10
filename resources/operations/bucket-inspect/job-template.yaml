@@ -18,6 +18,8 @@ parameters:
     value: 'thanos-bucket-inspect-config'
   - name: TENANT_ID
     value: 'rhobs'
+  - name: K8S_SECRET_KEY
+    value: config.yaml
   - name: IMAGE_TAG
     value: 'v0.31.0'
   - name: LOG_LEVEL
@@ -47,7 +49,7 @@ objects:
                 - 'bucket'
                 - 'inspect'
                 - '--log.level=${LOG_LEVEL}'
-                - '--objstore.config-file=/var/lib/thanos/bucket-inspect-config/config.yaml'
+                - '--objstore.config-file=/var/lib/thanos/bucket-inspect-config/${K8S_SECRET_KEY}'
                 - '--selector=tenant_id="${TENANT_ID}"'
           restartPolicy: Never
           volumes:

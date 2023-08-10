@@ -16,6 +16,8 @@ parameters:
     value: 'observatorium-operations'
   - name: OBJ_STORE_CONFIG_SECRET_NAME
     value: 'thanos-bucket-inspect-config'
+  - name: K8S_SECRET_KEY
+    value: config.yaml
   - name: SCHEDULE
     description: The schedule for the Job to run. Defaults to every 12 hours.
     value: '0 */12 * * *'
@@ -52,7 +54,7 @@ objects:
                     - 'bucket'
                     - 'inspect'
                     - '--log.level=${LOG_LEVEL}'
-                    - '--objstore.config-file=/var/lib/thanos/bucket-inspect-config/config.yaml'
+                    - '--objstore.config-file=/var/lib/thanos/bucket-inspect-config/${K8S_SECRET_KEY}'
                     - '--selector=tenant_id="${TENANT_ID}"'
               restartPolicy: Never
               volumes:

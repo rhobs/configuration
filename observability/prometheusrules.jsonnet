@@ -93,6 +93,8 @@ local appSREOverwrites(environment) = {
         std.startsWith(name, 'rhobs-mst') && environment == 'stage' then '92520ea4d6976f30d1618164e186ef9b'
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
+      else if
+        std.startsWith(name, 'alertmanager') then 'alertmanager-overview'
       else error 'no dashboard id for group %s' % name,
   },
 
@@ -241,6 +243,12 @@ local renderAlerts(name, environment, mixin) = {
 
   'observatorium-thanos-stage.prometheusrules': renderAlerts('observatorium-thanos-stage', 'stage', thanosAlerts),
   'observatorium-thanos-production.prometheusrules': renderAlerts('observatorium-thanos-production', 'production', thanosAlerts),
+}
+
+{
+  local alertmanagerAlerts = (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/mixin.libsonnet') + config.alertmanager,
+  'observatorium-alertmanager-stage.prometheusrules': renderAlerts('observatorium-alertmanager-stage', 'stage', alertmanagerAlerts),
+  'observatorium-alertmanager-production.prometheusrules': renderAlerts('observatorium-alertmanager-production', 'production', alertmanagerAlerts),
 }
 
 {

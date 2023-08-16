@@ -46,6 +46,7 @@ local var = import 'utils.jsonnet';
       alertmanagerClusterLabels: 'namespace,job',
       alertmanagerNameLabels: 'pod',
       alertmanagerCriticalIntegrationsRegEx: 'slack|pagerduty|email|webhook',
+      alertmanagerSelector: 'job="observatorium-alertmanager"',
     },
   },
   loki: {

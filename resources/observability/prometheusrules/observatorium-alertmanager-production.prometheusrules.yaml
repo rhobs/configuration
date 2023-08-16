@@ -1,0 +1,159 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: observatorium-alertmanager-production
+spec:
+  groups:
+  - name: alertmanager.rules
+    rules:
+    - alert: AlertmanagerFailedReload
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: Configuration has failed to load for {{$labels.pod}}.
+        message: Configuration has failed to load for {{$labels.pod}}.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerfailedreload
+        summary: Reloading an Alertmanager configuration has failed.
+      expr: |
+        # Without max_over_time, failed scrapes could create false negatives, see
+        # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+        max_over_time(alertmanager_config_last_reload_successful{job="observatorium-alertmanager"}[5m]) == 0
+      for: 10m
+      labels:
+        service: telemeter
+        severity: critical
+    - alert: AlertmanagerMembersInconsistent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: Alertmanager {{$labels.pod}} has only found {{ $value }} members of the {{$labels.job}} cluster.
+        message: Alertmanager {{$labels.pod}} has only found {{ $value }} members of the {{$labels.job}} cluster.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagermembersinconsistent
+        summary: A member of an Alertmanager cluster has not found all other cluster members.
+      expr: |
+        # Without max_over_time, failed scrapes could create false negatives, see
+        # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
+          max_over_time(alertmanager_cluster_members{job="observatorium-alertmanager"}[5m])
+        < on (namespace,job) group_left
+          count by (namespace,job) (max_over_time(alertmanager_cluster_members{job="observatorium-alertmanager"}[5m]))
+      for: 15m
+      labels:
+        service: telemeter
+        severity: critical
+    - alert: AlertmanagerFailedToSendAlerts
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: Alertmanager {{$labels.pod}} failed to send {{ $value | humanizePercentage }} of notifications to {{ $labels.integration }}.
+        message: Alertmanager {{$labels.pod}} failed to send {{ $value | humanizePercentage }} of notifications to {{ $labels.integration }}.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerfailedtosendalerts
+        summary: An Alertmanager instance failed to send notifications.
+      expr: |
+        (
+          rate(alertmanager_notifications_failed_total{job="observatorium-alertmanager"}[5m])
+        /
+          rate(alertmanager_notifications_total{job="observatorium-alertmanager"}[5m])
+        )
+        > 0.01
+      for: 5m
+      labels:
+        service: telemeter
+        severity: medium
+    - alert: AlertmanagerClusterFailedToSendAlerts
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
+        message: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclusterfailedtosendalerts
+        summary: All Alertmanager instances in a cluster failed to send notifications to a critical integration.
+      expr: |
+        min by (namespace,job, integration) (
+          rate(alertmanager_notifications_failed_total{job="observatorium-alertmanager", integration=~`slack|pagerduty|email|webhook`}[5m])
+        /
+          rate(alertmanager_notifications_total{job="observatorium-alertmanager", integration=~`slack|pagerduty|email|webhook`}[5m])
+        )
+        > 0.01
+      for: 5m
+      labels:
+        service: telemeter
+        severity: critical
+    - alert: AlertmanagerClusterFailedToSendAlerts
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
+        message: The minimum notification failure rate to {{ $labels.integration }} sent from any instance in the {{$labels.job}} cluster is {{ $value | humanizePercentage }}.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclusterfailedtosendalerts
+        summary: All Alertmanager instances in a cluster failed to send notifications to a non-critical integration.
+      expr: |
+        min by (namespace,job, integration) (
+          rate(alertmanager_notifications_failed_total{job="observatorium-alertmanager", integration!~`slack|pagerduty|email|webhook`}[5m])
+        /
+          rate(alertmanager_notifications_total{job="observatorium-alertmanager", integration!~`slack|pagerduty|email|webhook`}[5m])
+        )
+        > 0.01
+      for: 5m
+      labels:
+        service: telemeter
+        severity: medium
+    - alert: AlertmanagerConfigInconsistent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: Alertmanager instances within the {{$labels.job}} cluster have different configurations.
+        message: Alertmanager instances within the {{$labels.job}} cluster have different configurations.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerconfiginconsistent
+        summary: Alertmanager instances within the same cluster have different configurations.
+      expr: |
+        count by (namespace,job) (
+          count_values by (namespace,job) ("config_hash", alertmanager_config_hash{job="observatorium-alertmanager"})
+        )
+        != 1
+      for: 20m
+      labels:
+        service: telemeter
+        severity: critical
+    - alert: AlertmanagerClusterDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have been up for less than half of the last 5m.'
+        message: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have been up for less than half of the last 5m.'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclusterdown
+        summary: Half or more of the Alertmanager instances within the same cluster are down.
+      expr: |
+        (
+          count by (namespace,job) (
+            avg_over_time(up{job="observatorium-alertmanager"}[5m]) < 0.5
+          )
+        /
+          count by (namespace,job) (
+            up{job="observatorium-alertmanager"}
+          )
+        )
+        >= 0.5
+      for: 5m
+      labels:
+        service: telemeter
+        severity: critical
+    - alert: AlertmanagerClusterCrashlooping
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/alertmanager-overview/alertmanager.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have restarted at least 5 times in the last 10m.'
+        message: '{{ $value | humanizePercentage }} of Alertmanager instances within the {{$labels.job}} cluster have restarted at least 5 times in the last 10m.'
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#alertmanagerclustercrashlooping
+        summary: Half or more of the Alertmanager instances within the same cluster are crashlooping.
+      expr: |
+        (
+          count by (namespace,job) (
+            changes(process_start_time_seconds{job="observatorium-alertmanager"}[10m]) > 4
+          )
+        /
+          count by (namespace,job) (
+            up{job="observatorium-alertmanager"}
+          )
+        )
+        >= 0.5
+      for: 5m
+      labels:
+        service: telemeter
+        severity: critical

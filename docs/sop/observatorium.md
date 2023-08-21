@@ -1,10 +1,10 @@
 # RHOBS Observatorium Runbooks
 
 <!-- TOC depthTo:2 -->
-- [RHOBS Observatorium Runbooks](#rhobs-observatorium-runbooks)
+* [RHOBS Observatorium Runbooks](#rhobs-observatorium-runbooks)
   * [Quick Links](#quick-links)
   * [Verify components are running](#verify-components-are-running)
-- [SLO Alerts](#slo-alerts)
+* [SLO Alerts](#slo-alerts)
   * [TelemeterServerMetricsUploadWriteAvailabilityErrorBudgetBurning](#telemeterservermetricsuploadwriteavailabilityerrorbudgetburning)
   * [TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning](#telemeterservermetricsreceivewriteavailabilityerrorbudgetburning)
   * [TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning](#telemeterservermetricsuploadwritelatencyerrorbudgetburning)
@@ -19,21 +19,21 @@
   * [APIRulesRawReadAvailabilityErrorBudgetBurning](#apirulesrawreadavailabilityerrorbudgetburning)
   * [APIAlertmanagerAvailabilityErrorBudgetBurning](#apialertmanageravailabilityerrorbudgetburning)
   * [APIAlertmanagerNotificationsAvailabilityErrorBudgetBurning](#apialertmanagernotificationsavailabilityerrorbudgetburning)
-- [Observatorium HTTP Traffic Alerts](#observatorium-http-traffic-alerts)
+* [Observatorium HTTP Traffic Alerts](#observatorium-http-traffic-alerts)
   * [ObservatoriumHttpTrafficErrorRateHigh](#observatoriumhttptrafficerrorratehigh)
-- [Observatorium Proactive Monitoring Alerts](#observatorium-proactive-monitoring-alerts)
+* [Observatorium Proactive Monitoring Alerts](#observatorium-proactive-monitoring-alerts)
   * [ObservatoriumProActiveMetricsQueryErrorRateHigh](#observatoriumproactivemetricsqueryerrorratehigh)
-- [Observatorium Tenants Alerts](#observatorium-tenants-alerts)
+* [Observatorium Tenants Alerts](#observatorium-tenants-alerts)
   * [ObservatoriumTenantsFailedOIDCRegistrations](#observatoriumtenantsfailedoidcregistrations)
   * [ObservatoriumTenantsSkippedDuringConfiguration](#observatoriumtenantsskippedduringconfiguration)
-- [Observatorium Custom Metrics Alerts](#observatorium-custom-metrics-alerts)
+* [Observatorium Custom Metrics Alerts](#observatorium-custom-metrics-alerts)
   * [ObservatoriumNoStoreBlocksLoaded](#observatoriumnostoreblocksloaded)
   * [ObservatoriumNoRulesLoaded](#observatoriumnorulesloaded)
   * [ObservatoriumPersistentVolumeUsageHigh](#observatoriumpersistentvolumeusagehigh)
   * [ObservatoriumPersistentVolumeUsageCritical](#observatoriumpersistentvolumeusagecritical)
-- [Observatorium Gubernator Alerts](#observatorium-gubernator-alerts)
+* [Observatorium Gubernator Alerts](#observatorium-gubernator-alerts)
   * [GubernatorIsDown](#gubernatorisdown)
-- [Observatorium Thanos Alerts](#observatorium-thanos-alerts)
+* [Observatorium Thanos Alerts](#observatorium-thanos-alerts)
   * [MandatoryThanosComponentIsDown](#mandatorythanoscomponentisdown)
   * [ThanosCompactIsDown](#thanoscompactisdown)
   * [ThanosQueryIsDown](#thanosqueryisdown)
@@ -78,12 +78,20 @@
   * [ThanosReceiveControllerConfigmapChangeErrorRate](#thanosreceivecontrollerconfigmapchangeerrorrate)
   * [ThanosReceiveConfigStale](#thanosreceiveconfigstale)
   * [ThanosReceiveConfigInconsistent](#thanosreceiveconfiginconsistent)
-- [Observatorium Loki Alerts](#observatorium-loki-alerts)
+* [Observatorium Alertmanager Alerts](#observatorium-alertmanager-alerts)
+  * [AlertmanagerFailedReload](#alertmanagerfailedreload)
+  * [AlertmanagerMembersInconsistent](#alertmanagermembersinconsistent)
+  * [AlertmanagerFailedToSendAlerts](#alertmanagerfailedtosendalerts)
+  * [AlertmanagerClusterFailedToSendAlerts](#alertmanagerclusterfailedtosendalerts)
+  * [AlertmanagerConfigInconsistent](#alertmanagerconfiginconsistent)
+  * [AlertmanagerClusterDown](#alertmanagerclusterdown)
+  * [AlertmanagerClusterCrashlooping](#alertmanagerclustercrashlooping)
+* [Observatorium Loki Alerts](#observatorium-loki-alerts)
   * [LokiRequestErrors](#lokirequesterrors)
   * [LokiRequestPanics](#lokirequestpanics)
   * [LokiRequestLatency](#lokirequestlatency)
   * [LokiTenantRateLimitWarning](#lokitenantratelimitwarning)
-- [Escalations](#escalations)
+* [Escalations](#escalations)
 <!-- /TOC -->
 
 ---
@@ -791,7 +799,7 @@ The Thanos Ruler pods do not have any rules configured on them, which should not
   - Check dashboard of Thanos Ruler
   - Check the logs of Thanos Ruler pods for any errors.
   - Check for valid configuration as per <https://thanos.io/tip/components/rule.md/>
-- Check for presence of rule files in ConfigMaps. 
+- Check for presence of rule files in ConfigMaps.
 
 ## ObservatoriumPersistentVolumeUsageHigh
 
@@ -1461,7 +1469,7 @@ Thanos Receives component failed to retrieve current head series count for each 
 - If the cause is an invalid url or query configuration, update the limits configuration file using the `THANOS_RECEIVE_LIMIT_CONFIG` template parameter configured in `app-interface` repos in the `saas.yml` file. Update the values of the `meta_monitoring_url` and `meta_monitoring_limit_query` keys.
 - If the cause comes from the meta-monitoring service, signal the issue to app-sre team.
 
-## ThanosReceiveTenantLimitedByHeadSeries 
+## ThanosReceiveTenantLimitedByHeadSeries
 
 ### Impact
 
@@ -1477,7 +1485,7 @@ A tenant is writing too many metrics with high cardinality. This is causing high
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium MST in staging [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces)) 
+- Console access to the cluster that runs Observatorium MST in staging [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/project-details/all-namespaces))
 
 ### Steps
 
@@ -1801,6 +1809,177 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 ---
+
+# Observatorium Alertmanager Alerts
+
+## AlertmanagerFailedReload
+
+### Impact
+
+For users this means that their most recent update to alerts might not be currently in use. Ultimately, this means some of the alerts they have configured may not be firing as expected. Subsequente updates to Alertmanager configuration won't be picked up until the reload succeeds.
+
+### Summary
+
+For some reason, the Alertmanager failed to reload its configuration from disk. This means that any changes to alerts, inhibit rules, receivers etc will not be picked up until this is resolved.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the Alertmanager configuration being mounted into the Observatorium Alertmanager pods through the OSD console.
+- Check the definition of the Observatorium Alertmanager configuration in app-interface: https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/resources/rhobs/production.
+
+## AlertmanagerMembersInconsistent
+
+### Impact
+
+For users this means that some alerts routed to this Alertmanager might either not fire or stay stuck firing.
+
+### Summary
+
+A member of an Alertmanager cluster has not found all other cluster members.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+
+### Steps
+
+- In the OSD console for the affected cluster, find the Alertmanager Route. Check that it correctly points to the Alertmanager Service. Check that the Service correctly points to the **all** the Alertmanager pods. Open the Route's address, go to the "Status" tab, and note the IP addresses of the discovered Alertmanager instances. Check if they match the addresses of **all** the Alertmanager pods, none should be missing or mismatching.
+
+## AlertmanagerFailedToSendAlerts
+
+### Impact
+
+For users, no impact since another instance of Alertmanager in the cluster should be able to send the notification, unless `AlertmanagerClusterFailedToSendAlerts` is also triggered.
+
+### Summary
+
+One of the Alertmanager instances in the cluster cannot send alerts to integrations.
+
+### Severity
+
+Medium.
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+
+### Steps
+
+- Check the logs of the affected Alertmanager pod in the OSD console for related errors (authn/z, networking, firewall, rate limits, etc).
+
+## AlertmanagerClusterFailedToSendAlerts
+
+### Impact
+
+For users, the alert notifications won't be delivered to their configured integrations.
+
+### Summary
+
+All instances in the Alertmanaget cluster failed to send notification to an specific integration.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+
+### Steps
+
+- Check the logs of the affected Alertmanager pod in the OSD console for related errors (authn/z, networking, firewall, rate limits, etc).
+
+## AlertmanagerConfigInconsistent
+
+### Impact
+
+Hard to predict without knowing what is different between configuration of the different instances. Nevertheless, in most cases alerts might be lost or routed to the incorrect integration.
+
+### Summary
+
+The configuration of the Alertmanager instances inside the cluster have drifted.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+
+### Steps
+
+- In the OSD console of the affected cluster, find the Alertmanager pods. Check what is different in their Alertmanager configuration file -- it's mounted from a secret. Delete the pods and let them be recreated, this should ensure they load the same configuration.
+
+## AlertmanagerClusterDown
+
+### Impact
+
+With less than 50% of the cluster nodes being healthy, the gossip protocol used by Alertmanager to synchronize state across the cluster won't work properly. This means:
+
+* Some alerts may be missed or duplicated as different instances don't have a consistent view of state.
+* Some alerts may get stuck in the "pending" state and never resolve if the instance handling them goes down.
+* Silences and inhibitions may not propagate across the cluster, causing unexpected alerts to fire.
+
+### Summary
+
+More than 50% of the Alertmanager replicas in the cluster are down.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+
+### Steps
+
+* Open the OSD console for the affected cluster and try to diagnose why the Alertmanager pods aren't healthy and joining the cluster. Check the pods' logs and events for clues.
+
+## AlertmanagerClusterCrashlooping
+
+### Impact
+
+For tenants, alerts could be notified multiple time unless pods are crashing too fast and no alerts can be sent.
+
+### Summary
+
+Alertmanager pods are crashlooping.
+
+### Severity
+
+`high`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- In the OSD console of the affected cluster, check the logs of the crashlooping Alertmanager pods for clues about the root cause. Common issues are: not enough memory allocated to the pod, configuration errors, lack of permissions, bugs in the Alertmanager code or Docker image.
 
 # Observatorium Loki Alerts
 

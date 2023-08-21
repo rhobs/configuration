@@ -1816,7 +1816,7 @@ The configuration of the instances of Thanos Receive are not same with Receive C
 
 ### Impact
 
-For users this means that their most recent update to alerts might not be currently in use. Ultimately, this means some of the alerts they have configured may not be firing as expected. Subsequente updates to Alertmanager configuration won't be picked up until the reload succeeds.
+For users this means that their most recent update to alerts might not be currently in use. Ultimately, this means some of the alerts they have configured may not be firing as expected. Subsequent updates to Alertmanager configuration won't be picked up until the reload succeeds.
 
 ### Summary
 
@@ -1870,11 +1870,11 @@ For users, no impact since another instance of Alertmanager in the cluster shoul
 
 ### Summary
 
-One of the Alertmanager instances in the cluster cannot send alerts to integrations.
+One of the Alertmanager instances in the cluster cannot send alerts to receivers.
 
 ### Severity
 
-Medium.
+`medium`
 
 ### Access Required
 
@@ -1888,11 +1888,11 @@ Medium.
 
 ### Impact
 
-For users, the alert notifications won't be delivered to their configured integrations.
+For users, the alert notifications won't be delivered to their configured receivers.
 
 ### Summary
 
-All instances in the Alertmanaget cluster failed to send notification to an specific integration.
+All instances in the Alertmanaget cluster failed to send notification to an specific receiver.
 
 ### Severity
 
@@ -1910,7 +1910,7 @@ All instances in the Alertmanaget cluster failed to send notification to an spec
 
 ### Impact
 
-Hard to predict without knowing what is different between configuration of the different instances. Nevertheless, in most cases alerts might be lost or routed to the incorrect integration.
+Hard to predict without knowing what is different between configuration of the different instances. Nevertheless, in most cases alerts might be lost or routed to the incorrect receiver.
 
 ### Summary
 

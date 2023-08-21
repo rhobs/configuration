@@ -1860,7 +1860,7 @@ A member of an Alertmanager cluster has not found all other cluster members.
 
 ### Steps
 
-- In the OSD console for the affected cluster, find the Alertmanager Route. Check that it correctly points to the Alertmanager Service. Check that the Service correctly points to the **all** the Alertmanager pods. Open the Route's address, go to the "Status" tab, and note the IP addresses of the discovered Alertmanager instances. Check if they match the addresses of **all** the Alertmanager pods, none should be missing or mismatching.
+- In the OSD console for the affected cluster, find the Alertmanager Route. Check that it correctly points to the Alertmanager Service. Check that the Service correctly points to the **all** the Alertmanager pods. Find and open the Alertmanager's Route's URL to get to its UI, go to the "Status" tab, and note the IP addresses of the discovered Alertmanager instances. Check if they match the addresses of **all** the Alertmanager pods, none should be missing or mismatching.
 
 ## AlertmanagerFailedToSendAlerts
 

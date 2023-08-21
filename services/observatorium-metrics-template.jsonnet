@@ -76,7 +76,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_COMPACTOR_PVC_REQUEST', value: '50Gi' },
     { name: 'THANOS_COMPACTOR_REPLICAS', value: '1' },
     { name: 'THANOS_CONFIG_SECRET', value: 'thanos-objectstorage' },
-    { name: 'THANOS_IMAGE_TAG', value: 'v0.30.2' },
+    { name: 'THANOS_IMAGE_TAG', value: 'v0.32.0-rc.0' },
     { name: 'THANOS_IMAGE', value: 'quay.io/thanos/thanos' },
     { name: 'THANOS_QUERIER_CPU_LIMIT', value: '1' },
     { name: 'THANOS_QUERIER_CPU_REQUEST', value: '100m' },

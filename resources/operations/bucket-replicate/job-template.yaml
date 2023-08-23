@@ -18,6 +18,10 @@ parameters:
     value: 'thanos-bucket-replicate-config-source'
   - name: DESTINATION_OBJ_STORE_CONFIG_SECRET_NAME
     value: 'thanos-bucket-replicate-config-destination'
+  - name: SOURCE_OBJ_STORE_K8S_SECRET_KEY
+    value: 'config.yaml'
+  - name: DESTINATION_OBJ_STORE_K8S_SECRET_KEY
+    value: 'config.yaml'
   - name: COMPACTION_MIN
     value: '0'
   - name: COMPACTION_MAX
@@ -29,7 +33,7 @@ parameters:
   - name: TENANT_ID
     value: 'rhobs'
   - name: IMAGE_TAG
-    value: 'main-2023-08-01-e1a3ec1'
+    value: 'v0.32.0'
   - name: LOG_LEVEL
     value: 'info'
   - name: CPU_REQUEST
@@ -39,7 +43,7 @@ parameters:
   - name: MEMORY_REQUEST
     value: '500Mi'
   - name: MEMORY_LIMIT
-    value: '1Gi'
+    value: '3Gi'
 objects:
   - apiVersion: batch/v1
     kind: Job
@@ -79,8 +83,8 @@ objects:
                 - 'bucket'
                 - 'replicate'
                 - '--log.level=${LOG_LEVEL}'
-                - '--objstore.config-file=/var/lib/thanos/bucket-replicate-config/from/config.yaml'
-                - '--objstore-to.config-file=/var/lib/thanos/bucket-replicate-config/to/config.yaml'
+                - '--objstore.config-file=/var/lib/thanos/bucket-replicate-config/from/${SOURCE_OBJ_STORE_K8S_SECRET_KEY}'
+                - '--objstore-to.config-file=/var/lib/thanos/bucket-replicate-config/to/${DESTINATION_OBJ_STORE_K8S_SECRET_KEY}'
                 - '--single-run'
                 - '--matcher=tenant_id="${TENANT_ID}"'
                 - '--min-time=${MIN_TIME}'

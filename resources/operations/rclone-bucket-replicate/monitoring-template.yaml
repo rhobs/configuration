@@ -1,0 +1,33 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rhobs-rclone-bucket-replicate-pod-monitor
+  labels:
+    app.kubernetes.io/name: rclone-bucket-replicate
+    app.kubernetes.io/part-of: observatorium
+parameters:
+  - name: NAMESPACE
+    description: The namespace where the running Job will reside.
+    value: 'observatorium-operations'
+  - name: NAME
+    description: The name of the Job.
+    value: 'rclone-bucket-replicate'
+objects:
+  - apiVersion: monitoring.coreos.com/v1
+    kind: PodMonitor
+    metadata:
+      name: observatorium-operations-rclone-bucket-replicate
+      labels:
+        prometheus: app-sre
+    spec:
+      namespaceSelector:
+        matchNames:
+          - ${NAMESPACE}
+      selector:
+        matchLabels:
+          job-name: ${NAME}
+      podMetricsEndpoints:
+        - port: metrics
+          interval: 30s
+          path: /metrics
+

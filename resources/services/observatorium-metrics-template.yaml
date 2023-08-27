@@ -4627,7 +4627,7 @@ parameters:
 - name: OBSERVATORIUM_ALERTMANAGER_IMAGE
   value: quay.io/prometheus/alertmanager
 - name: OBSERVATORIUM_ALERTMANAGER_IMAGE_TAG
-  value: v0.25.0
+  value: v0.26.0
 - name: OBSERVATORIUM_ALERTMANAGER_PVC_STORAGE
   value: 10Gi
 - name: OBSERVATORIUM_ALERTMANAGER_CPU_REQUEST
@@ -4667,7 +4667,7 @@ parameters:
 - name: THANOS_CONFIG_SECRET
   value: thanos-objectstorage
 - name: THANOS_IMAGE_TAG
-  value: v0.32.0-rc.0
+  value: v0.32.0
 - name: THANOS_IMAGE
   value: quay.io/thanos/thanos
 - name: THANOS_QUERIER_CPU_LIMIT

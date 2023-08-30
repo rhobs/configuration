@@ -614,6 +614,9 @@ objects:
     - interval: 30s
       port: metrics
     jobLabel: app.kubernetes.io/component
+    namespaceSelector:
+      matchNames:
+      - ${NAMESPACE}
     selector:
       matchLabels:
         app.kubernetes.io/component: telemeter-cache

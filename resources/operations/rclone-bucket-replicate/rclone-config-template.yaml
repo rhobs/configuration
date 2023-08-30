@@ -11,7 +11,7 @@ parameters:
   - name: NAMESPACE
     description: The namespace where the ConfigMap will be created.
     value: 'observatorium-operations'
-  - name: RCLONE_CONFIG_NAME
+  - name: RCLONE_CONFIG_MAP_NAME
     value: 'rclone-config'
   - name: RCLONE_STATS_INTERVAL
     value: '30s'
@@ -24,14 +24,13 @@ parameters:
 
 objects:
   - apiVersion: v1
-    kind: Secret
+    kind: ConfigMap
     metadata:
-      name: ${OBJ_STORE_CONFIG_SECRET_NAME}
+      name: ${RCLONE_CONFIG_MAP_NAME}
       namespace: ${NAMESPACE}
       labels:
         app.kubernetes.io/name: rclone-bucket-replicate-secret
         app.kubernetes.io/part-of: observatorium
-    type: Opaque
     stringData:
       # Logging configuration
       RCLONE_STATS: ${RCLONE_STATS_INTERVAL}

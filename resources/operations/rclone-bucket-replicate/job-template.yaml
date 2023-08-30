@@ -30,10 +30,10 @@ parameters:
     value: '3Gi'
   - name: OBJ_STORE_CONFIG_SECRET_NAME
   - name: RCLONE_CONFIG_MAP_NAME
-  - name: SRC_ENDPOINT
-  - name: SRC_BUCKET
-  - name: DST_ENDPOINT
-  - name: DST_BUCKET
+  - name: SOURCE_ENDPOINT
+  - name: SOURCE_BUCKET
+  - name: TARGET_ENDPOINT
+  - name: TARGET_BUCKET
 objects:
   - apiVersion: batch/v1
     kind: Job
@@ -68,10 +68,9 @@ objects:
                     name: ${RCLONE_CONFIG_MAP_NAME}
               args:
                 - 'copy'
-                - ${SRC_ENDPOINT}:${SRC_BUCKET}
-                - ${DST_ENDPOINT}:${DST_BUCKET}
+                - ${SOURCE_ENDPOINT}:${SOURCE_BUCKET}
+                - ${TARGET_ENDPOINT}:${TARGET_BUCKET}
                 - '--rc'
-                - '--stats=30s'
                 - '-v'
                 - '--rc-enable-metrics'
                 - '--rc-addr=:10902'

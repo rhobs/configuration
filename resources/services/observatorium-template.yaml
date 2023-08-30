@@ -1278,6 +1278,7 @@ objects:
           - --traces.write.endpoint=observatorium-otel-collector-headless.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:4317
           - --grpc.listen=0.0.0.0:8090
           - --experimental.traces.read.endpoint-template=http://observatorium-jaeger-{tenant}-query.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:16686/
+          - --metrics.alertmanager.endpoint=${ALERTMANAGER_API_ENDPOINT}
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
@@ -1874,4 +1875,6 @@ parameters:
 - name: OSD_ORGANIZATION_ID
   value: ""
 - name: SD_OPS_ORGANIZATION_ID
+  value: ""
+- name: ALERTMANAGER_API_ENDPOINT
   value: ""

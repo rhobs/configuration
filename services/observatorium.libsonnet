@@ -465,6 +465,9 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         obs.rulesObjstore.service.spec.ports[1].port,
       ],
     },
+    alertmanager: {
+      endpoint: '${ALERTMANAGER_API_ENDPOINT}',
+    },
     rateLimiter: {
       grpcAddress: '%s.%s.svc.cluster.local:%d' % [
         obs.gubernator.service.metadata.name,

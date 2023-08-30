@@ -104,5 +104,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'CNVQE_ORGANIZATION_ID', value: '' },
     { name: 'OSD_ORGANIZATION_ID', value: '' },
     { name: 'SD_OPS_ORGANIZATION_ID', value: '' },
+    { name: 'ALERTMANAGER_API_ENDPOINT', value: '' },
   ],
 }

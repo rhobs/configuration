@@ -229,8 +229,8 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "96e8799ade449297a4529a67aab9f9a09d2b10a1",
-      "sum": "w+drNxzRjWcn2P8LgIzO+lfsFS1SKK2nzE+ILdBgx9o=",
+      "version": "57f083abebf15d0a82ca08d2ec3cdc6f87e9576d",
+      "sum": "+p4/o5YUUm4s57sggn5kMO4Ex5eGqyylbijdEgMsFoE=",
       "name": "observatorium-api"
     },
     {

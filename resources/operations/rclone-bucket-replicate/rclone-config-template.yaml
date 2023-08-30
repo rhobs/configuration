@@ -1,0 +1,45 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rclone Bucket Sync
+  labels:
+    app.kubernetes.io/name: rclone-config
+    app.kubernetes.io/part-of: observatorium
+description: |
+  This template creates a Secret that supports general configuration.
+parameters:
+  - name: NAMESPACE
+    description: The namespace where the ConfigMap will be created.
+    value: 'observatorium-operations'
+  - name: RCLONE_CONFIG_NAME
+    value: 'rclone-config'
+  - name: RCLONE_STATS_INTERVAL
+    value: '30s'
+  - name: RCLONE_LOG_LEVEL
+    value: '1'
+  - name: RCLONE_PARALLEL_TRANSFERS
+    value: '4'
+  - name: RCLONE_PARALLEL_FILE_CHECKERS
+    value: '8'
+
+objects:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${OBJ_STORE_CONFIG_SECRET_NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app.kubernetes.io/name: rclone-bucket-replicate-secret
+        app.kubernetes.io/part-of: observatorium
+    type: Opaque
+    stringData:
+      # Logging configuration
+      RCLONE_STATS: ${RCLONE_STATS_INTERVAL}
+      RCLONE_VERBOSE: ${RCLONE_LOG_LEVEL}
+
+      # Number of file transfers to run in parallel
+      RCLONE_TRANSFERS: ${RCLONE_PARALLEL_TRANSFERS}
+
+      # Checkers do the equality checking of files during a sync
+      RCLONE_CHECKERS: ${RCLONE_PARALLEL_FILE_CHECKERS}
+

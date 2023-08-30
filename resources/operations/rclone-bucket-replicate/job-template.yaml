@@ -14,8 +14,10 @@ parameters:
   - name: NAMESPACE
     description: The namespace where the Job should run.
     value: 'observatorium-operations'
+  - name: IMAGE
+    value: 'rclone/rclone'
   - name: IMAGE_TAG
-    value: 'v0.32.0'
+    value: 'latest'
   - name: LOG_LEVEL
     value: 'info'
   - name: CPU_REQUEST
@@ -27,6 +29,7 @@ parameters:
   - name: MEMORY_LIMIT
     value: '3Gi'
   - name: OBJ_STORE_CONFIG_SECRET_NAME
+  - name: RCLONE_CONFIG_MAP_NAME
   - name: SRC_ENDPOINT
   - name: SRC_BUCKET
   - name: DST_ENDPOINT
@@ -47,7 +50,7 @@ objects:
         spec:
           containers:
             - name: rclone-sync
-              image: rclone/rclone:latest
+              image: ${IMAGE}:${IMAGE_TAG}
               resources:
                 requests:
                   memory: ${MEMORY_REQUEST}
@@ -61,6 +64,8 @@ objects:
               envFrom:
                 - secretRef:
                     name: ${OBJ_STORE_CONFIG_SECRET_NAME}
+                - configMapRef:
+                    name: ${RCLONE_CONFIG_MAP_NAME}
               args:
                 - 'copy'
                 - ${SRC_ENDPOINT}:${SRC_BUCKET}

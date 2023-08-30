@@ -145,6 +145,7 @@
     serviceMonitor+: {
       spec+: {
         jobLabel: 'app.kubernetes.io/component',
+        namespaceSelector+: { matchNames: [config.namespace] },
         selector+: {
           matchLabels+: {
             'app.kubernetes.io/component': 'telemeter-cache',

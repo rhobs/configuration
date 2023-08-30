@@ -1,0 +1,79 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: rclone-bucket-replicate
+  labels:
+    app.kubernetes.io/name: rclone-bucket-replicate
+    app.kubernetes.io/part-of: observatorium
+description: |
+  Replicate data between object storage provider buckets
+parameters:
+  - name: NAME
+    description: The name of the Job.
+    value: 'rclone-bucket-replicate'
+  - name: NAMESPACE
+    description: The namespace where the Job should run.
+    value: 'observatorium-operations'
+  - name: IMAGE
+    value: 'rclone/rclone'
+  - name: IMAGE_TAG
+    value: 'latest'
+  - name: LOG_LEVEL
+    value: 'info'
+  - name: CPU_REQUEST
+    value: '1'
+  - name: CPU_LIMIT
+    value: '2'
+  - name: MEMORY_REQUEST
+    value: '500Mi'
+  - name: MEMORY_LIMIT
+    value: '3Gi'
+  - name: OBJ_STORE_CONFIG_SECRET_NAME
+  - name: RCLONE_CONFIG_MAP_NAME
+  - name: SRC_ENDPOINT
+  - name: SRC_BUCKET
+  - name: DST_ENDPOINT
+  - name: DST_BUCKET
+objects:
+  - apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: ${NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app.kubernetes.io/name: rclone-bucket-sync
+        app.kubernetes.io/part-of: observatorium
+    spec:
+      parallelism: 1
+      backoffLimit: 1
+      template:
+        spec:
+          containers:
+            - name: rclone-sync
+              image: ${IMAGE}:${IMAGE_TAG}
+              resources:
+                requests:
+                  memory: ${MEMORY_REQUEST}
+                  cpu: ${CPU_REQUEST}
+                limits:
+                  memory: ${MEMORY_LIMIT}
+                  cpu: ${CPU_LIMIT}
+              ports:
+                - containerPort: 10902
+                  name: metrics
+              envFrom:
+                - secretRef:
+                    name: ${OBJ_STORE_CONFIG_SECRET_NAME}
+                - configMapRef:
+                    name: ${RCLONE_CONFIG_MAP_NAME}
+              args:
+                - 'copy'
+                - ${SRC_ENDPOINT}:${SRC_BUCKET}
+                - ${DST_ENDPOINT}:${DST_BUCKET}
+                - '--rc'
+                - '--stats=30s'
+                - '-v'
+                - '--rc-enable-metrics'
+                - '--rc-addr=:10902'
+          restartPolicy: Never
+

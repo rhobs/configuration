@@ -10,9 +10,9 @@ local obs = import 'observatorium.libsonnet';
       }
       for name in std.objectFields(obs.manifests)
       if obs.manifests[name] != null &&
-        !std.startsWith(name, 'observatorium/thanos-') &&
-        !std.startsWith(name, 'observatorium/loki-') &&
-        !std.startsWith(name, 'observatorium/tracing-')
+         !std.startsWith(name, 'observatorium/thanos-') &&
+         !std.startsWith(name, 'observatorium/loki-') &&
+         !std.startsWith(name, 'observatorium/tracing-')
     ],
   parameters: [
     { name: 'NAMESPACE', value: 'observatorium' },
@@ -57,7 +57,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OBSERVATORIUM_API_CPU_LIMIT', value: '1' },
     { name: 'OBSERVATORIUM_API_CPU_REQUEST', value: '100m' },
     { name: 'OBSERVATORIUM_API_IDENTIFIER', value: 'observatorium-observatorium-api' },
-    { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'main-2023-04-05-v0.1.2-366-g2761e0f' },
+    { name: 'OBSERVATORIUM_API_IMAGE_TAG', value: 'main-2023-08-17-3f47d62' },
     { name: 'OBSERVATORIUM_API_IMAGE', value: 'quay.io/observatorium/api' },
     { name: 'OBSERVATORIUM_API_MEMORY_LIMIT', value: '1Gi' },
     { name: 'OBSERVATORIUM_API_MEMORY_REQUEST', value: '256Mi' },

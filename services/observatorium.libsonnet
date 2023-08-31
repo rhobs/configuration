@@ -224,7 +224,16 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         optional: true,
       },
     ],
-  }),
+  }) + {
+    serviceMonitor+: {
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
+        },
+      },
+    },
+  },
+
 
   rulesSLOPrometheusRule: {
     apiVersion: 'monitoring.coreos.com/v1',

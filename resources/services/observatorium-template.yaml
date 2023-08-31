@@ -295,6 +295,8 @@ objects:
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
+    labels:
+      prometheus: app-sre
     name: rules-obsctl-reloader
   spec:
     endpoints:

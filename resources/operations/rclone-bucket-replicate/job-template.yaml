@@ -18,6 +18,8 @@ parameters:
     value: 'rclone/rclone'
   - name: IMAGE_TAG
     value: 'latest'
+  - name: SERVICE_ACCOUNT_NAME
+    value: 'default'
   - name: LOG_LEVEL
     value: 'info'
   - name: CPU_REQUEST
@@ -48,6 +50,7 @@ objects:
       backoffLimit: 1
       template:
         spec:
+          serviceAccountName: ${SERVICE_ACCOUNT_NAME}
           containers:
             - name: rclone-sync
               image: ${IMAGE}:${IMAGE_TAG}

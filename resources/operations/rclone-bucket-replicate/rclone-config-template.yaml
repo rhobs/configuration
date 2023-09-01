@@ -31,7 +31,7 @@ objects:
       labels:
         app.kubernetes.io/name: rclone-bucket-replicate-secret
         app.kubernetes.io/part-of: observatorium
-    stringData:
+    data:
       # Logging configuration
       RCLONE_STATS: ${RCLONE_STATS_INTERVAL}
       RCLONE_VERBOSE: ${RCLONE_LOG_LEVEL}

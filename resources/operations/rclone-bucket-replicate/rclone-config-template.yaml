@@ -25,6 +25,8 @@ parameters:
     value: '8'
   - name: RCLONE_S3_CHUNK_SIZE
     value: '64M'
+  - name: RCLONE_MULTI_THREAD_STREAMS
+    value: '8'
 
 objects:
   - apiVersion: v1
@@ -42,6 +44,9 @@ objects:
 
       # Number of file transfers to run in parallel
       RCLONE_TRANSFERS: ${RCLONE_PARALLEL_TRANSFERS}
+
+      # Number of parallel download threads
+      RCLONE_MULTI_THREAD_STREAMS: ${RCLONE_MULTI_THREAD_STREAMS}
 
       # Checkers do the equality checking of files during a sync
       RCLONE_CHECKERS: ${RCLONE_PARALLEL_FILE_CHECKERS}

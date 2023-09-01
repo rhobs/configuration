@@ -74,8 +74,8 @@ objects:
                 - ${SOURCE_ENDPOINT}:${SOURCE_BUCKET}
                 - ${TARGET_ENDPOINT}:${TARGET_BUCKET}
                 - '--rc'
-                - '-v'
                 - '--rc-enable-metrics'
                 - '--rc-addr=:10902'
+                - '--s3-disable-http2' # Needed due to https://github.com/golang/go/issues/37373
           restartPolicy: Never
 

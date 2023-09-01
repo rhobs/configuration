@@ -16,11 +16,15 @@ parameters:
   - name: RCLONE_STATS_INTERVAL
     value: '30s'
   - name: RCLONE_LOG_LEVEL
-    value: '1'
+    value: '0'
   - name: RCLONE_PARALLEL_TRANSFERS
     value: '4'
   - name: RCLONE_PARALLEL_FILE_CHECKERS
     value: '8'
+  - name: RCLONE_S3_UPLOAD_CONCURRENCY
+    value: '8'
+  - name: RCLONE_S3_CHUNK_SIZE
+    value: '64M'
 
 objects:
   - apiVersion: v1
@@ -41,4 +45,8 @@ objects:
 
       # Checkers do the equality checking of files during a sync
       RCLONE_CHECKERS: ${RCLONE_PARALLEL_FILE_CHECKERS}
+
+      # AWS Client Specific Parameters
+      RCLONE_S3_UPLOAD_CONCURRENCY: ${RCLONE_S3_UPLOAD_CONCURRENCY}
+      RCLONE_S3_CHUNK_SIZE: ${RCLONE_S3_CHUNK_SIZE}
 

@@ -16,7 +16,7 @@ parameters:
   - name: RCLONE_STATS_INTERVAL
     value: '30s'
   - name: RCLONE_LOG_LEVEL
-    value: '0'
+    value: 'INFO'
   - name: RCLONE_PARALLEL_TRANSFERS
     value: '4'
   - name: RCLONE_PARALLEL_FILE_CHECKERS
@@ -38,7 +38,7 @@ objects:
     data:
       # Logging configuration
       RCLONE_STATS: ${RCLONE_STATS_INTERVAL}
-      RCLONE_VERBOSE: ${RCLONE_LOG_LEVEL}
+      RCLONE_LOG_LEVEL: ${RCLONE_LOG_LEVEL}
 
       # Number of file transfers to run in parallel
       RCLONE_TRANSFERS: ${RCLONE_PARALLEL_TRANSFERS}

@@ -608,6 +608,7 @@ objects:
   metadata:
     labels:
       app.kubernetes.io/name: memcached
+      prometheus: app-sre
     name: memcached
   spec:
     endpoints:

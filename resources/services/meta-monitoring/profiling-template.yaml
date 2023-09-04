@@ -73,6 +73,7 @@ objects:
       name: parca
       annotations:
         openshift.io/host.generated: 'true'
+        haproxy.router.openshift.io/timeout: 120s
     spec:
       to:
         kind: Service

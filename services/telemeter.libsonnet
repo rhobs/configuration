@@ -148,10 +148,7 @@
         namespaceSelector+: { matchNames: [config.namespace] },
         selector+: {
           matchLabels+: {
-            'app.kubernetes.io/component': 'telemeter-cache',
-            'app.kubernetes.io/instance': 'telemeter',
             'app.kubernetes.io/name': 'memcached',
-            'app.kubernetes.io/part-of': 'telemeter',
           },
         },
       },

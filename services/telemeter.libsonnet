@@ -143,6 +143,11 @@
       imagePullSecrets+: [{ name: 'quay.io' }],
     },
     serviceMonitor+: {
+      metadata+: {
+        labels+: {
+          prometheus: 'app-sre',
+        },
+      },
       spec+: {
         jobLabel: 'app.kubernetes.io/component',
         namespaceSelector+: { matchNames: [config.namespace] },

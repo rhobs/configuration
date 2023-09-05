@@ -301,6 +301,8 @@ objects:
   spec:
     endpoints:
     - port: internal
+    namespaceSelector:
+      matchNames: ${{NAMESPACES}}
     selector:
       matchLabels:
         app.kubernetes.io/component: rules-obsctl-reloader

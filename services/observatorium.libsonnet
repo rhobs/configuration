@@ -231,6 +231,15 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
           prometheus: 'app-sre',
         },
       },
+      spec+: {
+        namespaceSelector: {
+          // NOTICE:
+          // When using the ${{PARAMETER_NAME}} syntax only a single parameter reference is allowed and leading/trailing characters are not permitted.
+          // The resulting value will be unquoted unless, after substitution is performed, the result is not a valid json object.
+          // If the result is not a valid json value, the resulting value will be quoted and treated as a standard string.
+          matchNames: '${{NAMESPACES}}',
+        },
+      },
     },
   },
 

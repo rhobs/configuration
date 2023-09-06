@@ -1,7 +1,7 @@
 # What
 
-This template deploys [Thanos Bucket Inspect](https://thanos.io/tip/components/tools.md/#bucket-insepct)
-as a Kubernetes Job.
+This template deploys [Thanos Bucket Replicate](https://thanos.io/tip/components/tools.md/#bucket-replicate)
+as a Kubernetes Job or CronJob.
 
 # SOP
 
@@ -49,3 +49,7 @@ oc process -f job-template.yaml | oc apply -f -
 ```
 
 
+Alternatively, you can run it as a CronJob
+```bash
+oc process -f cron-job-template.yaml | oc apply -f -
+```

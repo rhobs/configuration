@@ -68,7 +68,7 @@ objects:
       name: ${NAME}
       namespace: ${NAMESPACE}
       labels:
-        app.kubernetes.io/name: thanos-bucket-inspect
+        app.kubernetes.io/name: ${NAME}
         app.kubernetes.io/part-of: observatorium
     spec:
       schedule: ${SCHEDULE}
@@ -76,6 +76,10 @@ objects:
       jobTemplate:
         spec:
           template:
+            metadata:
+              labels:
+                app.kubernetes.io/name: ${NAME}
+                app.kubernetes.io/part-of: observatorium
             spec:
               containers:
                 - name: thanos-bucket-replicate

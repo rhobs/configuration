@@ -128,7 +128,7 @@ objects:
         app.kubernetes.io/part-of: observatorium
     type: Opaque
     stringData:
-      ${SOURCE_K8S_SECRET_KEY}: |
+      ${SOURCE_OBJ_STORE_K8S_SECRET_KEY}: |
         type: S3
         config:
           bucket: ${SOURCE_S3_BUCKET_NAME}
@@ -146,7 +146,7 @@ objects:
         app.kubernetes.io/part-of: observatorium
     type: Opaque
     stringData:
-      ${DESTINATION_K8S_SECRET_KEY}: |
+      ${DESTINATION_OBJ_STORE_K8S_SECRET_KEY}: |
         type: S3
         config:
           bucket: ${DESTINATION_S3_BUCKET_NAME}

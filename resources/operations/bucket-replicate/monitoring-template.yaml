@@ -25,7 +25,7 @@ objects:
           - ${NAMESPACE}
       selector:
         matchLabels:
-          job-name: ${NAME}
+          app.kubernetes.io/name: ${NAME}
       podMetricsEndpoints:
         - port: metrics
           interval: 30s

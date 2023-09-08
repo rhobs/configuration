@@ -36,6 +36,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     version: '${GUBERNATOR_IMAGE_TAG}',
     image: '%s:%s' % ['${GUBERNATOR_IMAGE}', cfg.version],
     replicas: 1,
+    logLevel: '${GUBERNATOR_LOG_LEVEL}',
     commonLabels+:: obs.config.commonLabels,
     serviceMonitor: true,
     resources: {

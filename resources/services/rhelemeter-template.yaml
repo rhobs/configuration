@@ -25,6 +25,7 @@ objects:
           - --tls-key=/etc/pki/external/tls.key
           - --tls-crt=/etc/pki/external/tls.crt
           - --tls-ca-crt=/etc/pki/external/ca.crt
+          - --client-info-data-file=/etc/pki/external/client_info.json
           - --internal-tls-key=/etc/pki/service/tls.key
           - --internal-tls-crt=/etc/pki/service/tls.crt
           - --oidc-issuer=$(OIDC_ISSUER)
@@ -102,6 +103,15 @@ objects:
     ca.crt: ${RHELEMETER_EXTERNAL_MTLS_CA}
     tls.crt: ${RHELEMETER_EXTERNAL_MTLS_CRT}
     tls.key: ${RHELEMETER_EXTERNAL_MTLS_KEY}
+    client_info.json: |
+      {
+        "secret": "${RHELEMETER_CLIENT_INFO_PSK}",
+        "config": {
+          "secret_header": "x-rh-rhelemeter-gateway-secret",
+          "common_name_header": "x-rh-certauth-cn",
+          "issuer_header": "x-rh-certauth-issuer"
+        }
+      }
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -183,6 +193,8 @@ parameters:
 - name: RHELEMETER_EXTERNAL_MTLS_CRT
   value: ""
 - name: RHELEMETER_EXTERNAL_MTLS_KEY
+  value: ""
+- name: RHELEMETER_CLIENT_INFO_PSK
   value: ""
 - name: RHELEMETER_LOG_LEVEL
   value: warn

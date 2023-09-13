@@ -14,6 +14,7 @@ local rhelemeter = (import 'rhelemeter.libsonnet') {
       externalMtlsCa: '${RHELEMETER_EXTERNAL_MTLS_CA}',
       externalMtlsCrt: '${RHELEMETER_EXTERNAL_MTLS_CRT}',
       externalMtlsKey: '${RHELEMETER_EXTERNAL_MTLS_KEY}',
+      clientInfoPSK: '${RHELEMETER_CLIENT_INFO_PSK}',
       resourceLimits:: {
         cpu: '${RHELEMETER_SERVER_CPU_LIMIT}',
         memory: '${RHELEMETER_SERVER_MEMORY_LIMIT}',
@@ -49,6 +50,7 @@ local rhelemeter = (import 'rhelemeter.libsonnet') {
     { name: 'RHELEMETER_EXTERNAL_MTLS_CA', value: '' },
     { name: 'RHELEMETER_EXTERNAL_MTLS_CRT', value: '' },
     { name: 'RHELEMETER_EXTERNAL_MTLS_KEY', value: '' },
+    { name: 'RHELEMETER_CLIENT_INFO_PSK', value: '' },
     { name: 'RHELEMETER_LOG_LEVEL', value: 'warn' },
     { name: 'RHELEMETER_SERVER_CPU_LIMIT', value: '1' },
     { name: 'RHELEMETER_SERVER_CPU_REQUEST', value: '100m' },

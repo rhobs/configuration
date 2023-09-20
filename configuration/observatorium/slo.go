@@ -336,6 +336,18 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				sloType:             sloTypeAvailability,
 			},
 			{
+				name: "api-rules-raw-write-availability-slo",
+				labels: map[string]string{
+					slo.PropagationLabelsPrefix + "service": "observatorium-api",
+					"instance":                              string(envName),
+				},
+				description:         "API /rules/raw endpoint for writes is burning too much error budget to guarantee availability SLOs.",
+				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", group=\"metricsv1\", code=~\"^5..$\"}",
+				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"rules-raw\", method=\"PUT\", group=\"metricsv1\"}",
+				alertName:           "APIRulesRawWriteAvailabilityErrorBudgetBurning",
+				sloType:             sloTypeAvailability,
+			},
+			{
 				name: "api-rules-read-availability-slo",
 				labels: map[string]string{
 					slo.PropagationLabelsPrefix + "service": "observatorium-api",

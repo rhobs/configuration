@@ -40,6 +40,11 @@ local var = import 'utils.jsonnet';
       instance_name_filter: var.instance_name_filter,
     },
   },
+  obsctlReloader: {
+    _config+:: {
+      obsctlReloaderSelector: 'job="rules-obsctl-reloader"',
+    },
+  },
   alertmanager: (import 'github.com/prometheus/alertmanager/doc/alertmanager-mixin/config.libsonnet') {
     title: 'Alertmanager / Overview',
     _config+:: {

@@ -471,6 +471,6 @@ local renderAlerts(name, environment, mixin) = {
 
 {
   local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/alerts.libsonnet') + config.obsctlReloader,
-  'obsctl-realoder-stage.prometheusrules': renderAlerts('obsctl-reloader-stage', 'stage', obsctlReloader),
-  'obsctl-realoder-production.prometheusrules': renderAlerts('obsctl-reloader-production', 'production', obsctlReloader),
+  'obsctl-reloader-stage.prometheusrules': renderAlerts('obsctl-reloader-stage', 'stage', obsctlReloader),
+  'obsctl-reloader-production.prometheusrules': renderAlerts('obsctl-reloader-production', 'production', obsctlReloader),
 }

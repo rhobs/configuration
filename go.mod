@@ -1,6 +1,8 @@
 module github.com/rhobs/configuration
 
-go 1.19
+go 1.21
+
+toolchain go1.21.1
 
 require (
 	github.com/bwplotka/mimic v0.1.1-0.20220621130344-a6338e3b8238
@@ -78,3 +80,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.3.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/observatorium/observatorium => ../observatorium

@@ -1,0 +1,67 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: obsctl-reloader-stage
+spec:
+  groups:
+  - name: obsctl-reloader.rules
+    rules:
+    - alert: ObsCtlRulesStoreServerError
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/obsctl-reloader.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: Failed to send rules from tenant {{ $labels.tenant }} to store {{ $value | humanizePercentage }}% of the time with a 5xx or 4xx status code.
+        message: Failed to send rules from tenant {{ $labels.tenant }} to store {{ $value | humanizePercentage }}% of the time with a 5xx or 4xx status code.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#obsctlrulesstoreservererror
+        summary: Failing to send rules to Observatorium.
+      expr: |
+        (
+          sum_over_time(obsctl_reloader_prom_rules_store_ops_total{status_code=~"5..|4..", job="rules-obsctl-reloader"}[5m])
+        /
+          sum(sum_over_time(obsctl_reloader_prom_rules_store_ops_total{job="rules-obsctl-reloader"}[5m]))
+        ) or vector(0)
+        > 0.10
+      for: 10m
+      labels:
+        service: telemeter
+        severity: high
+    - alert: ObsCtlRulesSetFailure
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/obsctl-reloader.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: obsctl-reloader is failing to set rules for tenant {{ $labels.tenant }} before reaching Observatorium {{ $value | humanizePercentage }}% of the time due to {{ $labels.reason }}.
+        message: obsctl-reloader is failing to set rules for tenant {{ $labels.tenant }} before reaching Observatorium {{ $value | humanizePercentage }}% of the time due to {{ $labels.reason }}.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#obsctlrulessetfailure
+        summary: Failing to set rules due to issue before talking to Observatorium.
+      expr: |
+        (
+          sum_over_time(obsctl_reloader_prom_rule_set_failures_total{reason!="rules_store_error", job="rules-obsctl-reloader"}[5m])
+        /
+          sum_over_time(obsctl_reloader_prom_rule_set_total{job="rules-obsctl-reloader"}[5m])
+        ) or vector(0)
+        > 0.10
+      for: 10m
+      labels:
+        service: telemeter
+        severity: medium
+    - alert: ObsCtlFetchRulesFailed
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/obsctl-reloader.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: obsctl-reloader is failing to fetch rules via the PrometheusRule CRD in the local cluster.
+        message: obsctl-reloader is failing to fetch rules via the PrometheusRule CRD in the local cluster.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#obsctlfetchrulesfailed
+        summary: Failing to fetch rules from the local cluster.
+      expr: |
+        (
+          sum_over_time(obsctl_reloader_prom_rule_fetch_failures_total{job="rules-obsctl-reloader"}[5m])
+        /
+          sum_over_time(obsctl_reloader_prom_rule_fetches_total{job="rules-obsctl-reloader"}[5m])
+        ) or vector(0)
+        > 0.20
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high

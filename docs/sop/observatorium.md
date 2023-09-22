@@ -974,7 +974,7 @@ Obsctl Reloader is not able to set PrometheusRule CRs in Observatorium due to a 
 
 ### Steps
 
-- Check the logs of the Observatorium API and obsctl-reloader pods in the namespace indicated in the alert. The logs should contain the more details about the error.
+- For any other status code, check the logs of the Observatorium API and obsctl-reloader pods in the namespace indicated in the alert. The logs should contain more details about the error.
 - Ultimately you can check the tenant's rules by checking the PrometheusRule CRs in the namespace indicated in the alert.
 
 # Observatorium Thanos Alerts

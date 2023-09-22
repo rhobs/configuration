@@ -94,6 +94,8 @@ local appSREOverwrites(environment) = {
       else if
         std.startsWith(name, 'gubernator') then 'no-dashboard'
       else if
+        std.startsWith(name, 'obsctl-reloader') then 'no-dashboard'
+      else if
         std.startsWith(name, 'alertmanager') then 'alertmanager-overview'
       else error 'no dashboard id for group %s' % name,
   },
@@ -465,4 +467,10 @@ local renderAlerts(name, environment, mixin) = {
 
   'observatorium-http-traffic-stage.prometheusrules': renderAlerts('observatorium-http-traffic-stage', 'stage', httpTrafficMonitoringAlerts),
   'observatorium-http-traffic-production.prometheusrules': renderAlerts('observatorium-http-traffic-production', 'production', httpTrafficMonitoringAlerts),
+}
+
+{
+  local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/alerts.libsonnet') + config.obsctlReloader,
+  'observatorium-obsctl-reloader-stage.prometheusrules': renderAlerts('obsctl-reloader-stage', 'stage', obsctlReloader),
+  'observatorium-obsctl-reloader-production.prometheusrules': renderAlerts('obsctl-reloader-production', 'production', obsctlReloader),
 }

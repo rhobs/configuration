@@ -120,6 +120,16 @@ function() {
     },
   },
 
+  obsctlReloader:: {
+    dashboard:: {
+      title: 'Observatorium - obsctl-reloader',
+      selector: std.join(', ', config.dashboard.selector + ['job=~"$job"']),
+      dimensions: std.join(', ', config.dashboard.dimensions + ['job']),
+      pod: 'rules-obsctl-reloader.*',
+      container: 'obsctl-reloader',
+    },
+  },
+
   alerts:: {
     dashboard:: {
       selector: std.join(', ', ['service=~"observatorium.*|telemeter.*"']),
@@ -737,6 +747,75 @@ function() {
           g.stack +
           g.addDashboardLink(am.title) +
           { yaxes: g.yaxes('binBps') }
+        ) { collapse: true }
+      )
+      .addRow(
+        g.row('Obsctl Reloader Overview')
+        .addPanel(
+          g.panel('Rate of reloads', 'rate of rule reloads by obsctl-reloader') +
+          g.queryPanel(
+            [
+              'sum(rate(obsctl_reloader_prom_rule_sets_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+            ],
+            [
+              'reloads {{pod}}',
+            ]
+          ) { span:: 0 } +
+          g.addDashboardLink(thanos.obsctlReloader.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Percentage of reload errors', 'Percentage of rule reloads that failed') +
+          g.queryPanel(
+            [
+              '100 * sum(rate(obsctl_reloader_prom_rule_set_failures_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job, reason) / ignoring (job, reason) group_left sum(rate(obsctl_reloader_prom_rule_sets_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace) > 0',
+            ],
+            [
+              'reload error: {{reason}}',
+            ]
+          )
+          { span:: 0 } +
+          { yaxes: g.yaxes('percent') } +
+          g.addDashboardLink(thanos.obsctlReloader.dashboard.title) +
+          g.stack
+        )
+        .addPanel(
+          g.panel('Responses from Observatorium Rules API', 'Rate of responses from the Observatorium Rules API') +
+          g.queryPanel(
+            [
+              'sum(rate(obsctl_reloader_prom_rules_store_ops_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod,status_code) > 0',
+            ],
+            [
+              '{{status_code}} - pod {{pod}}',
+            ]
+          ) { span:: 0 } +
+          g.addDashboardLink(thanos.obsctlReloader.dashboard.title) +
+          g.stack
+        )
+        .addPanel(
+          g.panel('Rate of fetches', 'Rate of rule fetches via PrometheusRule CRDs from the local cluster') +
+          g.queryPanel(
+            [
+              'sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
+            ],
+            [
+              'fetches {{pod}}',
+            ]
+          ) { span:: 0 } +
+          g.addDashboardLink(thanos.obsctlReloader.dashboard.title)
+        )
+        .addPanel(
+          g.panel('Percentage of failed fetches', 'Percentage of failed rule fetches via PrometheusRule CRDs from the local cluster') +
+          g.queryPanel(
+            [
+              '100 * sum(rate(obsctl_reloader_prom_rule_fetch_failures_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod) / ignoring (job, pod) group_left sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace) > 0',
+            ],
+            [
+              'failed fetches {{pod}}',
+            ]
+          ) +
+          { span:: 0 } +
+          { yaxes: g.yaxes('percent') } +
+          g.addDashboardLink(thanos.obsctlReloader.dashboard.title)
         ) { collapse: true }
       ) + {
         templating+: {

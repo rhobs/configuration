@@ -33,6 +33,10 @@
   * [ObservatoriumPersistentVolumeUsageCritical](#observatoriumpersistentvolumeusagecritical)
 * [Observatorium Gubernator Alerts](#observatorium-gubernator-alerts)
   * [GubernatorIsDown](#gubernatorisdown)
+* [Observatorium Obsctl Reloader Alerts](#observatorium-obsctl-reloader-alerts)
+  * [ObsCtlRulesStoreServerError](#obsctlrulesstoreservererror)
+  * [ObsCtlFetchRulesFailed](#obsctlfetchrulesfailed)
+  * [ObsCtlRulesSetFailure](#obsctlrulessetfailure)
 * [Observatorium Thanos Alerts](#observatorium-thanos-alerts)
   * [MandatoryThanosComponentIsDown](#mandatorythanoscomponentisdown)
   * [ThanosCompactIsDown](#thanoscompactisdown)
@@ -891,6 +895,87 @@ Observatorium rate-limiting service is not working.
 - Inspect metrics of failing job using [Prometheus](https://prometheus.telemeter-prod-01.devshift.net/graph?g0.range_input=15m&g0.expr=%7Bjob%3D~%22observatorium-gubernator%22%7D&g0.tab=0).
 - Inspect logs and events of failing jobs, using [OpenShift console](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/ns/telemeter-production/deployments/observatorium-gubernator).
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
+
+# Observatorium Obsctl Reloader Alerts
+
+## ObsCtlRulesStoreServerError
+
+### Impact
+
+Tenant's rules are not being pushed to Observatorium, so they might be stale.
+
+### Summary
+
+Obsctl Reloader is not able to push rules to Observatorium. Potential causes could be:
+
+- Failing tenant authentication due to bad credentials or issues with SSO.
+- Internal server error in Observatorium API.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
+- Edit access to the Observatorium namespaces:
+  - `observatorium-mst-production`
+
+### Steps
+
+- If the error is a 403, check the tenant credentials in the Vault path indicated in [App Interface](https://gitlab.cee.redhat.com/service/app-interface/-/blob/master/data/services/rhobs/observatorium-mst/namespaces/telemeter-prod-01/observatorium-mst-production.yml#L68). Verify if they are valid and can authenticate the tenant properly. This can be done using obsctl-reloader locally and details can be found in the [RHOBS Tenant Test & Verification document](https://docs.google.com/document/d/1iDUh-U7d2luwRBDl8ZkRancsMCePt2pu2NFSf63j10Q/edit#heading=h.bupciudrwmna). If credentials are invalid, identify the tenant and notify them in Slack.
+- For any other status code, check the logs of the Observatorium API and obsctl-reloader pods in the namespace indicated in the alert. The logs should contain more details about the error.
+- Ultimately you can check the tenant's rules by checking the PrometheusRule CRs in the namespace indicated in the alert.
+
+## ObsCtlFetchRulesFailed
+
+### Impact
+
+Unable to fetch tenant's rules from the local cluster to process, so they might be stale.
+
+### Summary
+
+Obsctl Reloader is not able to fetch PrometheusRule CRs from the local cluster.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
+- Edit access to the Observatorium namespaces:
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the logs of the Obsctl Reloader pods in the namespace indicated in the alert. The logs should contain the more details about the error.
+- Ensure that the Obsctl Reloader deployment has a service account that can do `get, list, watch` on PrometheusRules.
+
+## ObsCtlRulesSetFailure
+
+### Impact
+
+Unable to set tenant's rules in Observatorium, so they might be stale. Didn't even try to talk to the Observatorium API.
+
+### Summary
+
+Obsctl Reloader is not able to set PrometheusRule CRs in Observatorium due to a problem happening **before** sending the request.
+
+### Severity
+
+`warning`
+
+### Access Required
+
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
+- Edit access to the Observatorium namespaces:
+  - `observatorium-mst-production`
+
+### Steps
+
+- For any other status code, check the logs of the Observatorium API and obsctl-reloader pods in the namespace indicated in the alert. The logs should contain more details about the error.
+- Ultimately you can check the tenant's rules by checking the PrometheusRule CRs in the namespace indicated in the alert.
 
 # Observatorium Thanos Alerts
 

@@ -917,15 +917,14 @@ Obsctl Reloader is not able to push rules to Observatorium. Potential causes cou
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-stage)).
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
 - Edit access to the Observatorium namespaces:
-  - `observatorium-mst-stage`
   - `observatorium-mst-production`
 
 ### Steps
 
-- If the error is a 403, check the tenant credentials in the Vault path indicated in [App Interface](https://gitlab.cee.redhat.com/service/app-interface/-/blob/master/data/services/rhobs/observatorium-mst/namespaces/telemeter-prod-01/observatorium-mst-production.yml#L68). Verify if they are valid and can authenticate the tenant properly. This can be done using obsctl-reloader locally and details can be found in the RHOBS Tenant Test & Verification document. If credentials are invalid, identify the tenant and notify them in Slack.
-- For any other status code, check the logs of the Observatorium API and obsctl-reloader pods in the namespace indicated in the alert. The logs should contain the more details about the error.
+- If the error is a 403, check the tenant credentials in the Vault path indicated in [App Interface](https://gitlab.cee.redhat.com/service/app-interface/-/blob/master/data/services/rhobs/observatorium-mst/namespaces/telemeter-prod-01/observatorium-mst-production.yml#L68). Verify if they are valid and can authenticate the tenant properly. This can be done using obsctl-reloader locally and details can be found in the [RHOBS Tenant Test & Verification document](https://docs.google.com/document/d/1iDUh-U7d2luwRBDl8ZkRancsMCePt2pu2NFSf63j10Q/edit#heading=h.bupciudrwmna). If credentials are invalid, identify the tenant and notify them in Slack.
+- For any other status code, check the logs of the Observatorium API and obsctl-reloader pods in the namespace indicated in the alert. The logs should contain more details about the error.
 - Ultimately you can check the tenant's rules by checking the PrometheusRule CRs in the namespace indicated in the alert.
 
 ## ObsCtlFetchRulesFailed
@@ -944,9 +943,8 @@ Obsctl Reloader is not able to fetch PrometheusRule CRs from the local cluster.
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-stage)).
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
 - Edit access to the Observatorium namespaces:
-  - `observatorium-mst-stage`
   - `observatorium-mst-production`
 
 ### Steps
@@ -970,9 +968,8 @@ Obsctl Reloader is not able to set PrometheusRule CRs in Observatorium due to a 
 
 ### Access Required
 
-- Console access to the cluster that runs Observatorium (Currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [app-sre-stage-0 OSD](https://console-openshift-console.apps.app-sre-stage-0.k3s7.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-stage)).
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
 - Edit access to the Observatorium namespaces:
-  - `observatorium-mst-stage`
   - `observatorium-mst-production`
 
 ### Steps

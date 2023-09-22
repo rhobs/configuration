@@ -70,7 +70,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.3
     name: observatorium-thanos-compact
-    namespace: rhobs
+    namespace: openshift-monitoring
   spec:
     endpoints:
     - bearerTokenSecret:
@@ -85,7 +85,7 @@ objects:
         targetLabel: instance
     namespaceSelector:
       matchNames:
-      - openshift-monitoring
+      - rhobs
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
@@ -190,7 +190,7 @@ objects:
           readinessProbe:
             failureThreshold: 20
             httpGet:
-              path: /-/healthy
+              path: /-/ready
               port: 10902
             periodSeconds: 5
           resources:
@@ -200,6 +200,9 @@ objects:
               cpu: 200m
               memory: 1Gi
           terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/thanos/compactor
+            name: data
         - args:
           - -provider=openshift
           - -https-address=:8443

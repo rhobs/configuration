@@ -2,16 +2,21 @@ package observatorium
 
 import (
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache/redis"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/common"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/units"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func makeCompactor(namespace string) *compactor.CompactorStatefulSet {
+func makeCompactor(namespace string) (*compactor.CompactorStatefulSet, PostProcessFunc) {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Image = thanosImage
@@ -31,9 +36,6 @@ func makeCompactor(namespace string) *compactor.CompactorStatefulSet {
 	}
 	tlsSecret := "compact-tls"
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, compactorSatefulset.Name, tlsSecret)}
-	// compactorSatefulset.PostProcess = []k8sutil.ObjectProcessor{
-	// 	serviceCertAnnotationModifier(tlsSecret),
-	// }
 
 	// Compactor config
 	compactorSatefulset.Options.LogLevel = "warn"
@@ -46,15 +48,48 @@ func makeCompactor(namespace string) *compactor.CompactorStatefulSet {
 	compactorSatefulset.Options.DeduplicationReplicaLabel = "replica"
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
-	return compactorSatefulset
+	return compactorSatefulset, addServiceCertAnnotation(compactorSatefulset.CommonLabels[k8sutil.NameLabel], tlsSecret)
 }
 
-func serviceCertAnnotationModifier(secretName string) func(object runtime.Object) {
-	return func(object runtime.Object) {
-		if service, ok := object.(*corev1.Service); ok {
-			service.ObjectMeta.Annotations["service.beta.openshift.io/serving-cert-secret-name"] = secretName
-		}
+func makeStore(namespace string) (*store.StoreStatefulSet, PostProcessFunc) {
+	storeStatefulSet := store.NewStore()
+	storeStatefulSet.Image = thanosImage
+	storeStatefulSet.ImageTag = thanosImageTag
+	storeStatefulSet.Namespace = namespace
+	storeStatefulSet.Replicas = 1
+	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU) // To be confirmed
+	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
+	storeStatefulSet.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("1Gi")
+	storeStatefulSet.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("5Gi")
+	storeStatefulSet.VolumeType = "gp2"
+	storeStatefulSet.VolumeSize = "500Gi"
+	storeStatefulSet.Env = []corev1.EnvVar{
+		k8sutil.NewEnvFromSecret("AWS_ACCESS_KEY_ID", "rhobs-thanos-s3", "aws_access_key_id"),
+		k8sutil.NewEnvFromSecret("AWS_SECRET_ACCESS_KEY", "rhobs-thanos-s3", "aws_secret_access_key"),
+		k8sutil.NewEnvFromSecret("OBJSTORE_CONFIG", "rhobs-thanos-objectstorage", "thanos.yaml"),
 	}
+	tlsSecret := "store-tls"
+	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, storeStatefulSet.Name, tlsSecret)}
+
+	// Store config
+	storeStatefulSet.Options.LogLevel = "warn"
+	storeStatefulSet.Options.LogFormat = "logfmt"
+	storeStatefulSet.Options.IgnoreDeletionMarksDelay = 24 * time.Hour
+	maxTime := time.Duration(365*24) * time.Hour
+	storeStatefulSet.Options.MaxTime = &common.TimeOrDurationValue{Dur: &maxTime}
+	storeStatefulSet.Options.ChunkPoolSize = 2040 * units.GiB
+	storeStatefulSet.Options.HttpAddress = &net.TCPAddr{Port: 10902, IP: net.ParseIP("0.0.0.0")}
+	// storeStatefulSet.Options.StoreGrpcDownloadedBytesLimit
+	// indexCacheCfg, err := yaml.Marshal(cache.NewConfig(redis.RedisClientConfig{
+	// 	Addr: "rhobs-redis.rhobs.svc.cluster.local:6379",
+	// }))
+	// mimic.PanicOnErr(err)
+
+	storeStatefulSet.Options.IndexCacheConfig = cache.NewConfig(redis.RedisClientConfig{
+		Addr: "rhobs-redis.rhobs.svc.cluster.local:6379",
+	})
+
+	return storeStatefulSet, addServiceCertAnnotation(storeStatefulSet.CommonLabels[k8sutil.NameLabel], tlsSecret)
 }
 
 func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret string) *k8sutil.Container {

@@ -6,8 +6,15 @@ metadata:
 objects:
 - apiVersion: v1
   data:
-    session_secret: c2VjcmV0
-  kind: Secret
+    entrypoint.sh: "#!/bin/bash\n\n# Kubernetes replicas are named with the following
+      convention \"<statefulset-name>-<ordinal>\". \n# This parameter expansion removes
+      all characters until the last hyphen, capturing only the ordinal.\nexport ORDINAL_INDEX=${HOSTNAME##*-}\n\n#
+      Logging parameters\necho \"generating store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX}
+      THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS} HOSTNAME=${HOSTNAME}\"\n\ncat
+      <<EOF >/tmp/config/hashmod-config.yaml\n- action: hashmod\n    source_labels:
+      [\"__block_id\"]\n    target_label: shard\n    modulus: ${THANOS_STORE_REPLICAS}\n-
+      action: keep\n    source_labels: [\"shard\"]\n    regex: ${ORDINAL_INDEX}\nEOF\n"
+  kind: ConfigMap
   metadata:
     creationTimestamp: null
     labels:
@@ -16,13 +23,11 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.3
-    name: compact-proxy
+    name: hashmod-config-template
     namespace: rhobs
 - apiVersion: v1
   kind: Service
   metadata:
-    annotations:
-      service.beta.openshift.io/serving-cert-secret-name: compact-tls
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: object-store-gateway
@@ -38,10 +43,6 @@ objects:
       port: 10902
       protocol: TCP
       targetPort: 10902
-    - name: https
-      port: 8443
-      protocol: TCP
-      targetPort: 8443
     selector:
       app.kubernetes.io/component: object-store-gateway
       app.kubernetes.io/instance: observatorium
@@ -147,9 +148,7 @@ objects:
         containers:
         - args:
           - store
-          - --chunk-pool-size=1TiB1016GiB
           - --data-dir=/var/thanos/store
-          - --http-address=0.0.0.0:10902
           - --ignore-deletion-marks-delay=24h0m0s
           - |
             --index-cache.config=type: REDIS
@@ -157,8 +156,10 @@ objects:
               addr: rhobs-redis.rhobs.svc.cluster.local:6379
           - --log.format=logfmt
           - --log.level=warn
-          - --max-time=8760h0m0s
+          - --max-time=-22h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
+          - --selector.relabel-config-file=/tmp/config/hashmod-config.yaml
+          - --store.enable-index-header-lazy-reader=true
           env:
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
@@ -197,52 +198,74 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: 5Gi
+              memory: 80Gi
             requests:
-              cpu: 200m
-              memory: 1Gi
+              cpu: "4"
+              memory: 20Gi
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/store
             name: data
+          - mountPath: /etc/config
+            name: hashmod-config
         - args:
-          - -provider=openshift
-          - -https-address=:8443
-          - -http-address=
-          - -email-domain=*
-          - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-store
-          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
-            "namespace": "rhobs"}'
-          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-            "name": "rhobs", "namespace": "rhobs"}}'
-          - -tls-cert=/etc/tls/private/tls.crt
-          - -tls-key=/etc/tls/private/tls.key
-          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-          - -cookie-secret-file=/etc/proxy/secrets/session_secret
-          - -openshift-ca=/etc/pki/tls/cert.pem
-          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: quay.io/openshift/origin-oauth-proxy:v4.8.0
-          name: oauth-proxy
+          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.observatorium-tools.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: quay.io/app-sre/jaegertracing-jaeger-agent:1.22.0
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+          name: jaeger-agent
           ports:
-          - containerPort: 8443
-            name: https
+          - containerPort: 5778
+            name: configs
             protocol: TCP
+          - containerPort: 6831
+            name: jaeger-thrift
+            protocol: TCP
+          - containerPort: 14271
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+            initialDelaySeconds: 1
           resources:
             limits:
-              cpu: 200m
-              memory: 200Mi
+              cpu: 128m
+              memory: 128Mi
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 32m
+              memory: 64Mi
           terminationMessagePolicy: FallbackToLogsOnError
+        initContainers:
+        - args:
+          - /tmp/entrypoint/entrypoint.sh
+          env:
+          - name: THANOS_STORE_REPLICAS
+            value: "1"
+          image: quay.io/app-sre/ubi8-ubi
+          imagePullPolicy: IfNotPresent
+          name: init-hashmod-file
+          resources: {}
           volumeMounts:
-          - mountPath: /etc/tls/private
-            name: compact-tls
-            readOnly: true
-          - mountPath: /etc/proxy/secrets
-            name: compact-proxy
-            readOnly: true
+          - mountPath: /tmp/entrypoint
+            name: hashmod-config-template
+          - mountPath: /etc/config
+            name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
         securityContext:
@@ -251,12 +274,12 @@ objects:
         serviceAccountName: observatorium-thanos-store
         terminationGracePeriodSeconds: 120
         volumes:
-        - name: compact-tls
-          secret:
-            secretName: compact-tls
-        - name: compact-proxy
-          secret:
-            secretName: compact-proxy
+        - configMap:
+            defaultMode: 511
+            name: thanos-store
+          name: hashmod-config-template
+        - emptyDir: {}
+          name: hashmod-config
     updateStrategy: {}
     volumeClaimTemplates:
     - metadata:

@@ -29,11 +29,14 @@ type TenantInstanceConfiguration struct {
 	// Tenant           *obs_api.tenant
 }
 
+// type ComponentsConfig struct {
+
 type InstanceConfiguration struct {
 	Cluster   string
 	Instance  string
 	Namespace string
 	Tenants   []TenantInstanceConfiguration
+	// Components
 }
 
 type PostProcessFunc func(obj runtime.Object)
@@ -48,9 +51,9 @@ type Observatorium struct {
 func NewObservatorium(cfg *InstanceConfiguration) *Observatorium {
 	postProcessFuncs := []PostProcessFunc{updateServiceMonitorNamespace}
 	storeComponent, postProcess := makeStore(cfg.Namespace)
-	postProcessFuncs = append(postProcessFuncs, postProcess)
+	postProcessFuncs = append(postProcessFuncs, postProcess...)
 	compactorComponent, postProcess := makeCompactor(cfg.Namespace)
-	postProcessFuncs = append(postProcessFuncs, postProcess)
+	postProcessFuncs = append(postProcessFuncs, postProcess...)
 
 	return &Observatorium{
 		Cfg:              cfg,

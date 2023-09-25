@@ -16,6 +16,8 @@ parameters:
   - name: S3_BUCKET_NAME
   - name: S3_BUCKET_ENDPOINT
     value: s3.us-east-1.amazonaws.com
+  - name: S3_BUCKET_ENDPOINT_SCHEME
+    value: 'https://'
   - name: OTELCOL_LIMIT_CHECK_INTERVAL
     value: "1s"
   - name: OTELCOL_LIMIT_PERCENTAGE
@@ -39,7 +41,7 @@ objects:
       access_key_id: ${S3_ACCESS_KEY_ID}
       access_key_secret: ${S3_SECRET_ACCESS_KEY}
       bucket: ${S3_BUCKET_NAME}
-      endpoint: ${S3_BUCKET_ENDPOINT}
+      endpoint: '${S3_BUCKET_ENDPOINT_SCHEME}${S3_BUCKET_ENDPOINT}'
   - apiVersion: tempo.grafana.com/v1alpha1
     kind: TempoStack
     metadata:

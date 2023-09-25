@@ -60,9 +60,8 @@ func makeCompactor(namespace string) (*compactor.CompactorStatefulSet, []PostPro
 
 }
 
-func makeStore(namespace string) (*store.StoreStatefulSet, []PostProcessFunc) {
+func makeStore(namespace string, replicas int32) (*store.StoreStatefulSet, []PostProcessFunc) {
 	// K8s config
-	replicas := int32(1)
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = thanosImageTag

@@ -32,11 +32,11 @@ type TenantInstanceConfiguration struct {
 // type ComponentsConfig struct {
 
 type InstanceConfiguration struct {
-	Cluster   string
-	Instance  string
-	Namespace string
-	Tenants   []TenantInstanceConfiguration
-	// Components
+	Cluster             string
+	Instance            string
+	Namespace           string
+	Tenants             []TenantInstanceConfiguration
+	ThanosStoreReplicas int32
 }
 
 type PostProcessFunc func(obj runtime.Object)
@@ -50,7 +50,7 @@ type Observatorium struct {
 
 func NewObservatorium(cfg *InstanceConfiguration) *Observatorium {
 	postProcessFuncs := []PostProcessFunc{updateServiceMonitorNamespace}
-	storeComponent, postProcess := makeStore(cfg.Namespace)
+	storeComponent, postProcess := makeStore(cfg.Namespace, cfg.ThanosStoreReplicas)
 	postProcessFuncs = append(postProcessFuncs, postProcess...)
 	compactorComponent, postProcess := makeCompactor(cfg.Namespace)
 	postProcessFuncs = append(postProcessFuncs, postProcess...)

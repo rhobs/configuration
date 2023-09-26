@@ -75,9 +75,7 @@ objects:
     namespace: openshift-monitoring
   spec:
     endpoints:
-    - bearerTokenSecret:
-        key: ""
-      port: http
+    - port: http
       relabelings:
       - action: replace
         separator: /

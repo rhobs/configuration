@@ -76,9 +76,7 @@ objects:
     namespace: openshift-monitoring
   spec:
     endpoints:
-    - bearerTokenSecret:
-        key: ""
-      port: http
+    - port: http
       relabelings:
       - action: replace
         separator: /
@@ -108,7 +106,7 @@ objects:
     name: observatorium-thanos-store
     namespace: rhobs
   spec:
-    replicas: 1
+    replicas: 2
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway
@@ -256,7 +254,7 @@ objects:
           - /tmp/entrypoint/entrypoint.sh
           env:
           - name: THANOS_STORE_REPLICAS
-            value: "1"
+            value: "2"
           image: quay.io/app-sre/ubi8-ubi
           imagePullPolicy: IfNotPresent
           name: init-hashmod-file

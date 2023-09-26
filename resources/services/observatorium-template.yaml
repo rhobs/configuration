@@ -1389,7 +1389,7 @@ objects:
               cpu: ${OPA_AMS_CPU_REQUEST}
               memory: ${OPA_AMS_MEMORY_REQUEST}
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1746,6 +1746,8 @@ parameters:
   value: jaegertracing/jaeger-agent
 - name: JAEGER_COLLECTOR_NAMESPACE
   value: $(NAMESPACE)
+- name: TRACING_COLLECTOR_ENDPOINT
+  value: otel-trace-writer-collector-headless.observatorium-tools.svc:14250
 - name: MEMCACHED_CONNECTION_LIMIT
   value: "3072"
 - name: MEMCACHED_CPU_LIMIT

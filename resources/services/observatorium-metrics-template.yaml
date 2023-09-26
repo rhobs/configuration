@@ -654,7 +654,7 @@ objects:
             name: query-proxy
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -937,7 +937,7 @@ objects:
             name: query-proxy
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1246,7 +1246,7 @@ objects:
             name: query-proxy
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -1563,7 +1563,7 @@ objects:
             name: query-frontend-proxy
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -2160,7 +2160,7 @@ objects:
             name: observatorium-thanos-receive-limits
             readOnly: true
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -2642,7 +2642,7 @@ objects:
           - mountPath: /etc/thanos/rules/observatorium-rules
             name: observatorium-rules
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -3199,7 +3199,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -3456,7 +3456,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -3713,7 +3713,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -3970,7 +3970,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -4227,7 +4227,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -4484,7 +4484,7 @@ objects:
             name: data
             readOnly: false
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250
+          - --reporter.grpc.host-port=dns:///${TRACING_COLLECTOR_ENDPOINT}
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -4586,6 +4586,8 @@ parameters:
   value: quay.io/app-sre/jaegertracing-jaeger-agent
 - name: JAEGER_COLLECTOR_NAMESPACE
   value: $(NAMESPACE)
+- name: TRACING_COLLECTOR_ENDPOINT
+  value: otel-trace-writer-collector-headless.observatorium-tools.svc:14250
 - name: MEMCACHED_CPU_LIMIT
   value: "3"
 - name: MEMCACHED_CPU_REQUEST

@@ -131,14 +131,14 @@ objects:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - thanos-store
                   - key: app.kubernetes.io/instance
                     operator: In
                     values:
                     - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-store
                 namespaces:
                 - observatorium
                 topologyKey: kubernetes.io/hostname

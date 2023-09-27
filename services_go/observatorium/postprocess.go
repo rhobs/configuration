@@ -12,12 +12,16 @@ const (
 	servingCertSecretNameAnnotation = "service.alpha.openshift.io/serving-cert-secret-name"
 )
 
+// updateServiceMonitorNamespace updates the namespace of all ServiceMonitor objects.
+// This is useful when the ServiceMonitor must be deployed in a different namespace than observatorium.
 func updateServiceMonitorNamespace(obj runtime.Object) {
 	if serviceMonitor, ok := obj.(*monv1.ServiceMonitor); ok {
 		serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
 	}
 }
 
+// addAnnotation adds an annotation to an object.
+// The object is filtered by objectType and objectName.
 func addAnnotation(objectType, objectName, key, value string) func(object runtime.Object) {
 	return func(object runtime.Object) {
 		if object.GetObjectKind().GroupVersionKind().Kind != objectType {
@@ -41,6 +45,7 @@ func addAnnotation(objectType, objectName, key, value string) func(object runtim
 	}
 }
 
+// addPodContainer adds an init container to a pod.
 func addPodInitContainer(objectName string, container corev1.Container) func(object runtime.Object) {
 	return func(object runtime.Object) {
 		name, pod := getPodFromObject(object)
@@ -56,6 +61,7 @@ func addPodInitContainer(objectName string, container corev1.Container) func(obj
 	}
 }
 
+// addPodContainer adds a volume to a pod whose deployment/statefulset name is objectName.
 func addPodVolume(objectName string, volume corev1.Volume) func(object runtime.Object) {
 	return func(object runtime.Object) {
 		name, pod := getPodFromObject(object)
@@ -72,6 +78,8 @@ func addPodVolume(objectName string, volume corev1.Volume) func(object runtime.O
 	}
 }
 
+// addContainerVolumeMount adds a volume mount to the main container whose deployment/statefulset name is objectName.
+// The main container is the first container in the pod.
 func addContainerVolumeMount(objectName string, volumeMount corev1.VolumeMount) func(object runtime.Object) {
 	return func(object runtime.Object) {
 		name, pod := getPodFromObject(object)

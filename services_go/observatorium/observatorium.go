@@ -21,6 +21,7 @@ const (
 	monitoringNamespace = "openshift-monitoring"
 )
 
+// TenantInstanceConfiguration is the configuration for a single tenant in an instance of observatorium.
 type TenantInstanceConfiguration struct {
 	IngestRateLimit  []struct{}
 	QueryRateLimit   []struct{}
@@ -29,8 +30,7 @@ type TenantInstanceConfiguration struct {
 	// Tenant           *obs_api.tenant
 }
 
-// type ComponentsConfig struct {
-
+// InstanceConfiguration is the configuration for an instance of observatorium.
 type InstanceConfiguration struct {
 	Cluster             string
 	Instance            string
@@ -39,8 +39,11 @@ type InstanceConfiguration struct {
 	ThanosStoreReplicas int32
 }
 
+// PostProcessFunc is a function that can be applied to a Kubernetes object after it has been generated.
 type PostProcessFunc func(obj runtime.Object)
 
+// Observatorium is a representation of an instance of observatorium.
+// It contains all the components that make up the instance.
 type Observatorium struct {
 	Cfg              *InstanceConfiguration
 	Compactor        *compactor.CompactorStatefulSet
@@ -48,6 +51,7 @@ type Observatorium struct {
 	PostProcessFuncs []PostProcessFunc
 }
 
+// NewObservatorium creates a new instance of observatorium.
 func NewObservatorium(cfg *InstanceConfiguration) *Observatorium {
 	postProcessFuncs := []PostProcessFunc{updateServiceMonitorNamespace}
 	storeComponent, postProcess := makeStore(cfg.Namespace, cfg.ThanosStoreReplicas)
@@ -63,6 +67,7 @@ func NewObservatorium(cfg *InstanceConfiguration) *Observatorium {
 	}
 }
 
+// Manifests generates the manifests for the instance of observatorium.
 func (o *Observatorium) Manifests(generator *mimic.Generator) {
 	components := []struct {
 		name    string
@@ -81,6 +86,7 @@ func (o *Observatorium) Manifests(generator *mimic.Generator) {
 	}
 }
 
+// postProcess applies all the post process functions to the manifests.
 func (o *Observatorium) postProcess(manifests k8sutil.ObjectMap) {
 	for _, manifest := range manifests {
 		for _, postProcessFunc := range o.PostProcessFuncs {

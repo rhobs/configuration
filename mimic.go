@@ -15,6 +15,7 @@ func main() {
 
 	cfgobservatorium.GenerateRBAC(gen.With(".tmp", "tenants"))
 
+	// Generate the manifests for all observatorium instances.
 	services.Generate(gen.With("services"))
 
 }

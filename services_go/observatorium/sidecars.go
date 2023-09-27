@@ -7,6 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+// makeOauthProxy creates a container for the oauth-proxy sidecar.
 func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret string) *k8sutil.Container {
 	proxyPort := int32(8443)
 
@@ -65,6 +66,7 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 	}
 }
 
+// makeJaegerAgent creates a container for the jaeger-agent sidecar.
 func makeJaegerAgent(collectorNamespace string) *k8sutil.Container {
 	metricsPort := int32(14271)
 	livelinesProbe := k8sutil.NewProbe("/", int(metricsPort), k8sutil.ProbeConfig{FailureThreshold: 5})

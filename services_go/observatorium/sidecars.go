@@ -14,7 +14,7 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 	return &k8sutil.Container{
 		Name:     "oauth-proxy",
 		Image:    "quay.io/openshift/origin-oauth-proxy",
-		ImageTag: "v4.8.0",
+		ImageTag: "v4.13.0",
 		Args: []string{
 			"-provider=openshift",
 			fmt.Sprintf("-https-address=:%d", proxyPort),

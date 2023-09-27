@@ -71,8 +71,9 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.3
+      prometheus: app-sre
     name: observatorium-thanos-compact
-    namespace: openshift-monitoring
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -220,7 +221,7 @@ objects:
           - -cookie-secret-file=/etc/proxy/secrets/session_secret
           - -openshift-ca=/etc/pki/tls/cert.pem
           - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: quay.io/openshift/origin-oauth-proxy:v4.8.0
+          image: quay.io/openshift/origin-oauth-proxy:v4.13.0
           name: oauth-proxy
           ports:
           - containerPort: 8443

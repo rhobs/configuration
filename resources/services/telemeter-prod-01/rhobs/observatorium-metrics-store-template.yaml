@@ -72,8 +72,9 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.3
+      prometheus: app-sre
     name: observatorium-thanos-store
-    namespace: openshift-monitoring
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -268,12 +269,12 @@ objects:
         serviceAccountName: observatorium-thanos-store
         terminationGracePeriodSeconds: 120
         volumes:
+        - emptyDir: {}
+          name: hashmod-config
         - configMap:
             defaultMode: 511
             name: thanos-store
           name: hashmod-config-template
-        - emptyDir: {}
-          name: hashmod-config
     updateStrategy: {}
     volumeClaimTemplates:
     - metadata:

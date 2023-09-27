@@ -2,6 +2,8 @@ package observatorium
 
 import (
 	_ "embed"
+	"fmt"
+	"maps"
 	"strconv"
 	"time"
 
@@ -11,14 +13,23 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/common"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
+	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+)
+
+const (
+	thanosImage                     = "quay.io/thanos/thanos"
+	thanosImageTag                  = "v0.32.3"
+	monitoringNamespace             = "openshift-customer-monitoring"
+	servingCertSecretNameAnnotation = "service.alpha.openshift.io/serving-cert-secret-name"
 )
 
 //go:embed assets/store-auto-shard-relabel-configMap.sh
 var storeAutoShardRelabelConfigMap string
 
-func makeCompactor(namespace string) (*compactor.CompactorStatefulSet, []PostProcessFunc) {
+func makeCompactor(namespace string) k8sutil.ObjectMap {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Image = thanosImage
@@ -50,15 +61,17 @@ func makeCompactor(namespace string) (*compactor.CompactorStatefulSet, []PostPro
 	compactorSatefulset.Options.DeduplicationReplicaLabel = "replica"
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
-	posProcessFuncs := []PostProcessFunc{
-		addAnnotation("Service", compactorSatefulset.Name, servingCertSecretNameAnnotation, tlsSecret),
-	}
+	// Post process
+	manifests := compactorSatefulset.Manifests()
+	service := getObject[*corev1.Service](manifests)
+	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests))
 
-	return compactorSatefulset, posProcessFuncs
+	return manifests
 
 }
 
-func makeStore(namespace string, replicas int32) (*store.StoreStatefulSet, []PostProcessFunc) {
+func makeStore(namespace string, replicas int32) k8sutil.ObjectMap {
 	// K8s config
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage
@@ -109,31 +122,6 @@ func makeStore(namespace string, replicas int32) (*store.StoreStatefulSet, []Pos
 			},
 		},
 	}
-	defaultMode := int32(0777)
-	postProcessFuncs := []PostProcessFunc{
-		addPodVolume(storeStatefulSet.Name, corev1.Volume{
-			Name: "hashmod-config-template",
-			VolumeSource: corev1.VolumeSource{
-				ConfigMap: &corev1.ConfigMapVolumeSource{
-					LocalObjectReference: corev1.LocalObjectReference{
-						Name: storeStatefulSet.CommonLabels[k8sutil.NameLabel],
-					},
-					DefaultMode: &defaultMode,
-				},
-			},
-		}),
-		addPodVolume(storeStatefulSet.Name, corev1.Volume{
-			Name: "hashmod-config",
-			VolumeSource: corev1.VolumeSource{
-				EmptyDir: &corev1.EmptyDirVolumeSource{},
-			},
-		}),
-		addContainerVolumeMount(storeStatefulSet.Name, corev1.VolumeMount{
-			Name:      "hashmod-config",
-			MountPath: "/etc/config",
-		}),
-		addPodInitContainer(storeStatefulSet.Name, initContainer),
-	}
 
 	// Store config
 	storeStatefulSet.Options.LogLevel = common.LogLevelWarn
@@ -152,5 +140,55 @@ func makeStore(namespace string, replicas int32) (*store.StoreStatefulSet, []Pos
 	}
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
 
-	return storeStatefulSet, postProcessFuncs
+	// Post process
+	manifests := storeStatefulSet.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests))
+	statefulset := getObject[*appsv1.StatefulSet](manifests)
+	defaultMode := int32(0777)
+	statefulset.Spec.Template.Spec.Volumes = append(statefulset.Spec.Template.Spec.Volumes, corev1.Volume{
+		Name: "hashmod-config",
+		VolumeSource: corev1.VolumeSource{
+			EmptyDir: &corev1.EmptyDirVolumeSource{},
+		},
+	}, corev1.Volume{
+		Name: "hashmod-config-template",
+		VolumeSource: corev1.VolumeSource{
+			ConfigMap: &corev1.ConfigMapVolumeSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: storeStatefulSet.CommonLabels[k8sutil.NameLabel],
+				},
+				DefaultMode: &defaultMode,
+			},
+		},
+	})
+	statefulset.Spec.Template.Spec.InitContainers = append(statefulset.Spec.Template.Spec.InitContainers, initContainer)
+	mainContainer := &statefulset.Spec.Template.Spec.Containers[0]
+	mainContainer.VolumeMounts = append(mainContainer.VolumeMounts, corev1.VolumeMount{
+		Name:      "hashmod-config",
+		MountPath: "/etc/config",
+	})
+
+	return manifests
+}
+
+type KubeObject interface {
+	*corev1.Service | *appsv1.StatefulSet | *monv1.ServiceMonitor
+}
+
+func getObject[T KubeObject](manifests k8sutil.ObjectMap) T {
+	for _, obj := range manifests {
+		if service, ok := obj.(T); ok {
+			return service
+		}
+	}
+
+	panic(fmt.Sprintf("could not find object of type %T", *new(T)))
+}
+
+func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor) {
+	serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
+	// Same labels map is shared between all objects in the manifests. Need to clone it to avoid modifying all.
+	labels := maps.Clone(serviceMonitor.ObjectMeta.Labels)
+	labels["prometheus"] = "app-sre"
+	serviceMonitor.ObjectMeta.Labels = labels
 }

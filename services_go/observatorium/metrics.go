@@ -8,8 +8,6 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
-	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache"
-	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache/redis"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/common"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
@@ -153,9 +151,6 @@ func makeStore(namespace string, replicas int32) (*store.StoreStatefulSet, []Pos
 		},
 	}
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
-	storeStatefulSet.Options.IndexCacheConfig = cache.NewConfig(redis.RedisClientConfig{
-		Addr: "rhobs-redis.rhobs.svc.cluster.local:6379",
-	})
 
 	return storeStatefulSet, postProcessFuncs
 }

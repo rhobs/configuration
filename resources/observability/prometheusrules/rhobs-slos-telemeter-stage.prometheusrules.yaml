@@ -94,8 +94,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate5m{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (14 * (1-0.99)) and haproxy_server_http_responses:burnrate1h{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         route: telemeter-server-upload
         service: telemeter
@@ -111,8 +112,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate30m{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (7 * (1-0.99)) and haproxy_server_http_responses:burnrate6h{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         route: telemeter-server-upload
         service: telemeter
@@ -128,8 +130,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate2h{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (2 * (1-0.99)) and haproxy_server_http_responses:burnrate1d{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         route: telemeter-server-upload
         service: telemeter
@@ -145,8 +148,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate6h{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (1 * (1-0.99)) and haproxy_server_http_responses:burnrate4d{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         route: telemeter-server-upload
         service: telemeter
@@ -158,24 +162,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="telemeter-server-upload"}
-        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="telemeter-server-upload"})
+    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"}
+        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="telemeter-server-upload",slo="rhobs-telemeter-server-metrics-upload-availability-slo"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
       record: pyrra_availability
     - expr: sum(haproxy_server_http_responses_total{route="telemeter-server-upload"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
       record: pyrra_requests_total
     - expr: sum(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-upload"}
         or vector(0))
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -262,8 +271,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate5m{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (14 * (1-0.99)) and haproxy_server_http_responses:burnrate1h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         route: telemeter-server-metrics-v1-receive
         service: telemeter
@@ -279,8 +289,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate30m{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (7 * (1-0.99)) and haproxy_server_http_responses:burnrate6h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         route: telemeter-server-metrics-v1-receive
         service: telemeter
@@ -296,8 +307,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate2h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (2 * (1-0.99)) and haproxy_server_http_responses:burnrate1d{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         route: telemeter-server-metrics-v1-receive
         service: telemeter
@@ -313,8 +325,9 @@ spec:
       expr: haproxy_server_http_responses:burnrate6h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (1 * (1-0.99)) and haproxy_server_http_responses:burnrate4d{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         route: telemeter-server-metrics-v1-receive
         service: telemeter
@@ -326,24 +339,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="telemeter-server-metrics-v1-receive"}
-        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="telemeter-server-metrics-v1-receive"})
+    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
       record: pyrra_availability
     - expr: sum(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
       record: pyrra_requests_total
     - expr: sum(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}
         or vector(0))
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -471,6 +489,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         handler: upload
         job: telemeter-server
         long_burnrate_window: 1h
@@ -489,6 +508,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         handler: upload
         job: telemeter-server
         long_burnrate_window: 6h
@@ -507,6 +527,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         handler: upload
         job: telemeter-server
         long_burnrate_window: 1d
@@ -525,6 +546,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         handler: upload
         job: telemeter-server
         long_burnrate_window: 4d
@@ -537,24 +559,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
       record: pyrra_window
     - expr: sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="upload",job="telemeter-server",le="5",slo="rhobs-telemeter-server-metrics-upload-latency-slo"}
         or vector(0)) / sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="upload",job="telemeter-server",le="",slo="rhobs-telemeter-server-metrics-upload-latency-slo"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
       record: pyrra_availability
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="upload",job="telemeter-server"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
       record: pyrra_requests_total
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="upload",job="telemeter-server"})
         - sum(http_request_duration_seconds_bucket{code=~"^2..$",handler="upload",job="telemeter-server",le="5"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -682,6 +709,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         handler: receive
         job: telemeter-server
         long_burnrate_window: 1h
@@ -700,6 +728,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         handler: receive
         job: telemeter-server
         long_burnrate_window: 6h
@@ -718,6 +747,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         handler: receive
         job: telemeter-server
         long_burnrate_window: 1d
@@ -736,6 +766,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         handler: receive
         job: telemeter-server
         long_burnrate_window: 4d
@@ -748,24 +779,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
       record: pyrra_window
     - expr: sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="receive",job="telemeter-server",le="5",slo="rhobs-telemeter-server-metrics-receive-latency-slo"}
         or vector(0)) / sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="receive",job="telemeter-server",le="",slo="rhobs-telemeter-server-metrics-receive-latency-slo"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
       record: pyrra_availability
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="telemeter-server"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
       record: pyrra_requests_total
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="telemeter-server"})
         - sum(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="telemeter-server",le="5"})
       labels:
+        service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -870,8 +906,9 @@ spec:
       expr: http_requests:burnrate5m{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -889,8 +926,9 @@ spec:
       expr: http_requests:burnrate30m{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -908,8 +946,9 @@ spec:
       expr: http_requests:burnrate2h{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -927,8 +966,9 @@ spec:
       expr: http_requests:burnrate6h{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -942,24 +982,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api"}
-        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="receive",job="observatorium-observatorium-api"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"}
+        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="receive",job="observatorium-observatorium-api",slo="api-metrics-write-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: pyrra_availability
     - expr: sum(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"})
       labels:
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: pyrra_requests_total
     - expr: sum(http_requests_total{code=~"^5..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-metrics-write-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -1055,8 +1100,9 @@ spec:
       expr: http_requests:burnrate5m{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 1h
@@ -1073,8 +1119,9 @@ spec:
       expr: http_requests:burnrate30m{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 6h
@@ -1091,8 +1138,9 @@ spec:
       expr: http_requests:burnrate2h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 1d
@@ -1109,8 +1157,9 @@ spec:
       expr: http_requests:burnrate6h{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 4d
@@ -1123,24 +1172,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-query-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-query-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",handler="query",job="observatorium-ruler-query"}
-        or vector(0)) / sum(http_requests:increase4w{handler="query",job="observatorium-ruler-query"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"}
+        or vector(0)) / sum(http_requests:increase4w{handler="query",job="observatorium-ruler-query",slo="api-metrics-rule-query-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-query-availability-slo
       record: pyrra_availability
     - expr: sum(http_requests_total{handler="query",job="observatorium-ruler-query"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-query-availability-slo
       record: pyrra_requests_total
     - expr: sum(http_requests_total{code=~"^5..$",handler="query",job="observatorium-ruler-query"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-query-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -1245,8 +1299,9 @@ spec:
       expr: http_requests:burnrate5m{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         group: metricsv1
         handler: query
         job: observatorium-observatorium-api
@@ -1264,8 +1319,9 @@ spec:
       expr: http_requests:burnrate30m{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         group: metricsv1
         handler: query
         job: observatorium-observatorium-api
@@ -1283,8 +1339,9 @@ spec:
       expr: http_requests:burnrate2h{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         group: metricsv1
         handler: query
         job: observatorium-observatorium-api
@@ -1302,8 +1359,9 @@ spec:
       expr: http_requests:burnrate6h{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         group: metricsv1
         handler: query
         job: observatorium-observatorium-api
@@ -1317,24 +1375,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-api"}
-        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="query",job="observatorium-observatorium-api"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"}
+        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="query",job="observatorium-observatorium-api",slo="api-metrics-query-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: pyrra_availability
     - expr: sum(http_requests_total{group="metricsv1",handler="query",job="observatorium-observatorium-api"})
       labels:
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: pyrra_requests_total
     - expr: sum(http_requests_total{code=~"^5..$",group="metricsv1",handler="query",job="observatorium-observatorium-api"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-metrics-query-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -1439,8 +1502,9 @@ spec:
       expr: http_requests:burnrate5m{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-api
@@ -1458,8 +1522,9 @@ spec:
       expr: http_requests:burnrate30m{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-api
@@ -1477,8 +1542,9 @@ spec:
       expr: http_requests:burnrate2h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-api
@@ -1496,8 +1562,9 @@ spec:
       expr: http_requests:burnrate6h{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-api
@@ -1511,24 +1578,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}
-        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"}
+        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="query_range",job="observatorium-observatorium-api",slo="api-metrics-query-range-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: pyrra_availability
     - expr: sum(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"})
       labels:
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: pyrra_requests_total
     - expr: sum(http_requests_total{code=~"^5..$",group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-metrics-query-range-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -1642,8 +1714,9 @@ spec:
       expr: http_requests:burnrate5m{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-api
@@ -1662,8 +1735,9 @@ spec:
       expr: http_requests:burnrate30m{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-api
@@ -1682,8 +1756,9 @@ spec:
       expr: http_requests:burnrate2h{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-api
@@ -1702,8 +1777,9 @@ spec:
       expr: http_requests:burnrate6h{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-api
@@ -1718,24 +1794,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT"}
-        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"}
+        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT",slo="api-rules-raw-write-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: pyrra_availability
     - expr: sum(http_requests_total{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT"})
       labels:
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: pyrra_requests_total
     - expr: sum(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-rules-raw-write-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -1849,8 +1930,9 @@ spec:
       expr: http_requests:burnrate5m{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (14 * (1-0.99)) and http_requests:burnrate1h{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-api
@@ -1869,8 +1951,9 @@ spec:
       expr: http_requests:burnrate30m{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (7 * (1-0.99)) and http_requests:burnrate6h{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-api
@@ -1889,8 +1972,9 @@ spec:
       expr: http_requests:burnrate2h{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (2 * (1-0.99)) and http_requests:burnrate1d{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-api
@@ -1909,8 +1993,9 @@ spec:
       expr: http_requests:burnrate6h{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (1 * (1-0.99)) and http_requests:burnrate4d{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-api
@@ -1925,24 +2010,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET"}
-        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET"})
+    - expr: 1 - sum(http_requests:increase4w{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"}
+        or vector(0)) / sum(http_requests:increase4w{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET",slo="api-rules-read-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: pyrra_availability
     - expr: sum(http_requests_total{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET"})
       labels:
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: pyrra_requests_total
     - expr: sum(http_requests_total{code=~"^5..$",group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-rules-read-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -2045,8 +2135,9 @@ spec:
       expr: client_api_requests:burnrate5m{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (14 * (1-0.99)) and client_api_requests:burnrate1h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2062,8 +2153,9 @@ spec:
       expr: client_api_requests:burnrate30m{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (7 * (1-0.99)) and client_api_requests:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2079,8 +2171,9 @@ spec:
       expr: client_api_requests:burnrate2h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (2 * (1-0.99)) and client_api_requests:burnrate1d{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2096,8 +2189,9 @@ spec:
       expr: client_api_requests:burnrate6h{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (1 * (1-0.99)) and client_api_requests:burnrate4d{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2109,24 +2203,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(client_api_requests:increase4w{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}
-        or vector(0)) / sum(client_api_requests:increase4w{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"})
+    - expr: 1 - sum(client_api_requests:increase4w{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"}
+        or vector(0)) / sum(client_api_requests:increase4w{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage",slo="api-rules-sync-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: pyrra_availability
     - expr: sum(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"})
       labels:
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: pyrra_requests_total
     - expr: sum(client_api_requests_total{client="reload",code=~"^5..$",container="thanos-rule-syncer",namespace="observatorium-metrics-stage"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-rules-sync-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -2221,8 +2320,9 @@ spec:
       expr: thanos_alert_sender_alerts_dropped:burnrate5m{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (14 * (1-0.99)) and thanos_alert_sender_alerts_dropped:burnrate1h{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2238,8 +2338,9 @@ spec:
       expr: thanos_alert_sender_alerts_dropped:burnrate30m{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (7 * (1-0.99)) and thanos_alert_sender_alerts_dropped:burnrate6h{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2255,8 +2356,9 @@ spec:
       expr: thanos_alert_sender_alerts_dropped:burnrate2h{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (2 * (1-0.99)) and thanos_alert_sender_alerts_dropped:burnrate1d{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2272,8 +2374,9 @@ spec:
       expr: thanos_alert_sender_alerts_dropped:burnrate6h{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (1 * (1-0.99)) and thanos_alert_sender_alerts_dropped:burnrate4d{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2285,24 +2388,29 @@ spec:
     rules:
     - expr: "0.99"
       labels:
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(thanos_alert_sender_alerts_dropped:increase4w{code=~"^5..$",container="thanos-rule",namespace="observatorium-metrics-stage"}
-        or vector(0)) / sum(thanos_alert_sender_alerts_dropped:increase4w{container="thanos-rule",namespace="observatorium-metrics-stage"})
+    - expr: 1 - sum(thanos_alert_sender_alerts_dropped:increase4w{code=~"^5..$",container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"}
+        or vector(0)) / sum(thanos_alert_sender_alerts_dropped:increase4w{container="thanos-rule",namespace="observatorium-metrics-stage",slo="api-alerting-availability-slo"})
       labels:
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: pyrra_availability
     - expr: sum(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-stage"})
       labels:
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: pyrra_requests_total
     - expr: sum(thanos_alert_sender_alerts_dropped_total{code=~"^5..$",container="thanos-rule",namespace="observatorium-metrics-stage"}
         or vector(0))
       labels:
+        service: observatorium-api
         slo: api-alerting-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -2389,8 +2497,9 @@ spec:
       expr: alertmanager_notifications_failed:burnrate5m{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (14 * (1-0.99)) and alertmanager_notifications_failed:burnrate1h{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (14 * (1-0.99))
-      for: 2m
+      for: 2m0s
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2406,8 +2515,9 @@ spec:
       expr: alertmanager_notifications_failed:burnrate30m{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (7 * (1-0.99)) and alertmanager_notifications_failed:burnrate6h{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (7 * (1-0.99))
-      for: 15m
+      for: 15m0s
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2423,8 +2533,9 @@ spec:
       expr: alertmanager_notifications_failed:burnrate2h{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (2 * (1-0.99)) and alertmanager_notifications_failed:burnrate1d{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (2 * (1-0.99))
-      for: 1h
+      for: 1h0m0s
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2440,8 +2551,9 @@ spec:
       expr: alertmanager_notifications_failed:burnrate6h{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (1 * (1-0.99)) and alertmanager_notifications_failed:burnrate4d{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
         > (1 * (1-0.99))
-      for: 3h
+      for: 3h0m0s
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-metrics-stage
         service: observatorium-api
@@ -2459,8 +2571,8 @@ spec:
       labels:
         slo: api-alerting-notif-availability-slo
       record: pyrra_window
-    - expr: 1 - sum(alertmanager_notifications_failed:increase4w{code=~"^5..$",namespace="observatorium-metrics-stage",service="observatorium-alertmanager"}
-        or vector(0)) / sum(alertmanager_notifications_failed:increase4w{namespace="observatorium-metrics-stage",service="observatorium-alertmanager"})
+    - expr: 1 - sum(alertmanager_notifications_failed:increase4w{code=~"^5..$",namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"}
+        or vector(0)) / sum(alertmanager_notifications_failed:increase4w{namespace="observatorium-metrics-stage",service="observatorium-alertmanager",slo="api-alerting-notif-availability-slo"})
       labels:
         slo: api-alerting-notif-availability-slo
       record: pyrra_availability
@@ -2609,6 +2721,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -2628,6 +2741,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -2647,6 +2761,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -2666,6 +2781,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-api
@@ -2679,24 +2795,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: pyrra_window
     - expr: sum(http_request_duration_seconds:increase4w{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api",le="5",slo="api-metrics-write-latency-slo"}
         or vector(0)) / sum(http_request_duration_seconds:increase4w{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api",le="",slo="api-metrics-write-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: pyrra_availability
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api"})
       labels:
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: pyrra_requests_total
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api"})
         - sum(http_request_duration_seconds_bucket{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api",le="5"})
       labels:
+        service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -2824,6 +2945,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -2842,6 +2964,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -2860,6 +2983,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -2878,6 +3002,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -2890,24 +3015,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-1M-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-1M-latency-slo
       record: pyrra_window
     - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="10",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-1M-latency-slo"}
         or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-1M-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-1M-latency-slo
       record: pyrra_availability
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-1M-latency-slo
       record: pyrra_requests_total
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples"})
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-1M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -3035,6 +3165,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-stage
         query: rule-query-path-sli-10M-samples
@@ -3053,6 +3184,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-stage
         query: rule-query-path-sli-10M-samples
@@ -3071,6 +3203,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-stage
         query: rule-query-path-sli-10M-samples
@@ -3089,6 +3222,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-stage
         query: rule-query-path-sli-10M-samples
@@ -3101,24 +3235,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-10M-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-10M-latency-slo
       record: pyrra_window
     - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="30",namespace="observatorium-stage",query="rule-query-path-sli-10M-samples",slo="api-metrics-rule-read-10M-latency-slo"}
         or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-stage",query="rule-query-path-sli-10M-samples",slo="api-metrics-rule-read-10M-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-10M-latency-slo
       record: pyrra_availability
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="rule-query-path-sli-10M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-10M-latency-slo
       record: pyrra_requests_total
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="rule-query-path-sli-10M-samples"})
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-stage",query="rule-query-path-sli-10M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-10M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -3246,6 +3385,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -3264,6 +3404,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -3282,6 +3423,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -3300,6 +3442,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-stage
         query: rule-query-path-sli-1M-samples
@@ -3312,24 +3455,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-100M-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-100M-latency-slo
       record: pyrra_window
     - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="120",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"}
         or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples",slo="api-metrics-rule-read-100M-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-100M-latency-slo
       record: pyrra_availability
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-100M-latency-slo
       record: pyrra_requests_total
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples"})
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-stage",query="rule-query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-rule-read-100M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -3457,6 +3605,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3475,6 +3624,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3493,6 +3643,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3511,6 +3662,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3523,24 +3675,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_window
     - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="10",namespace="observatorium-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"}
         or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-1M-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_availability
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_requests_total
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="query-path-sli-1M-samples"})
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-stage",query="query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -3668,6 +3825,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-stage
         query: query-path-sli-10M-samples
@@ -3686,6 +3844,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-stage
         query: query-path-sli-10M-samples
@@ -3704,6 +3863,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-stage
         query: query-path-sli-10M-samples
@@ -3722,6 +3882,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-stage
         query: query-path-sli-10M-samples
@@ -3734,24 +3895,29 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_window
     - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="30",namespace="observatorium-stage",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"}
         or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-stage",query="query-path-sli-10M-samples",slo="api-metrics-read-10M-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_availability
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="query-path-sli-10M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_requests_total
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="query-path-sli-10M-samples"})
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-stage",query="query-path-sli-10M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: pyrra_errors_total
   - interval: 2m30s
@@ -3879,6 +4045,7 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
+        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3897,6 +4064,7 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
+        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3915,6 +4083,7 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
+        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3933,6 +4102,7 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
+        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-stage
         query: query-path-sli-1M-samples
@@ -3945,23 +4115,28 @@ spec:
     rules:
     - expr: "0.9"
       labels:
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_window
     - expr: sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="120",namespace="observatorium-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"}
         or vector(0)) / sum(up_custom_query_duration_seconds:increase4w{http_code=~"^2..$",le="",namespace="observatorium-stage",query="query-path-sli-1M-samples",slo="api-metrics-read-100M-latency-slo"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_availability
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_requests_total
     - expr: sum(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-stage",query="query-path-sli-1M-samples"})
         - sum(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-stage",query="query-path-sli-1M-samples"})
       labels:
+        service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: pyrra_errors_total

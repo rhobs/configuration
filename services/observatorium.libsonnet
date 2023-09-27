@@ -535,7 +535,7 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
 
     local jaegerAgent = (import './sidecars/jaeger-agent.libsonnet')({
       image: '${JAEGER_AGENT_IMAGE}:${JAEGER_AGENT_IMAGE_TAG}',
-      collectorAddress: 'dns:///jaeger-collector-headless.${JAEGER_COLLECTOR_NAMESPACE}.svc:14250',
+      collectorAddress: 'dns:///${TRACING_COLLECTOR_ENDPOINT}',
     }),
 
     local opaAms = (import 'sidecars/opa-ams.libsonnet')({

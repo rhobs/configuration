@@ -36,6 +36,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.29.0' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'quay.io/app-sre/jaegertracing-jaeger-agent' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
+    { name: 'TRACING_COLLECTOR_ENDPOINT', value: 'otel-trace-writer-collector-headless.observatorium-tools.svc:14250' },
     { name: 'MEMCACHED_CPU_LIMIT', value: '3' },
     { name: 'MEMCACHED_CPU_REQUEST', value: '500m' },
     { name: 'MEMCACHED_EXPORTER_CPU_LIMIT', value: '200m' },

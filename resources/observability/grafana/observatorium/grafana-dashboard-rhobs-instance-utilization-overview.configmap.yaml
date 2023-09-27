@@ -8230,6 +8230,478 @@ data:
        "showTitle": true,
        "title": "Alertmanager Overview",
        "titleSize": "h6"
+      },
+      {
+       "collapse": true,
+       "height": "250px",
+       "panels": [
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "rate of rule reloads by obsctl-reloader",
+         "fill": 1,
+         "id": 81,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Observatorium - obsctl-reloader",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - obsctl-reloader",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum(rate(obsctl_reloader_prom_rule_sets_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "reloads {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Rate of reloads",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Percentage of rule reloads that failed",
+         "fill": 10,
+         "id": 82,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Observatorium - obsctl-reloader",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - obsctl-reloader",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "100 * sum(rate(obsctl_reloader_prom_rule_set_failures_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job, reason) / ignoring (job, reason) group_left sum(rate(obsctl_reloader_prom_rule_sets_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace) > 0",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "reload error: {{reason}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Percentage of reload errors",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percent",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of responses from the Observatorium Rules API",
+         "fill": 10,
+         "id": 83,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 0,
+         "links": [
+          {
+           "dashboard": "Observatorium - obsctl-reloader",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - obsctl-reloader",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "stack": true,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum(rate(obsctl_reloader_prom_rules_store_ops_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod,status_code) > 0",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "{{status_code}} - pod {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Responses from Observatorium Rules API",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Rate of rule fetches via PrometheusRule CRs from the local cluster",
+         "fill": 1,
+         "id": 84,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Observatorium - obsctl-reloader",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - obsctl-reloader",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "fetches {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Rate of fetches",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        },
+        {
+         "aliasColors": {
+
+         },
+         "bars": false,
+         "dashLength": 10,
+         "dashes": false,
+         "datasource": "$datasource",
+         "description": "Percentage of failed rule fetches via PrometheusRule CRs from the local cluster",
+         "fill": 1,
+         "id": 85,
+         "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+         },
+         "lines": true,
+         "linewidth": 1,
+         "links": [
+          {
+           "dashboard": "Observatorium - obsctl-reloader",
+           "includeVars": true,
+           "keepTime": true,
+           "title": "Observatorium - obsctl-reloader",
+           "type": "dashboard"
+          }
+         ],
+         "nullPointMode": "null as zero",
+         "percentage": false,
+         "pointradius": 5,
+         "points": false,
+         "renderer": "flot",
+         "seriesOverrides": [
+
+         ],
+         "spaceLength": 10,
+         "stack": false,
+         "steppedLine": false,
+         "targets": [
+          {
+           "expr": "100 * sum(rate(obsctl_reloader_prom_rule_fetch_failures_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod) / ignoring (job, pod) group_left sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace) > 0",
+           "format": "time_series",
+           "intervalFactor": 2,
+           "legendFormat": "failed fetches {{pod}}",
+           "legendLink": null,
+           "step": 10
+          }
+         ],
+         "thresholds": [
+
+         ],
+         "timeFrom": null,
+         "timeShift": null,
+         "title": "Percentage of failed fetches",
+         "tooltip": {
+          "shared": false,
+          "sort": 0,
+          "value_type": "individual"
+         },
+         "type": "graph",
+         "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": [
+
+          ]
+         },
+         "yaxes": [
+          {
+           "format": "percent",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": 0,
+           "show": true
+          },
+          {
+           "format": "short",
+           "label": null,
+           "logBase": 1,
+           "max": null,
+           "min": null,
+           "show": false
+          }
+         ]
+        }
+       ],
+       "repeat": null,
+       "repeatIteration": null,
+       "repeatRowId": null,
+       "showTitle": true,
+       "title": "Obsctl Reloader Overview",
+       "titleSize": "h6"
       }
      ],
      "schemaVersion": 14,

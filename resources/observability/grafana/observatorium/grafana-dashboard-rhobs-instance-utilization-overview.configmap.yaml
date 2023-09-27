@@ -8519,7 +8519,7 @@ data:
          "dashLength": 10,
          "dashes": false,
          "datasource": "$datasource",
-         "description": "Rate of rule fetches via PrometheusRule CRDs from the local cluster",
+         "description": "Rate of rule fetches via PrometheusRule CRs from the local cluster",
          "fill": 1,
          "id": 84,
          "legend": {
@@ -8611,7 +8611,7 @@ data:
          "dashLength": 10,
          "dashes": false,
          "datasource": "$datasource",
-         "description": "Percentage of failed rule fetches via PrometheusRule CRDs from the local cluster",
+         "description": "Percentage of failed rule fetches via PrometheusRule CRs from the local cluster",
          "fill": 1,
          "id": 85,
          "legend": {

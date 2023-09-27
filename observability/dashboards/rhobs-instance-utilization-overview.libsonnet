@@ -792,7 +792,7 @@ function() {
           g.stack
         )
         .addPanel(
-          g.panel('Rate of fetches', 'Rate of rule fetches via PrometheusRule CRDs from the local cluster') +
+          g.panel('Rate of fetches', 'Rate of rule fetches via PrometheusRule CRs from the local cluster') +
           g.queryPanel(
             [
               'sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod)',
@@ -804,7 +804,7 @@ function() {
           g.addDashboardLink(thanos.obsctlReloader.dashboard.title)
         )
         .addPanel(
-          g.panel('Percentage of failed fetches', 'Percentage of failed rule fetches via PrometheusRule CRDs from the local cluster') +
+          g.panel('Percentage of failed fetches', 'Percentage of failed rule fetches via PrometheusRule CRs from the local cluster') +
           g.queryPanel(
             [
               '100 * sum(rate(obsctl_reloader_prom_rule_fetch_failures_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace,job,pod) / ignoring (job, pod) group_left sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~"$namespace",job=~"$job"}[$__rate_interval])) by (namespace) > 0',

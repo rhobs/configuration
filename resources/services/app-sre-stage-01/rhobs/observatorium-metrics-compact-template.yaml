@@ -150,7 +150,7 @@ objects:
           - --delete-delay=24h0m0s
           - --downsample.concurrency=1
           - --log.format=logfmt
-          - --log.level=warn
+          - --log.level=info
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --retention.resolution-1h=8760h0m0s
           - --retention.resolution-5m=8760h0m0s

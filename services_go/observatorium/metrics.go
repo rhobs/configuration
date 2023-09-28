@@ -29,7 +29,7 @@ const (
 //go:embed assets/store-auto-shard-relabel-configMap.sh
 var storeAutoShardRelabelConfigMap string
 
-func makeCompactor(namespace string) k8sutil.ObjectMap {
+func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Image = thanosImage
@@ -63,6 +63,9 @@ func makeCompactor(namespace string) k8sutil.ObjectMap {
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
 	// Post process
+	if preManifestsHook != nil {
+		preManifestsHook(compactorSatefulset)
+	}
 	manifests := compactorSatefulset.Manifests()
 	service := getObject[*corev1.Service](manifests)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
@@ -72,8 +75,9 @@ func makeCompactor(namespace string) k8sutil.ObjectMap {
 
 }
 
-func makeStore(namespace string, replicas int32) k8sutil.ObjectMap {
+func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
+	replicas := int32(1)
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = thanosImageTag
@@ -143,6 +147,9 @@ func makeStore(namespace string, replicas int32) k8sutil.ObjectMap {
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
 
 	// Post process
+	if preManifestHook != nil {
+		preManifestHook(storeStatefulSet)
+	}
 	manifests := storeStatefulSet.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests))
 	statefulset := getObject[*appsv1.StatefulSet](manifests)

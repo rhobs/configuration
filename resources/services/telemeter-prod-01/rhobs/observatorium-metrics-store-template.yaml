@@ -202,7 +202,7 @@ objects:
           - mountPath: /etc/config
             name: hashmod-config
         - args:
-          - --reporter.grpc.host-port=dns:///jaeger-collector-headless.observatorium-tools.svc:14250
+          - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
           - --reporter.type=grpc
           - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
           env:
@@ -249,7 +249,7 @@ objects:
           - /tmp/entrypoint/entrypoint.sh
           env:
           - name: THANOS_STORE_REPLICAS
-            value: "3"
+            value: "1"
           image: quay.io/app-sre/ubi8-ubi
           imagePullPolicy: IfNotPresent
           name: init-hashmod-file

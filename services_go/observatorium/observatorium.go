@@ -10,6 +10,8 @@ import (
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
 	"github.com/observatorium/api/rbac"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
@@ -25,13 +27,20 @@ type TenantInstanceConfiguration struct {
 	// Tenant           *obs_api.tenant
 }
 
+// PreManifestsHooks is a collection of hooks that can be used to modify the manifests before they are generated.
+// This provides the instance configuration with the ability to customize each component deployed.
+type PreManifestsHooks struct {
+	ThanosStore func(*store.StoreStatefulSet)
+	Compactor   func(*compactor.CompactorStatefulSet)
+}
+
 // InstanceConfiguration is the configuration for an instance of observatorium.
 type InstanceConfiguration struct {
-	Cluster             string
-	Instance            string
-	Namespace           string
-	Tenants             []TenantInstanceConfiguration
-	ThanosStoreReplicas int32
+	Cluster           string
+	Instance          string
+	Namespace         string
+	Tenants           []TenantInstanceConfiguration
+	PreManifestsHooks PreManifestsHooks
 }
 
 // Observatorium is a representation of an instance of observatorium.
@@ -46,8 +55,8 @@ type Observatorium struct {
 func NewObservatorium(cfg *InstanceConfiguration) *Observatorium {
 	return &Observatorium{
 		Cfg:       cfg,
-		Compactor: makeCompactor(cfg.Namespace),
-		Store:     makeStore(cfg.Namespace, cfg.ThanosStoreReplicas),
+		Compactor: makeCompactor(cfg.Namespace, cfg.PreManifestsHooks.Compactor),
+		Store:     makeStore(cfg.Namespace, cfg.PreManifestsHooks.ThanosStore),
 	}
 }
 

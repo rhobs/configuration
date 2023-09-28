@@ -76,7 +76,7 @@ func makeJaegerAgent(collectorNamespace string) *k8sutil.Container {
 		Image:    "quay.io/app-sre/jaegertracing-jaeger-agent",
 		ImageTag: "1.22.0",
 		Args: []string{
-			fmt.Sprintf("--reporter.grpc.host-port=dns:///jaeger-collector-headless.%s.svc:14250", collectorNamespace),
+			fmt.Sprintf("--reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.%s.svc:14250", collectorNamespace),
 			"--reporter.type=grpc",
 			"--agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)",
 		},

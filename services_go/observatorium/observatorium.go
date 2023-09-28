@@ -43,20 +43,16 @@ type InstanceConfiguration struct {
 	PreManifestsHooks PreManifestsHooks
 }
 
-// Observatorium is a representation of an instance of observatorium.
-// It contains all the components that make up the instance.
+// Observatorium is an instance of observatorium.
+// It contains the configuration for the instance and the ability to generate the manifests for the instance.
 type Observatorium struct {
-	Cfg       *InstanceConfiguration
-	Compactor k8sutil.ObjectMap
-	Store     k8sutil.ObjectMap
+	cfg *InstanceConfiguration
 }
 
 // NewObservatorium creates a new instance of observatorium.
 func NewObservatorium(cfg *InstanceConfiguration) *Observatorium {
 	return &Observatorium{
-		Cfg:       cfg,
-		Compactor: makeCompactor(cfg.Namespace, cfg.PreManifestsHooks.Compactor),
-		Store:     makeStore(cfg.Namespace, cfg.PreManifestsHooks.ThanosStore),
+		cfg: cfg,
 	}
 }
 
@@ -66,15 +62,15 @@ func (o *Observatorium) Manifests(generator *mimic.Generator) {
 		name    string
 		objects k8sutil.ObjectMap
 	}{
-		{"observatorium-metrics-compact", o.Compactor},
-		{"observatorium-metrics-store", o.Store},
+		{"observatorium-metrics-compact", makeCompactor(o.cfg.Namespace, o.cfg.PreManifestsHooks.Compactor)},
+		{"observatorium-metrics-store", makeStore(o.cfg.Namespace, o.cfg.PreManifestsHooks.ThanosStore)},
 	}
 
 	for _, component := range components {
 		template := openshift.WrapInTemplate("", component.objects, metav1.ObjectMeta{
 			Name: component.name,
 		}, []templatev1.Parameter{})
-		generator.With(o.Cfg.Cluster, o.Cfg.Instance).Add(component.name+"-template.yaml", &customYAML{encoder: encoding.GhodssYAML(template[""])})
+		generator.With(o.cfg.Cluster, o.cfg.Instance).Add(component.name+"-template.yaml", &customYAML{encoder: encoding.GhodssYAML(template[""])})
 	}
 }
 

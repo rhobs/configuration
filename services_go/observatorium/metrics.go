@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"fmt"
 	"maps"
-	"strconv"
 	"time"
 
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
@@ -16,7 +15,9 @@ import (
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -29,6 +30,7 @@ const (
 //go:embed assets/store-auto-shard-relabel-configMap.sh
 var storeAutoShardRelabelConfigMap string
 
+// makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
 func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
@@ -75,15 +77,15 @@ func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorS
 
 }
 
+// makeStore creates a base store component that can be derived from using the preManifestsHook.
 func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
-	replicas := int32(1)
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = thanosImageTag
 	storeStatefulSet.Namespace = namespace
 	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
-	storeStatefulSet.Replicas = replicas
+	storeStatefulSet.Replicas = 1
 	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU) // To be confirmed
 	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("4")
 	storeStatefulSet.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("20Gi")
@@ -113,8 +115,12 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 		},
 		Env: []corev1.EnvVar{
 			{
-				Name:  "THANOS_STORE_REPLICAS",
-				Value: strconv.Itoa(int(replicas)),
+				Name: "NAMESPACE",
+				ValueFrom: &corev1.EnvVarSource{
+					FieldRef: &corev1.ObjectFieldSelector{
+						FieldPath: "metadata.namespace",
+					},
+				},
 			},
 		},
 		VolumeMounts: []corev1.VolumeMount{
@@ -177,11 +183,51 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 		MountPath: "/etc/config",
 	})
 
+	// add rbac for reading the number of replicas from the statefulset in the initContainer
+	labels := maps.Clone(statefulset.ObjectMeta.Labels)
+	delete(labels, k8sutil.VersionLabel)
+	manifests["list-pods-rbac"] = &rbacv1.Role{
+		// ObjectMeta:
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "list-pods",
+			Namespace: namespace,
+			Labels:    labels,
+		},
+		Rules: []rbacv1.PolicyRule{
+			{
+				APIGroups: []string{"apps"},
+				Resources: []string{"statefulsets"},
+				Verbs:     []string{"get", "list"},
+			},
+		},
+	}
+	manifests["list-pods-rbac-binding"] = &rbacv1.RoleBinding{
+		// ObjectMeta:
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "list-pods",
+			Namespace: namespace,
+			Labels:    labels,
+		},
+		Subjects: []rbacv1.Subject{
+			{
+
+				Kind:      "ServiceAccount",
+				Name:      statefulset.Spec.Template.Spec.ServiceAccountName,
+				Namespace: namespace,
+			},
+		},
+		RoleRef: rbacv1.RoleRef{
+			Kind:     "Role",
+			Name:     "list-pods",
+			APIGroup: "rbac.authorization.k8s.io",
+		},
+	}
+
 	return manifests
 }
 
 type kubeObject interface {
-	*corev1.Service | *appsv1.StatefulSet | *monv1.ServiceMonitor
+	*corev1.Service | *appsv1.StatefulSet | *monv1.ServiceMonitor | *corev1.ServiceAccount
 }
 
 func getObject[T kubeObject](manifests k8sutil.ObjectMap) T {

@@ -61,20 +61,28 @@ func (o *Observatorium) Manifests(generator *mimic.Generator) {
 	components := []struct {
 		name    string
 		objects k8sutil.ObjectMap
+		params  []templatev1.Parameter
 	}{
-		{"observatorium-metrics-compact", makeCompactor(o.cfg.Namespace, o.cfg.PreManifestsHooks.Compactor)},
-		{"observatorium-metrics-store", makeStore(o.cfg.Namespace, o.cfg.PreManifestsHooks.ThanosStore)},
+		{"observatorium-metrics-compact", makeCompactor(o.cfg.Namespace, o.cfg.PreManifestsHooks.Compactor), []templatev1.Parameter{
+			{
+				Name:     "OAUTH_PROXY_COOKIE_SECRET",
+				Generate: "expression",
+				From:     "[a-zA-Z0-9]{40}",
+			},
+		}},
+		{"observatorium-metrics-store", makeStore(o.cfg.Namespace, o.cfg.PreManifestsHooks.ThanosStore), []templatev1.Parameter{}},
 	}
 
 	for _, component := range components {
 		template := openshift.WrapInTemplate("", component.objects, metav1.ObjectMeta{
 			Name: component.name,
-		}, []templatev1.Parameter{})
+		}, component.params)
 		generator.With(o.cfg.Cluster, o.cfg.Instance).Add(component.name+"-template.yaml", &customYAML{encoder: encoding.GhodssYAML(template[""])})
 	}
 }
 
 // customYAML is a YAML encoder wrapper that allows cleaning of the output.
+// Wihtout this, the manifests would contain a status section that is not needed.
 type customYAML struct {
 	encoder encoding.Encoder
 	reader  io.Reader

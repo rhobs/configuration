@@ -27,6 +27,7 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 			"-tls-cert=/etc/tls/private/tls.crt",
 			"-tls-key=/etc/tls/private/tls.key",
 			"-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token",
+			"-cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}", // replaced by openshift template parameter
 			"-cookie-secret-file=/etc/proxy/secrets/session_secret",
 			"-openshift-ca=/etc/pki/tls/cert.pem",
 			"-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt",

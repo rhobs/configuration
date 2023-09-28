@@ -216,6 +216,7 @@ objects:
           - -tls-cert=/etc/tls/private/tls.crt
           - -tls-key=/etc/tls/private/tls.key
           - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
           - -cookie-secret-file=/etc/proxy/secrets/session_secret
           - -openshift-ca=/etc/pki/tls/cert.pem
           - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -273,3 +274,7 @@ objects:
             storage: 500Gi
         storageClassName: gp2
       status: {}
+parameters:
+- from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: OAUTH_PROXY_COOKIE_SECRET

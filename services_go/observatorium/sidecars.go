@@ -59,11 +59,6 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 			k8sutil.NewPodVolumeFromSecret("compact-tls", tlsSecret),
 			k8sutil.NewPodVolumeFromSecret("compact-proxy", "compact-proxy"),
 		},
-		Secrets: map[string]map[string][]byte{
-			"compact-proxy": {
-				"session_secret": []byte("secret"),
-			},
-		},
 	}
 }
 

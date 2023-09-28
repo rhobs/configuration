@@ -75,6 +75,31 @@ func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorS
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests))
 
+	// Add pod disruption budget
+	labels := maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels)
+	delete(labels, k8sutil.VersionLabel)
+	manifests["store-pdb"] = &policyv1.PodDisruptionBudget{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "PodDisruptionBudget",
+			APIVersion: policyv1.SchemeGroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      compactorSatefulset.Name,
+			Namespace: namespace,
+			Labels:    labels,
+		},
+		Spec: policyv1.PodDisruptionBudgetSpec{
+			MaxUnavailable: &intstr.IntOrString{
+
+				Type:   intstr.Int,
+				IntVal: 1,
+			},
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+		},
+	}
+
 	return manifests
 
 }
@@ -189,6 +214,10 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 	labels := maps.Clone(statefulset.ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
 	manifests["list-pods-rbac"] = &rbacv1.Role{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Role",
+			APIVersion: rbacv1.SchemeGroupVersion.String(),
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "list-pods",
 			Namespace: namespace,
@@ -203,6 +232,10 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 		},
 	}
 	manifests["list-pods-rbac-binding"] = &rbacv1.RoleBinding{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "RoleBinding",
+			APIVersion: rbacv1.SchemeGroupVersion.String(),
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "list-pods",
 			Namespace: namespace,
@@ -225,8 +258,12 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 
 	// Add pod disruption budget
 	manifests["store-pdb"] = &policyv1.PodDisruptionBudget{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "PodDisruptionBudget",
+			APIVersion: policyv1.SchemeGroupVersion.String(),
+		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "store",
+			Name:      storeStatefulSet.Name,
 			Namespace: namespace,
 			Labels:    labels,
 		},

@@ -28,7 +28,6 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 			"-tls-key=/etc/tls/private/tls.key",
 			"-client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token",
 			"-cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}", // replaced by openshift template parameter
-			"-cookie-secret-file=/etc/proxy/secrets/session_secret",
 			"-openshift-ca=/etc/pki/tls/cert.pem",
 			"-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt",
 		},
@@ -49,15 +48,9 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 				MountPath: "/etc/tls/private",
 				ReadOnly:  true,
 			},
-			{
-				Name:      "compact-proxy",
-				MountPath: "/etc/proxy/secrets",
-				ReadOnly:  true,
-			},
 		},
 		Volumes: []corev1.Volume{
 			k8sutil.NewPodVolumeFromSecret("compact-tls", tlsSecret),
-			k8sutil.NewPodVolumeFromSecret("compact-proxy", "compact-proxy"),
 		},
 	}
 }

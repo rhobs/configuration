@@ -63,6 +63,23 @@ objects:
       app.kubernetes.io/version: v0.32.3
     name: hashmod-config-template
     namespace: rhobs
+- metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+    name: store
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:

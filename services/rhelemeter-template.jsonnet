@@ -36,7 +36,7 @@ local rhelemeter = (import 'rhelemeter.libsonnet') {
   ],
   parameters: [
     { name: 'NAMESPACE', value: 'rhelemeter' },
-    { name: 'IMAGE_TAG', value: '1568906' },
+    { name: 'IMAGE_TAG', value: '5923762' },
     { name: 'IMAGE', value: 'quay.io/app-sre/telemeter' },
     { name: 'REPLICAS', value: '2' },
     { name: 'RHELEMETER_TENANT_ID', value: 'rhel' },

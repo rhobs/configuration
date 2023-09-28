@@ -169,7 +169,7 @@ parameters:
 - name: NAMESPACE
   value: rhelemeter
 - name: IMAGE_TAG
-  value: "1568906"
+  value: "5923762"
 - name: IMAGE
   value: quay.io/app-sre/telemeter
 - name: REPLICAS

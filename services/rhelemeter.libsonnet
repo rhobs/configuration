@@ -5,7 +5,7 @@
     namespace: 'rhelemeter',
 
     rhelemeterServer+:: {
-      image: 'quay.io/app-sre/telemeter:82f71d3',
+      image: 'quay.io/app-sre/telemeter:5923762',
       replicas: 3,
       logLevel: 'warn',
       oidcIssuer: error 'must provide telemeterForwardURL',

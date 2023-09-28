@@ -294,6 +294,3 @@ objects:
             storage: 500Gi
         storageClassName: gp2
       status: {}
-  status:
-    availableReplicas: 0
-    replicas: 0

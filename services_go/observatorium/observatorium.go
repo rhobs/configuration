@@ -3,6 +3,10 @@ package observatorium
 // import "github.com/rhobs/configuration/services_go/components/thanos/compactor"
 
 import (
+	"bytes"
+	"io"
+	"regexp"
+
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
 	"github.com/observatorium/api/rbac"
@@ -61,6 +65,36 @@ func (o *Observatorium) Manifests(generator *mimic.Generator) {
 		template := openshift.WrapInTemplate("", component.objects, metav1.ObjectMeta{
 			Name: component.name,
 		}, []templatev1.Parameter{})
-		generator.With(o.Cfg.Cluster, o.Cfg.Instance).Add(component.name+"-template.yaml", encoding.GhodssYAML(template[""]))
+		generator.With(o.Cfg.Cluster, o.Cfg.Instance).Add(component.name+"-template.yaml", &customYAML{encoder: encoding.GhodssYAML(template[""])})
 	}
+}
+
+// customYAML is a YAML encoder wrapper that allows cleaning of the output.
+type customYAML struct {
+	encoder encoding.Encoder
+	reader  io.Reader
+}
+
+func (c *customYAML) Read(p []byte) (n int, err error) {
+	if c.reader == nil {
+		ret, err := io.ReadAll(c.encoder)
+		if err != nil {
+			panic(err)
+		}
+
+		c.reader = bytes.NewBuffer(c.clean(ret))
+	}
+
+	return c.reader.Read(p)
+}
+
+func (c *customYAML) EncodeComment(lines string) []byte {
+	return c.encoder.EncodeComment(lines)
+}
+
+func (c *customYAML) clean(input []byte) []byte {
+	// Remove status section from manifests
+	re := regexp.MustCompile(`\s*status:\n\s*availableReplicas: 0\n\s*replicas: 0`)
+	ret := re.ReplaceAllString(string(input), "")
+	return []byte(ret)
 }

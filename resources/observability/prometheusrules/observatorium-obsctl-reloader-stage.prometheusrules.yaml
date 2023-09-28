@@ -11,6 +11,19 @@ spec:
   groups:
   - name: obsctl-reloader.rules
     rules:
+    - alert: ObsCtlIsDown
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/obsctl-reloader.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: obsctl-reloader is down.
+        message: obsctl-reloader is down.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#obsctlisdown
+        summary: obsctl-reloader is down. Tenants rules are not being reloaded.
+      expr: |
+        (up{job="rules-obsctl-reloader"} == 0)
+      for: 5m
+      labels:
+        service: telemeter
+        severity: high
     - alert: ObsCtlRulesStoreServerError
       annotations:
         dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/obsctl-reloader.rules?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
@@ -23,7 +36,7 @@ spec:
           sum_over_time(obsctl_reloader_prom_rules_store_ops_total{status_code=~"5..|4..", job="rules-obsctl-reloader"}[5m])
         /
           sum(sum_over_time(obsctl_reloader_prom_rules_store_ops_total{job="rules-obsctl-reloader"}[5m]))
-        ) or vector(0)
+        )
         > 0.10
       for: 10m
       labels:
@@ -41,7 +54,7 @@ spec:
           sum_over_time(obsctl_reloader_prom_rule_set_failures_total{reason!="rules_store_error", job="rules-obsctl-reloader"}[5m])
         /
           sum_over_time(obsctl_reloader_prom_rule_set_total{job="rules-obsctl-reloader"}[5m])
-        ) or vector(0)
+        )
         > 0.10
       for: 10m
       labels:
@@ -59,7 +72,7 @@ spec:
           sum_over_time(obsctl_reloader_prom_rule_fetch_failures_total{job="rules-obsctl-reloader"}[5m])
         /
           sum_over_time(obsctl_reloader_prom_rule_fetches_total{job="rules-obsctl-reloader"}[5m])
-        ) or vector(0)
+        )
         > 0.20
       for: 5m
       labels:

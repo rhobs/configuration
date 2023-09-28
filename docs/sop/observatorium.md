@@ -34,6 +34,7 @@
 * [Observatorium Gubernator Alerts](#observatorium-gubernator-alerts)
   * [GubernatorIsDown](#gubernatorisdown)
 * [Observatorium Obsctl Reloader Alerts](#observatorium-obsctl-reloader-alerts)
+  * [ObsCtlIsDown](#obsctlisdown)
   * [ObsCtlRulesStoreServerError](#obsctlrulesstoreservererror)
   * [ObsCtlFetchRulesFailed](#obsctlfetchrulesfailed)
   * [ObsCtlRulesSetFailure](#obsctlrulessetfailure)
@@ -897,6 +898,31 @@ Observatorium rate-limiting service is not working.
 - Reach out to Observability Team (team-observability-platform@redhat.com), [`#forum-observatorium`](https://slack.com/app_redirect?channel=forum-observatorium) at CoreOS Slack, to get help in the investigation.
 
 # Observatorium Obsctl Reloader Alerts
+
+## ObsCtlIsDown
+
+### Impact
+
+Tenant's rules are not being pushed to Observatorium, so they might be stale.
+
+### Summary
+
+The `obsctl-reloader` is most likely down, in a crashloop state.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the production clusters (this system is't used in staging) that runs Observatorium (currently [telemeter-prod-01 OSD](https://console-openshift-console.apps.telemeter-prod.a5j2.p1.openshiftapps.com/k8s/cluster/projects/observatorium-mst-production) and [rhobsp0ue1 OSD](https://console-openshift-console.apps.rhobsp02ue1.y9ya.p1.openshiftapps.com/)).
+- Edit access to the Observatorium namespaces:
+  - `observatorium-mst-production`
+
+### Steps
+
+- In the OSD console for specific cluster, check the pods belonging to the `obsctl-reloader` deployment and establish what is causing the crashloop.
+- Further actions will depend a lot on the root cause found and most likely be something we didn't go through before.
 
 ## ObsCtlRulesStoreServerError
 

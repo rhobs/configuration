@@ -922,7 +922,7 @@ The `obsctl-reloader` is most likely down, in a crashloop state.
 ### Steps
 
 - In the OSD console for specific cluster, check the pods belonging to the `obsctl-reloader` deployment and establish what is causing the crashloop.
-- Further actions will depend a lot on the root cause found and most likel be something we didn't go through before.
+- Further actions will depend a lot on the root cause found and most likely be something we didn't go through before.
 
 ## ObsCtlRulesStoreServerError
 

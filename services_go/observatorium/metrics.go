@@ -35,6 +35,7 @@ func makeCompactor(namespace string) k8sutil.ObjectMap {
 	compactorSatefulset.Image = thanosImage
 	compactorSatefulset.ImageTag = thanosImageTag
 	compactorSatefulset.Namespace = namespace
+	compactorSatefulset.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	compactorSatefulset.Replicas = 1
 	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU) // To be confirmed
 	compactorSatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
@@ -77,6 +78,7 @@ func makeStore(namespace string, replicas int32) k8sutil.ObjectMap {
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = thanosImageTag
 	storeStatefulSet.Namespace = namespace
+	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	storeStatefulSet.Replicas = replicas
 	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU) // To be confirmed
 	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("4")
@@ -171,11 +173,11 @@ func makeStore(namespace string, replicas int32) k8sutil.ObjectMap {
 	return manifests
 }
 
-type KubeObject interface {
+type kubeObject interface {
 	*corev1.Service | *appsv1.StatefulSet | *monv1.ServiceMonitor
 }
 
-func getObject[T KubeObject](manifests k8sutil.ObjectMap) T {
+func getObject[T kubeObject](manifests k8sutil.ObjectMap) T {
 	for _, obj := range manifests {
 		if service, ok := obj.(T); ok {
 			return service

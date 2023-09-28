@@ -3,6 +3,23 @@ kind: Template
 metadata:
   name: rhelemeter
 objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    labels:
+      k8s-app: rhelemeter-server
+    name: rhelemeter-server-client-info
+  stringData:
+    client-info.json: |-
+      {
+          "config": {
+              "common_name_header": "x-rh-certauth-cn",
+              "issuer_header": "x-rh-certauth-issuer",
+              "secret_header": "x-rh-rhelemeter-gateway-secret"
+          },
+          "secret": "${RHELEMETER_CLIENT_INFO_PSK}"
+      }
+  type: Opaque
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -22,11 +39,11 @@ objects:
           - /usr/bin/rhelemeter-server
           - --listen=0.0.0.0:8443
           - --listen-internal=0.0.0.0:8081
-          - --tls-key=/etc/pki/external/tls.key
-          - --tls-crt=/etc/pki/external/tls.crt
-          - --tls-ca-crt=/etc/pki/external/ca.crt
+          - --tls-key=/etc/pki/service/tls.key
+          - --tls-crt=/etc/pki/service/tls.crt
           - --internal-tls-key=/etc/pki/service/tls.key
           - --internal-tls-crt=/etc/pki/service/tls.crt
+          - --client-info-data-file=/etc/external/client-info.json
           - --oidc-issuer=$(OIDC_ISSUER)
           - --client-id=$(CLIENT_ID)
           - --client-secret=$(CLIENT_SECRET)
@@ -78,8 +95,8 @@ objects:
           - mountPath: /etc/pki/service
             name: rhelemeter-server-tls
             readOnly: false
-          - mountPath: /etc/pki/external
-            name: rhelemeter-server-external-mtls
+          - mountPath: /etc/external
+            name: rhelemeter-server-client-info
             readOnly: false
         serviceAccountName: rhelemeter-server
         volumes:
@@ -89,20 +106,9 @@ objects:
         - name: rhelemeter-server-tls
           secret:
             secretName: rhelemeter-server-shared
-        - name: rhelemeter-server-external-mtls
+        - name: rhelemeter-server-client-info
           secret:
-            secretName: rhelemeter-server-external-mtls
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    labels:
-      k8s-app: rhelemeter-server
-    name: rhelemeter-server-external-mtls
-  stringData:
-    ca.crt: ${RHELEMETER_EXTERNAL_MTLS_CA}
-    tls.crt: ${RHELEMETER_EXTERNAL_MTLS_CRT}
-    tls.key: ${RHELEMETER_EXTERNAL_MTLS_KEY}
-  type: Opaque
+            secretName: rhelemeter-server-client-info
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -163,7 +169,7 @@ parameters:
 - name: NAMESPACE
   value: rhelemeter
 - name: IMAGE_TAG
-  value: 82f71d3
+  value: "1568906"
 - name: IMAGE
   value: quay.io/app-sre/telemeter
 - name: REPLICAS
@@ -173,16 +179,12 @@ parameters:
 - name: RHELEMETER_FORWARD_URL
   value: ""
 - name: RHELEMETER_OIDC_ISSUER
-  value: ""
+  value: https://sso.redhat.com/auth/realms/redhat-external
 - name: RHELEMETER_CLIENT_ID
   value: ""
 - name: RHELEMETER_CLIENT_SECRET
   value: ""
-- name: RHELEMETER_EXTERNAL_MTLS_CA
-  value: ""
-- name: RHELEMETER_EXTERNAL_MTLS_CRT
-  value: ""
-- name: RHELEMETER_EXTERNAL_MTLS_KEY
+- name: RHELEMETER_CLIENT_INFO_PSK
   value: ""
 - name: RHELEMETER_LOG_LEVEL
   value: warn

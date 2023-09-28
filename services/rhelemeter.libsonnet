@@ -13,9 +13,7 @@
       clientSecret: error 'must provide clientSecret',
       rhelemeterForwardURL: error 'must provide telemeterForwardURL',
       rhelemeterTenantID: error 'must provide rhelemeterTenantID',
-      externalMtlsCa: error 'must provide externalMtlsCa',
-      externalMtlsKey: error 'must provide externalMtlsKey',
-      externalMtlsCrt: error 'must provide externalMtlsCrt',
+      clientInfoPSK: error 'must provide clientInfoPSK',
     },
 
   },
@@ -27,7 +25,7 @@
       },
     },
 
-    externalMtlsSecret+: {
+    clientInfoSecret+: {
       data+:: {
       },
     },

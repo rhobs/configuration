@@ -82,8 +82,7 @@ telemeter() {
 
 rhelemeter() {
     oc wait --for=jsonpath='{.status.phase}=Active' namespace/rhelemeter --timeout=5s
-    oc process -f --param-file=env/rhelemeter.test.ci.env -p RHELEMETER_EXTERNAL_MTLS_CA="$(cat ../deploy/manifests/rhelemeter_certs/ca.crt)" \
-        RHELEMETER_EXTERNAL_MTLS_CRT="$(cat ../deploy/manifests/rhelemeter_certs/tls.crt)" RHELEMETER_EXTERNAL_MTLS_KEY="$(cat ../deploy/manifests/rhelemeter_certs/tls.key)" \
+    oc process -f --param-file=env/rhelemeter.test.ci.env -p RHELEMETER_CLIENT_INFO_PSK=ZXhhbXBsZS1hcHAtc2VjcmV0 \
         -f ../../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
 }
 

@@ -5,7 +5,7 @@
     namespace: 'rhelemeter',
 
     rhelemeterServer+:: {
-      image: 'quay.io/app-sre/telemeter:82f71d3',
+      image: 'quay.io/app-sre/telemeter:5923762',
       replicas: 3,
       logLevel: 'warn',
       oidcIssuer: error 'must provide telemeterForwardURL',
@@ -13,9 +13,7 @@
       clientSecret: error 'must provide clientSecret',
       rhelemeterForwardURL: error 'must provide telemeterForwardURL',
       rhelemeterTenantID: error 'must provide rhelemeterTenantID',
-      externalMtlsCa: error 'must provide externalMtlsCa',
-      externalMtlsKey: error 'must provide externalMtlsKey',
-      externalMtlsCrt: error 'must provide externalMtlsCrt',
+      clientInfoPSK: error 'must provide clientInfoPSK',
     },
 
   },
@@ -27,7 +25,7 @@
       },
     },
 
-    externalMtlsSecret+: {
+    clientInfoSecret+: {
       data+:: {
       },
     },

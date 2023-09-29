@@ -78,8 +78,7 @@ telemeter() {
 
 rhelemeter() {
     oc create ns rhelemeter || true
-    oc process --param-file=env/rhelemeter.test.env -p RHELEMETER_EXTERNAL_MTLS_CA="$(cat manifests/rhelemeter_certs/ca.crt)" \
-        RHELEMETER_EXTERNAL_MTLS_CRT="$(cat manifests/rhelemeter_certs/tls.crt)" RHELEMETER_EXTERNAL_MTLS_KEY="$(cat manifests/rhelemeter_certs/tls.key)" \
+    oc process --param-file=env/rhelemeter.test.env -p RHELEMETER_CLIENT_INFO_PSK=super-secret \
         -f ../../resources/services/rhelemeter-template.yaml | oc apply --namespace rhelemeter -f -
 }
 

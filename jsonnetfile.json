@@ -82,7 +82,7 @@
           "subdir": "jsonnet/lib"
         }
       },
-      "version": "master",
+      "version": "main",
       "name": "thanos-receive-controller"
     },
     {
@@ -92,7 +92,7 @@
           "subdir": "jsonnet/thanos-receive-controller-mixin"
         }
       },
-      "version": "master"
+      "version": "main"
     },
     {
       "source": {

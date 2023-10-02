@@ -73,7 +73,7 @@ func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorS
 	manifests := compactorSatefulset.Manifests()
 	service := getObject[*corev1.Service](manifests)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests))
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), compactorSatefulset.Namespace)
 
 	// Add pod disruption budget
 	labels := maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels)
@@ -184,7 +184,7 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 		preManifestHook(storeStatefulSet)
 	}
 	manifests := storeStatefulSet.Manifests()
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests))
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), storeStatefulSet.Namespace)
 	statefulset := getObject[*appsv1.StatefulSet](manifests)
 	defaultMode := int32(0777)
 	statefulset.Spec.Template.Spec.Volumes = append(statefulset.Spec.Template.Spec.Volumes, corev1.Volume{
@@ -296,10 +296,8 @@ func getObject[T kubeObject](manifests k8sutil.ObjectMap) T {
 	panic(fmt.Sprintf("could not find object of type %T", *new(T)))
 }
 
-func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor) {
+func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSelector string) {
 	serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
-	// Same labels map is shared between all objects in the manifests. Need to clone it to avoid modifying all.
-	labels := maps.Clone(serviceMonitor.ObjectMeta.Labels)
-	labels["prometheus"] = "app-sre"
-	serviceMonitor.ObjectMeta.Labels = labels
+	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
+	serviceMonitor.ObjectMeta.Labels["prometheus"] = "app-sre"
 }

@@ -84,4 +84,5 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20230922090626-0f7a82fd0910
+// Delete when https://github.com/observatorium/observatorium/pull/543 is merged to main branch
+replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231002130052-3e0c7849c81f

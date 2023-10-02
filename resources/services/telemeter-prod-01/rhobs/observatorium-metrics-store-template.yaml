@@ -104,6 +104,10 @@ objects:
       port: 10902
       protocol: TCP
       targetPort: 10902
+    - name: grpc
+      port: 10901
+      protocol: TCP
+      targetPort: 10901
     selector:
       app.kubernetes.io/component: object-store-gateway
       app.kubernetes.io/instance: observatorium
@@ -193,14 +197,14 @@ objects:
             - podAffinityTerm:
                 labelSelector:
                   matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - thanos-store
                   - key: app.kubernetes.io/instance
                     operator: In
                     values:
                     - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-store
                 topologyKey: kubernetes.io/hostname
               weight: 100
         containers:
@@ -243,6 +247,9 @@ objects:
           ports:
           - containerPort: 10902
             name: http
+            protocol: TCP
+          - containerPort: 10901
+            name: grpc
             protocol: TCP
           readinessProbe:
             failureThreshold: 20

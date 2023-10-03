@@ -6,15 +6,18 @@ import (
 	"maps"
 	"time"
 
+	"github.com/bwplotka/mimic/encoding"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	"github.com/observatorium/observatorium/configuration_go/openshift"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/common"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
 	objstore3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
 	routev1 "github.com/openshift/api/route/v1"
+	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
@@ -37,7 +40,7 @@ const (
 var storeAutoShardRelabelConfigMap string
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
+func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*compactor.CompactorStatefulSet)) encoding.Encoder {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Image = thanosImage
@@ -57,7 +60,6 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, compactorSatefulset.Name, tlsSecret)}
 
 	// Compactor config
-	compactorSatefulset.Options.LogLevel = "warn"
 	compactorSatefulset.Options.RetentionResolutionRaw = 365 * 24 * time.Hour
 	compactorSatefulset.Options.RetentionResolution5m = 365 * 24 * time.Hour
 	compactorSatefulset.Options.RetentionResolution1h = 365 * 24 * time.Hour
@@ -67,10 +69,14 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 	compactorSatefulset.Options.DeduplicationReplicaLabel = "replica"
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
-	// Post process
+	// Execute preManifestsHook
 	if preManifestsHook != nil {
 		preManifestsHook(compactorSatefulset)
 	}
+	logLevel := string(compactorSatefulset.Options.LogLevel) // capture final log level for use in template
+	compactorSatefulset.Options.LogLevel = "${THANOS_LOG_LEVEL}"
+
+	// Post process
 	manifests := compactorSatefulset.Manifests()
 	service := getObject[*corev1.Service](manifests)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
@@ -131,12 +137,38 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 		},
 	}
 
-	return manifests
+	// Wrap in template
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: "observatorium-metrics-compact",
+	}, []templatev1.Parameter{
+		{
+			Name:     "OAUTH_PROXY_COOKIE_SECRET",
+			Generate: "expression",
+			From:     "[a-zA-Z0-9]{40}",
+		},
+		{
+			Name:     "THANOS_LOG_LEVEL",
+			Value:    logLevel,
+			Required: true,
+		},
+		{
+			Name:     "THANOS_REPLICAS",
+			Value:    fmt.Sprintf("%d", compactorSatefulset.Replicas),
+			Required: true,
+		},
+	})
+
+	// Adding a special encoder wrapper to replace the replicas value in the template with a template parameter
+	// As the replicas value is typed as an int, it cannot be replaced using the compactor config.
+	yamlDecoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
+	yamlDecoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, compactorSatefulset.Replicas), "${1}$${THANOS_REPLICAS}")
+
+	return &yamlDecoder
 
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
+func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.StoreStatefulSet)) encoding.Encoder {
 	// K8s config
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage
@@ -207,10 +239,14 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 	}
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
 
-	// Post process
+	// Execute preManifestHook
 	if preManifestHook != nil {
 		preManifestHook(storeStatefulSet)
 	}
+	logLevel := string(storeStatefulSet.Options.LogLevel) // capture final log level for use in template
+	storeStatefulSet.Options.LogLevel = "${THANOS_LOG_LEVEL}"
+
+	// Post process
 	manifests := storeStatefulSet.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), storeStatefulSet.Namespace)
 	statefulset := getObject[*appsv1.StatefulSet](manifests)
@@ -307,7 +343,28 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 		},
 	}
 
-	return manifests
+	// Wrap in template
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: "observatorium-metrics-store",
+	}, []templatev1.Parameter{
+		{
+			Name:     "THANOS_LOG_LEVEL",
+			Value:    logLevel,
+			Required: true,
+		},
+		{
+			Name:     "THANOS_REPLICAS",
+			Value:    fmt.Sprintf("%d", storeStatefulSet.Replicas),
+			Required: true,
+		},
+	})
+
+	yamlDecoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
+	// Adding a special encoder wrapper to replace the replicas value in the template with a template parameter
+	// As the replicas value is typed as an int, it cannot be replaced using the compactor config.
+	yamlDecoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, storeStatefulSet.Replicas), "${1}$${THANOS_REPLICAS}")
+
+	return &yamlDecoder
 }
 
 type kubeObject interface {

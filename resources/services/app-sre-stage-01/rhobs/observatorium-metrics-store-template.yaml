@@ -113,8 +113,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-  status:
-    loadBalancer: {}
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -172,7 +170,7 @@ objects:
     name: observatorium-thanos-store
     namespace: rhobs
   spec:
-    replicas: 2
+    replicas: ${THANOS_REPLICAS}
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway
@@ -213,7 +211,7 @@ objects:
           - --data-dir=/var/thanos/store
           - --ignore-deletion-marks-delay=24h0m0s
           - --log.format=logfmt
-          - --log.level=info
+          - --log.level=${THANOS_LOG_LEVEL}
           - --max-time=-22h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --selector.relabel-config-file=/tmp/config/hashmod-config.yaml
@@ -383,3 +381,10 @@ objects:
             storage: 500Gi
         storageClassName: gp2
       status: {}
+parameters:
+- name: THANOS_LOG_LEVEL
+  required: true
+  value: info
+- name: THANOS_REPLICAS
+  required: true
+  value: "2"

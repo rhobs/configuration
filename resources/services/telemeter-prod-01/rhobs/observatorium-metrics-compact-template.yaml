@@ -33,8 +33,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-  status:
-    loadBalancer: {}
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -92,7 +90,7 @@ objects:
     name: observatorium-thanos-compact
     namespace: rhobs
   spec:
-    replicas: 1
+    replicas: ${THANOS_REPLICAS}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
@@ -136,7 +134,7 @@ objects:
           - --delete-delay=24h0m0s
           - --downsample.concurrency=1
           - --log.format=logfmt
-          - --log.level=warn
+          - --log.level=${THANOS_LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --retention.resolution-1h=8760h0m0s
           - --retention.resolution-5m=8760h0m0s
@@ -322,3 +320,9 @@ parameters:
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET
+- name: THANOS_LOG_LEVEL
+  required: true
+  value: warn
+- name: THANOS_REPLICAS
+  required: true
+  value: "1"

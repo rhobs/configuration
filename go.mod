@@ -2,8 +2,6 @@ module github.com/rhobs/configuration
 
 go 1.21
 
-toolchain go1.21.1
-
 require (
 	github.com/bwplotka/mimic v0.2.1-0.20230303101552-f705cca2f4a4
 	github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44

@@ -111,6 +111,7 @@ func (c *customYAML) clean(input []byte) []byte {
 	re := []*regexp.Regexp{
 		regexp.MustCompile(`\s*status:\n\s*availableReplicas: 0\n\s*replicas: 0`),
 		regexp.MustCompile(`\s*status:\n\s*currentHealthy: 0\n\s*desiredHealthy: 0\n\s*disruptionsAllowed: 0\n\s*expectedPods: 0`),
+		regexp.MustCompile(`\s*status:\n\s*ingress: null`),
 	}
 
 	ret := input

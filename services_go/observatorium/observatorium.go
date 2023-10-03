@@ -39,6 +39,7 @@ type InstanceConfiguration struct {
 	Cluster           string
 	Instance          string
 	Namespace         string
+	ObjStoreSecret    string
 	Tenants           []TenantInstanceConfiguration
 	PreManifestsHooks PreManifestsHooks
 }
@@ -63,14 +64,14 @@ func (o *Observatorium) Manifests(generator *mimic.Generator) {
 		objects k8sutil.ObjectMap
 		params  []templatev1.Parameter
 	}{
-		{"observatorium-metrics-compact", makeCompactor(o.cfg.Namespace, o.cfg.PreManifestsHooks.Compactor), []templatev1.Parameter{
+		{"observatorium-metrics-compact", makeCompactor(o.cfg.Namespace, o.cfg.ObjStoreSecret, o.cfg.PreManifestsHooks.Compactor), []templatev1.Parameter{
 			{
 				Name:     "OAUTH_PROXY_COOKIE_SECRET",
 				Generate: "expression",
 				From:     "[a-zA-Z0-9]{40}",
 			},
 		}},
-		{"observatorium-metrics-store", makeStore(o.cfg.Namespace, o.cfg.PreManifestsHooks.ThanosStore), []templatev1.Parameter{}},
+		{"observatorium-metrics-store", makeStore(o.cfg.Namespace, o.cfg.ObjStoreSecret, o.cfg.PreManifestsHooks.ThanosStore), []templatev1.Parameter{}},
 	}
 
 	for _, component := range components {

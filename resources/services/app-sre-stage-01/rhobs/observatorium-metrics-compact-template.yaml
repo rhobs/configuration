@@ -144,21 +144,42 @@ objects:
           - --wait
           - --debug.max-compaction-level=3
           env:
+          - name: HOST_IP_ADDRESS
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
                 key: aws_access_key_id
-                name: rhobs-thanos-s3
+                name: telemeter-tenant-s3
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 key: aws_secret_access_key
-                name: rhobs-thanos-s3
-          - name: OBJSTORE_CONFIG
+                name: telemeter-tenant-s3
+          - name: OBJ_STORE_BUCKET
             valueFrom:
               secretKeyRef:
-                key: thanos.yaml
-                name: rhobs-thanos-objectstorage
+                key: bucket
+                name: telemeter-tenant-s3
+          - name: OBJ_STORE_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: telemeter-tenant-s3
+          - name: OBJ_STORE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                key: endpoint
+                name: telemeter-tenant-s3
+          - name: OBJSTORE_CONFIG
+            value: |
+              type: S3
+              config:
+                  bucket: $(OBJ_STORE_BUCKET)
+                  endpoint: $(OBJ_STORE_ENDPOINT)
+                  region: $(OBJ_STORE_REGION)
           image: quay.io/thanos/thanos:v0.32.3
           imagePullPolicy: IfNotPresent
           livenessProbe:

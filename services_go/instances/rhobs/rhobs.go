@@ -10,10 +10,11 @@ import (
 func ClusterConfigs() []observatorium.InstanceConfiguration {
 	return []observatorium.InstanceConfiguration{
 		{
-			Cluster:   "app-sre-stage-01",
-			Namespace: "rhobs",
-			Instance:  "rhobs",
-			Tenants:   []observatorium.TenantInstanceConfiguration{},
+			Cluster:        "app-sre-stage-01",
+			Namespace:      "rhobs",
+			Instance:       "rhobs",
+			ObjStoreSecret: "telemeter-tenant-s3",
+			Tenants:        []observatorium.TenantInstanceConfiguration{},
 			PreManifestsHooks: observatorium.PreManifestsHooks{
 				ThanosStore: func(store *store.StoreStatefulSet) {
 					store.Replicas = 2
@@ -25,10 +26,11 @@ func ClusterConfigs() []observatorium.InstanceConfiguration {
 			},
 		},
 		{
-			Cluster:   "telemeter-prod-01",
-			Namespace: "rhobs",
-			Instance:  "rhobs",
-			Tenants:   []observatorium.TenantInstanceConfiguration{},
+			Cluster:        "telemeter-prod-01",
+			Namespace:      "rhobs",
+			Instance:       "rhobs",
+			ObjStoreSecret: "telemeter-tenant-s3",
+			Tenants:        []observatorium.TenantInstanceConfiguration{},
 			PreManifestsHooks: observatorium.PreManifestsHooks{
 				ThanosStore: func(store *store.StoreStatefulSet) {
 					store.Replicas = 3

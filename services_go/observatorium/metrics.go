@@ -10,9 +10,12 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/common"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
+	objstore3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	policyv1 "k8s.io/api/policy/v1"
@@ -33,7 +36,7 @@ const (
 var storeAutoShardRelabelConfigMap string
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
+func makeCompactor(namespace string, objstoreSecret string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Image = thanosImage
@@ -41,17 +44,14 @@ func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorS
 	compactorSatefulset.Namespace = namespace
 	compactorSatefulset.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	compactorSatefulset.Replicas = 1
-	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU) // To be confirmed
+	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU)
 	compactorSatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
 	compactorSatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("1Gi")
 	compactorSatefulset.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("5Gi")
 	compactorSatefulset.VolumeType = "gp2"
 	compactorSatefulset.VolumeSize = "500Gi"
-	compactorSatefulset.Env = []corev1.EnvVar{
-		k8sutil.NewEnvFromSecret("AWS_ACCESS_KEY_ID", "rhobs-thanos-s3", "aws_access_key_id"),
-		k8sutil.NewEnvFromSecret("AWS_SECRET_ACCESS_KEY", "rhobs-thanos-s3", "aws_secret_access_key"),
-		k8sutil.NewEnvFromSecret("OBJSTORE_CONFIG", "rhobs-thanos-objectstorage", "thanos.yaml"),
-	}
+	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
+	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(objstoreSecret)...)
 	tlsSecret := "compact-tls"
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, compactorSatefulset.Name, tlsSecret)}
 
@@ -105,7 +105,7 @@ func makeCompactor(namespace string, preManifestsHook func(*compactor.CompactorS
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
+func makeStore(namespace string, objstoreSecret string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage
@@ -113,17 +113,14 @@ func makeStore(namespace string, preManifestHook func(*store.StoreStatefulSet)) 
 	storeStatefulSet.Namespace = namespace
 	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	storeStatefulSet.Replicas = 1
-	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU) // To be confirmed
+	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU)
 	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("4")
 	storeStatefulSet.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("20Gi")
 	storeStatefulSet.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("80Gi")
 	storeStatefulSet.VolumeType = "gp2"
 	storeStatefulSet.VolumeSize = "500Gi"
-	storeStatefulSet.Env = []corev1.EnvVar{
-		k8sutil.NewEnvFromSecret("AWS_ACCESS_KEY_ID", "rhobs-thanos-s3", "aws_access_key_id"),
-		k8sutil.NewEnvFromSecret("AWS_SECRET_ACCESS_KEY", "rhobs-thanos-s3", "aws_secret_access_key"),
-		k8sutil.NewEnvFromSecret("OBJSTORE_CONFIG", "rhobs-thanos-objectstorage", "thanos.yaml"),
-	}
+	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
+	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(objstoreSecret)...)
 	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Store auto-sharding using a configMap and an initContainer
@@ -300,4 +297,40 @@ func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSe
 	serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels["prometheus"] = "app-sre"
+}
+
+func deleteObjStoreEnv(objStoreEnv []corev1.EnvVar) []corev1.EnvVar {
+	for i, env := range objStoreEnv {
+		if env.Name == "OBJSTORE_CONFIG" {
+			return append(objStoreEnv[:i], objStoreEnv[i+1:]...)
+		}
+	}
+
+	return objStoreEnv
+}
+
+func objStoreEnvVars(objstoreSecret string) []corev1.EnvVar {
+	objStoreCfg, err := yaml.Marshal(objstore.BucketConfig{
+		Type: objstore.S3,
+		Config: objstore3.Config{
+			Bucket:   "$(OBJ_STORE_BUCKET)",
+			Endpoint: "$(OBJ_STORE_ENDPOINT)",
+			Region:   "$(OBJ_STORE_REGION)",
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return []corev1.EnvVar{
+		k8sutil.NewEnvFromSecret("AWS_ACCESS_KEY_ID", objstoreSecret, "aws_access_key_id"),
+		k8sutil.NewEnvFromSecret("AWS_SECRET_ACCESS_KEY", objstoreSecret, "aws_secret_access_key"),
+		k8sutil.NewEnvFromSecret("OBJ_STORE_BUCKET", objstoreSecret, "bucket"),
+		k8sutil.NewEnvFromSecret("OBJ_STORE_REGION", objstoreSecret, "aws_region"),
+		k8sutil.NewEnvFromSecret("OBJ_STORE_ENDPOINT", objstoreSecret, "endpoint"),
+		{
+			Name:  "OBJSTORE_CONFIG",
+			Value: string(objStoreCfg),
+		},
+	}
 }

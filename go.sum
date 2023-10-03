@@ -1257,8 +1257,6 @@ github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
 github.com/thanos-io/thanos v0.32.2 h1:W9vzOUdiIBKUc947IbTPAj4Lnv5r4MP8iXuUF1G1GkM=
 github.com/thanos-io/thanos v0.32.2/go.mod h1:zfpzKCtqaqCy1D9/6ksZfL+U+KKt8mkcX6v3btuDHgg=
-github.com/thibaultmg/observatorium v0.0.0-20230922090626-0f7a82fd0910 h1:HKkk7aBcPd4542+YTo9bJKS+IYCoGJTM8eOt/tM8+2c=
-github.com/thibaultmg/observatorium v0.0.0-20230922090626-0f7a82fd0910/go.mod h1:Bfegly2FCsugSsgbEQ+2wGW14Hj6pH7yaE+vQA/dw2M=
 github.com/thibaultmg/observatorium v0.0.0-20231002130052-3e0c7849c81f h1:bs2Q0quoMiEXncDLKSyzzj2K57zwE64aIebMLxWQ83s=
 github.com/thibaultmg/observatorium v0.0.0-20231002130052-3e0c7849c81f/go.mod h1:Bfegly2FCsugSsgbEQ+2wGW14Hj6pH7yaE+vQA/dw2M=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=

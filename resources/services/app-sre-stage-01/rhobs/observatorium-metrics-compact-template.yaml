@@ -274,6 +274,31 @@ objects:
             storage: 500Gi
         storageClassName: gp2
       status: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/issuer-name: letsencrypt-prod-http
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-thanos-compact
+    namespace: rhobs
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: observatorium-thanos-compact
+      weight: null
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:

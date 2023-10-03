@@ -14,6 +14,7 @@ import (
 	objstore3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
+	routev1 "github.com/openshift/api/route/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
@@ -36,7 +37,7 @@ const (
 var storeAutoShardRelabelConfigMap string
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func makeCompactor(namespace string, objstoreSecret string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
+func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*compactor.CompactorStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Image = thanosImage
@@ -100,12 +101,42 @@ func makeCompactor(namespace string, objstoreSecret string, preManifestsHook fun
 		},
 	}
 
+	// Add route for oauth-proxy
+	manifests["oauth-proxy-route"] = &routev1.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: routev1.SchemeGroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      compactorSatefulset.Name,
+			Namespace: namespace,
+			Labels:    labels,
+			Annotations: map[string]string{
+				"cert-manager.io/issuer-kind": "ClusterIssuer",
+				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
+			},
+		},
+		Spec: routev1.RouteSpec{
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.FromString("https"),
+			},
+			TLS: &routev1.TLSConfig{
+				Termination:                   routev1.TLSTerminationReencrypt,
+				InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+			},
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: compactorSatefulset.Name,
+			},
+		},
+	}
+
 	return manifests
 
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func makeStore(namespace string, objstoreSecret string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
+func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.StoreStatefulSet)) k8sutil.ObjectMap {
 	// K8s config
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Image = thanosImage

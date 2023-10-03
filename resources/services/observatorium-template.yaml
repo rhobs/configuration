@@ -967,12 +967,16 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhel-read-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhel-read"
       - "name": "observatorium-rhel-write"
         "roles":
         - "rhel-metrics-write"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhel-write-staging"
+        - "kind": "user"
+          "name": "service-account-observatorium-rhel-write"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":

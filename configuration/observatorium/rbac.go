@@ -319,7 +319,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  rhelTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Read},
-		envs:    []env{stagingEnv},
+		envs:    []env{stagingEnv, productionEnv},
 	})
 	// RHEL
 	// Writer serviceaccount
@@ -328,7 +328,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 		tenant:  rhelTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write},
-		envs:    []env{stagingEnv},
+		envs:    []env{stagingEnv, productionEnv},
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.

@@ -458,6 +458,8 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                         '--receive.grpc-compression=none',
                         '--receive.hashrings-algorithm=${THANOS_RECEIVE_HASHRINGS_ALGORITHM}',
                         '--receive.hashrings-file-refresh-interval=5s',
+                        '--store.limits.request-series=${THANOS_RECEIVE_REQUEST_SERIES_LIMIT}',
+                        '--store.limits.request-samples=${THANOS_RECEIVE_REQUEST_SAMPLES_LIMIT}',
                       ],
                       env+: s3EnvVars + [{
                         name: 'DEBUG',

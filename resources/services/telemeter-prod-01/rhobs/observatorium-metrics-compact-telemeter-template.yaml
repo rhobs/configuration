@@ -144,9 +144,6 @@ objects:
           - --log.format=logfmt
           - --log.level=${THANOS_LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
-          - --retention.resolution-1h=8760h0m0s
-          - --retention.resolution-5m=8760h0m0s
-          - --retention.resolution-raw=8760h0m0s
           - --wait
           - --debug.max-compaction-level=3
           env:

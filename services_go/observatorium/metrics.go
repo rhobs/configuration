@@ -62,9 +62,10 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, compactorSatefulset.Name, tlsSecret)}
 
 	// Compactor config
-	compactorSatefulset.Options.RetentionResolutionRaw = 365 * 24 * time.Hour
-	compactorSatefulset.Options.RetentionResolution5m = 365 * 24 * time.Hour
-	compactorSatefulset.Options.RetentionResolution1h = 365 * 24 * time.Hour
+	compactorSatefulset.Options.LogLevel = common.LogLevelWarn
+	compactorSatefulset.Options.RetentionResolutionRaw = 0
+	compactorSatefulset.Options.RetentionResolution5m = 0
+	compactorSatefulset.Options.RetentionResolution1h = 0
 	compactorSatefulset.Options.DeleteDelay = 24 * time.Hour
 	compactorSatefulset.Options.CompactConcurrency = 1
 	compactorSatefulset.Options.DownsampleConcurrency = 1

@@ -2,13 +2,13 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-compact-rhel
+  name: observatorium-thanos-compact-default
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: compact-tls-rhel
+      service.alpha.openshift.io/serving-cert-secret-name: compact-tls-default
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: database-compactor
@@ -16,8 +16,8 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+      observatorium/tenant: default
+    name: observatorium-thanos-compact-default
     namespace: rhobs
   spec:
     ports:
@@ -34,7 +34,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
+      observatorium/tenant: default
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -45,8 +45,8 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+      observatorium/tenant: default
+    name: observatorium-thanos-compact-default
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -58,9 +58,9 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
+      observatorium/tenant: default
       prometheus: app-sre
-    name: observatorium-thanos-compact-rhel
+    name: observatorium-thanos-compact-default
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -81,7 +81,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-compact
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
+        observatorium/tenant: default
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -92,8 +92,8 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+      observatorium/tenant: default
+    name: observatorium-thanos-compact-default
     namespace: rhobs
   spec:
     replicas: ${THANOS_REPLICAS}
@@ -103,8 +103,8 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-compact
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
-    serviceName: observatorium-thanos-compact-rhel
+        observatorium/tenant: default
+    serviceName: observatorium-thanos-compact-default
     template:
       metadata:
         creationTimestamp: null
@@ -114,7 +114,7 @@ objects:
           app.kubernetes.io/name: thanos-compact
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: rhel
+          observatorium/tenant: default
         namespace: rhobs
       spec:
         affinity:
@@ -155,27 +155,27 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: aws_access_key_id
-                name: rhel-tenant-s3
+                name: default-tenant-s3
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 key: aws_secret_access_key
-                name: rhel-tenant-s3
+                name: default-tenant-s3
           - name: OBJ_STORE_BUCKET
             valueFrom:
               secretKeyRef:
                 key: bucket
-                name: rhel-tenant-s3
+                name: default-tenant-s3
           - name: OBJ_STORE_REGION
             valueFrom:
               secretKeyRef:
                 key: aws_region
-                name: rhel-tenant-s3
+                name: default-tenant-s3
           - name: OBJ_STORE_ENDPOINT
             valueFrom:
               secretKeyRef:
                 key: endpoint
-                name: rhel-tenant-s3
+                name: default-tenant-s3
           - name: OBJSTORE_CONFIG
             value: |
               type: S3
@@ -218,7 +218,7 @@ objects:
           - -http-address=
           - -email-domain=*
           - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-compact-rhel
+          - -openshift-service-account=observatorium-thanos-compact-default
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
             "namespace": "rhobs"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
@@ -252,12 +252,12 @@ objects:
         securityContext:
           fsGroup: 65534
           runAsUser: 65534
-        serviceAccountName: observatorium-thanos-compact-rhel
+        serviceAccountName: observatorium-thanos-compact-default
         terminationGracePeriodSeconds: 120
         volumes:
         - name: compact-tls
           secret:
-            secretName: compact-tls-rhel
+            secretName: compact-tls-default
     updateStrategy: {}
     volumeClaimTemplates:
     - metadata:
@@ -268,7 +268,7 @@ objects:
           app.kubernetes.io/name: thanos-compact
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: rhel
+          observatorium/tenant: default
         name: data
       spec:
         accessModes:
@@ -289,8 +289,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+      observatorium/tenant: default
+    name: observatorium-thanos-compact-default
     namespace: rhobs
   spec:
     host: ""
@@ -301,7 +301,7 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-compact-rhel
+      name: observatorium-thanos-compact-default
       weight: null
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
@@ -312,8 +312,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+      observatorium/tenant: default
+    name: observatorium-thanos-compact-default
     namespace: rhobs
   spec:
     maxUnavailable: 1
@@ -323,7 +323,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-compact
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
+        observatorium/tenant: default
 parameters:
 - name: THANOS_LOG_LEVEL
   value: warn

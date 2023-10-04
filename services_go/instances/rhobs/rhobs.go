@@ -15,8 +15,8 @@ func ClusterConfigs() []observatorium.Observatorium {
 			ThanosImageTag: "v0.32.4",
 			Stores: []observatorium.ThanosTenantConfig[store.StoreStatefulSet]{
 				{
-					Tenant:         "shared",
-					ObjStoreSecret: "shared-tenant-s3",
+					Tenant:         "default",
+					ObjStoreSecret: "default-tenant-s3",
 				},
 				{
 					Tenant:         "rhel",
@@ -29,8 +29,8 @@ func ClusterConfigs() []observatorium.Observatorium {
 			},
 			Compactors: []observatorium.ThanosTenantConfig[compactor.CompactorStatefulSet]{
 				{
-					Tenant:         "shared",
-					ObjStoreSecret: "shared-tenant-s3",
+					Tenant:         "default",
+					ObjStoreSecret: "default-tenant-s3",
 				},
 				{
 					Tenant:         "rhel",
@@ -49,8 +49,8 @@ func ClusterConfigs() []observatorium.Observatorium {
 			ThanosImageTag: "v0.32.4",
 			Stores: []observatorium.ThanosTenantConfig[store.StoreStatefulSet]{
 				{
-					Tenant:         "shared",
-					ObjStoreSecret: "shared-tenant-s3",
+					Tenant:         "default",
+					ObjStoreSecret: "default-tenant-s3",
 				},
 				{
 					Tenant:         "rhel",
@@ -63,8 +63,8 @@ func ClusterConfigs() []observatorium.Observatorium {
 			},
 			Compactors: []observatorium.ThanosTenantConfig[compactor.CompactorStatefulSet]{
 				{
-					Tenant:         "shared",
-					ObjStoreSecret: "shared-tenant-s3",
+					Tenant:         "default",
+					ObjStoreSecret: "default-tenant-s3",
 				},
 				{
 					Tenant:         "rhel",

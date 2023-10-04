@@ -61,7 +61,6 @@ observatorium() {
     oc apply -f manifests/observatorium-rhobs-tenant-secret.yaml --namespace observatorium
     oc apply --namespace observatorium -f manifests/observatorium-service-account.yaml
     oc process --param-file=env/observatorium.test.env -f ../../resources/services/observatorium-template.yaml | oc apply --namespace observatorium -f -
-    oc process --param-file=env/observatorium-jaeger.test.env -f ../../resources/services/jaeger-template.yaml | oc apply --namespace observatorium -f -
 }
 
 observatorium_logs(){

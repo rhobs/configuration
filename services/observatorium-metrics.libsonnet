@@ -583,81 +583,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       },
     },
 
-    // Querier with new PromQL query engine.
-    // This is not linked to anything on critical path.
-    // TODO(saswatamcode): Revert once new PromQL engine is stable.
-    volcanoQuery:: t.query(thanosSharedConfig {
-      image: '${THANOS_VOLCANO_IMAGE}:${THANOS_VOLCANO_IMAGE_TAG}',
-      version: '${THANOS_VOLCANO_IMAGE_TAG}',
-      name: 'observatorium-volcano-query',
-      useThanosEngine: true,
-      commonLabels+:: {
-        'app.kubernetes.io/instance': 'observatorium',
-        'app.kubernetes.io/part-of': 'observatorium',
-        'app.kubernetes.io/name': 'thanos-volcano-query',
-      },
-      replicas: 2,
-      logLevel: '${THANOS_VOLCANO_LOG_LEVEL}',
-      lookbackDelta: '15m',
-      queryTimeout: '15m',
-      prefixHeader: 'X-Forwarded-Prefix',
-      stores: [
-        'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
-        for service in
-          [thanos.stores.shards[shard].service for shard in std.objectFields(thanos.stores.shards)]
-      ] + [
-        // todo - @pgough revert after https://issues.redhat.com/browse/RHOBS-112
-        'dnssrv+_grpc._tcp.${THANOS_RECEIVE_HASHRING_SERVICE_NAME}.${NAMESPACE}.svc.cluster.local',
-      ],
-      rules: [
-        'dnssrv+_grpc._tcp.%s.%s.svc.cluster.local' % [service.metadata.name, service.metadata.namespace]
-        for service in
-          [thanos.rule.service]
-      ],
-      serviceMonitor: true,
-      resources: {
-        requests: {
-          cpu: '${THANOS_VOLCANO_CPU_REQUEST}',
-          memory: '${THANOS_VOLCANO_MEMORY_REQUEST}',
-        },
-        limits: {
-          cpu: '${THANOS_VOLCANO_CPU_LIMIT}',
-          memory: '${THANOS_VOLCANO_MEMORY_LIMIT}',
-        },
-      },
-    }) + {
-      // This is a workaround for adding extra store for the metric federation
-      // ruler service, which does not exist in the MST instance, so we cannot simply pass it
-      // with the --store flag. Instead, we use the file service discovery. The extra store(s)
-      // should be passed as an array string in THANOS_QUERIER_FILE_SD_TARGETS parameter.
-      deployment+: {
-        spec+: {
-          template+: {
-            spec+: {
-              volumes+: [{
-                configMap: {
-                  name: 'thanos-query-file-sd',
-                },
-                name: 'file-sd',
-              }],
-              containers: [
-                if x.name == 'thanos-query'
-                then x {
-                  args+: ['--store.sd-files=/etc/thanos/sd/file_sd.yaml'],
-                  volumeMounts+: [{
-                    mountPath: '/etc/thanos/sd',
-                    name: 'file-sd',
-                  }],
-                }
-                else x
-                for x in super.containers
-              ],
-            },
-          },
-        },
-      },
-    },
-
     queryFrontend:: t.queryFrontend(thanosSharedConfig {
       name: 'observatorium-thanos-query-frontend',
       commonLabels+:: {
@@ -1153,9 +1078,6 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
     } + {
       ['observatorium-alertmanager-' + name]: thanos.alertmanager[name]
       for name in std.objectFields(thanos.alertmanager)
-    } + {
-      ['observatorium-volcano-' + name]: thanos.volcanoQuery[name]
-      for name in std.objectFields(thanos.volcanoQuery)
     } + {
       ['observatorium-ruler-' + name]: thanos.rulerQuery[name]
       for name in std.objectFields(thanos.rulerQuery)

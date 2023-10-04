@@ -33,7 +33,6 @@ This will delete all namespaces and crd's for you.
 
 ### Additional information
 Currently, below RHOBS OpenShift templates are being processed and deployed:
-- `jaeger`
 - `metric-federation-rule`
 - `observatorium-logs`
 - `observatorium-metrics`

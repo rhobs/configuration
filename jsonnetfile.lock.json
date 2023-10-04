@@ -148,18 +148,8 @@
           "subdir": "operations/mimir-mixin"
         }
       },
-      "version": "c1cfa0367dc87440546dabc9081ced3276d3eb77",
-      "sum": "8bQfVmEekD2KhifhkRrX/UdBIKPotCjXef4umbbEtjM="
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/jaegertracing/jaeger.git",
-          "subdir": "monitoring/jaeger-mixin"
-        }
-      },
-      "version": "3021d314f71b9ce0707e8f5a443dd49b6a73d7da",
-      "sum": "OQCueps8UH/JhWnoA1dX7P9Q7ct3zk2/d8Y7DHNT2YI="
+      "version": "0421daaa5ffd91c601a130331e1124a4b615695d",
+      "sum": "vvTsA5XdK4oBTCcin7hbI1eGpeEn+vSH9KZ0ZsBdHxE="
     },
     {
       "source": {

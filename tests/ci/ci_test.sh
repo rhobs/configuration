@@ -67,9 +67,6 @@ observatorium() {
     oc process --param-file=env/observatorium.test.ci.env \
         -f ../../resources/services/observatorium-template.yaml | \
         oc apply --namespace observatorium -f -
-    oc process --param-file=env/observatorium-jaeger.test.ci.env \
-        -f ../../resources/services/jaeger-template.yaml| \
-        oc apply --namespace observatorium -f -
 }
 
 telemeter() {

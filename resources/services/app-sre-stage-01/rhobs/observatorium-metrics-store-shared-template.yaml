@@ -1,0 +1,403 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: observatorium-thanos-store-shared
+objects:
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: shared
+    name: list-pods-shared
+    namespace: rhobs
+  rules:
+  - apiGroups:
+    - apps
+    resources:
+    - statefulsets
+    verbs:
+    - get
+    - list
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: shared
+    name: list-pods-shared
+    namespace: rhobs
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: list-pods-shared
+  subjects:
+  - kind: ServiceAccount
+    name: observatorium-thanos-store-shared
+    namespace: rhobs
+- apiVersion: v1
+  data:
+    entrypoint.sh: "#!/bin/bash\n\n# Kubernetes replicas are named with the following
+      convention \"<statefulset-name>-<ordinal>\". \n# This parameter expansion removes
+      all characters until the last hyphen, capturing only the ordinal.\nexport ORDINAL_INDEX=${HOSTNAME##*-}\n#
+      This parameter expansion removes all characters after the last hyphen, capturing
+      only the statefulset name.\nexport STATEFULSET_NAME=\"${HOSTNAME%-*}\"\nexport
+      THANOS_STORE_REPLICAS=$(kubectl get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE}
+      -o=jsonpath='{.status.replicas}')\n\n# Logging parameters\necho \"generating
+      store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS_STORE_REPLICAS=${STATEFULSET_NAME}
+      HOSTNAME=${HOSTNAME} NAMESPACE=${NAMESPACE} THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS}\"\n\ncat
+      <<EOF >/tmp/config/hashmod-config.yaml\n- action: hashmod\n    source_labels:
+      [\"__block_id\"]\n    target_label: shard\n    modulus: ${THANOS_STORE_REPLICAS}\n-
+      action: keep\n    source_labels: [\"shard\"]\n    regex: ${ORDINAL_INDEX}\nEOF\n"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: shared
+    name: hashmod-config-template-shared
+    namespace: rhobs
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: shared
+    name: observatorium-thanos-store-shared
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: shared
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: shared
+    name: observatorium-thanos-store-shared
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 10902
+      protocol: TCP
+      targetPort: 10902
+    - name: grpc
+      port: 10901
+      protocol: TCP
+      targetPort: 10901
+    selector:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: shared
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: shared
+    name: observatorium-thanos-store-shared
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: shared
+      prometheus: app-sre
+    name: observatorium-thanos-store-shared
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: shared
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: shared
+    name: observatorium-thanos-store-shared
+    namespace: rhobs
+  spec:
+    replicas: ${THANOS_REPLICAS}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: object-store-gateway
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-store
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: shared
+    serviceName: observatorium-thanos-store-shared
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: object-store-gateway
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: thanos-store
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v0.32.4
+          observatorium/tenant: shared
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - thanos-store
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - store
+          - --data-dir=/var/thanos/store
+          - --ignore-deletion-marks-delay=24h0m0s
+          - --log.format=logfmt
+          - --log.level=${THANOS_LOG_LEVEL}
+          - --max-time=-22h0m0s
+          - --objstore.config=$(OBJSTORE_CONFIG)
+          - --selector.relabel-config-file=/tmp/config/hashmod-config.yaml
+          - --store.enable-index-header-lazy-reader=true
+          env:
+          - name: HOST_IP_ADDRESS
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: shared-tenant-s3
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: shared-tenant-s3
+          - name: OBJ_STORE_BUCKET
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: shared-tenant-s3
+          - name: OBJ_STORE_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: shared-tenant-s3
+          - name: OBJ_STORE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                key: endpoint
+                name: shared-tenant-s3
+          - name: OBJSTORE_CONFIG
+            value: |
+              type: S3
+              config:
+                  bucket: $(OBJ_STORE_BUCKET)
+                  endpoint: $(OBJ_STORE_ENDPOINT)
+                  region: $(OBJ_STORE_REGION)
+          image: quay.io/thanos/thanos:v0.32.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /-/healthy
+              port: 10902
+            periodSeconds: 30
+            timeoutSeconds: 1
+          name: thanos
+          ports:
+          - containerPort: 10902
+            name: http
+            protocol: TCP
+          - containerPort: 10901
+            name: grpc
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 20
+            httpGet:
+              path: /-/ready
+              port: 10902
+            periodSeconds: 5
+          resources:
+            limits:
+              memory: 80Gi
+            requests:
+              cpu: "4"
+              memory: 20Gi
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /var/thanos/store
+            name: data
+          - mountPath: /etc/config
+            name: hashmod-config
+        - args:
+          - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: quay.io/app-sre/jaegertracing-jaeger-agent:1.22.0
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+            protocol: TCP
+          - containerPort: 6831
+            name: jaeger-thrift
+            protocol: TCP
+          - containerPort: 14271
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+            initialDelaySeconds: 1
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        initContainers:
+        - args:
+          - /tmp/entrypoint/entrypoint.sh
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          image: quay.io/app-sre/ubi8-ubi
+          imagePullPolicy: IfNotPresent
+          name: init-hashmod-file
+          resources: {}
+          volumeMounts:
+          - mountPath: /tmp/entrypoint
+            name: hashmod-config-template
+          - mountPath: /etc/config
+            name: hashmod-config
+        nodeSelector:
+          kubernetes.io/os: linux
+        securityContext:
+          fsGroup: 65534
+          runAsUser: 65534
+        serviceAccountName: observatorium-thanos-store-shared
+        terminationGracePeriodSeconds: 120
+        volumes:
+        - emptyDir: {}
+          name: hashmod-config
+        - configMap:
+            defaultMode: 511
+            name: thanos-store
+          name: hashmod-config-template
+    updateStrategy: {}
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: object-store-gateway
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: thanos-store
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v0.32.4
+          observatorium/tenant: shared
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Gi
+        storageClassName: gp2
+parameters:
+- name: THANOS_LOG_LEVEL
+  required: true
+  value: warn
+- name: THANOS_REPLICAS
+  required: true
+  value: "1"

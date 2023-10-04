@@ -17,13 +17,15 @@ type statusRemoveEncoder struct {
 
 func (c *statusRemoveEncoder) Read(p []byte) (n int, err error) {
 	if c.reader == nil {
-		ret, err := io.ReadAll(c.encoder)
+		yamlData, err := io.ReadAll(c.encoder)
 		if err != nil {
 			panic(err)
 		}
 
 		// Remove status sections from manifests
-		c.reader = bytes.NewBuffer(regexp.MustCompile(`(?m)^( {2})status:\n( {4}.*\n)+`).ReplaceAll(ret, []byte{}))
+		yamlData = regexp.MustCompile(`(?m)^( {2})status:\n( {4}.*\n)+`).ReplaceAll(yamlData, []byte{})
+		yamlData = regexp.MustCompile(`(?m)^ +status: \{\}\n`).ReplaceAll(yamlData, []byte{})
+		c.reader = bytes.NewBuffer(yamlData)
 	}
 
 	return c.reader.Read(p)
@@ -43,16 +45,16 @@ type templateYAML struct {
 
 func (c *templateYAML) Read(p []byte) (n int, err error) {
 	if c.reader == nil {
-		ret, err := io.ReadAll(c.encoder)
+		yamlData, err := io.ReadAll(c.encoder)
 		if err != nil {
 			panic(err)
 		}
 
 		for _, r := range c.replacements {
-			ret = regexp.MustCompile(r[0]).ReplaceAll(ret, []byte(r[1]))
+			yamlData = regexp.MustCompile(r[0]).ReplaceAll(yamlData, []byte(r[1]))
 		}
 
-		c.reader = bytes.NewBuffer(ret)
+		c.reader = bytes.NewBuffer(yamlData)
 	}
 
 	return c.reader.Read(p)

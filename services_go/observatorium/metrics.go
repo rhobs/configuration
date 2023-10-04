@@ -31,20 +31,22 @@ import (
 
 const (
 	thanosImage                     = "quay.io/thanos/thanos"
-	thanosImageTag                  = "v0.32.3"
 	monitoringNamespace             = "openshift-customer-monitoring"
 	servingCertSecretNameAnnotation = "service.alpha.openshift.io/serving-cert-secret-name"
+	tenantLabel                     = "observatorium/tenant"
 )
 
 //go:embed assets/store-auto-shard-relabel-configMap.sh
 var storeAutoShardRelabelConfigMap string
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*compactor.CompactorStatefulSet)) encoding.Encoder {
+func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.CompactorStatefulSet]) encoding.Encoder {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
+	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, cfg.Tenant)
+	compactorSatefulset.CommonLabels[tenantLabel] = cfg.Tenant
 	compactorSatefulset.Image = thanosImage
-	compactorSatefulset.ImageTag = thanosImageTag
+	compactorSatefulset.ImageTag = imageTag
 	compactorSatefulset.Namespace = namespace
 	compactorSatefulset.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	compactorSatefulset.Replicas = 1
@@ -55,8 +57,8 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 	compactorSatefulset.VolumeType = "gp2"
 	compactorSatefulset.VolumeSize = "500Gi"
 	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
-	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(objstoreSecret)...)
-	tlsSecret := "compact-tls"
+	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(cfg.ObjStoreSecret)...)
+	tlsSecret := "compact-tls-" + cfg.Tenant
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, compactorSatefulset.Name, tlsSecret)}
 
 	// Compactor config
@@ -70,8 +72,8 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
 	// Execute preManifestsHook
-	if preManifestsHook != nil {
-		preManifestsHook(compactorSatefulset)
+	if cfg.PreManifestsHook != nil {
+		cfg.PreManifestsHook(compactorSatefulset)
 	}
 	logLevel := string(compactorSatefulset.Options.LogLevel) // capture final log level for use in template
 	compactorSatefulset.Options.LogLevel = "${THANOS_LOG_LEVEL}"
@@ -139,7 +141,7 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 
 	// Wrap in template
 	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
-		Name: "observatorium-metrics-compact",
+		Name: compactorSatefulset.Name,
 	}, []templatev1.Parameter{
 		{
 			Name:     "OAUTH_PROXY_COOKIE_SECRET",
@@ -160,19 +162,21 @@ func makeCompactor(namespace, objstoreSecret string, preManifestsHook func(*comp
 
 	// Adding a special encoder wrapper to replace the replicas value in the template with a template parameter
 	// As the replicas value is typed as an int, it cannot be replaced using the compactor config.
-	yamlDecoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
-	yamlDecoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, compactorSatefulset.Replicas), "${1}$${THANOS_REPLICAS}")
+	yamlEncoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
+	yamlEncoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, compactorSatefulset.Replicas), "${1}$${THANOS_REPLICAS}")
 
-	return &yamlDecoder
+	return &yamlEncoder
 
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.StoreStatefulSet)) encoding.Encoder {
+func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreStatefulSet]) encoding.Encoder {
 	// K8s config
 	storeStatefulSet := store.NewStore()
+	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, cfg.Tenant)
+	storeStatefulSet.CommonLabels[tenantLabel] = cfg.Tenant
 	storeStatefulSet.Image = thanosImage
-	storeStatefulSet.ImageTag = thanosImageTag
+	storeStatefulSet.ImageTag = imageTag
 	storeStatefulSet.Namespace = namespace
 	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	storeStatefulSet.Replicas = 1
@@ -183,14 +187,14 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 	storeStatefulSet.VolumeType = "gp2"
 	storeStatefulSet.VolumeSize = "500Gi"
 	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
-	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(objstoreSecret)...)
+	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(cfg.ObjStoreSecret)...)
 	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Store auto-sharding using a configMap and an initContainer
 	// The configMap contains a script that will be executed by the initContainer
 	// The script generates the relabeling config based on the replica ordinal and the number of replicas
 	// The relabeling config is then written to a volume shared with the store container
-	storeStatefulSet.ConfigMaps["hashmod-config-template"] = map[string]string{
+	storeStatefulSet.ConfigMaps[fmt.Sprintf("hashmod-config-template-%s", cfg.Tenant)] = map[string]string{
 		"entrypoint.sh": storeAutoShardRelabelConfigMap,
 	}
 	initContainer := corev1.Container{
@@ -240,8 +244,8 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
 
 	// Execute preManifestHook
-	if preManifestHook != nil {
-		preManifestHook(storeStatefulSet)
+	if cfg.PreManifestsHook != nil {
+		cfg.PreManifestsHook(storeStatefulSet)
 	}
 	logLevel := string(storeStatefulSet.Options.LogLevel) // capture final log level for use in template
 	storeStatefulSet.Options.LogLevel = "${THANOS_LOG_LEVEL}"
@@ -251,6 +255,7 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), storeStatefulSet.Namespace)
 	statefulset := getObject[*appsv1.StatefulSet](manifests)
 	defaultMode := int32(0777)
+	// Add volumes and volume mounts for the initContainer
 	statefulset.Spec.Template.Spec.Volumes = append(statefulset.Spec.Template.Spec.Volumes, corev1.Volume{
 		Name: "hashmod-config",
 		VolumeSource: corev1.VolumeSource{
@@ -277,13 +282,13 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 	// add rbac for reading the number of replicas from the statefulset in the initContainer
 	labels := maps.Clone(statefulset.ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
-	manifests["list-pods-rbac"] = &rbacv1.Role{
+	listPodsRole := &rbacv1.Role{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Role",
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "list-pods",
+			Name:      fmt.Sprintf("list-pods-%s", cfg.Tenant),
 			Namespace: namespace,
 			Labels:    labels,
 		},
@@ -295,13 +300,16 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 			},
 		},
 	}
+
+	manifests["list-pods-rbac"] = listPodsRole
+
 	manifests["list-pods-rbac-binding"] = &rbacv1.RoleBinding{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "RoleBinding",
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "list-pods",
+			Name:      fmt.Sprintf("list-pods-%s", cfg.Tenant),
 			Namespace: namespace,
 			Labels:    labels,
 		},
@@ -315,7 +323,7 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 		},
 		RoleRef: rbacv1.RoleRef{
 			Kind:     "Role",
-			Name:     "list-pods",
+			Name:     listPodsRole.Name,
 			APIGroup: "rbac.authorization.k8s.io",
 		},
 	}
@@ -345,7 +353,7 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 
 	// Wrap in template
 	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
-		Name: "observatorium-metrics-store",
+		Name: storeStatefulSet.Name,
 	}, []templatev1.Parameter{
 		{
 			Name:     "THANOS_LOG_LEVEL",
@@ -359,12 +367,12 @@ func makeStore(namespace, objstoreSecret string, preManifestHook func(*store.Sto
 		},
 	})
 
-	yamlDecoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
+	yamlEncoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
 	// Adding a special encoder wrapper to replace the replicas value in the template with a template parameter
 	// As the replicas value is typed as an int, it cannot be replaced using the compactor config.
-	yamlDecoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, storeStatefulSet.Replicas), "${1}$${THANOS_REPLICAS}")
+	yamlEncoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, storeStatefulSet.Replicas), "${1}$${THANOS_REPLICAS}")
 
-	return &yamlDecoder
+	return &yamlEncoder
 }
 
 type kubeObject interface {

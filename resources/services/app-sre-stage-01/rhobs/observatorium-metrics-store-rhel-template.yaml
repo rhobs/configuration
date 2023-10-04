@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-metrics-store
+  name: observatorium-thanos-store-rhel
 objects:
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
@@ -13,7 +13,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-    name: list-pods
+      observatorium/tenant: rhel
+    name: list-pods-rhel
     namespace: rhobs
   rules:
   - apiGroups:
@@ -32,15 +33,16 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-    name: list-pods
+      observatorium/tenant: rhel
+    name: list-pods-rhel
     namespace: rhobs
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: list-pods
+    name: list-pods-rhel
   subjects:
   - kind: ServiceAccount
-    name: observatorium-thanos-store
+    name: observatorium-thanos-store-rhel
     namespace: rhobs
 - apiVersion: v1
   data:
@@ -64,8 +66,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.3
-    name: hashmod-config-template
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: rhel
+    name: hashmod-config-template-rhel
     namespace: rhobs
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
@@ -76,7 +79,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-    name: observatorium-thanos-store
+      observatorium/tenant: rhel
+    name: observatorium-thanos-store-rhel
     namespace: rhobs
   spec:
     maxUnavailable: 1
@@ -86,6 +90,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: rhel
 - apiVersion: v1
   kind: Service
   metadata:
@@ -95,8 +100,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.3
-    name: observatorium-thanos-store
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: rhel
+    name: observatorium-thanos-store-rhel
     namespace: rhobs
   spec:
     ports:
@@ -113,6 +119,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: rhel
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -122,8 +129,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.3
-    name: observatorium-thanos-store
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: rhel
+    name: observatorium-thanos-store-rhel
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -134,9 +142,10 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.3
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: rhel
       prometheus: app-sre
-    name: observatorium-thanos-store
+    name: observatorium-thanos-store-rhel
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -157,6 +166,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: rhel
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -166,8 +176,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.3
-    name: observatorium-thanos-store
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: rhel
+    name: observatorium-thanos-store-rhel
     namespace: rhobs
   spec:
     replicas: ${THANOS_REPLICAS}
@@ -177,7 +188,8 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-thanos-store
+        observatorium/tenant: rhel
+    serviceName: observatorium-thanos-store-rhel
     template:
       metadata:
         creationTimestamp: null
@@ -186,7 +198,8 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-store
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.3
+          app.kubernetes.io/version: v0.32.4
+          observatorium/tenant: rhel
         namespace: rhobs
       spec:
         affinity:
@@ -225,27 +238,27 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: aws_access_key_id
-                name: telemeter-tenant-s3
+                name: rhel-tenant-s3
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 key: aws_secret_access_key
-                name: telemeter-tenant-s3
+                name: rhel-tenant-s3
           - name: OBJ_STORE_BUCKET
             valueFrom:
               secretKeyRef:
                 key: bucket
-                name: telemeter-tenant-s3
+                name: rhel-tenant-s3
           - name: OBJ_STORE_REGION
             valueFrom:
               secretKeyRef:
                 key: aws_region
-                name: telemeter-tenant-s3
+                name: rhel-tenant-s3
           - name: OBJ_STORE_ENDPOINT
             valueFrom:
               secretKeyRef:
                 key: endpoint
-                name: telemeter-tenant-s3
+                name: rhel-tenant-s3
           - name: OBJSTORE_CONFIG
             value: |
               type: S3
@@ -253,7 +266,7 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
-          image: quay.io/thanos/thanos:v0.32.3
+          image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -353,7 +366,7 @@ objects:
         securityContext:
           fsGroup: 65534
           runAsUser: 65534
-        serviceAccountName: observatorium-thanos-store
+        serviceAccountName: observatorium-thanos-store-rhel
         terminationGracePeriodSeconds: 120
         volumes:
         - emptyDir: {}
@@ -371,7 +384,8 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-store
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.3
+          app.kubernetes.io/version: v0.32.4
+          observatorium/tenant: rhel
         name: data
       spec:
         accessModes:
@@ -380,11 +394,10 @@ objects:
           requests:
             storage: 500Gi
         storageClassName: gp2
-      status: {}
 parameters:
 - name: THANOS_LOG_LEVEL
   required: true
-  value: info
+  value: warn
 - name: THANOS_REPLICAS
   required: true
-  value: "2"
+  value: "1"

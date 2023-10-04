@@ -8,6 +8,7 @@ import (
 )
 
 // makeOauthProxy creates a container for the oauth-proxy sidecar.
+// It contains a template parameter OAUTH_PROXY_COOKIE_SECRET that must be added to the template parameters.
 func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret string) *k8sutil.Container {
 	proxyPort := int32(8443)
 

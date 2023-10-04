@@ -43,6 +43,22 @@ type templateYAML struct {
 	replacements [][]string // regexp, replace tuples
 }
 
+func NewDefaultTemplateYAML(encoder encoding.Encoder) *templateYAML {
+	return &templateYAML{
+		encoder: encoder,
+		replacements: [][]string{
+			// (?s) is a flag that allows . to match newlines
+			// .*? is a non-greedy match of any character
+			// these matchers assume that the main container (thanos) is the first container in the pod
+			{`(?s)(containers:\n.*?limits:.*?memory: )\S+`, "${1}$${THANOS_MEMORY_LIMIT}"},      // replace memory limit
+			{`(?s)(containers:\n.*?requests:.*?memory: )\S+`, "${1}$${THANOS_MEMORY_REQUEST}"},  // replace memory request
+			{`(?s)(containers:\n.*?limits:.*?cpu: )\S+`, "${1}$${THANOS_CPU_REQUEST}"},          // replace cpu request
+			{`(?s)(kind: (Deployment|StatefulSet).*?replicas: )\d+`, "${1}$${THANOS_REPLICAS}"}, // replace replicas
+			{`(?s)(containers:\n.*?\s+--log\.level=)\w+`, "${1}$${THANOS_LOG_LEVEL}"},           // replace thanos log level
+		},
+	}
+}
+
 func (c *templateYAML) Read(p []byte) (n int, err error) {
 	if c.reader == nil {
 		yamlData, err := io.ReadAll(c.encoder)

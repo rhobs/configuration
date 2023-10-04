@@ -291,10 +291,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: 80Gi
+              memory: ${THANOS_MEMORY_LIMIT}
             requests:
-              cpu: "4"
-              memory: 20Gi
+              cpu: ${THANOS_CPU_REQUEST}
+              memory: ${THANOS_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/store
@@ -396,8 +396,12 @@ objects:
         storageClassName: gp2
 parameters:
 - name: THANOS_LOG_LEVEL
-  required: true
   value: warn
 - name: THANOS_REPLICAS
-  required: true
   value: "1"
+- name: THANOS_CPU_REQUEST
+  value: "4"
+- name: THANOS_MEMORY_LIMIT
+  value: 80Gi
+- name: THANOS_MEMORY_REQUEST
+  value: 20Gi

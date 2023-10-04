@@ -207,10 +207,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: 5Gi
+              memory: ${THANOS_MEMORY_LIMIT}
             requests:
-              cpu: 200m
-              memory: 1Gi
+              cpu: ${THANOS_CPU_REQUEST}
+              memory: ${THANOS_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/compactor
@@ -328,12 +328,16 @@ objects:
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: rhel
 parameters:
+- name: THANOS_LOG_LEVEL
+  value: warn
+- name: THANOS_REPLICAS
+  value: "1"
+- name: THANOS_CPU_REQUEST
+  value: 200m
+- name: THANOS_MEMORY_LIMIT
+  value: 5Gi
+- name: THANOS_MEMORY_REQUEST
+  value: 1Gi
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET
-- name: THANOS_LOG_LEVEL
-  required: true
-  value: warn
-- name: THANOS_REPLICAS
-  required: true
-  value: "1"

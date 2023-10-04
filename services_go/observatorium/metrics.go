@@ -75,8 +75,6 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 	if cfg.PreManifestsHook != nil {
 		cfg.PreManifestsHook(compactorSatefulset)
 	}
-	logLevel := string(compactorSatefulset.Options.LogLevel) // capture final log level for use in template
-	compactorSatefulset.Options.LogLevel = "${THANOS_LOG_LEVEL}"
 
 	// Post process
 	manifests := compactorSatefulset.Manifests()
@@ -139,34 +137,26 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 		},
 	}
 
-	// Wrap in template
+	// Wrap in template, add parameters
+	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(compactorSatefulset.Options.LogLevel),
+		Replicas:      compactorSatefulset.Replicas,
+		CPURequest:    compactorSatefulset.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   compactorSatefulset.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: compactorSatefulset.PodResources.Requests[corev1.ResourceMemory],
+	})
 	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
 		Name: compactorSatefulset.Name,
-	}, []templatev1.Parameter{
+	}, append(defaultParams, []templatev1.Parameter{
 		{
 			Name:     "OAUTH_PROXY_COOKIE_SECRET",
 			Generate: "expression",
 			From:     "[a-zA-Z0-9]{40}",
 		},
-		{
-			Name:     "THANOS_LOG_LEVEL",
-			Value:    logLevel,
-			Required: true,
-		},
-		{
-			Name:     "THANOS_REPLICAS",
-			Value:    fmt.Sprintf("%d", compactorSatefulset.Replicas),
-			Required: true,
-		},
-	})
+	}...))
 
-	// Adding a special encoder wrapper to replace the replicas value in the template with a template parameter
-	// As the replicas value is typed as an int, it cannot be replaced using the compactor config.
-	yamlEncoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
-	yamlEncoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, compactorSatefulset.Replicas), "${1}$${THANOS_REPLICAS}")
-
-	return &yamlEncoder
-
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]))
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
@@ -247,8 +237,6 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	if cfg.PreManifestsHook != nil {
 		cfg.PreManifestsHook(storeStatefulSet)
 	}
-	logLevel := string(storeStatefulSet.Options.LogLevel) // capture final log level for use in template
-	storeStatefulSet.Options.LogLevel = "${THANOS_LOG_LEVEL}"
 
 	// Post process
 	manifests := storeStatefulSet.Manifests()
@@ -354,31 +342,24 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	// Wrap in template
 	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
 		Name: storeStatefulSet.Name,
-	}, []templatev1.Parameter{
-		{
-			Name:     "THANOS_LOG_LEVEL",
-			Value:    logLevel,
-			Required: true,
-		},
-		{
-			Name:     "THANOS_REPLICAS",
-			Value:    fmt.Sprintf("%d", storeStatefulSet.Replicas),
-			Required: true,
-		},
-	})
+	}, defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(storeStatefulSet.Options.LogLevel),
+		Replicas:      storeStatefulSet.Replicas,
+		CPURequest:    storeStatefulSet.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   storeStatefulSet.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: storeStatefulSet.PodResources.Requests[corev1.ResourceMemory],
+	}))
 
-	yamlEncoder := templateYAML{encoder: encoding.GhodssYAML(template[""])}
-	// Adding a special encoder wrapper to replace the replicas value in the template with a template parameter
-	// As the replicas value is typed as an int, it cannot be replaced using the compactor config.
-	yamlEncoder.AddReplacement(fmt.Sprintf(`(?m)^(\s*replicas: )%d$`, storeStatefulSet.Replicas), "${1}$${THANOS_REPLICAS}")
-
-	return &yamlEncoder
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]))
 }
 
 type kubeObject interface {
 	*corev1.Service | *appsv1.StatefulSet | *monv1.ServiceMonitor | *corev1.ServiceAccount
 }
 
+// getObject returns the first object of type T from the given map of kubernetes objects.
+// This helper can be used for doing post processing on the objects.
 func getObject[T kubeObject](manifests k8sutil.ObjectMap) T {
 	for _, obj := range manifests {
 		if service, ok := obj.(T); ok {
@@ -389,12 +370,15 @@ func getObject[T kubeObject](manifests k8sutil.ObjectMap) T {
 	panic(fmt.Sprintf("could not find object of type %T", *new(T)))
 }
 
+// postProcessServiceMonitor updates the service monitor to work with the app-sre prometheus.
 func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSelector string) {
 	serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels["prometheus"] = "app-sre"
 }
 
+// deleteObjStoreEnv deletes the objstore env var from the list of env vars.
+// This env var is included by default by the observatorium config for each thanos component.
 func deleteObjStoreEnv(objStoreEnv []corev1.EnvVar) []corev1.EnvVar {
 	for i, env := range objStoreEnv {
 		if env.Name == "OBJSTORE_CONFIG" {
@@ -405,6 +389,9 @@ func deleteObjStoreEnv(objStoreEnv []corev1.EnvVar) []corev1.EnvVar {
 	return objStoreEnv
 }
 
+// objStoreEnvVars returns the env vars required for the objstore config.
+// Base env vars are taken from the s3 secret generated by app-interface.
+// The objstore config env var is generated by aggregating the other env vars.
 func objStoreEnvVars(objstoreSecret string) []corev1.EnvVar {
 	objStoreCfg, err := yaml.Marshal(objstore.BucketConfig{
 		Type: objstore.S3,
@@ -427,6 +414,40 @@ func objStoreEnvVars(objstoreSecret string) []corev1.EnvVar {
 		{
 			Name:  "OBJSTORE_CONFIG",
 			Value: string(objStoreCfg),
+		},
+	}
+}
+
+type defaultTemplateParamsConfig struct {
+	LogLevel      string
+	Replicas      int32
+	CPURequest    resource.Quantity
+	MemoryLimit   resource.Quantity
+	MemoryRequest resource.Quantity
+}
+
+// defaultTemplateParams returns the default template parameters for the thanos components.
+func defaultTemplateParams(cfg defaultTemplateParamsConfig) []templatev1.Parameter {
+	return []templatev1.Parameter{
+		{
+			Name:  "THANOS_LOG_LEVEL",
+			Value: cfg.LogLevel,
+		},
+		{
+			Name:  "THANOS_REPLICAS",
+			Value: fmt.Sprintf("%d", cfg.Replicas),
+		},
+		{
+			Name:  "THANOS_CPU_REQUEST",
+			Value: cfg.CPURequest.String(),
+		},
+		{
+			Name:  "THANOS_MEMORY_LIMIT",
+			Value: cfg.MemoryLimit.String(),
+		},
+		{
+			Name:  "THANOS_MEMORY_REQUEST",
+			Value: cfg.MemoryRequest.String(),
 		},
 	}
 }

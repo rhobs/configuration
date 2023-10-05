@@ -223,6 +223,8 @@ objects:
                 grpc:
 
           processors:
+            batch:
+              # https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor
             k8sattributes:
               # Allows automatic setting of spans, metrics and logs resource attributes with k8s metadata.
               # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor
@@ -253,5 +255,5 @@ objects:
             pipelines:
               traces:
                 receivers: [otlp, jaeger]
-                processors: [memory_limiter, k8sattributes, resourcedetection]
+                processors: [memory_limiter, k8sattributes, resourcedetection, batch]
                 exporters: [otlp/application]

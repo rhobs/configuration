@@ -241,6 +241,11 @@ objects:
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="profile:cluster_monitoring_operator_collection_profile:max"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_info"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_secured_clusters"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_secured_nodes"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_secured_vcpus"}
+          - --whitelist={__name__="rhacs:telemetry:rox_sensor_info"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhoam_7d_slo_percentile:max"}
           - --whitelist={__name__="rhoam_7d_slo_remaining_error_budget:max"}
@@ -500,6 +505,11 @@ objects:
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="profile:cluster_monitoring_operator_collection_profile:max"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_info"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_secured_clusters"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_secured_nodes"}
+          - --whitelist={__name__="rhacs:telemetry:rox_central_secured_vcpus"}
+          - --whitelist={__name__="rhacs:telemetry:rox_sensor_info"}
           - --whitelist={__name__="rhmi_status"}
           - --whitelist={__name__="rhoam_7d_slo_percentile:max"}
           - --whitelist={__name__="rhoam_7d_slo_remaining_error_budget:max"}

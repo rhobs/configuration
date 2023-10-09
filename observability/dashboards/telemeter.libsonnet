@@ -2522,7 +2522,7 @@ function(datasource, namespace) {
               options: [],
               query: 'label_values(kube_pod_info, namespace)',
               refresh: 1,
-              regex: '^telemeter.*',
+              regex: '^telemeter.*|^rhelemeter.*',
               skipUrlSync: false,
               sort: 1,
               tagValuesQuery: '',

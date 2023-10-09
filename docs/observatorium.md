@@ -2,6 +2,10 @@
 
 Observatorium is a collection of services unified behind a single API to provide a scalable, multi-tenant observability platform for ingesting and querying logs and metrics and other observability signals. Its [documentation can be found on github](https://github.com/observatorium/docs)
 
+## Rate limits
+
+Observatorium implements rate limits through [Gubernator](https://github.com/mailgun/gubernator). The rate limits are configured per tenant in [app-interface](https://gitlab.cee.redhat.com/service/app-interface/blob/a711b7dbb690d8f7575d4614a89fb22a1ad68285/data/services/rhobs/observatorium-mst/cicd/saas-tenants.yaml#L40).
+
 # Observatorium Metrics
 
 Observatorium Metrics, which is a general-purpose, scalable, multi-tenant, observability platform for ingesting and querying metrics. Its [documentation can be found on github](https://github.com/observatorium/observatorium/blob/main/docs/design/metrics.md)

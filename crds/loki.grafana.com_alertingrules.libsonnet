@@ -3,7 +3,7 @@
   kind: 'CustomResourceDefinition',
   metadata: {
     annotations: {
-      'controller-gen.kubebuilder.io/version': 'v0.11.3',
+      'controller-gen.kubebuilder.io/version': 'v0.13.0',
     },
     creationTimestamp: null,
     labels: {

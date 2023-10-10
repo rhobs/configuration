@@ -2,6 +2,7 @@ package cfgobservatorium
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
@@ -26,6 +27,8 @@ type rhobsInstanceEnv string
 const (
 	telemeterProduction   rhobsInstanceEnv = "telemeter-production"   // Telemeter production Observatorium instance on telemeter-prod-01 cluster.
 	telemeterStaging      rhobsInstanceEnv = "telemeter-staging"      // Telemeter staging Observatorium instance on app-sre-stage-01 cluster.
+	rhelemeterProduction  rhobsInstanceEnv = "rhelemeter-production"  // Rhelemeter production instance on telemeter-prod-01 cluster.
+	rhelemeterStaging     rhobsInstanceEnv = "rhelemeter-stage"       // Rhelemeter staging instance on app-sre-stage-01 cluster.
 	mstProduction         rhobsInstanceEnv = "mst-production"         // MST production Observatorium instance on telemeter-prod-01 cluster.
 	mstStage              rhobsInstanceEnv = "mst-stage"              // MST staging Observatorium instance on app-sre-stage-01 cluster.
 	rhobsp02ue1Production rhobsInstanceEnv = "rhobsp02ue1-production" // MST production Observatorium instance on rhobsp02ue1 cluster.
@@ -218,8 +221,51 @@ func getRunbookLink(alert string) string {
 // This set of SLOs are driven by the RHOBS Service Level Objectives document
 // https://docs.google.com/document/d/1wJjcpgg-r8rlnOtRiqWGv0zwr1MB6WwkQED1XDWXVQs/edit
 func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
+	return append(TelemeterUploadSLOs(envName), TelemeterReceiveSLOs(envName, "Telemeter")...)
+}
+
+// RhelemeterSLOs returns the openshift/telemeter specific SLOs we maintain for the Rhelemeter instance.
+func RhelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
+	return TelemeterReceiveSLOs(envName, "Rhelemeter")
+}
+
+// TelemeterReceiveSLOs returns the openshift/telemeter specific SLOs we maintain for the remote write path. This path
+// runs on diferent instances, so we need to be able to customize the instance name.
+func TelemeterReceiveSLOs(envName rhobsInstanceEnv, instanceName string) []pyrrav1alpha1.ServiceLevelObjective {
 	slos := rhobSLOList{
-		// Telemeter Availability SLOs.
+		{
+			name: fmt.Sprintf("rhobs-%s-server-metrics-receive-availability-slo", strings.ToLower(instanceName)),
+			labels: map[string]string{
+				"route":                                 fmt.Sprintf("%s-server-receive", strings.ToLower(instanceName)),
+				slo.PropagationLabelsPrefix + "service": strings.ToLower(instanceName),
+			},
+			description:         fmt.Sprintf("%s Server /receive is burning too much error budget to guarantee availability SLOs.", instanceName),
+			successOrErrorsExpr: fmt.Sprintf("haproxy_server_http_responses_total{route=\"%s-server-metrics-v1-receive\", code=~\"5..\"}", strings.ToLower(instanceName)),
+			totalExpr:           fmt.Sprintf("haproxy_server_http_responses_total{route=\"%s-server-metrics-v1-receive\"}", strings.ToLower(instanceName)),
+			alertName:           fmt.Sprintf("%sServerMetricsReceiveWriteAvailabilityErrorBudgetBurning", instanceName),
+			sloType:             sloTypeAvailability,
+		},
+		{
+			name: fmt.Sprintf("rhobs-%s-server-metrics-receive-latency-slo", strings.ToLower(instanceName)),
+			labels: map[string]string{
+				"route":                                 fmt.Sprintf("%s-server-receive", strings.ToLower(instanceName)),
+				slo.PropagationLabelsPrefix + "service": strings.ToLower(instanceName),
+			},
+			description:         fmt.Sprintf("%s Server /receive is burning too much error budget to guarantee latency SLOs.", instanceName),
+			successOrErrorsExpr: fmt.Sprintf("http_request_duration_seconds_bucket{job=\"%s-server\", handler=\"receive\", code=~\"^2..$\", le=\""+genericSLOLatencySeconds+"\"}", strings.ToLower(instanceName)),
+			totalExpr:           fmt.Sprintf("http_request_duration_seconds_count{job=\"%s-server\", handler=\"receive\", code=~\"^2..$\"}", strings.ToLower(instanceName)),
+			alertName:           fmt.Sprintf("%sServerMetricsReceiveWriteLatencyErrorBudgetBurning", instanceName),
+			sloType:             sloTypeLatency,
+		},
+	}
+
+	return slos.GetObjectives(envName)
+}
+
+// TelemeterReceiveSLOs returns the openshift/telemeter specific SLOs we maintain for the upload path. These are only
+// available for the Telemeter instance, so there's no customization on instance name.
+func TelemeterUploadSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjective {
+	slos := rhobSLOList{
 		{
 			name: "rhobs-telemeter-server-metrics-upload-availability-slo",
 			labels: map[string]string{
@@ -233,20 +279,6 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 			sloType:             sloTypeAvailability,
 		},
 		{
-			name: "rhobs-telemeter-server-metrics-receive-availability-slo",
-			labels: map[string]string{
-				"route":                                 "telemeter-server-receive",
-				slo.PropagationLabelsPrefix + "service": "telemeter",
-			},
-			description:         "Telemeter Server /receive is burning too much error budget to guarantee availability SLOs.",
-			successOrErrorsExpr: "haproxy_server_http_responses_total{route=\"telemeter-server-metrics-v1-receive\", code=~\"5..\"}",
-			totalExpr:           "haproxy_server_http_responses_total{route=\"telemeter-server-metrics-v1-receive\"}",
-			alertName:           "TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning",
-			sloType:             sloTypeAvailability,
-		},
-
-		// Telemeter Latency SLOs.
-		{
 			name: "rhobs-telemeter-server-metrics-upload-latency-slo",
 			labels: map[string]string{
 				"route":                                 "telemeter-server-upload",
@@ -256,18 +288,6 @@ func TelemeterSLOs(envName rhobsInstanceEnv) []pyrrav1alpha1.ServiceLevelObjecti
 			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"upload\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
 			totalExpr:           "http_request_duration_seconds_count{job=\"telemeter-server\", handler=\"upload\", code=~\"^2..$\"}",
 			alertName:           "TelemeterServerMetricsUploadWriteLatencyErrorBudgetBurning",
-			sloType:             sloTypeLatency,
-		},
-		{
-			name: "rhobs-telemeter-server-metrics-receive-latency-slo",
-			labels: map[string]string{
-				"route":                                 "telemeter-server-receive",
-				slo.PropagationLabelsPrefix + "service": "telemeter",
-			},
-			description:         "Telemeter Server /receive is burning too much error budget to guarantee latency SLOs.",
-			successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"telemeter-server\", handler=\"receive\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
-			totalExpr:           "http_request_duration_seconds_count{job=\"telemeter-server\", handler=\"receive\", code=~\"^2..$\"}",
-			alertName:           "TelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning",
 			sloType:             sloTypeLatency,
 		},
 	}
@@ -579,13 +599,36 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 // GenSLO is the function responsible for tying together Pyrra Objectives and converting them into SLO+Rule files.
 func GenSLO(genPyrra, genRules *mimic.Generator) {
 	// Add on extra Telemeter-only SLOs.
-	telemeterProdObjectives := []pyrrav1alpha1.ServiceLevelObjective{}
+	var telemeterProdObjectives []pyrrav1alpha1.ServiceLevelObjective
 	telemeterProdObjectives = append(telemeterProdObjectives, TelemeterSLOs(telemeterProduction)...)
 	telemeterProdObjectives = append(telemeterProdObjectives, ObservatoriumSLOs(telemeterProduction, metricsSignal)...)
 
-	telemeterStageObjectives := []pyrrav1alpha1.ServiceLevelObjective{}
+	var telemeterStageObjectives []pyrrav1alpha1.ServiceLevelObjective
 	telemeterStageObjectives = append(telemeterStageObjectives, TelemeterSLOs(telemeterStaging)...)
 	telemeterStageObjectives = append(telemeterStageObjectives, ObservatoriumSLOs(telemeterStaging, metricsSignal)...)
+
+	// Add on for Rhelemeter SLOs, which are a subset of Telemeter SLOs.
+	var rhelemeterProdObjectives []pyrrav1alpha1.ServiceLevelObjective
+	rhelemeterProdObjectives = append(rhelemeterProdObjectives, RhelemeterSLOs(rhelemeterProduction)...)
+
+	var rhelemeterStageObjectives []pyrrav1alpha1.ServiceLevelObjective
+	rhelemeterStageObjectives = append(rhelemeterStageObjectives, RhelemeterSLOs(rhelemeterStaging)...)
+
+	envSLOs(
+		rhelemeterProduction,
+		rhelemeterProdObjectives,
+		"rhobs-slos-rhelemeter-production",
+		genPyrra,
+		genRules,
+	)
+
+	envSLOs(
+		rhelemeterStaging,
+		rhelemeterStageObjectives,
+		"rhobs-slos-rhelemeter-stage",
+		genPyrra,
+		genRules,
+	)
 
 	envSLOs(
 		telemeterProduction,

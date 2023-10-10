@@ -1,0 +1,409 @@
+---
+$schema: /openshift/prometheus-rule-1.yml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: null
+  labels:
+    prometheus: app-sre
+    role: alert-rules
+  name: rhobs-slos-rhelemeter-stage
+spec:
+  groups:
+  - interval: 2m30s
+    name: rhobs-rhelemeter-server-metrics-receive-availability-slo-increase
+    rules:
+    - expr: sum by(code) (increase(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[4w]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:increase4w
+    - alert: SLOMetricAbsent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: absent(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"})
+        == 1
+      for: 2m
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        severity: medium
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+  - interval: 30s
+    name: rhobs-rhelemeter-server-metrics-receive-availability-slo
+    rules:
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[5m]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[5m]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate5m
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[30m]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[30m]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate30m
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[1h]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[1h]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate1h
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[2h]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[2h]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate2h
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[6h]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[6h]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate6h
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[1d]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[1d]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate1d
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}[4d]))
+        / sum(rate(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[4d]))
+      labels:
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate4d
+    - alert: RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate5m{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (14 * (1-0.99)) and haproxy_server_http_responses:burnrate1h{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (14 * (1-0.99))
+      for: 2m0s
+      labels:
+        exhaustion: 2d
+        long_burnrate_window: 1h
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        severity: high
+        short_burnrate_window: 5m
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+    - alert: RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate30m{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (7 * (1-0.99)) and haproxy_server_http_responses:burnrate6h{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (7 * (1-0.99))
+      for: 15m0s
+      labels:
+        exhaustion: 4d
+        long_burnrate_window: 6h
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        severity: high
+        short_burnrate_window: 30m
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+    - alert: RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate2h{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (2 * (1-0.99)) and haproxy_server_http_responses:burnrate1d{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (2 * (1-0.99))
+      for: 1h0m0s
+      labels:
+        exhaustion: 2w
+        long_burnrate_window: 1d
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        severity: medium
+        short_burnrate_window: 2h
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+    - alert: RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate6h{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (1 * (1-0.99)) and haproxy_server_http_responses:burnrate4d{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        > (1 * (1-0.99))
+      for: 3h0m0s
+      labels:
+        exhaustion: 4w
+        long_burnrate_window: 4d
+        route: rhelemeter-server-metrics-v1-receive
+        service: rhelemeter
+        severity: medium
+        short_burnrate_window: 6h
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+  - interval: 30s
+    name: rhobs-rhelemeter-server-metrics-receive-availability-slo-generic
+    rules:
+    - expr: "0.99"
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: pyrra_objective
+    - expr: 2419200
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: pyrra_window
+    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"}
+        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="rhelemeter-server-metrics-v1-receive",slo="rhobs-rhelemeter-server-metrics-receive-availability-slo"})
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: pyrra_availability
+    - expr: sum(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"})
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: pyrra_requests_total
+    - expr: sum(haproxy_server_http_responses_total{code=~"5..",route="rhelemeter-server-metrics-v1-receive"}
+        or vector(0))
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-availability-slo
+      record: pyrra_errors_total
+  - interval: 2m30s
+    name: rhobs-rhelemeter-server-metrics-receive-latency-slo-increase
+    rules:
+    - expr: sum by(code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[4w]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:increase4w
+    - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[4w]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        le: "5"
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:increase4w
+    - alert: SLOMetricAbsent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      expr: absent(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"})
+        == 1
+      for: 2m
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        severity: medium
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+    - alert: SLOMetricAbsent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      expr: absent(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"})
+        == 1
+      for: 2m
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        severity: medium
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+  - interval: 30s
+    name: rhobs-rhelemeter-server-metrics-receive-latency-slo
+    rules:
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[5m]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[5m])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[5m]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate5m
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[30m]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[30m])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[30m]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate30m
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[1h]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[1h])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[1h]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate1h
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[2h]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[2h])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[2h]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate2h
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[6h]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[6h])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[6h]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate6h
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[1d]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[1d])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[1d]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate1d
+    - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[4d]))
+        - sum(rate(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[4d])))
+        / sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[4d]))
+      labels:
+        handler: receive
+        job: rhelemeter-server
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: http_request_duration_seconds:burnrate4d
+    - alert: RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      expr: http_request_duration_seconds:burnrate5m{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (14 * (1-0.9)) and http_request_duration_seconds:burnrate1h{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (14 * (1-0.9))
+      for: 2m
+      labels:
+        exhaustion: 2d
+        handler: receive
+        job: rhelemeter-server
+        long_burnrate_window: 1h
+        service: rhelemeter
+        severity: high
+        short_burnrate_window: 5m
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+    - alert: RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      expr: http_request_duration_seconds:burnrate30m{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (7 * (1-0.9)) and http_request_duration_seconds:burnrate6h{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (7 * (1-0.9))
+      for: 15m
+      labels:
+        exhaustion: 4d
+        handler: receive
+        job: rhelemeter-server
+        long_burnrate_window: 6h
+        service: rhelemeter
+        severity: high
+        short_burnrate_window: 30m
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+    - alert: RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      expr: http_request_duration_seconds:burnrate2h{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (2 * (1-0.9)) and http_request_duration_seconds:burnrate1d{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (2 * (1-0.9))
+      for: 1h
+      labels:
+        exhaustion: 2w
+        handler: receive
+        job: rhelemeter-server
+        long_burnrate_window: 1d
+        service: rhelemeter
+        severity: medium
+        short_burnrate_window: 2h
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+    - alert: RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-stage-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Rhelemeter Server /receive is burning too much error budget to guarantee
+          latency SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
+      expr: http_request_duration_seconds:burnrate6h{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (1 * (1-0.9)) and http_request_duration_seconds:burnrate4d{handler="receive",job="rhelemeter-server",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        > (1 * (1-0.9))
+      for: 3h
+      labels:
+        exhaustion: 4w
+        handler: receive
+        job: rhelemeter-server
+        long_burnrate_window: 4d
+        service: rhelemeter
+        severity: medium
+        short_burnrate_window: 6h
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+  - interval: 30s
+    name: rhobs-rhelemeter-server-metrics-receive-latency-slo-generic
+    rules:
+    - expr: "0.9"
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: pyrra_objective
+    - expr: 2419200
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: pyrra_window
+    - expr: sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
+        or vector(0)) / sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="receive",job="rhelemeter-server",le="",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"})
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: pyrra_availability
+    - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"})
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: pyrra_requests_total
+    - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"})
+        - sum(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"})
+      labels:
+        service: rhelemeter
+        slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
+      record: pyrra_errors_total

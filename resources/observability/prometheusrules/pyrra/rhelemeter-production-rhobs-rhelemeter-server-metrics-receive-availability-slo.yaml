@@ -1,0 +1,29 @@
+apiVersion: v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  annotations:
+    pyrra.dev/dashboard: https://grafana.app-sre.devshift.net/d//rhelemeter-production-slos?orgId=1&refresh=10s&var-datasource=&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+    pyrra.dev/message: Rhelemeter Server /receive is burning too much error budget
+      to guarantee availability SLOs.
+    pyrra.dev/runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+  creationTimestamp: null
+  labels:
+    pyrra.dev/service: rhelemeter
+    route: rhelemeter-server-receive
+  name: rhobs-rhelemeter-server-metrics-receive-availability-slo
+spec:
+  alerting:
+    name: RhelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+  description: Rhelemeter Server /receive is burning too much error budget to guarantee
+    availability SLOs.
+  indicator:
+    ratio:
+      errors:
+        metric: haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive",
+          code=~"5.."}
+      grouping: null
+      total:
+        metric: haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}
+  target: "99"
+  window: 28d
+status: {}

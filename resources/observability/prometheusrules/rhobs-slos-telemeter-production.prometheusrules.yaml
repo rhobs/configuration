@@ -188,183 +188,6 @@ spec:
         slo: rhobs-telemeter-server-metrics-upload-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
-    name: rhobs-telemeter-server-metrics-receive-availability-slo-increase
-    rules:
-    - expr: sum by(code) (increase(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[4w]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:increase4w
-    - alert: SLOMetricAbsent
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /receive is burning too much error budget to guarantee
-          availability SLOs.
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      expr: absent(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"})
-        == 1
-      for: 2m
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        severity: medium
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-  - interval: 30s
-    name: rhobs-telemeter-server-metrics-receive-availability-slo
-    rules:
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[5m]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[5m]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate5m
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[30m]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[30m]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate30m
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[1h]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[1h]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate1h
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[2h]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[2h]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate2h
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[6h]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[6h]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate6h
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[1d]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[1d]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate1d
-    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[4d]))
-        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[4d]))
-      labels:
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: haproxy_server_http_responses:burnrate4d
-    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /receive is burning too much error budget to guarantee
-          availability SLOs.
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      expr: haproxy_server_http_responses:burnrate5m{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (14 * (1-0.99)) and haproxy_server_http_responses:burnrate1h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (14 * (1-0.99))
-      for: 2m0s
-      labels:
-        exhaustion: 2d
-        long_burnrate_window: 1h
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        severity: high
-        short_burnrate_window: 5m
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /receive is burning too much error budget to guarantee
-          availability SLOs.
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      expr: haproxy_server_http_responses:burnrate30m{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (7 * (1-0.99)) and haproxy_server_http_responses:burnrate6h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (7 * (1-0.99))
-      for: 15m0s
-      labels:
-        exhaustion: 4d
-        long_burnrate_window: 6h
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        severity: high
-        short_burnrate_window: 30m
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /receive is burning too much error budget to guarantee
-          availability SLOs.
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      expr: haproxy_server_http_responses:burnrate2h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (2 * (1-0.99)) and haproxy_server_http_responses:burnrate1d{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (2 * (1-0.99))
-      for: 1h0m0s
-      labels:
-        exhaustion: 2w
-        long_burnrate_window: 1d
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        severity: medium
-        short_burnrate_window: 2h
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      annotations:
-        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
-        message: Telemeter Server /receive is burning too much error budget to guarantee
-          availability SLOs.
-        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
-      expr: haproxy_server_http_responses:burnrate6h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (1 * (1-0.99)) and haproxy_server_http_responses:burnrate4d{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        > (1 * (1-0.99))
-      for: 3h0m0s
-      labels:
-        exhaustion: 4w
-        long_burnrate_window: 4d
-        route: telemeter-server-metrics-v1-receive
-        service: telemeter
-        severity: medium
-        short_burnrate_window: 6h
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-  - interval: 30s
-    name: rhobs-telemeter-server-metrics-receive-availability-slo-generic
-    rules:
-    - expr: "0.99"
-      labels:
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: pyrra_objective
-    - expr: 2419200
-      labels:
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: pyrra_window
-    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
-        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"})
-      labels:
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: pyrra_availability
-    - expr: sum(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"})
-      labels:
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: pyrra_requests_total
-    - expr: sum(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}
-        or vector(0))
-      labels:
-        service: telemeter
-        slo: rhobs-telemeter-server-metrics-receive-availability-slo
-      record: pyrra_errors_total
-  - interval: 2m30s
     name: rhobs-telemeter-server-metrics-upload-latency-slo-increase
     rules:
     - expr: sum by(code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="upload",job="telemeter-server"}[4w]))
@@ -583,6 +406,183 @@ spec:
       labels:
         service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
+      record: pyrra_errors_total
+  - interval: 2m30s
+    name: rhobs-telemeter-server-metrics-receive-availability-slo-increase
+    rules:
+    - expr: sum by(code) (increase(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[4w]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:increase4w
+    - alert: SLOMetricAbsent
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: absent(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"})
+        == 1
+      for: 2m
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: medium
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+  - interval: 30s
+    name: rhobs-telemeter-server-metrics-receive-availability-slo
+    rules:
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[5m]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[5m]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate5m
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[30m]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[30m]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate30m
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[1h]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[1h]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate1h
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[2h]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[2h]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate2h
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[6h]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[6h]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate6h
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[1d]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[1d]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate1d
+    - expr: sum(rate(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}[4d]))
+        / sum(rate(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[4d]))
+      labels:
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: haproxy_server_http_responses:burnrate4d
+    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate5m{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (14 * (1-0.99)) and haproxy_server_http_responses:burnrate1h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (14 * (1-0.99))
+      for: 2m0s
+      labels:
+        exhaustion: 2d
+        long_burnrate_window: 1h
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: high
+        short_burnrate_window: 5m
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate30m{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (7 * (1-0.99)) and haproxy_server_http_responses:burnrate6h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (7 * (1-0.99))
+      for: 15m0s
+      labels:
+        exhaustion: 4d
+        long_burnrate_window: 6h
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: high
+        short_burnrate_window: 30m
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate2h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (2 * (1-0.99)) and haproxy_server_http_responses:burnrate1d{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (2 * (1-0.99))
+      for: 1h0m0s
+      labels:
+        exhaustion: 2w
+        long_burnrate_window: 1d
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: medium
+        short_burnrate_window: 2h
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+    - alert: TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/f9fa7677fb4a2669f123f9a0f2234b47/telemeter-production-slos?orgId=1&refresh=10s&var-datasource=telemeter-prod-01-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        message: Telemeter Server /receive is burning too much error budget to guarantee
+          availability SLOs.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#TelemeterServerMetricsReceiveWriteAvailabilityErrorBudgetBurning
+      expr: haproxy_server_http_responses:burnrate6h{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (1 * (1-0.99)) and haproxy_server_http_responses:burnrate4d{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        > (1 * (1-0.99))
+      for: 3h0m0s
+      labels:
+        exhaustion: 4w
+        long_burnrate_window: 4d
+        route: telemeter-server-metrics-v1-receive
+        service: telemeter
+        severity: medium
+        short_burnrate_window: 6h
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+  - interval: 30s
+    name: rhobs-telemeter-server-metrics-receive-availability-slo-generic
+    rules:
+    - expr: "0.99"
+      labels:
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: pyrra_objective
+    - expr: 2419200
+      labels:
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: pyrra_window
+    - expr: 1 - sum(haproxy_server_http_responses:increase4w{code=~"5..",route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"}
+        or vector(0)) / sum(haproxy_server_http_responses:increase4w{route="telemeter-server-metrics-v1-receive",slo="rhobs-telemeter-server-metrics-receive-availability-slo"})
+      labels:
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: pyrra_availability
+    - expr: sum(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"})
+      labels:
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
+      record: pyrra_requests_total
+    - expr: sum(haproxy_server_http_responses_total{code=~"5..",route="telemeter-server-metrics-v1-receive"}
+        or vector(0))
+      labels:
+        service: telemeter
+        slo: rhobs-telemeter-server-metrics-receive-availability-slo
       record: pyrra_errors_total
   - interval: 2m30s
     name: rhobs-telemeter-server-metrics-receive-latency-slo-increase

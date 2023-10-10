@@ -229,7 +229,7 @@ objects:
           - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
           - -openshift-ca=/etc/pki/tls/cert.pem
           - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: quay.io/openshift/origin-oauth-proxy:v4.13.0
+          image: quay.io/openshift/origin-oauth-proxy:4.15
           name: oauth-proxy
           ports:
           - containerPort: 8443

@@ -1,78 +1,72 @@
 package rhobs
 
 import (
-	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
-	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/rhobs/configuration/services_go/observatorium"
 )
 
 func ClusterConfigs() []observatorium.Observatorium {
 	return []observatorium.Observatorium{
 		{
-			Cluster:        "app-sre-stage-01",
-			Namespace:      "rhobs",
-			Instance:       "rhobs",
-			ThanosImageTag: "v0.32.4",
-			Stores: []observatorium.ThanosTenantConfig[store.StoreStatefulSet]{
+			Cluster:  "app-sre-stage-01",
+			Instance: "rhobs",
+			MetricsInstances: []observatorium.ObservatoriumMetrics{
 				{
-					Tenant:         "default",
-					ObjStoreSecret: "default-tenant-s3",
+					InstanceName:              "default",
+					Namespace:                 "rhobs",
+					ThanosImageTag:            "v0.32.4",
+					ObjStoreSecret:            "default-tenant-s3",
+					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
+					ReceiveLimits: receive.ReceiveLimitsConfig{
+						WriteLimits: receive.WriteLimitsConfig{
+							DefaultLimits: receive.DefaultLimitsConfig{
+								RequestLimits: receive.RequestLimitsConfig{
+									SamplesLimit: 100000,
+								},
+							},
+						},
+					},
 				},
 				{
-					Tenant:         "rhel",
-					ObjStoreSecret: "rhelemeter-tenant-s3",
+					InstanceName:              "rhel",
+					Namespace:                 "rhobs",
+					ThanosImageTag:            "v0.32.4",
+					ObjStoreSecret:            "rhel-tenant-s3",
+					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 				{
-					Tenant:         "telemeter",
-					ObjStoreSecret: "telemeter-tenant-s3",
-				},
-			},
-			Compactors: []observatorium.ThanosTenantConfig[compactor.CompactorStatefulSet]{
-				{
-					Tenant:         "default",
-					ObjStoreSecret: "default-tenant-s3",
-				},
-				{
-					Tenant:         "rhel",
-					ObjStoreSecret: "rhelemeter-tenant-s3",
-				},
-				{
-					Tenant:         "telemeter",
-					ObjStoreSecret: "telemeter-tenant-s3",
+					InstanceName:              "telemeter",
+					Namespace:                 "rhobs",
+					ThanosImageTag:            "v0.32.4",
+					ObjStoreSecret:            "telemeter-tenant-s3",
+					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 			},
 		},
 		{
-			Cluster:        "telemeter-prod-01",
-			Namespace:      "rhobs",
-			Instance:       "rhobs",
-			ThanosImageTag: "v0.32.4",
-			Stores: []observatorium.ThanosTenantConfig[store.StoreStatefulSet]{
+			Cluster:  "telemeter-prod-01",
+			Instance: "rhobs",
+			MetricsInstances: []observatorium.ObservatoriumMetrics{
 				{
-					Tenant:         "default",
-					ObjStoreSecret: "default-tenant-s3",
+					InstanceName:              "default",
+					Namespace:                 "rhobs",
+					ThanosImageTag:            "v0.32.4",
+					ObjStoreSecret:            "default-tenant-s3",
+					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 				{
-					Tenant:         "rhel",
-					ObjStoreSecret: "rhelemeter-tenant-s3",
+					InstanceName:              "rhel",
+					Namespace:                 "rhobs",
+					ThanosImageTag:            "v0.32.4",
+					ObjStoreSecret:            "rhel-tenant-s3",
+					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 				{
-					Tenant:         "telemeter",
-					ObjStoreSecret: "telemeter-tenant-s3",
-				},
-			},
-			Compactors: []observatorium.ThanosTenantConfig[compactor.CompactorStatefulSet]{
-				{
-					Tenant:         "default",
-					ObjStoreSecret: "default-tenant-s3",
-				},
-				{
-					Tenant:         "rhel",
-					ObjStoreSecret: "rhelemeter-tenant-s3",
-				},
-				{
-					Tenant:         "telemeter",
-					ObjStoreSecret: "telemeter-tenant-s3",
+					InstanceName:              "telemeter",
+					Namespace:                 "rhobs",
+					ThanosImageTag:            "v0.32.4",
+					ObjStoreSecret:            "telemeter-tenant-s3",
+					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 			},
 		},

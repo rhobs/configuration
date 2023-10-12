@@ -11,9 +11,10 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
-	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/common"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/log"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
 	objstore3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
+	thanostime "github.com/observatorium/observatorium/configuration_go/schemas/thanos/time"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
 	routev1 "github.com/openshift/api/route/v1"
@@ -33,22 +34,186 @@ const (
 	thanosImage                     = "quay.io/thanos/thanos"
 	monitoringNamespace             = "openshift-customer-monitoring"
 	servingCertSecretNameAnnotation = "service.alpha.openshift.io/serving-cert-secret-name"
-	tenantLabel                     = "observatorium/tenant"
+	observatoriumInstanceLabel      = "observatorium/tenant"
 )
 
 //go:embed assets/store-auto-shard-relabel-configMap.sh
 var storeAutoShardRelabelConfigMap string
 
+// ObservatoriumMetrics contains the configuration for a metrics instance in an observatorium instance.
+type ObservatoriumMetrics struct {
+	InstanceName                    string
+	Namespace                       string
+	ThanosImageTag                  string
+	ObjStoreSecret                  string
+	ReceiveLimits                   receive.ReceiveLimitsConfig
+	ReceiveControllerImageTag       string
+	StorePreManifestsHook           func(*store.StoreStatefulSet)
+	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
+	ReceiveRouterPreManifestsHook   func(*receive.Router)
+	ReceiveIngestorPreManifestsHook func(*receive.Ingestor)
+}
+
+func (o ObservatoriumMetrics) Manifests() map[string]encoding.Encoder {
+	makeFileName := func(name string) string {
+		return fmt.Sprintf("observatorium-metrics-%s-%s-template.yaml", name, o.InstanceName)
+	}
+	return map[string]encoding.Encoder{
+		makeFileName("store"):            o.makeStore(),
+		makeFileName("compact"):          o.makeCompactor(),
+		makeFileName("receive-router"):   o.makeReceiveRouter(),
+		makeFileName("receive-ingestor"): o.makeReceiveIngestor(),
+	}
+}
+
+func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
+	router := receive.NewRouter()
+	router.Name = fmt.Sprintf("%s-%s", router.Name, o.InstanceName)
+	router.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
+	router.Image = thanosImage
+	router.ImageTag = o.ThanosImageTag
+	router.Namespace = o.Namespace
+	router.Replicas = 1
+	delete(router.PodResources.Limits, corev1.ResourceCPU)
+	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("15")
+	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("200Gi")
+	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("200Gi")
+	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
+	receiveLimitsConfigMap := "receive-limits-config-" + o.InstanceName
+	router.ConfigMaps[receiveLimitsConfigMap] = map[string]string{
+		"receive-limits.yaml": o.ReceiveLimits.String(),
+	}
+
+	// Router config
+	router.Options.LogLevel = log.LogLevelWarn
+	router.Options.LogFormat = log.LogFormatLogfmt
+	router.Options.TracingConfig = &trclient.TracingConfig{
+		Type: trclient.Jaeger,
+		Config: jaeger.Config{
+			SamplerParam: 2,
+			SamplerType:  jaeger.SamplerTypeRateLimiting,
+			ServiceName:  "thanos-receive-router",
+		},
+	}
+
+	// Execute preManifestsHook
+	if o.ReceiveRouterPreManifestsHook != nil {
+		o.ReceiveRouterPreManifestsHook(router)
+	}
+
+	// Post process
+
+	baseHashringCm := "thanos-receive-hashring-" + o.InstanceName
+	generatedHashringCm := "thanos-receive-hashring-generated-" + o.InstanceName
+	manifests := router.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), router.Namespace)
+	routerDeployment := getObject[*appsv1.Deployment](manifests)
+	routerDeployment.Spec.Template.Spec.Volumes = []corev1.Volume{
+		k8sutil.NewPodVolumeFromConfigMap("hashring-config", generatedHashringCm),
+		k8sutil.NewPodVolumeFromConfigMap("receive-limits-config", receiveLimitsConfigMap),
+	}
+
+	// Add thanos-receive-controller
+	controller := receive.NewController()
+	controller.Name = fmt.Sprintf("%s-%s", controller.Name, o.InstanceName)
+	controller.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
+	controller.Image = thanosReceiveControllerImage
+	controller.ImageTag = o.ReceiveControllerImageTag
+	controller.Namespace = o.Namespace
+	controller.Replicas = 1
+	controller.ConfigMaps[baseHashringCm] = map[string]string{
+		"hashrings.json": "", // TODO
+	}
+
+	// Controller config
+	controller.Options.ConfigMapName = baseHashringCm
+	controller.Options.ConfigMapGeneratedName = generatedHashringCm
+	controller.Options.Namespace = o.Namespace
+
+	controllerManifests := controller.Manifests()
+
+	// TODO: Add configMap for thanos-receive-controller
+
+	for k, v := range controllerManifests {
+		manifests[k] = v
+	}
+
+	// Wrap in template, add parameters
+	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(router.Options.LogLevel),
+		Replicas:      router.Replicas,
+		CPURequest:    router.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   router.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: router.PodResources.Requests[corev1.ResourceMemory],
+	})
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: router.Name,
+	}, defaultParams)
+
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), router.Name)
+}
+
+func (o ObservatoriumMetrics) makeReceiveIngestor() encoding.Encoder {
+	ingestor := receive.NewIngestor()
+	ingestor.Name = fmt.Sprintf("%s-%s", ingestor.Name, o.InstanceName)
+	ingestor.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
+	ingestor.Image = thanosImage
+	ingestor.ImageTag = o.ThanosImageTag
+	ingestor.Namespace = o.Namespace
+	ingestor.Replicas = 1
+	delete(ingestor.PodResources.Limits, corev1.ResourceCPU)
+	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("15")
+	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("200Gi")
+	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("200Gi")
+	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
+
+	// Router config
+	ingestor.Options.LogLevel = log.LogLevelWarn
+	ingestor.Options.LogFormat = log.LogFormatLogfmt
+	ingestor.Options.TracingConfig = &trclient.TracingConfig{
+		Type: trclient.Jaeger,
+		Config: jaeger.Config{
+			SamplerParam: 2,
+			SamplerType:  jaeger.SamplerTypeRateLimiting,
+			ServiceName:  "thanos-receive-router",
+		},
+	}
+
+	// Execute preManifestsHook
+	if o.ReceiveIngestorPreManifestsHook != nil {
+		o.ReceiveIngestorPreManifestsHook(ingestor)
+	}
+
+	// Post process
+	manifests := ingestor.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), ingestor.Namespace)
+
+	// Wrap in template, add parameters
+	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(ingestor.Options.LogLevel),
+		Replicas:      ingestor.Replicas,
+		CPURequest:    ingestor.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   ingestor.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: ingestor.PodResources.Requests[corev1.ResourceMemory],
+	})
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: ingestor.Name,
+	}, defaultParams)
+
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), ingestor.Name)
+}
+
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.CompactorStatefulSet]) encoding.Encoder {
+func (o ObservatoriumMetrics) makeCompactor() encoding.Encoder {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
-	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, cfg.Tenant)
-	compactorSatefulset.CommonLabels[tenantLabel] = cfg.Tenant
+	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, o.InstanceName)
+	compactorSatefulset.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
 	compactorSatefulset.Image = thanosImage
-	compactorSatefulset.ImageTag = imageTag
-	compactorSatefulset.Namespace = namespace
-	compactorSatefulset.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
+	compactorSatefulset.ImageTag = o.ThanosImageTag
+	compactorSatefulset.Namespace = o.Namespace
 	compactorSatefulset.Replicas = 1
 	compactorSatefulset.SecurityContext = corev1.PodSecurityContext{}
 	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU)
@@ -58,12 +223,12 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 	compactorSatefulset.VolumeType = "gp2"
 	compactorSatefulset.VolumeSize = "50Gi"
 	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
-	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(cfg.ObjStoreSecret)...)
-	tlsSecret := "compact-tls-" + cfg.Tenant
-	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, namespace, compactorSatefulset.Name, tlsSecret)}
+	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(o.ObjStoreSecret)...)
+	tlsSecret := "compact-tls-" + o.InstanceName
+	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, o.Namespace, compactorSatefulset.Name, tlsSecret)}
 
 	// Compactor config
-	compactorSatefulset.Options.LogLevel = common.LogLevelWarn
+	compactorSatefulset.Options.LogLevel = log.LogLevelWarn
 	compactorSatefulset.Options.RetentionResolutionRaw = 0
 	compactorSatefulset.Options.RetentionResolution5m = 0
 	compactorSatefulset.Options.RetentionResolution1h = 0
@@ -74,8 +239,8 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
 	// Execute preManifestsHook
-	if cfg.PreManifestsHook != nil {
-		cfg.PreManifestsHook(compactorSatefulset)
+	if o.CompactorPreManifestsHook != nil {
+		o.CompactorPreManifestsHook(compactorSatefulset)
 	}
 
 	// Post process
@@ -94,7 +259,7 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      compactorSatefulset.Name,
-			Namespace: namespace,
+			Namespace: o.Namespace,
 			Labels:    labels,
 		},
 		Spec: policyv1.PodDisruptionBudgetSpec{
@@ -117,7 +282,7 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      compactorSatefulset.Name,
-			Namespace: namespace,
+			Namespace: o.Namespace,
 			Labels:    labels,
 			Annotations: map[string]string{
 				"cert-manager.io/issuer-kind": "ClusterIssuer",
@@ -162,16 +327,15 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreStatefulSet]) encoding.Encoder {
+func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
 	// K8s config
 	storeStatefulSet := store.NewStore()
-	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, cfg.Tenant)
-	storeStatefulSet.CommonLabels[tenantLabel] = cfg.Tenant
+	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, o.InstanceName)
+	storeStatefulSet.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
 	storeStatefulSet.Image = thanosImage
-	storeStatefulSet.ImageTag = imageTag
-	storeStatefulSet.Namespace = namespace
+	storeStatefulSet.ImageTag = o.ThanosImageTag
+	storeStatefulSet.Namespace = o.Namespace
 	storeStatefulSet.SecurityContext = corev1.PodSecurityContext{}
-	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	storeStatefulSet.Replicas = 1
 	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU)
 	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("4")
@@ -180,14 +344,14 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	storeStatefulSet.VolumeType = "gp2"
 	storeStatefulSet.VolumeSize = "50Gi"
 	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
-	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(cfg.ObjStoreSecret)...)
+	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(o.ObjStoreSecret)...)
 	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Store auto-sharding using a configMap and an initContainer
 	// The configMap contains a script that will be executed by the initContainer
 	// The script generates the relabeling config based on the replica ordinal and the number of replicas
 	// The relabeling config is then written to a volume shared with the store container
-	storeStatefulSet.ConfigMaps[fmt.Sprintf("hashmod-config-template-%s", cfg.Tenant)] = map[string]string{
+	storeStatefulSet.ConfigMaps[fmt.Sprintf("hashmod-config-template-%s", o.InstanceName)] = map[string]string{
 		"entrypoint.sh": storeAutoShardRelabelConfigMap,
 	}
 	initContainer := corev1.Container{
@@ -220,11 +384,11 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	}
 
 	// Store config
-	storeStatefulSet.Options.LogLevel = common.LogLevelWarn
-	storeStatefulSet.Options.LogFormat = common.LogFormatLogfmt
+	storeStatefulSet.Options.LogLevel = log.LogLevelWarn
+	storeStatefulSet.Options.LogFormat = log.LogFormatLogfmt
 	storeStatefulSet.Options.IgnoreDeletionMarksDelay = 24 * time.Hour
 	maxTimeDur := time.Duration(-22) * time.Hour
-	storeStatefulSet.Options.MaxTime = &common.TimeOrDurationValue{Dur: &maxTimeDur}
+	storeStatefulSet.Options.MaxTime = &thanostime.TimeOrDurationValue{Dur: &maxTimeDur}
 	storeStatefulSet.Options.SelectorRelabelConfigFile = "/tmp/config/hashmod-config.yaml"
 	storeStatefulSet.Options.TracingConfig = &trclient.TracingConfig{
 		Type: trclient.Jaeger,
@@ -237,8 +401,8 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
 
 	// Execute preManifestHook
-	if cfg.PreManifestsHook != nil {
-		cfg.PreManifestsHook(storeStatefulSet)
+	if o.StorePreManifestsHook != nil {
+		o.StorePreManifestsHook(storeStatefulSet)
 	}
 
 	// Post process
@@ -279,8 +443,8 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("list-pods-%s", cfg.Tenant),
-			Namespace: namespace,
+			Name:      fmt.Sprintf("list-pods-%s", o.InstanceName),
+			Namespace: o.Namespace,
 			Labels:    labels,
 		},
 		Rules: []rbacv1.PolicyRule{
@@ -300,8 +464,8 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("list-pods-%s", cfg.Tenant),
-			Namespace: namespace,
+			Name:      fmt.Sprintf("list-pods-%s", o.InstanceName),
+			Namespace: o.Namespace,
 			Labels:    labels,
 		},
 		Subjects: []rbacv1.Subject{
@@ -309,7 +473,7 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 
 				Kind:      "ServiceAccount",
 				Name:      statefulset.Spec.Template.Spec.ServiceAccountName,
-				Namespace: namespace,
+				Namespace: o.Namespace,
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
@@ -327,7 +491,7 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      storeStatefulSet.Name,
-			Namespace: namespace,
+			Namespace: o.Namespace,
 			Labels:    labels,
 		},
 		Spec: policyv1.PodDisruptionBudgetSpec{

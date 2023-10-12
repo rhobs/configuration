@@ -8,6 +8,7 @@ import (
 
 	"github.com/bwplotka/mimic/encoding"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
@@ -32,6 +33,7 @@ import (
 
 const (
 	thanosImage                     = "quay.io/thanos/thanos"
+	thanosReceiveControllerImage    = "quay.io/observatorium/thanos-receive-controller"
 	monitoringNamespace             = "openshift-customer-monitoring"
 	servingCertSecretNameAnnotation = "service.alpha.openshift.io/serving-cert-secret-name"
 	observatoriumInstanceLabel      = "observatorium/tenant"
@@ -323,7 +325,7 @@ func (o ObservatoriumMetrics) makeCompactor() encoding.Encoder {
 	}...))
 
 	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
-	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]))
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), compactorSatefulset.Name)
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
@@ -518,11 +520,11 @@ func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
 	}))
 
 	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
-	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]))
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), storeStatefulSet.Name)
 }
 
 type kubeObject interface {
-	*corev1.Service | *appsv1.StatefulSet | *monv1.ServiceMonitor | *corev1.ServiceAccount
+	*corev1.Service | *appsv1.StatefulSet | *appsv1.Deployment | *monv1.ServiceMonitor | *corev1.ServiceAccount
 }
 
 // getObject returns the first object of type T from the given map of kubernetes objects.

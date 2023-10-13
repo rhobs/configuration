@@ -96,7 +96,7 @@ objects:
     name: observatorium-thanos-compact-telemeter
     namespace: rhobs
   spec:
-    replicas: ${THANOS_REPLICAS}
+    replicas: ${{THANOS_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor

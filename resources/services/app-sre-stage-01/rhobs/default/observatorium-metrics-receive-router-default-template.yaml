@@ -6,7 +6,8 @@ metadata:
 objects:
 - apiVersion: v1
   data:
-    hashrings.json: ""
+    hashrings.json: "[{\n\t\t\t  \"hashring\": \"default\",\n\t\t\t  \"tenants\":
+      []\n\t\t}]"
   kind: ConfigMap
   metadata:
     creationTimestamp: null
@@ -187,11 +188,11 @@ objects:
     namespace: rhobs
 - apiVersion: v1
   data:
-    receive-limits.yaml: |
+    limits.yaml: |
       write:
         default:
           request:
-            samples_limit: 100000
+            series_limit: 1000
   kind: ConfigMap
   metadata:
     creationTimestamp: null
@@ -202,7 +203,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
-    name: receive-limits-config-default
+    name: observatorium-thanos-receive-router-default-limits
     namespace: rhobs
 - apiVersion: apps/v1
   kind: Deployment
@@ -218,7 +219,7 @@ objects:
     name: observatorium-thanos-receive-router-default
     namespace: rhobs
   spec:
-    replicas: ${THANOS_REPLICAS}
+    replicas: ${{THANOS_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-router
@@ -367,7 +368,7 @@ objects:
             name: thanos-receive-hashring-generated-default
           name: hashring-config
         - configMap:
-            name: receive-limits-config-default
+            name: observatorium-thanos-receive-router-default-limits
           name: receive-limits-config
 - apiVersion: v1
   kind: Service

@@ -98,7 +98,7 @@ objects:
     name: observatorium-thanos-receive-ingestor-default
     namespace: rhobs
   spec:
-    replicas: ${THANOS_REPLICAS}
+    replicas: ${{THANOS_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-ingestor

@@ -15,10 +15,7 @@ type Observatorium struct {
 // Manifests generates the manifests for the instance of observatorium.
 func (o *Observatorium) Manifests(generator *mimic.Generator) {
 	for _, metricsInstance := range o.MetricsInstances {
-
-		res := metricsInstance.Manifests()
-
-		for fn, encoder := range res {
+		for fn, encoder := range metricsInstance.Manifests() {
 			generator.With(o.Cluster, o.Instance, metricsInstance.InstanceName).Add(fn, &statusRemoveEncoder{encoder: encoder})
 		}
 	}

@@ -17,21 +17,13 @@ func ClusterConfigs() []observatorium.Observatorium {
 					ThanosImageTag:            "v0.32.4",
 					ObjStoreSecret:            "default-tenant-s3",
 					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
-					ReceiveLimits: receive.ReceiveLimitsConfig{
-						WriteLimits: receive.WriteLimitsConfig{
-							DefaultLimits: receive.DefaultLimitsConfig{
-								RequestLimits: receive.RequestLimitsConfig{
-									SamplesLimit: 100000,
-								},
-							},
-						},
-					},
+					ReceiveLimits:             receive.NewReceiveLimitsConfig().WithDefaultLimits(0, 1e3, 0, 0),
 				},
 				{
 					InstanceName:              "rhel",
 					Namespace:                 "rhobs",
 					ThanosImageTag:            "v0.32.4",
-					ObjStoreSecret:            "rhel-tenant-s3",
+					ObjStoreSecret:            "rhelemeter-tenant-s3",
 					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 				{
@@ -58,7 +50,7 @@ func ClusterConfigs() []observatorium.Observatorium {
 					InstanceName:              "rhel",
 					Namespace:                 "rhobs",
 					ThanosImageTag:            "v0.32.4",
-					ObjStoreSecret:            "rhel-tenant-s3",
+					ObjStoreSecret:            "rhelemeter-tenant-s3",
 					ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 				},
 				{

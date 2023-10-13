@@ -6,7 +6,8 @@ metadata:
 objects:
 - apiVersion: v1
   data:
-    hashrings.json: ""
+    hashrings.json: "[{\n\t\t\t  \"hashring\": \"default\",\n\t\t\t  \"tenants\":
+      []\n\t\t}]"
   kind: ConfigMap
   metadata:
     creationTimestamp: null
@@ -185,22 +186,6 @@ objects:
       observatorium/tenant: telemeter
     name: observatorium-thanos-receive-controller-telemeter
     namespace: rhobs
-- apiVersion: v1
-  data:
-    receive-limits.yaml: |
-      {}
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-write-hashring-router
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-router
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: telemeter
-    name: receive-limits-config-telemeter
-    namespace: rhobs
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -215,7 +200,7 @@ objects:
     name: observatorium-thanos-receive-router-telemeter
     namespace: rhobs
   spec:
-    replicas: ${THANOS_REPLICAS}
+    replicas: ${{THANOS_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-router
@@ -262,7 +247,6 @@ objects:
           - --receive.hashrings-algorithm=ketama
           - --receive.hashrings-file=/etc/thanos/hashring/hashring.json
           - --receive.hashrings-file-refresh-interval=5s
-          - --receive.limits-config-file=/etc/thanos/receive-limits/limits.yaml
           - --remote-write.address=0.0.0.0:19291
           - |
             --tracing.config=type: JAEGER
@@ -307,8 +291,6 @@ objects:
           volumeMounts:
           - mountPath: /etc/thanos/hashring
             name: hashring-config
-          - mountPath: /etc/thanos/receive-limits
-            name: receive-limits-config
         - args:
           - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
           - --reporter.type=grpc
@@ -363,9 +345,6 @@ objects:
         - configMap:
             name: thanos-receive-hashring-generated-telemeter
           name: hashring-config
-        - configMap:
-            name: receive-limits-config-telemeter
-          name: receive-limits-config
 - apiVersion: v1
   kind: Service
   metadata:

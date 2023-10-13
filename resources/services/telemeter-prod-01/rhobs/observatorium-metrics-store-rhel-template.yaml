@@ -181,7 +181,7 @@ objects:
     name: observatorium-thanos-store-rhel
     namespace: rhobs
   spec:
-    replicas: ${THANOS_REPLICAS}
+    replicas: ${{THANOS_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway

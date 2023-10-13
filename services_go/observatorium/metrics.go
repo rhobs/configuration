@@ -50,6 +50,7 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 	compactorSatefulset.Namespace = namespace
 	compactorSatefulset.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	compactorSatefulset.Replicas = 1
+	compactorSatefulset.SecurityContext = corev1.PodSecurityContext{}
 	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU)
 	compactorSatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
 	compactorSatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("1Gi")

@@ -20,7 +20,7 @@ func ClusterConfigs() []observatorium.Observatorium {
 				},
 				{
 					Tenant:         "rhel",
-					ObjStoreSecret: "rhel-tenant-s3",
+					ObjStoreSecret: "rhelemeter-tenant-s3",
 				},
 				{
 					Tenant:         "telemeter",
@@ -34,7 +34,7 @@ func ClusterConfigs() []observatorium.Observatorium {
 				},
 				{
 					Tenant:         "rhel",
-					ObjStoreSecret: "rhel-tenant-s3",
+					ObjStoreSecret: "rhelemeter-tenant-s3",
 				},
 				{
 					Tenant:         "telemeter",
@@ -54,7 +54,7 @@ func ClusterConfigs() []observatorium.Observatorium {
 				},
 				{
 					Tenant:         "rhel",
-					ObjStoreSecret: "rhel-tenant-s3",
+					ObjStoreSecret: "rhelemeter-tenant-s3",
 				},
 				{
 					Tenant:         "telemeter",
@@ -68,7 +68,7 @@ func ClusterConfigs() []observatorium.Observatorium {
 				},
 				{
 					Tenant:         "rhel",
-					ObjStoreSecret: "rhel-tenant-s3",
+					ObjStoreSecret: "rhelemeter-tenant-s3",
 				},
 				{
 					Tenant:         "telemeter",

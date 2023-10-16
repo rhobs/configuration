@@ -170,6 +170,7 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = imageTag
 	storeStatefulSet.Namespace = namespace
+	storeStatefulSet.SecurityContext = corev1.PodSecurityContext{}
 	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	storeStatefulSet.Replicas = 1
 	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU)

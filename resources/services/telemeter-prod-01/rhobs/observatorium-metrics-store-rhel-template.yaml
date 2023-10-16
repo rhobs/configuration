@@ -363,9 +363,7 @@ objects:
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-store-rhel
         terminationGracePeriodSeconds: 120
         volumes:

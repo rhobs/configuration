@@ -363,9 +363,7 @@ objects:
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-store-default
         terminationGracePeriodSeconds: 120
         volumes:
@@ -392,7 +390,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 500Gi
+            storage: 50Gi
         storageClassName: gp2
 parameters:
 - name: THANOS_LOG_LEVEL

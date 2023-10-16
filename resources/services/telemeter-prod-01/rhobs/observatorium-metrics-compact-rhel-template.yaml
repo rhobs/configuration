@@ -249,9 +249,7 @@ objects:
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-compact-rhel
         terminationGracePeriodSeconds: 120
         volumes:
@@ -275,7 +273,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 500Gi
+            storage: 50Gi
         storageClassName: gp2
 - apiVersion: route.openshift.io/v1
   kind: Route

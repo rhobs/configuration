@@ -50,12 +50,13 @@ func makeCompactor(namespace, imageTag string, cfg ThanosTenantConfig[compactor.
 	compactorSatefulset.Namespace = namespace
 	compactorSatefulset.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	compactorSatefulset.Replicas = 1
+	compactorSatefulset.SecurityContext = corev1.PodSecurityContext{}
 	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU)
 	compactorSatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
 	compactorSatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("1Gi")
 	compactorSatefulset.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("5Gi")
 	compactorSatefulset.VolumeType = "gp2"
-	compactorSatefulset.VolumeSize = "500Gi"
+	compactorSatefulset.VolumeSize = "50Gi"
 	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
 	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(cfg.ObjStoreSecret)...)
 	tlsSecret := "compact-tls-" + cfg.Tenant
@@ -169,6 +170,7 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = imageTag
 	storeStatefulSet.Namespace = namespace
+	storeStatefulSet.SecurityContext = corev1.PodSecurityContext{}
 	storeStatefulSet.Affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution[0].PodAffinityTerm.Namespaces = []string{}
 	storeStatefulSet.Replicas = 1
 	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU)
@@ -176,7 +178,7 @@ func makeStore(namespace, imageTag string, cfg ThanosTenantConfig[store.StoreSta
 	storeStatefulSet.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("20Gi")
 	storeStatefulSet.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("80Gi")
 	storeStatefulSet.VolumeType = "gp2"
-	storeStatefulSet.VolumeSize = "500Gi"
+	storeStatefulSet.VolumeSize = "50Gi"
 	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
 	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(cfg.ObjStoreSecret)...)
 	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}

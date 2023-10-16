@@ -273,7 +273,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 500Gi
+            storage: 50Gi
         storageClassName: gp2
 - apiVersion: route.openshift.io/v1
   kind: Route

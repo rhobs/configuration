@@ -392,7 +392,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 500Gi
+            storage: 50Gi
         storageClassName: gp2
 parameters:
 - name: THANOS_LOG_LEVEL

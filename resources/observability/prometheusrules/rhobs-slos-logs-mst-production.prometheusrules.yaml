@@ -105,7 +105,6 @@ spec:
         > (14 * (1-0.95))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -124,7 +123,6 @@ spec:
         > (7 * (1-0.95))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -143,7 +141,6 @@ spec:
         > (2 * (1-0.95))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -162,7 +159,6 @@ spec:
         > (1 * (1-0.95))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -281,7 +277,6 @@ spec:
         > (14 * (1-0.95))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: logsv1
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1h
@@ -299,7 +294,6 @@ spec:
         > (7 * (1-0.95))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: logsv1
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 6h
@@ -317,7 +311,6 @@ spec:
         > (2 * (1-0.95))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: logsv1
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 1d
@@ -335,7 +328,6 @@ spec:
         > (1 * (1-0.95))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: logsv1
         job: observatorium-observatorium-mst-api
         long_burnrate_window: 4d
@@ -462,7 +454,6 @@ spec:
         > (14 * (1-0.95))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -481,7 +472,6 @@ spec:
         > (7 * (1-0.95))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -500,7 +490,6 @@ spec:
         > (2 * (1-0.95))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -519,7 +508,6 @@ spec:
         > (1 * (1-0.95))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: logsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -647,7 +635,6 @@ spec:
         > (14 * (1-0.95))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
@@ -666,7 +653,6 @@ spec:
         > (7 * (1-0.95))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
@@ -685,7 +671,6 @@ spec:
         > (2 * (1-0.95))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
@@ -704,7 +689,6 @@ spec:
         > (1 * (1-0.95))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: logsv1
         handler: tail
         job: observatorium-observatorium-mst-api
@@ -832,7 +816,6 @@ spec:
         > (14 * (1-0.95))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
@@ -851,7 +834,6 @@ spec:
         > (7 * (1-0.95))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
@@ -870,7 +852,6 @@ spec:
         > (2 * (1-0.95))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
@@ -889,7 +870,6 @@ spec:
         > (1 * (1-0.95))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: logsv1
         handler: prom_tail
         job: observatorium-observatorium-mst-api
@@ -1047,7 +1027,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -1066,7 +1045,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -1085,7 +1063,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api
@@ -1104,7 +1081,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         group: logsv1
         handler: push
         job: observatorium-observatorium-mst-api

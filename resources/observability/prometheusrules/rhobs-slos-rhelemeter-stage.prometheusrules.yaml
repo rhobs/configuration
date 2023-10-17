@@ -96,7 +96,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         route: rhelemeter-server-metrics-v1-receive
         service: rhelemeter
@@ -114,7 +113,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         route: rhelemeter-server-metrics-v1-receive
         service: rhelemeter
@@ -132,7 +130,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         route: rhelemeter-server-metrics-v1-receive
         service: rhelemeter
@@ -150,7 +147,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         route: rhelemeter-server-metrics-v1-receive
         service: rhelemeter
@@ -312,7 +308,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 1h
@@ -331,7 +326,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 6h
@@ -350,7 +344,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 1d
@@ -369,7 +362,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 4d

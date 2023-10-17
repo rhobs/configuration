@@ -114,7 +114,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -134,7 +133,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -154,7 +152,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -174,7 +171,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -308,7 +304,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 1h
@@ -327,7 +322,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 6h
@@ -346,7 +340,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 1d
@@ -365,7 +358,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         handler: query
         job: observatorium-ruler-query
         long_burnrate_window: 4d
@@ -507,7 +499,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
@@ -527,7 +518,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
@@ -547,7 +537,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
@@ -567,7 +556,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: metricsv1
         handler: query
         job: observatorium-observatorium-mst-api
@@ -710,7 +698,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -730,7 +717,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -750,7 +736,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -770,7 +755,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: metricsv1
         handler: query_range
         job: observatorium-observatorium-mst-api
@@ -922,7 +906,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-mst-api
@@ -943,7 +926,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-mst-api
@@ -964,7 +946,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-mst-api
@@ -985,7 +966,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: metricsv1
         handler: rules-raw
         job: observatorium-observatorium-mst-api
@@ -1138,7 +1118,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-mst-api
@@ -1159,7 +1138,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-mst-api
@@ -1180,7 +1158,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-mst-api
@@ -1201,7 +1178,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         group: metricsv1
         handler: rules
         job: observatorium-observatorium-mst-api
@@ -1343,7 +1319,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1361,7 +1336,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1379,7 +1353,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1397,7 +1370,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1528,7 +1500,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1546,7 +1517,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1564,7 +1534,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1582,7 +1551,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1705,7 +1673,6 @@ spec:
         > (14 * (1-0.99))
       for: 2m0s
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1723,7 +1690,6 @@ spec:
         > (7 * (1-0.99))
       for: 15m0s
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1741,7 +1707,6 @@ spec:
         > (2 * (1-0.99))
       for: 1h0m0s
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1759,7 +1724,6 @@ spec:
         > (1 * (1-0.99))
       for: 3h0m0s
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         service: observatorium-api
@@ -1927,7 +1891,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -1947,7 +1910,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -1967,7 +1929,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -1987,7 +1948,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         group: metricsv1
         handler: receive
         job: observatorium-observatorium-mst-api
@@ -2151,7 +2111,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2170,7 +2129,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2189,7 +2147,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2208,7 +2165,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2371,7 +2327,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: rule-query-path-sli-10M-samples
@@ -2390,7 +2345,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: rule-query-path-sli-10M-samples
@@ -2409,7 +2363,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: rule-query-path-sli-10M-samples
@@ -2428,7 +2381,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: rule-query-path-sli-10M-samples
@@ -2591,7 +2543,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2610,7 +2561,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2629,7 +2579,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2648,7 +2597,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: rule-query-path-sli-1M-samples
@@ -2811,7 +2759,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -2830,7 +2777,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -2849,7 +2795,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -2868,7 +2813,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -3031,7 +2975,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
@@ -3050,7 +2993,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
@@ -3069,7 +3011,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
@@ -3088,7 +3029,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: query-path-sli-10M-samples
@@ -3251,7 +3191,6 @@ spec:
         > (14 * (1-0.9))
       for: 2m
       labels:
-        exhaustion: 2d
         long_burnrate_window: 1h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -3270,7 +3209,6 @@ spec:
         > (7 * (1-0.9))
       for: 15m
       labels:
-        exhaustion: 4d
         long_burnrate_window: 6h
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -3289,7 +3227,6 @@ spec:
         > (2 * (1-0.9))
       for: 1h
       labels:
-        exhaustion: 2w
         long_burnrate_window: 1d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples
@@ -3308,7 +3245,6 @@ spec:
         > (1 * (1-0.9))
       for: 3h
       labels:
-        exhaustion: 4w
         long_burnrate_window: 4d
         namespace: observatorium-mst-production
         query: query-path-sli-1M-samples

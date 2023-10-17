@@ -744,6 +744,7 @@ func makePrometheusRule(envName rhobsInstanceEnv, objs []pyrrav1alpha1.ServiceLe
 				delete(grp[i].Rules[j].Labels, "le")
 				delete(grp[i].Rules[j].Labels, "client")
 				delete(grp[i].Rules[j].Labels, "container")
+				delete(grp[i].Rules[j].Labels, "exhaustion")
 
 				// Hack for AM alert labels.
 				if v, ok := grp[i].Rules[j].Labels["service"]; ok && v == "observatorium-alertmanager" {

@@ -194,7 +194,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:increase4w
     - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[4w]))
@@ -202,7 +202,7 @@ spec:
         handler: receive
         job: rhelemeter-server
         le: "5"
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:increase4w
     - alert: SLOMetricAbsent
@@ -217,7 +217,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         severity: medium
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
     - alert: SLOMetricAbsent
@@ -232,7 +232,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         severity: medium
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
   - interval: 30s
@@ -244,7 +244,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate5m
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[30m]))
@@ -253,7 +253,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate30m
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[1h]))
@@ -262,7 +262,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate1h
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[2h]))
@@ -271,7 +271,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate2h
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[6h]))
@@ -280,7 +280,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate6h
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[1d]))
@@ -289,7 +289,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate1d
     - expr: (sum(rate(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[4d]))
@@ -298,7 +298,7 @@ spec:
       labels:
         handler: receive
         job: rhelemeter-server
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:burnrate4d
     - alert: RhelemeterServerMetricsReceiveWriteLatencyErrorBudgetBurning
@@ -316,7 +316,7 @@ spec:
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 1h
-        service: rhelemeter
+        service: telemeter
         severity: high
         short_burnrate_window: 5m
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
@@ -335,7 +335,7 @@ spec:
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 6h
-        service: rhelemeter
+        service: telemeter
         severity: high
         short_burnrate_window: 30m
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
@@ -354,7 +354,7 @@ spec:
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 1d
-        service: rhelemeter
+        service: telemeter
         severity: medium
         short_burnrate_window: 2h
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
@@ -373,7 +373,7 @@ spec:
         handler: receive
         job: rhelemeter-server
         long_burnrate_window: 4d
-        service: rhelemeter
+        service: telemeter
         severity: medium
         short_burnrate_window: 6h
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
@@ -382,28 +382,28 @@ spec:
     rules:
     - expr: "0.9"
       labels:
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: pyrra_objective
     - expr: 2419200
       labels:
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: pyrra_window
     - expr: sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"}
         or vector(0)) / sum(http_request_duration_seconds:increase4w{code=~"^2..$",handler="receive",job="rhelemeter-server",le="",slo="rhobs-rhelemeter-server-metrics-receive-latency-slo"})
       labels:
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: pyrra_availability
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"})
       labels:
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: pyrra_requests_total
     - expr: sum(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"})
         - sum(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"})
       labels:
-        service: rhelemeter
+        service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: pyrra_errors_total

@@ -251,7 +251,7 @@ func TelemeterReceiveSLOs(envName rhobsInstanceEnv, instanceName string) []pyrra
 			name: fmt.Sprintf("rhobs-%s-server-metrics-receive-latency-slo", strings.ToLower(instanceName)),
 			labels: map[string]string{
 				"route":                                 fmt.Sprintf("%s-server-receive", strings.ToLower(instanceName)),
-				slo.PropagationLabelsPrefix + "service": strings.ToLower(instanceName),
+				slo.PropagationLabelsPrefix + "service": "telemeter",
 			},
 			description:         fmt.Sprintf("%s Server /receive is burning too much error budget to guarantee latency SLOs.", instanceName),
 			successOrErrorsExpr: fmt.Sprintf("http_request_duration_seconds_bucket{job=\"%s-server\", handler=\"receive\", code=~\"^2..$\", le=\""+genericSLOLatencySeconds+"\"}", strings.ToLower(instanceName)),

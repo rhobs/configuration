@@ -94,6 +94,8 @@ objects:
       app.kubernetes.io/name: thanos-receive-ingestor
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
+      controller.receive.thanos.io: thanos-receive-controller
+      controller.receive.thanos.io/hashring: default
       observatorium/tenant: default
     name: observatorium-thanos-receive-ingestor-default
     namespace: rhobs

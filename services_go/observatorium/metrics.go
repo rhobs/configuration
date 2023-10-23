@@ -6,6 +6,7 @@ import (
 	"maps"
 	"time"
 
+	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
@@ -36,37 +37,63 @@ const (
 	thanosReceiveControllerImage    = "quay.io/observatorium/thanos-receive-controller"
 	monitoringNamespace             = "openshift-customer-monitoring"
 	servingCertSecretNameAnnotation = "service.alpha.openshift.io/serving-cert-secret-name"
-	observatoriumInstanceLabel      = "observatorium/tenant"
+	observatoriumInstanceLabel      = "observatorium/tenant" // used by selectors to select the correct observatorium instance
+	ingestorControllerLabel         = "controller.receive.thanos.io"
+	ingestorControllerLabelValue    = "thanos-receive-controller"
+	ingestorControllerLabelHashring = ingestorControllerLabel + "/hashring"
 )
 
 //go:embed assets/store-auto-shard-relabel-configMap.sh
 var storeAutoShardRelabelConfigMap string
 
-// ObservatoriumMetrics contains the configuration for a metrics instance in an observatorium instance.
+// ObservatoriumMetrics contains the configuration common to all metrics instances in an observatorium instance
+// and a list of ObservatoriumMetricsInstance configuring the individual metrics instances.
 type ObservatoriumMetrics struct {
+	Namespace                     string
+	ThanosImageTag                string
+	Instances                     []*ObservatoriumMetricsInstance
+	ReceiveRouterPreManifestsHook func(*receive.Router)
+	ReceiveLimitsGlobal           receive.GlobalLimitsConfig
+	ReceiveLimitsDefault          receive.DefaultLimitsConfig
+	ReceiveControllerImageTag     string
+}
+
+// ObservatoriumMetricsInstance contains the configuration for a metrics instance in an observatorium instance.
+// It includes all thanos components that are needed for a metrics instance, excluding commons components such as
+// the receive router.
+type ObservatoriumMetricsInstance struct {
 	InstanceName                    string
-	Namespace                       string
-	ThanosImageTag                  string
 	ObjStoreSecret                  string
-	ReceiveLimits                   *receive.ReceiveLimitsConfig
-	ReceiveControllerImageTag       string
+	Tenants                         []Tenants
 	StorePreManifestsHook           func(*store.StoreStatefulSet)
 	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
-	ReceiveRouterPreManifestsHook   func(*receive.Router)
 	ReceiveIngestorPreManifestsHook func(*receive.Ingestor)
 }
 
+// Tenants contains the configuration for a tenant in a metrics instance.
+type Tenants struct {
+	Name          string
+	ID            string
+	ReceiveLimits *receive.WriteLimitConfig
+}
+
 // Manifests generates the manifests for the metrics instance of observatorium.
-func (o ObservatoriumMetrics) Manifests() map[string]encoding.Encoder {
-	makeFileName := func(name string) string {
-		return fmt.Sprintf("observatorium-metrics-%s-%s-template.yaml", name, o.InstanceName)
+func (o ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
+	makeFileName := func(name, instanceName string) string {
+		return fmt.Sprintf("observatorium-metrics-%s-%s-template.yaml", name, instanceName)
 	}
-	return map[string]encoding.Encoder{
-		makeFileName("store"):            o.makeStore(),
-		makeFileName("compact"):          o.makeCompactor(),
-		makeFileName("receive-router"):   o.makeReceiveRouter(),
-		makeFileName("receive-ingestor"): o.makeReceiveIngestor(),
+	withStatusRemove := func(encoder encoding.Encoder) encoding.Encoder {
+		return &statusRemoveEncoder{encoder: encoder}
 	}
+
+	for _, instanceCfg := range o.Instances {
+		gen := generator.With(instanceCfg.InstanceName)
+		gen.Add(makeFileName("receive-ingestor", instanceCfg.InstanceName), withStatusRemove(o.makeTenantReceiveIngestor(instanceCfg)))
+		gen.Add(makeFileName("compact", instanceCfg.InstanceName), withStatusRemove(o.makeCompactor(instanceCfg)))
+		gen.Add(makeFileName("store", instanceCfg.InstanceName), withStatusRemove(o.makeStore(instanceCfg)))
+	}
+
+	generator.Add("observatorium-metrics-receive-router-template.yaml", withStatusRemove(o.makeReceiveRouter()))
 }
 
 // makeReceiveRouter creates a base receive router component that can be derived from using the preManifestsHook
@@ -75,8 +102,6 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	router := receive.NewRouter()
 
 	// K8s config
-	router.Name = fmt.Sprintf("%s-%s", router.Name, o.InstanceName)
-	router.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
 	router.Image = thanosImage
 	router.ImageTag = o.ThanosImageTag
 	router.Namespace = o.Namespace
@@ -98,10 +123,23 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 			ServiceName:  "thanos-receive-router",
 		},
 	}
-	if o.ReceiveLimits != nil {
-		router.Options.ReceiveLimitsConfigFile = receive.NewReceiveLimitsConfigFile(router.Name+"-limits", *o.ReceiveLimits)
+
+	receiveLimits := receive.NewReceiveLimitsConfig()
+	receiveLimits.WriteLimits.DefaultLimits = o.ReceiveLimitsDefault
+	receiveLimits.WriteLimits.GlobalLimits = o.ReceiveLimitsGlobal
+	receiveLimits.WriteLimits.TenantsLimits = map[string]receive.WriteLimitConfig{}
+	for _, instanceCfg := range o.Instances {
+		for _, tenant := range instanceCfg.Tenants {
+			if tenant.ReceiveLimits == nil {
+				continue
+			}
+
+			receiveLimits.WriteLimits.TenantsLimits[tenant.ID] = *tenant.ReceiveLimits
+		}
 	}
-	generatedHashringCm := "thanos-receive-hashring-generated-" + o.InstanceName
+	router.Options.ReceiveLimitsConfigFile = receive.NewReceiveLimitsConfigFile(router.Name+"-limits", *receiveLimits)
+
+	generatedHashringCm := "thanos-receive-hashring-generated"
 	// Leave the config map empty, it is generated by the controller
 	router.Options.ReceiveHashringsFile = receive.NewReceiveHashringConfigFile(generatedHashringCm, receive.HashRingsConfig{})
 
@@ -111,24 +149,33 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	}
 
 	// Post process
-	baseHashringCm := "thanos-receive-hashring-" + o.InstanceName
+	baseHashringCm := "thanos-receive-hashring"
 	manifests := router.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), router.Namespace)
 
 	// Add thanos-receive-controller
 	controller := receive.NewController()
 	// Controller k8s config
-	controller.Name = fmt.Sprintf("%s-%s", controller.Name, o.InstanceName)
-	controller.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
 	controller.Image = thanosReceiveControllerImage
 	controller.ImageTag = o.ReceiveControllerImageTag
 	controller.Namespace = o.Namespace
 	controller.Replicas = 1
+
+	var baseHashring receive.HashRingsConfig = []receive.HashringConfig{}
+	for _, instanceCfg := range o.Instances {
+		newHashring := receive.HashringConfig{
+			Hashring:  instanceCfg.InstanceName,
+			Algorithm: receive.HashRingAlgorithmKetama,
+		}
+
+		for _, tenant := range instanceCfg.Tenants {
+			newHashring.Tenants = append(newHashring.Tenants, tenant.ID)
+		}
+
+		baseHashring = append(baseHashring, newHashring)
+	}
 	controller.ConfigMaps[baseHashringCm] = map[string]string{
-		"hashrings.json": `[{
-			  "hashring": "default",
-			  "tenants": []
-		}]`,
+		"hashrings.json": baseHashring.String(),
 	}
 	// Controller config
 	controller.Options.ConfigMapName = baseHashringCm
@@ -160,10 +207,10 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 }
 
 // makeReceiveIngestor creates a base receive ingestor component that can be derived from using the preManifestsHook
-func (o ObservatoriumMetrics) makeReceiveIngestor() encoding.Encoder {
+func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	ingestor := receive.NewIngestor()
-	ingestor.Name = fmt.Sprintf("%s-%s", ingestor.Name, o.InstanceName)
-	ingestor.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
+	ingestor.Name = fmt.Sprintf("%s-%s", ingestor.Name, instanceCfg.InstanceName)
+	ingestor.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	ingestor.Image = thanosImage
 	ingestor.ImageTag = o.ThanosImageTag
 	ingestor.Namespace = o.Namespace
@@ -187,13 +234,18 @@ func (o ObservatoriumMetrics) makeReceiveIngestor() encoding.Encoder {
 	}
 
 	// Execute preManifestsHook
-	if o.ReceiveIngestorPreManifestsHook != nil {
-		o.ReceiveIngestorPreManifestsHook(ingestor)
+	if instanceCfg.ReceiveIngestorPreManifestsHook != nil {
+		instanceCfg.ReceiveIngestorPreManifestsHook(ingestor)
 	}
 
 	// Post process
 	manifests := ingestor.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), ingestor.Namespace)
+	// clone to avoid modifying the original, remove when fixed in upstream
+	statefulSetLabels := maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels)
+	getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels = statefulSetLabels
+	statefulSetLabels[ingestorControllerLabel] = ingestorControllerLabelValue
+	statefulSetLabels[ingestorControllerLabelHashring] = instanceCfg.InstanceName
 
 	// Wrap in template, add parameters
 	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
@@ -212,11 +264,11 @@ func (o ObservatoriumMetrics) makeReceiveIngestor() encoding.Encoder {
 }
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func (o ObservatoriumMetrics) makeCompactor() encoding.Encoder {
+func (o ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
-	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, o.InstanceName)
-	compactorSatefulset.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
+	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, instanceCfg.InstanceName)
+	compactorSatefulset.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	compactorSatefulset.Image = thanosImage
 	compactorSatefulset.ImageTag = o.ThanosImageTag
 	compactorSatefulset.Namespace = o.Namespace
@@ -229,8 +281,8 @@ func (o ObservatoriumMetrics) makeCompactor() encoding.Encoder {
 	compactorSatefulset.VolumeType = "gp2"
 	compactorSatefulset.VolumeSize = "50Gi"
 	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
-	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(o.ObjStoreSecret)...)
-	tlsSecret := "compact-tls-" + o.InstanceName
+	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
+	tlsSecret := "compact-tls-" + instanceCfg.InstanceName
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, o.Namespace, compactorSatefulset.Name, tlsSecret)}
 
 	// Compactor config
@@ -245,8 +297,8 @@ func (o ObservatoriumMetrics) makeCompactor() encoding.Encoder {
 	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
 	// Execute preManifestsHook
-	if o.CompactorPreManifestsHook != nil {
-		o.CompactorPreManifestsHook(compactorSatefulset)
+	if instanceCfg.CompactorPreManifestsHook != nil {
+		instanceCfg.CompactorPreManifestsHook(compactorSatefulset)
 	}
 
 	// Post process
@@ -333,11 +385,11 @@ func (o ObservatoriumMetrics) makeCompactor() encoding.Encoder {
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
+func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	// K8s config
 	storeStatefulSet := store.NewStore()
-	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, o.InstanceName)
-	storeStatefulSet.CommonLabels[observatoriumInstanceLabel] = o.InstanceName
+	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, instanceCfg.InstanceName)
+	storeStatefulSet.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = o.ThanosImageTag
 	storeStatefulSet.Namespace = o.Namespace
@@ -350,14 +402,14 @@ func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
 	storeStatefulSet.VolumeType = "gp2"
 	storeStatefulSet.VolumeSize = "50Gi"
 	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
-	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(o.ObjStoreSecret)...)
+	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
 	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Store auto-sharding using a configMap and an initContainer
 	// The configMap contains a script that will be executed by the initContainer
 	// The script generates the relabeling config based on the replica ordinal and the number of replicas
 	// The relabeling config is then written to a volume shared with the store container
-	storeStatefulSet.ConfigMaps[fmt.Sprintf("hashmod-config-template-%s", o.InstanceName)] = map[string]string{
+	storeStatefulSet.ConfigMaps[fmt.Sprintf("hashmod-config-template-%s", instanceCfg.InstanceName)] = map[string]string{
 		"entrypoint.sh": storeAutoShardRelabelConfigMap,
 	}
 	initContainer := corev1.Container{
@@ -407,8 +459,8 @@ func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
 
 	// Execute preManifestHook
-	if o.StorePreManifestsHook != nil {
-		o.StorePreManifestsHook(storeStatefulSet)
+	if instanceCfg.StorePreManifestsHook != nil {
+		instanceCfg.StorePreManifestsHook(storeStatefulSet)
 	}
 
 	// Post process
@@ -449,7 +501,7 @@ func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("list-pods-%s", o.InstanceName),
+			Name:      fmt.Sprintf("list-pods-%s", instanceCfg.InstanceName),
 			Namespace: o.Namespace,
 			Labels:    labels,
 		},
@@ -470,7 +522,7 @@ func (o ObservatoriumMetrics) makeStore() encoding.Encoder {
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("list-pods-%s", o.InstanceName),
+			Name:      fmt.Sprintf("list-pods-%s", instanceCfg.InstanceName),
 			Namespace: o.Namespace,
 			Labels:    labels,
 		},

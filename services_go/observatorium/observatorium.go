@@ -8,15 +8,11 @@ type Observatorium struct {
 	Cluster  string
 	Instance string // Instance is the name of the observatorium instance
 	// MetricsInstances is the list of metrics instances in the observatorium instance
-	// These are the different tenants in the observatorium instance (e.g. default, rhel, telemeter)
-	MetricsInstances []ObservatoriumMetrics
+	// These are the different deployment units to which our tenants are mapped (e.g. default, rhel, telemeter)
+	MetricsInstances ObservatoriumMetrics
 }
 
 // Manifests generates the manifests for the instance of observatorium.
 func (o *Observatorium) Manifests(generator *mimic.Generator) {
-	for _, metricsInstance := range o.MetricsInstances {
-		for fn, encoder := range metricsInstance.Manifests() {
-			generator.With(o.Cluster, o.Instance, metricsInstance.InstanceName).Add(fn, &statusRemoveEncoder{encoder: encoder})
-		}
-	}
+	o.MetricsInstances.Manifests(generator.With(o.Cluster, o.Instance))
 }

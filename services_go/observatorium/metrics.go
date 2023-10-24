@@ -209,9 +209,6 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	controller.Options.Namespace = o.Namespace
 
 	controllerManifests := controller.Manifests()
-
-	// TODO: Add configMap for thanos-receive-controller
-
 	for k, v := range controllerManifests {
 		manifests[k] = v
 	}

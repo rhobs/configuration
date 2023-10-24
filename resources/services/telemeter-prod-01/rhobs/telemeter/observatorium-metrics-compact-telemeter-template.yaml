@@ -2,13 +2,13 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-compact-default
+  name: observatorium-thanos-compact-telemeter
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: compact-tls-default
+      service.alpha.openshift.io/serving-cert-secret-name: compact-tls-telemeter
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: database-compactor
@@ -16,8 +16,8 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: default
-    name: observatorium-thanos-compact-default
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-compact-telemeter
     namespace: rhobs
   spec:
     ports:
@@ -34,10 +34,12 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
+      observatorium/tenant: telemeter
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-compact-telemeter"}}'
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: database-compactor
@@ -45,8 +47,8 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: default
-    name: observatorium-thanos-compact-default
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-compact-telemeter
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -58,9 +60,9 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: default
+      observatorium/tenant: telemeter
       prometheus: app-sre
-    name: observatorium-thanos-compact-default
+    name: observatorium-thanos-compact-telemeter
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -81,7 +83,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-compact
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: default
+        observatorium/tenant: telemeter
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -92,19 +94,19 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: default
-    name: observatorium-thanos-compact-default
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-compact-telemeter
     namespace: rhobs
   spec:
-    replicas: ${{THANOS_REPLICAS}}
+    replicas: ${{REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-compact
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: default
-    serviceName: observatorium-thanos-compact-default
+        observatorium/tenant: telemeter
+    serviceName: observatorium-thanos-compact-telemeter
     template:
       metadata:
         creationTimestamp: null
@@ -114,7 +116,7 @@ objects:
           app.kubernetes.io/name: thanos-compact
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: default
+          observatorium/tenant: telemeter
         namespace: rhobs
       spec:
         affinity:
@@ -142,7 +144,7 @@ objects:
           - --delete-delay=24h0m0s
           - --downsample.concurrency=1
           - --log.format=logfmt
-          - --log.level=${THANOS_LOG_LEVEL}
+          - --log.level=${LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --wait
           - --debug.max-compaction-level=3
@@ -155,27 +157,27 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: aws_access_key_id
-                name: default-tenant-s3
+                name: telemeter-tenant-s3
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 key: aws_secret_access_key
-                name: default-tenant-s3
+                name: telemeter-tenant-s3
           - name: OBJ_STORE_BUCKET
             valueFrom:
               secretKeyRef:
                 key: bucket
-                name: default-tenant-s3
+                name: telemeter-tenant-s3
           - name: OBJ_STORE_REGION
             valueFrom:
               secretKeyRef:
                 key: aws_region
-                name: default-tenant-s3
+                name: telemeter-tenant-s3
           - name: OBJ_STORE_ENDPOINT
             valueFrom:
               secretKeyRef:
                 key: endpoint
-                name: default-tenant-s3
+                name: telemeter-tenant-s3
           - name: OBJSTORE_CONFIG
             value: |
               type: S3
@@ -204,10 +206,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${THANOS_MEMORY_LIMIT}
+              memory: ${MEMORY_LIMIT}
             requests:
-              cpu: ${THANOS_CPU_REQUEST}
-              memory: ${THANOS_MEMORY_REQUEST}
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/compactor
@@ -218,7 +220,7 @@ objects:
           - -http-address=
           - -email-domain=*
           - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-compact-default
+          - -openshift-service-account=observatorium-thanos-compact-telemeter
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
             "namespace": "rhobs"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
@@ -250,12 +252,12 @@ objects:
         nodeSelector:
           kubernetes.io/os: linux
         securityContext: {}
-        serviceAccountName: observatorium-thanos-compact-default
+        serviceAccountName: observatorium-thanos-compact-telemeter
         terminationGracePeriodSeconds: 120
         volumes:
         - name: compact-tls
           secret:
-            secretName: compact-tls-default
+            secretName: compact-tls-telemeter
     updateStrategy: {}
     volumeClaimTemplates:
     - metadata:
@@ -266,7 +268,7 @@ objects:
           app.kubernetes.io/name: thanos-compact
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: default
+          observatorium/tenant: telemeter
         name: data
       spec:
         accessModes:
@@ -287,8 +289,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: observatorium-thanos-compact-default
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-compact-telemeter
     namespace: rhobs
   spec:
     host: ""
@@ -299,7 +301,7 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-compact-default
+      name: observatorium-thanos-compact-telemeter
       weight: null
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
@@ -310,8 +312,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: observatorium-thanos-compact-default
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-compact-telemeter
     namespace: rhobs
   spec:
     maxUnavailable: 1
@@ -321,17 +323,17 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-compact
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: default
+        observatorium/tenant: telemeter
 parameters:
-- name: THANOS_LOG_LEVEL
+- name: LOG_LEVEL
   value: warn
-- name: THANOS_REPLICAS
+- name: REPLICAS
   value: "1"
-- name: THANOS_CPU_REQUEST
+- name: CPU_REQUEST
   value: 200m
-- name: THANOS_MEMORY_LIMIT
+- name: MEMORY_LIMIT
   value: 5Gi
-- name: THANOS_MEMORY_REQUEST
+- name: MEMORY_REQUEST
   value: 1Gi
 - from: '[a-zA-Z0-9]{40}'
   generate: expression

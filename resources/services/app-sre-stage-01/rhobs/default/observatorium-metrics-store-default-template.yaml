@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-store-shared
+  name: observatorium-thanos-store-default
 objects:
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
@@ -13,8 +13,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: shared
-    name: list-pods-shared
+      observatorium/tenant: default
+    name: list-pods-default
     namespace: rhobs
   rules:
   - apiGroups:
@@ -33,16 +33,16 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: shared
-    name: list-pods-shared
+      observatorium/tenant: default
+    name: list-pods-default
     namespace: rhobs
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: list-pods-shared
+    name: list-pods-default
   subjects:
   - kind: ServiceAccount
-    name: observatorium-thanos-store-shared
+    name: observatorium-thanos-store-default
     namespace: rhobs
 - apiVersion: v1
   data:
@@ -67,8 +67,8 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: shared
-    name: hashmod-config-template-shared
+      observatorium/tenant: default
+    name: hashmod-config-template-default
     namespace: rhobs
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
@@ -79,8 +79,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: shared
-    name: observatorium-thanos-store-shared
+      observatorium/tenant: default
+    name: observatorium-thanos-store-default
     namespace: rhobs
   spec:
     maxUnavailable: 1
@@ -90,7 +90,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: shared
+        observatorium/tenant: default
 - apiVersion: v1
   kind: Service
   metadata:
@@ -101,8 +101,8 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: shared
-    name: observatorium-thanos-store-shared
+      observatorium/tenant: default
+    name: observatorium-thanos-store-default
     namespace: rhobs
   spec:
     ports:
@@ -119,7 +119,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: shared
+      observatorium/tenant: default
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -130,8 +130,8 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: shared
-    name: observatorium-thanos-store-shared
+      observatorium/tenant: default
+    name: observatorium-thanos-store-default
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -143,9 +143,9 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: shared
+      observatorium/tenant: default
       prometheus: app-sre
-    name: observatorium-thanos-store-shared
+    name: observatorium-thanos-store-default
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -166,7 +166,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: shared
+        observatorium/tenant: default
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -177,19 +177,19 @@ objects:
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: shared
-    name: observatorium-thanos-store-shared
+      observatorium/tenant: default
+    name: observatorium-thanos-store-default
     namespace: rhobs
   spec:
-    replicas: ${THANOS_REPLICAS}
+    replicas: ${{REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-store
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: shared
-    serviceName: observatorium-thanos-store-shared
+        observatorium/tenant: default
+    serviceName: observatorium-thanos-store-default
     template:
       metadata:
         creationTimestamp: null
@@ -199,7 +199,7 @@ objects:
           app.kubernetes.io/name: thanos-store
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: shared
+          observatorium/tenant: default
         namespace: rhobs
       spec:
         affinity:
@@ -224,11 +224,17 @@ objects:
           - --data-dir=/var/thanos/store
           - --ignore-deletion-marks-delay=24h0m0s
           - --log.format=logfmt
-          - --log.level=${THANOS_LOG_LEVEL}
+          - --log.level=${LOG_LEVEL}
           - --max-time=-22h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --selector.relabel-config-file=/tmp/config/hashmod-config.yaml
           - --store.enable-index-header-lazy-reader=true
+          - |
+            --tracing.config=type: JAEGER
+            config:
+              service_name: thanos-store
+              sampler_type: ratelimiting
+              sampler_param: 2
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
@@ -238,27 +244,27 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: aws_access_key_id
-                name: shared-tenant-s3
+                name: default-tenant-s3
           - name: AWS_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 key: aws_secret_access_key
-                name: shared-tenant-s3
+                name: default-tenant-s3
           - name: OBJ_STORE_BUCKET
             valueFrom:
               secretKeyRef:
                 key: bucket
-                name: shared-tenant-s3
+                name: default-tenant-s3
           - name: OBJ_STORE_REGION
             valueFrom:
               secretKeyRef:
                 key: aws_region
-                name: shared-tenant-s3
+                name: default-tenant-s3
           - name: OBJ_STORE_ENDPOINT
             valueFrom:
               secretKeyRef:
                 key: endpoint
-                name: shared-tenant-s3
+                name: default-tenant-s3
           - name: OBJSTORE_CONFIG
             value: |
               type: S3
@@ -291,10 +297,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${THANOS_MEMORY_LIMIT}
+              memory: ${MEMORY_LIMIT}
             requests:
-              cpu: ${THANOS_CPU_REQUEST}
-              memory: ${THANOS_MEMORY_REQUEST}
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/store
@@ -363,10 +369,8 @@ objects:
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
-        serviceAccountName: observatorium-thanos-store-shared
+        securityContext: {}
+        serviceAccountName: observatorium-thanos-store-default
         terminationGracePeriodSeconds: 120
         volumes:
         - emptyDir: {}
@@ -385,23 +389,23 @@ objects:
           app.kubernetes.io/name: thanos-store
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: shared
+          observatorium/tenant: default
         name: data
       spec:
         accessModes:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 500Gi
+            storage: 50Gi
         storageClassName: gp2
 parameters:
-- name: THANOS_LOG_LEVEL
+- name: LOG_LEVEL
   value: warn
-- name: THANOS_REPLICAS
+- name: REPLICAS
   value: "1"
-- name: THANOS_CPU_REQUEST
+- name: CPU_REQUEST
   value: "4"
-- name: THANOS_MEMORY_LIMIT
+- name: MEMORY_LIMIT
   value: 80Gi
-- name: THANOS_MEMORY_REQUEST
+- name: MEMORY_REQUEST
   value: 20Gi

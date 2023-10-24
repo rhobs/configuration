@@ -36,6 +36,7 @@ require (
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
+	github.com/google/pprof v0.0.0-20230406165453-00490a63f317 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -54,7 +55,6 @@ require (
 	github.com/prometheus/prometheus v1.8.2-0.20220211202545-56e14463bccf // indirect
 	github.com/rodaine/hclencoder v0.0.1 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
-	github.com/thanos-io/thanos v0.32.2 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/goleak v1.2.1 // indirect
 	go.uber.org/zap v1.26.0 // indirect
@@ -83,4 +83,4 @@ require (
 )
 
 // Delete when https://github.com/observatorium/observatorium/pull/543 is merged to main branch
-replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231002130052-3e0c7849c81f
+replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231023163509-c3d0fcdbc308

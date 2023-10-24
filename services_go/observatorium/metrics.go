@@ -264,9 +264,7 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	// Post process
 	manifests := ingestor.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), ingestor.Namespace)
-	// clone to avoid modifying the original, remove when fixed in upstream
-	statefulSetLabels := maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels)
-	getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels = statefulSetLabels
+	statefulSetLabels := getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels
 	statefulSetLabels[ingestorControllerLabel] = ingestorControllerLabelValue
 	statefulSetLabels[ingestorControllerLabelHashring] = instanceCfg.InstanceName
 

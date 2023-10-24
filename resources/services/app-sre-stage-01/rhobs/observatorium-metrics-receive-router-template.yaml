@@ -52,10 +52,10 @@ objects:
       spec:
         containers:
         - args:
-          - '----configmap-name=thanos-receive-hashring'
-          - '----configmap-generated-name=thanos-receive-hashring-generated'
-          - '----file-name=hashrings.json'
-          - '----namespace=rhobs'
+          - --configmap-name=thanos-receive-hashring
+          - --configmap-generated-name=thanos-receive-hashring-generated
+          - --file-name=hashrings.json
+          - --namespace=rhobs
           env:
           - name: NAMESPACE
             valueFrom:
@@ -221,7 +221,7 @@ objects:
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
-    replicas: ${{THANOS_REPLICAS}}
+    replicas: ${{REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-router
@@ -262,7 +262,7 @@ objects:
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
           - --log.format=logfmt
-          - --log.level=${THANOS_LOG_LEVEL}
+          - --log.level=${LOG_LEVEL}
           - --receive.hashrings-algorithm=ketama
           - --receive.hashrings-file=/etc/thanos/hashring/hashring.json
           - --receive.hashrings-file-refresh-interval=5s
@@ -303,10 +303,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${THANOS_MEMORY_LIMIT}
+              memory: ${MEMORY_LIMIT}
             requests:
-              cpu: ${THANOS_CPU_REQUEST}
-              memory: ${THANOS_MEMORY_REQUEST}
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /etc/thanos/hashring
@@ -358,9 +358,7 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-router
         terminationGracePeriodSeconds: 120
         volumes:
@@ -445,14 +443,33 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-receive-router
         app.kubernetes.io/part-of: observatorium
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-write-hashring-router
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-router
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-thanos-receive-router
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring-router
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-router
+        app.kubernetes.io/part-of: observatorium
 parameters:
-- name: THANOS_LOG_LEVEL
+- name: LOG_LEVEL
   value: warn
-- name: THANOS_REPLICAS
+- name: REPLICAS
   value: "1"
-- name: THANOS_CPU_REQUEST
+- name: CPU_REQUEST
   value: "15"
-- name: THANOS_MEMORY_LIMIT
+- name: MEMORY_LIMIT
   value: 200Gi
-- name: THANOS_MEMORY_REQUEST
+- name: MEMORY_REQUEST
   value: 200Gi

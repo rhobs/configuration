@@ -100,7 +100,7 @@ objects:
     name: observatorium-thanos-receive-ingestor-default
     namespace: rhobs
   spec:
-    replicas: ${{THANOS_REPLICAS}}
+    replicas: ${{REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-ingestor
@@ -145,7 +145,7 @@ objects:
           - --label=receive=true
           - --label=receive-replica=$(NAME)
           - --log.format=logfmt
-          - --log.level=${THANOS_LOG_LEVEL}
+          - --log.level=${LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --remote-write.address=0.0.0.0:19291
           - |
@@ -189,10 +189,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${THANOS_MEMORY_LIMIT}
+              memory: ${MEMORY_LIMIT}
             requests:
-              cpu: ${THANOS_CPU_REQUEST}
-              memory: ${THANOS_MEMORY_REQUEST}
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/receive
@@ -242,9 +242,7 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext:
-          fsGroup: 65534
-          runAsUser: 65534
+        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-ingestor-default
         terminationGracePeriodSeconds: 120
     updateStrategy: {}
@@ -266,14 +264,39 @@ objects:
           requests:
             storage: 100Gi
         storageClassName: ""
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-write-hashring-ingestor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-ingestor
+      app.kubernetes.io/part-of: observatorium
+      controller.receive.thanos.io: thanos-receive-controller
+      controller.receive.thanos.io/hashring: default
+      observatorium/tenant: default
+    name: observatorium-thanos-receive-ingestor-default
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring-ingestor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-ingestor
+        app.kubernetes.io/part-of: observatorium
+        controller.receive.thanos.io: thanos-receive-controller
+        controller.receive.thanos.io/hashring: default
+        observatorium/tenant: default
 parameters:
-- name: THANOS_LOG_LEVEL
+- name: LOG_LEVEL
   value: warn
-- name: THANOS_REPLICAS
+- name: REPLICAS
   value: "1"
-- name: THANOS_CPU_REQUEST
+- name: CPU_REQUEST
   value: "15"
-- name: THANOS_MEMORY_LIMIT
+- name: MEMORY_LIMIT
   value: 200Gi
-- name: THANOS_MEMORY_REQUEST
+- name: MEMORY_REQUEST
   value: 200Gi

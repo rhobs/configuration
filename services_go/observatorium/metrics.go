@@ -655,23 +655,23 @@ type defaultTemplateParamsConfig struct {
 func defaultTemplateParams(cfg defaultTemplateParamsConfig) []templatev1.Parameter {
 	return []templatev1.Parameter{
 		{
-			Name:  "THANOS_LOG_LEVEL",
+			Name:  "LOG_LEVEL",
 			Value: cfg.LogLevel,
 		},
 		{
-			Name:  "THANOS_REPLICAS",
+			Name:  "REPLICAS",
 			Value: fmt.Sprintf("%d", cfg.Replicas),
 		},
 		{
-			Name:  "THANOS_CPU_REQUEST",
+			Name:  "CPU_REQUEST",
 			Value: cfg.CPURequest.String(),
 		},
 		{
-			Name:  "THANOS_MEMORY_LIMIT",
+			Name:  "MEMORY_LIMIT",
 			Value: cfg.MemoryLimit.String(),
 		},
 		{
-			Name:  "THANOS_MEMORY_REQUEST",
+			Name:  "MEMORY_REQUEST",
 			Value: cfg.MemoryRequest.String(),
 		},
 	}

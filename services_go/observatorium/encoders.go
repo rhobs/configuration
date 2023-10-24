@@ -52,11 +52,11 @@ func NewDefaultTemplateYAML(encoder encoding.Encoder, resourceName string) *temp
 			// (?s) is a flag that allows . to match newlines
 			// .*? is a non-greedy match of any character
 			// these matchers assume that the main container (thanos) is the first container in the pod
-			{fmt.Sprintf(`(?s)(%scontainers:\n.*?limits:.*?memory: )\S+`, prefix), "${1}$${THANOS_MEMORY_LIMIT}"},     // replace memory limit
-			{fmt.Sprintf(`(?s)(%scontainers:\n.*?requests:.*?memory: )\S+`, prefix), "${1}$${THANOS_MEMORY_REQUEST}"}, // replace memory request
-			{fmt.Sprintf(`(?s)(%scontainers:\n.*?limits:.*?cpu: )\S+`, prefix), "${1}$${THANOS_CPU_REQUEST}"},         // replace cpu request
-			{fmt.Sprintf(`(?s)(%sreplicas: )\d+`, prefix), "${1}$${{THANOS_REPLICAS}}"},                               // replace replicas
-			{fmt.Sprintf(`(?s)(%scontainers:\n.*?\s+--log\.level=)\w+`, prefix), "${1}$${THANOS_LOG_LEVEL}"},          // replace thanos log level
+			{fmt.Sprintf(`(?s)(%scontainers:\n.*?limits:.*?memory: )\S+`, prefix), "${1}$${MEMORY_LIMIT}"},     // replace memory limit
+			{fmt.Sprintf(`(?s)(%scontainers:\n.*?requests:.*?memory: )\S+`, prefix), "${1}$${MEMORY_REQUEST}"}, // replace memory request
+			{fmt.Sprintf(`(?s)(%scontainers:\n.*?limits:.*?cpu: )\S+`, prefix), "${1}$${CPU_REQUEST}"},         // replace cpu request
+			{fmt.Sprintf(`(?s)(%sreplicas: )\d+`, prefix), "${1}$${{REPLICAS}}"},                               // replace replicas
+			{fmt.Sprintf(`(?s)(%scontainers:\n.*?\s+--log\.level=)\w+`, prefix), "${1}$${LOG_LEVEL}"},          // replace thanos log level
 		},
 	}
 }

@@ -357,6 +357,12 @@ func (o ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIns
 	service := getObject[*corev1.Service](manifests)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), compactorSatefulset.Namespace)
+	// Add annotations for openshift oauth so that the route to access the compactor ui works
+	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
+	if serviceAccount.Annotations == nil {
+		serviceAccount.Annotations = map[string]string{}
+	}
+	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, compactorSatefulset.Name)
 
 	// Add pod disruption budget
 	labels := maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels)

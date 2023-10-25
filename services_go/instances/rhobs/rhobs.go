@@ -43,11 +43,6 @@ var tenantsMapping = map[InstanceName]map[string]string{
 	},
 }
 
-var hardTenantIDs = map[string]string{
-	"rhel":      "72e6f641-b2e2-47eb-bbc2-fee3c8fbda26",
-	"telemeter": "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-}
-
 func ClusterConfigs() []observatorium.Observatorium {
 	return []observatorium.Observatorium{
 		stageConfig(),

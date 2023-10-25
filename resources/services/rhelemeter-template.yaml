@@ -47,6 +47,7 @@ objects:
           - --oidc-issuer=$(OIDC_ISSUER)
           - --client-id=$(CLIENT_ID)
           - --client-secret=$(CLIENT_SECRET)
+          - --whitelist={__name__="system_cpu_logical_count"}
           - --log-level=${RHELEMETER_LOG_LEVEL}
           - --limit-bytes=5242880
           - --tenant-id=${RHELEMETER_TENANT_ID}

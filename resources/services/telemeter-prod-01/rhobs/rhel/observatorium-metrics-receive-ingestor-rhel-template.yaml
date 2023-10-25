@@ -262,8 +262,8 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 100Gi
-        storageClassName: ""
+            storage: 5Gi
+        storageClassName: gp2
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:

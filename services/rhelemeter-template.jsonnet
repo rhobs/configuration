@@ -12,6 +12,7 @@ local rhelemeter = (import 'rhelemeter.libsonnet') {
       clientID: '${RHELEMETER_CLIENT_ID}',
       clientSecret: '${RHELEMETER_CLIENT_SECRET}',
       clientInfoPSK: '${RHELEMETER_CLIENT_INFO_PSK}',
+      whitelist+: (import '../configuration/rhelemeter/metrics.json'),
       resourceLimits:: {
         cpu: '${RHELEMETER_SERVER_CPU_LIMIT}',
         memory: '${RHELEMETER_SERVER_MEMORY_LIMIT}',

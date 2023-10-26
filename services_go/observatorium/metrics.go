@@ -238,6 +238,8 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.ImageTag = o.ThanosImageTag
 	ingestor.Namespace = o.Namespace
 	ingestor.Replicas = 1
+	ingestor.VolumeType = "gp2"
+	ingestor.VolumeSize = "50Gi"
 	delete(ingestor.PodResources.Limits, corev1.ResourceCPU)
 	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("15")
 	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("200Gi")

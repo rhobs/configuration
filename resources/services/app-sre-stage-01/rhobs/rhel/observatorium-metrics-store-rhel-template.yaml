@@ -396,7 +396,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
+            storage: 5Gi
         storageClassName: gp2
 parameters:
 - name: LOG_LEVEL

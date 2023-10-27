@@ -83,4 +83,4 @@ require (
 )
 
 // Delete when https://github.com/observatorium/observatorium/pull/543 is merged to main branch
-replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231030100738-39cab44afecc
+replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231027122440-a57dcb5e78db

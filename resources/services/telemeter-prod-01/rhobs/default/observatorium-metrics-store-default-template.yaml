@@ -369,7 +369,6 @@ objects:
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-store-default
         terminationGracePeriodSeconds: 120
         volumes:

@@ -82,7 +82,6 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-controller
         terminationGracePeriodSeconds: 0
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -338,7 +337,6 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-router
         terminationGracePeriodSeconds: 120
         volumes:

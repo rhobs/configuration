@@ -156,10 +156,38 @@ objects:
               sampler_param: 2
           - --tsdb.path=/var/thanos/receive
           env:
-          - name: OBJSTORE_CONFIG
+          - name: AWS_ACCESS_KEY_ID
             valueFrom:
-              fieldRef:
-                fieldPath: objectStore-secret
+              secretKeyRef:
+                key: aws_access_key_id
+                name: rhelemeter-tenant-s3
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: rhelemeter-tenant-s3
+          - name: OBJ_STORE_BUCKET
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: rhelemeter-tenant-s3
+          - name: OBJ_STORE_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: rhelemeter-tenant-s3
+          - name: OBJ_STORE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                key: endpoint
+                name: rhelemeter-tenant-s3
+          - name: OBJSTORE_CONFIG
+            value: |
+              type: S3
+              config:
+                  bucket: $(OBJ_STORE_BUCKET)
+                  endpoint: $(OBJ_STORE_ENDPOINT)
+                  region: $(OBJ_STORE_REGION)
           image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
           livenessProbe:

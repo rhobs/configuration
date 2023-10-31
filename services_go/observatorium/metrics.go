@@ -244,6 +244,8 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("15")
 	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("200Gi")
 	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("200Gi")
+	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
+	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
 	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config
@@ -461,7 +463,8 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	// The configMap contains a script that will be executed by the initContainer
 	// The script generates the relabeling config based on the replica ordinal and the number of replicas
 	// The relabeling config is then written to a volume shared with the store container
-	storeStatefulSet.ConfigMaps[fmt.Sprintf("hashmod-config-template-%s", instanceCfg.InstanceName)] = map[string]string{
+	hasmodCMName := fmt.Sprintf("hashmod-config-template-%s", instanceCfg.InstanceName)
+	storeStatefulSet.ConfigMaps[hasmodCMName] = map[string]string{
 		"entrypoint.sh": storeAutoShardRelabelConfigMap,
 	}
 	initContainer := corev1.Container{
@@ -527,7 +530,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 			EmptyDir: &corev1.EmptyDirVolumeSource{},
 		},
 	}, corev1.Volume{
-		Name: "hashmod-config-template",
+		Name: hasmodCMName,
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
 				LocalObjectReference: corev1.LocalObjectReference{

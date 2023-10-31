@@ -321,7 +321,6 @@ func (o ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIns
 	compactorSatefulset.ImageTag = o.ThanosImageTag
 	compactorSatefulset.Namespace = o.Namespace
 	compactorSatefulset.Replicas = 1
-	compactorSatefulset.SecurityContext = corev1.PodSecurityContext{}
 	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU)
 	compactorSatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
 	compactorSatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("1Gi")
@@ -447,7 +446,6 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.ImageTag = o.ThanosImageTag
 	storeStatefulSet.Namespace = o.Namespace
-	storeStatefulSet.SecurityContext = corev1.PodSecurityContext{}
 	storeStatefulSet.Replicas = 1
 	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU)
 	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("4")

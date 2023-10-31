@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/bwplotka/mimic"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
+	services "github.com/rhobs/configuration/services_go"
 )
 
 func main() {
@@ -15,6 +16,6 @@ func main() {
 	cfgobservatorium.GenerateRBAC(gen.With(".tmp", "tenants"))
 
 	// Generate the manifests for all observatorium instances.
-	// services.Generate(gen.With("services"))
+	services.Generate(gen.With("services"))
 
 }

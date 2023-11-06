@@ -788,7 +788,7 @@ objects:
           volumeMounts:
           - mountPath: /tmp/entrypoint
             name: hashmod-config-template
-          - mountPath: /etc/config
+          - mountPath: /tmp/config
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux

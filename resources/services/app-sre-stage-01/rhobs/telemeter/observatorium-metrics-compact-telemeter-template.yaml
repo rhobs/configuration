@@ -251,6 +251,7 @@ objects:
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
+        securityContext: {}
         serviceAccountName: observatorium-thanos-compact-telemeter
         terminationGracePeriodSeconds: 120
         volumes:

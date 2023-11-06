@@ -106,7 +106,7 @@ func makeJaegerAgent(collectorNamespace string) *k8sutil.Container {
 				},
 			},
 		},
-		LivenessProbe:  livelinesProbe,
-		ReadinessProbe: readinessProbe,
+		LivenessProbe:  &livelinesProbe,
+		ReadinessProbe: &readinessProbe,
 	}
 }

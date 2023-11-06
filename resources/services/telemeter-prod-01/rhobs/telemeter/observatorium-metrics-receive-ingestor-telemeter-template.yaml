@@ -270,6 +270,7 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
+        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-ingestor-telemeter
         terminationGracePeriodSeconds: 120
     updateStrategy: {}

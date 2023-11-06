@@ -113,9 +113,9 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	router.Namespace = o.Namespace
 	router.Replicas = 1
 	delete(router.PodResources.Limits, corev1.ResourceCPU)
-	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("15")
-	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("200Gi")
-	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("200Gi")
+	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("1")
+	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("5Gi")
+	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config
@@ -247,8 +247,8 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.VolumeType = "gp2"
 	ingestor.VolumeSize = "50Gi"
 	delete(ingestor.PodResources.Limits, corev1.ResourceCPU)
-	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("2")
-	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("24Gi")
+	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("1")
+	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("10Gi")
 	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
@@ -497,7 +497,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 			},
 			{
 				Name:      "hashmod-config",
-				MountPath: "/etc/config",
+				MountPath: "/tmp/config",
 			},
 		},
 	}
@@ -692,7 +692,7 @@ func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName strin
 	memcachedDeployment.CommonLabels[observatoriumInstanceLabel] = instanceName
 	memcachedDeployment.CommonLabels[k8sutil.ComponentLabel] = component
 	memcachedDeployment.Image = "quay.io/app-sre/memcached"
-	memcachedDeployment.ImageTag = "1.6.22"
+	memcachedDeployment.ImageTag = "1.5"
 	memcachedDeployment.Namespace = o.Namespace
 	memcachedDeployment.Replicas = 1
 	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)

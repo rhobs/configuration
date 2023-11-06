@@ -468,8 +468,8 @@ parameters:
 - name: REPLICAS
   value: "1"
 - name: CPU_REQUEST
-  value: "15"
+  value: "1"
 - name: MEMORY_LIMIT
-  value: 200Gi
+  value: 24Gi
 - name: MEMORY_REQUEST
-  value: 200Gi
+  value: 5Gi

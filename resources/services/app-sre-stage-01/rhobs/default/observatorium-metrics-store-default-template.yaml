@@ -13,7 +13,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
     name: observatorium-thanos-store-bucket-cache-memcached-default
     namespace: rhobs
@@ -35,7 +35,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: memcached
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: 1.6.22
+          app.kubernetes.io/version: "1.5"
           observatorium/tenant: default
         namespace: rhobs
       spec:
@@ -61,7 +61,7 @@ objects:
           - --max-item-size=5m
           - --memory-limit=2048
           - --verbose=true
-          image: quay.io/app-sre/memcached:1.6.22
+          image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
           livenessProbe: {}
           name: observatorium-thanos-store-bucket-cache-memcached-default
@@ -111,7 +111,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
     name: observatorium-thanos-store-bucket-cache-memcached-default
     namespace: rhobs
@@ -141,7 +141,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
     name: observatorium-thanos-store-bucket-cache-memcached-default
     namespace: rhobs
@@ -154,7 +154,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-store-bucket-cache-memcached-default
@@ -209,7 +209,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
     name: observatorium-thanos-store-index-cache-memcached-default
     namespace: rhobs
@@ -231,7 +231,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: memcached
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: 1.6.22
+          app.kubernetes.io/version: "1.5"
           observatorium/tenant: default
         namespace: rhobs
       spec:
@@ -257,7 +257,7 @@ objects:
           - --max-item-size=5m
           - --memory-limit=2048
           - --verbose=true
-          image: quay.io/app-sre/memcached:1.6.22
+          image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
           livenessProbe: {}
           name: observatorium-thanos-store-index-cache-memcached-default
@@ -307,7 +307,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
     name: observatorium-thanos-store-index-cache-memcached-default
     namespace: rhobs
@@ -337,7 +337,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
     name: observatorium-thanos-store-index-cache-memcached-default
     namespace: rhobs
@@ -350,7 +350,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.6.22
+      app.kubernetes.io/version: "1.5"
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-store-index-cache-memcached-default
@@ -788,7 +788,7 @@ objects:
           volumeMounts:
           - mountPath: /tmp/entrypoint
             name: hashmod-config-template
-          - mountPath: /etc/config
+          - mountPath: /tmp/config
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux

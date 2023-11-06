@@ -115,7 +115,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	delete(router.PodResources.Limits, corev1.ResourceCPU)
 	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("1")
 	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("5Gi")
-	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("5Gi")
+	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config
@@ -248,8 +248,8 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.VolumeSize = "50Gi"
 	delete(ingestor.PodResources.Limits, corev1.ResourceCPU)
 	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("1")
-	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("5Gi")
-	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("5Gi")
+	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("10Gi")
+	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
 	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}

@@ -465,6 +465,6 @@ parameters:
 - name: CPU_REQUEST
   value: "1"
 - name: MEMORY_LIMIT
-  value: 5Gi
+  value: 24Gi
 - name: MEMORY_REQUEST
   value: 5Gi

@@ -692,7 +692,7 @@ func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName strin
 	memcachedDeployment.CommonLabels[observatoriumInstanceLabel] = instanceName
 	memcachedDeployment.CommonLabels[k8sutil.ComponentLabel] = component
 	memcachedDeployment.Image = "quay.io/app-sre/memcached"
-	memcachedDeployment.ImageTag = "1.6.22"
+	memcachedDeployment.ImageTag = "1.5"
 	memcachedDeployment.Namespace = o.Namespace
 	memcachedDeployment.Replicas = 1
 	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)

@@ -8,17 +8,21 @@ import (
 
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/memcached"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache"
+	memcachedclientcfg "github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache/memcached"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/log"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
 	objstore3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	thanostime "github.com/observatorium/observatorium/configuration_go/schemas/thanos/time"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/units"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -66,6 +70,8 @@ type ObservatoriumMetricsInstance struct {
 	ObjStoreSecret                  string
 	Tenants                         []Tenants
 	StorePreManifestsHook           func(*store.StoreStatefulSet)
+	IndexCachePreManifestsHook      func(*memcached.MemcachedDeployment)
+	BucketCachePreManifestsHook     func(*memcached.MemcachedDeployment)
 	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
 	ReceiveIngestorPreManifestsHook func(*receive.Ingestor)
 }
@@ -512,6 +518,41 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 		},
 	}
 	storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
+	indexCacheName := fmt.Sprintf("observatorium-thanos-store-index-cache-memcached-%s", instanceCfg.InstanceName)
+	bucketCacheName := fmt.Sprintf("observatorium-thanos-store-bucket-cache-memcached-%s", instanceCfg.InstanceName)
+	storeStatefulSet.Options.IndexCacheConfig = cache.NewIndexCacheConfig(memcachedclientcfg.MemcachedClientConfig{
+		Addresses: []string{
+			fmt.Sprintf("dnssrv+_client._tcp.%s.observatorium-mst-stage.svc", indexCacheName),
+		},
+		DNSProviderUpdateInterval: 10 * time.Second,
+		MaxAsyncBufferSize:        2500000,
+		MaxAsyncConcurrency:       1000,
+		MaxGetMultiBatchSize:      100000,
+		MaxGetMultiConcurrency:    1000,
+		MaxIdleConnections:        2500,
+		MaxItemSize:               5 * 1024 * 1024,
+		Timeout:                   2 * time.Second,
+	})
+	memCache := cache.NewBucketCacheConfig(memcachedclientcfg.MemcachedClientConfig{
+		Addresses: []string{
+			fmt.Sprintf("dnssrv+_client._tcp.%s.observatorium-mst-stage.svc", indexCacheName),
+		},
+		DNSProviderUpdateInterval: 10 * time.Second,
+		MaxAsyncBufferSize:        2500000,
+		MaxAsyncConcurrency:       1000,
+		MaxGetMultiBatchSize:      100000,
+		MaxGetMultiConcurrency:    1000,
+		MaxIdleConnections:        2500,
+		MaxItemSize:               5 * 1024 * 1024,
+		Timeout:                   2 * time.Second,
+	})
+	memCache.MaxChunksGetRangeRequests = 3
+	memCache.MetafileMaxSize = 1 * units.MiB
+	memCache.MetafileExistsTTL = 2 * time.Hour
+	memCache.MetafileDoesntExistTTL = 15 * time.Minute
+	memCache.MetafileContentTTL = 24 * time.Hour
+
+	storeStatefulSet.Options.AddExtraOpts(fmt.Sprintf("--store.caching-bucket.config=%s", memCache.String()))
 
 	// Execute preManifestHook
 	if instanceCfg.StorePreManifestsHook != nil {
@@ -619,6 +660,16 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 		},
 	}
 
+	// Add index cache
+	for k, v := range o.makeStoreCache(indexCacheName, "store-index-cache", instanceCfg.InstanceName, instanceCfg.IndexCachePreManifestsHook) {
+		manifests["index-cache-"+k] = v
+	}
+
+	// Add bucket cache
+	for k, v := range o.makeStoreCache(bucketCacheName, "store-bucket-cache", instanceCfg.InstanceName, instanceCfg.BucketCachePreManifestsHook) {
+		manifests["bucket-cache-"+k] = v
+	}
+
 	// Wrap in template
 	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
 		Name: storeStatefulSet.Name,
@@ -632,6 +683,66 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 
 	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
 	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), storeStatefulSet.Name)
+}
+
+func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName string, preManifestHook func(*memcached.MemcachedDeployment)) k8sutil.ObjectMap {
+	// K8s config
+	memcachedDeployment := memcached.NewMemcachedStatefulSet()
+	memcachedDeployment.Name = name
+	memcachedDeployment.CommonLabels[observatoriumInstanceLabel] = instanceName
+	memcachedDeployment.CommonLabels[k8sutil.ComponentLabel] = component
+	memcachedDeployment.Image = "quay.io/app-sre/memcached"
+	memcachedDeployment.ImageTag = "1.6.22"
+	memcachedDeployment.Namespace = o.Namespace
+	memcachedDeployment.Replicas = 1
+	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)
+	memcachedDeployment.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
+	memcachedDeployment.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
+	memcachedDeployment.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")
+	memcachedDeployment.ExporterImage = "quay.io/prometheus/memcached-exporter"
+	memcachedDeployment.ExporterImageTag = "v0.13.0"
+
+	// Compactor config
+	memcachedDeployment.Options.MemoryLimit = 2048
+	memcachedDeployment.Options.MaxItemSize = "5m"
+	memcachedDeployment.Options.ConnLimit = 3072
+	memcachedDeployment.Options.Verbose = true
+
+	// Execute preManifestsHook
+	if preManifestHook != nil {
+		preManifestHook(memcachedDeployment)
+	}
+
+	// Post process
+	manifests := memcachedDeployment.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), memcachedDeployment.Namespace)
+
+	// Add pod disruption budget
+	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)
+	delete(labels, k8sutil.VersionLabel)
+	manifests["store-index-cache-pdb"] = &policyv1.PodDisruptionBudget{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "PodDisruptionBudget",
+			APIVersion: policyv1.SchemeGroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      memcachedDeployment.Name,
+			Namespace: o.Namespace,
+			Labels:    labels,
+		},
+		Spec: policyv1.PodDisruptionBudgetSpec{
+			MaxUnavailable: &intstr.IntOrString{
+
+				Type:   intstr.Int,
+				IntVal: 1,
+			},
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+		},
+	}
+
+	return manifests
 }
 
 type kubeObject interface {

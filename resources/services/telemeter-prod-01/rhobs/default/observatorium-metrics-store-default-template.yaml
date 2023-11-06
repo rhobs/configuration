@@ -4,6 +4,398 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-store-default
 objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+    name: observatorium-thanos-store-bucket-cache-memcached-default
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-bucket-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: store-bucket-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: 1.6.22
+          observatorium/tenant: default
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - memcached
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - --conn-limit=3072
+          - --max-item-size=5m
+          - --memory-limit=2048
+          - --verbose=true
+          image: quay.io/app-sre/memcached:1.6.22
+          imagePullPolicy: IfNotPresent
+          livenessProbe: {}
+          name: observatorium-thanos-store-bucket-cache-memcached-default
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          readinessProbe: {}
+          resources:
+            limits:
+              memory: 3Gi
+            requests:
+              cpu: 500m
+              memory: 2Gi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:0
+          - --web.listen-address=:9150
+          image: quay.io/prometheus/memcached-exporter:v0.13.0
+          imagePullPolicy: IfNotPresent
+          name: memcached-exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        securityContext:
+          fsGroup: 65534
+          runAsUser: 65534
+        serviceAccountName: observatorium-thanos-store-bucket-cache-memcached-default
+        terminationGracePeriodSeconds: 120
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+    name: observatorium-thanos-store-bucket-cache-memcached-default
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+    name: observatorium-thanos-store-bucket-cache-memcached-default
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+      prometheus: app-sre
+    name: observatorium-thanos-store-bucket-cache-memcached-default
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: metrics
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-bucket-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+    name: observatorium-thanos-store-bucket-cache-memcached-default
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-bucket-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-index-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+    name: observatorium-thanos-store-index-cache-memcached-default
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-index-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: store-index-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: 1.6.22
+          observatorium/tenant: default
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - memcached
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - --conn-limit=3072
+          - --max-item-size=5m
+          - --memory-limit=2048
+          - --verbose=true
+          image: quay.io/app-sre/memcached:1.6.22
+          imagePullPolicy: IfNotPresent
+          livenessProbe: {}
+          name: observatorium-thanos-store-index-cache-memcached-default
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          readinessProbe: {}
+          resources:
+            limits:
+              memory: 3Gi
+            requests:
+              cpu: 500m
+              memory: 2Gi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:0
+          - --web.listen-address=:9150
+          image: quay.io/prometheus/memcached-exporter:v0.13.0
+          imagePullPolicy: IfNotPresent
+          name: memcached-exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        securityContext:
+          fsGroup: 65534
+          runAsUser: 65534
+        serviceAccountName: observatorium-thanos-store-index-cache-memcached-default
+        terminationGracePeriodSeconds: 120
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-index-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+    name: observatorium-thanos-store-index-cache-memcached-default
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: store-index-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-index-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+    name: observatorium-thanos-store-index-cache-memcached-default
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-index-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 1.6.22
+      observatorium/tenant: default
+      prometheus: app-sre
+    name: observatorium-thanos-store-index-cache-memcached-default
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: metrics
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-index-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-index-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+    name: observatorium-thanos-store-index-cache-memcached-default
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-index-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
@@ -223,6 +615,19 @@ objects:
           - store
           - --data-dir=/var/thanos/store
           - --ignore-deletion-marks-delay=24h0m0s
+          - |
+            --index-cache.config=type: MEMCACHED
+            config:
+              addresses:
+              - dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached-default.observatorium-mst-stage.svc
+              timeout: 2s
+              max_idle_connections: 2500
+              max_async_concurrency: 1000
+              max_async_buffer_size: 2500000
+              max_get_multi_concurrency: 1000
+              max_item_size: 5242880
+              max_get_multi_batch_size: 100000
+              dns_provider_update_interval: 10s
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
           - --max-time=-22h0m0s
@@ -235,6 +640,24 @@ objects:
               service_name: thanos-store
               sampler_type: ratelimiting
               sampler_param: 2
+          - |
+            --store.caching-bucket.config=type: MEMCACHED
+            config:
+              addresses:
+              - dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached-default.observatorium-mst-stage.svc
+              timeout: 2s
+              max_idle_connections: 2500
+              max_async_concurrency: 1000
+              max_async_buffer_size: 2500000
+              max_get_multi_concurrency: 1000
+              max_item_size: 5242880
+              max_get_multi_batch_size: 100000
+              dns_provider_update_interval: 10s
+            max_chunks_get_range_requests: 3
+            metafile_max_size: 1048576
+            metafile_exists_ttl: 2h0m0s
+            metafile_doesnt_exist_ttl: 15m0s
+            metafile_content_ttl: 24h0m0s
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
@@ -297,10 +720,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${MEMORY_REQUEST}
             requests:
               cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              memory: 20Gi
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/store
@@ -369,6 +792,7 @@ objects:
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
+        securityContext: {}
         serviceAccountName: observatorium-thanos-store-default
         terminationGracePeriodSeconds: 120
         volumes:

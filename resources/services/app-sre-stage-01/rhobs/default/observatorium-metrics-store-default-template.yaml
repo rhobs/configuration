@@ -376,8 +376,8 @@ objects:
           name: hashmod-config
         - configMap:
             defaultMode: 511
-            name: thanos-store
-          name: hashmod-config-template-default
+            name: hashmod-config-template-default
+          name: hashmod-config-template
     updateStrategy: {}
     volumeClaimTemplates:
     - metadata:

@@ -251,7 +251,6 @@ objects:
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-compact-rhel
         terminationGracePeriodSeconds: 120
         volumes:

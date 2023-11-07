@@ -67,13 +67,11 @@ objects:
                 fieldPath: metadata.namespace
           image: quay.io/observatorium/thanos-receive-controller:main-2023-09-22-f168dd7
           imagePullPolicy: IfNotPresent
-          livenessProbe: {}
           name: observatorium-thanos-receive-controller
           ports:
           - containerPort: 8080
             name: http
             protocol: TCP
-          readinessProbe: {}
           resources:
             limits:
               cpu: 24Mi
@@ -84,7 +82,6 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-controller
         terminationGracePeriodSeconds: 0
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -139,31 +136,13 @@ objects:
     name: observatorium-thanos-receive-controller
     namespace: rhobs
   roleRef:
-    apiGroup: rbac.authorization.k8s.io/v1
+    apiGroup: rbac.authorization.k8s.io
     kind: Role
     name: observatorium-thanos-receive-controller
   subjects:
   - kind: ServiceAccount
     name: observatorium-thanos-receive-controller
     namespace: rhobs
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: kubernetes-controller
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-controller
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-09-22-f168dd7
-    name: observatorium-thanos-receive-controller
-    namespace: rhobs
-  spec:
-    selector:
-      app.kubernetes.io/component: kubernetes-controller
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-controller
-      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -358,7 +337,6 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-receive-router
         terminationGracePeriodSeconds: 120
         volumes:

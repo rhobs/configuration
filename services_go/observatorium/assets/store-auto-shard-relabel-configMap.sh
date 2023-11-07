@@ -5,7 +5,7 @@
 export ORDINAL_INDEX=${HOSTNAME##*-}
 # This parameter expansion removes all characters after the last hyphen, capturing only the statefulset name.
 export STATEFULSET_NAME="${HOSTNAME%-*}"
-export THANOS_STORE_REPLICAS=$(kubectl get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE} -o=jsonpath='{.status.replicas}')
+export THANOS_STORE_REPLICAS=$(oc get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE} -o=jsonpath='{.status.replicas}')
 
 # Logging parameters
 echo "generating store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS_STORE_REPLICAS=${STATEFULSET_NAME} HOSTNAME=${HOSTNAME} NAMESPACE=${NAMESPACE} THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS}"

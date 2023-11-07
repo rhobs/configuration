@@ -475,7 +475,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	}
 	initContainer := corev1.Container{
 		Name:            "init-hashmod-file",
-		Image:           "quay.io/app-sre/ubi8-ubi",
+		Image:           "quay.io/openshift/origin-cli:4.15",
 		ImagePullPolicy: corev1.PullIfNotPresent,
 		Args: []string{
 			"/tmp/entrypoint/entrypoint.sh",

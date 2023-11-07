@@ -63,13 +63,11 @@ objects:
           - --verbose=true
           image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
-          livenessProbe: {}
           name: observatorium-thanos-store-bucket-cache-memcached-telemeter
           ports:
           - containerPort: 11211
             name: client
             protocol: TCP
-          readinessProbe: {}
           resources:
             limits:
               memory: 3Gi
@@ -259,13 +257,11 @@ objects:
           - --verbose=true
           image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
-          livenessProbe: {}
           name: observatorium-thanos-store-index-cache-memcached-telemeter
           ports:
           - containerPort: 11211
             name: client
             protocol: TCP
-          readinessProbe: {}
           resources:
             limits:
               memory: 3Gi
@@ -443,7 +439,7 @@ objects:
       all characters until the last hyphen, capturing only the ordinal.\nexport ORDINAL_INDEX=${HOSTNAME##*-}\n#
       This parameter expansion removes all characters after the last hyphen, capturing
       only the statefulset name.\nexport STATEFULSET_NAME=\"${HOSTNAME%-*}\"\nexport
-      THANOS_STORE_REPLICAS=$(kubectl get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE}
+      THANOS_STORE_REPLICAS=$(oc get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE}
       -o=jsonpath='{.status.replicas}')\n\n# Logging parameters\necho \"generating
       store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS_STORE_REPLICAS=${STATEFULSET_NAME}
       HOSTNAME=${HOSTNAME} NAMESPACE=${NAMESPACE} THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS}\"\n\ncat
@@ -781,7 +777,7 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          image: quay.io/app-sre/ubi8-ubi
+          image: registry.redhat.io/openshift4/ose-cli:v4.12
           imagePullPolicy: IfNotPresent
           name: init-hashmod-file
           resources: {}
@@ -792,7 +788,6 @@ objects:
             name: hashmod-config
         nodeSelector:
           kubernetes.io/os: linux
-        securityContext: {}
         serviceAccountName: observatorium-thanos-store-telemeter
         terminationGracePeriodSeconds: 120
         volumes:

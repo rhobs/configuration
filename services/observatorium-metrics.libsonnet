@@ -254,14 +254,13 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         type: 'memcached',
         config+: memcachedDefaults {
           addresses: ['dnssrv+_client._tcp.%s.%s.svc' % [thanos.storeIndexCache.service.metadata.name, thanos.storeIndexCache.service.metadata.namespace]],
-          // Default Memcached Max Connection Limit is '3072', this is related to concurrency.
-          max_idle_connections: 2500,  // default: 100 - For better performances, this should be set to a number higher than your peak parallel requests.
-          timeout: '2s',  // default: 500ms
-          max_async_buffer_size: 2500000,  // default: 10_000
-          max_async_concurrency: 1000,  // default: 20
-          max_get_multi_batch_size: 100000,  // default: 0 - No batching.
-          max_get_multi_concurrency: 1000,  // default: 100
-          max_item_size: '5MiB',  // default: 1Mb
+          max_idle_connections: '${{INDEX_CACHE_MAX_IDLE_CONNECTIONS}}',
+          timeout: '${INDEX_CACHE_TIMEOUT_SECONDS}',
+          max_async_buffer_size: '${{INDEX_CACHE_MAX_ASYNC_BUFFER_SIZE}}',
+          max_async_concurrency: '${{INDEX_CACHE_MAX_ASYNC_CONCURRENCY}}',
+          max_get_multi_batch_size: '${{INDEX_CACHE_MAX_GET_MULTI_BATCH_SIZE}}',
+          max_get_multi_concurrency: '${{INDEX_CACHE_MAX_GET_MULTI_CONCURRENCY}}',
+          max_item_size: '${INDEX_CACHE_MAX_ITEM_SIZE}',
         },
       },
       bucketCache: {

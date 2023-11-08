@@ -166,5 +166,12 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_STORE_MAX_TIME', value: '9999-12-31T23:59:59Z' },
     { name: 'CONFIGMAP_RELOADER_IMAGE', value: 'quay.io/openshift/origin-configmap-reloader' },
     { name: 'CONFIGMAP_RELOADER_IMAGE_TAG', value: '4.5.0' },
+    { name: 'INDEX_CACHE_MAX_IDLE_CONNECTIONS', value: '2500' },
+    { name: 'INDEX_CACHE_TIMEOUT_SECONDS', value: '2s' },
+    { name: 'INDEX_CACHE_MAX_ASYNC_BUFFER_SIZE', value: '2500000' },
+    { name: 'INDEX_CACHE_MAX_ASYNC_CONCURRENCY', value: '1000' },
+    { name: 'INDEX_CACHE_MAX_GET_MULTI_BATCH_SIZE', value: '100000' },
+    { name: 'INDEX_CACHE_MAX_GET_MULTI_CONCURRENCY', value: '1000' },
+    { name: 'INDEX_CACHE_MAX_ITEM_SIZE', value: '5MiB' },
   ],
 }

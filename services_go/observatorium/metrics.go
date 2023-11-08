@@ -129,6 +129,12 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 			ServiceName:  "thanos-receive-router",
 		},
 	}
+	router.Options.Label = []receive.Label{
+		{
+			Key:   "receive",
+			Value: "\"true\"",
+		},
+	}
 
 	receiveLimits := receive.NewReceiveLimitsConfig()
 	receiveLimits.WriteLimits.DefaultLimits = o.ReceiveLimitsDefault
@@ -253,6 +259,7 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
+	ingestor.Env = append(ingestor.Env, k8sutil.NewEnvFromField("POD_NAME", "metadata.name"))
 	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config
@@ -264,6 +271,12 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 			SamplerParam: 2,
 			SamplerType:  jaeger.SamplerTypeRateLimiting,
 			ServiceName:  "thanos-receive-router",
+		},
+	}
+	ingestor.Options.Label = []receive.Label{
+		{
+			Key:   "replica",
+			Value: "\"$(POD_NAME)\"",
 		},
 	}
 
@@ -757,13 +770,21 @@ type kubeObject interface {
 // getObject returns the first object of type T from the given map of kubernetes objects.
 // This helper can be used for doing post processing on the objects.
 func getObject[T kubeObject](manifests k8sutil.ObjectMap) T {
+	var ret T
 	for _, obj := range manifests {
 		if service, ok := obj.(T); ok {
-			return service
+			if ret != nil {
+				panic(fmt.Sprintf("found multiple objects of type %T", *new(T)))
+			}
+			ret = service
 		}
 	}
 
-	panic(fmt.Sprintf("could not find object of type %T", *new(T)))
+	if ret == nil {
+		panic(fmt.Sprintf("could not find object of type %T", *new(T)))
+	}
+
+	return ret
 }
 
 // postProcessServiceMonitor updates the service monitor to work with the app-sre prometheus.

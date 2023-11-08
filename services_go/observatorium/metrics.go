@@ -717,6 +717,12 @@ func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName strin
 	// Post process
 	manifests := memcachedDeployment.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), memcachedDeployment.Namespace)
+	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
+	serviceAccount.ImagePullSecrets = []corev1.LocalObjectReference{
+		{
+			Name: "quay.io",
+		},
+	}
 
 	// Add pod disruption budget
 	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)

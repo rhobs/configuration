@@ -128,6 +128,8 @@ objects:
       app.kubernetes.io/part-of: observatorium
       observatorium/tenant: telemeter
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     creationTimestamp: null
@@ -319,6 +321,8 @@ objects:
       app.kubernetes.io/part-of: observatorium
       observatorium/tenant: telemeter
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     creationTimestamp: null

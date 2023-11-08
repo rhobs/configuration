@@ -696,6 +696,7 @@ func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName strin
 	memcachedDeployment.Namespace = o.Namespace
 	memcachedDeployment.Replicas = 1
 	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)
+	memcachedDeployment.SecurityContext = nil
 	memcachedDeployment.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
 	memcachedDeployment.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
 	memcachedDeployment.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")

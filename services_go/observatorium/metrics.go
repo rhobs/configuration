@@ -220,6 +220,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	controller.Options.ConfigMapName = baseHashringCm
 	controller.Options.ConfigMapGeneratedName = generatedHashringCm
 	controller.Options.Namespace = o.Namespace
+	controller.Options.FileName = "hashring.json"
 
 	controllerManifests := controller.Manifests()
 	for k, v := range controllerManifests {

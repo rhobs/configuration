@@ -213,7 +213,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 		baseHashring = append(baseHashring, newHashring)
 	}
 	controller.ConfigMaps[baseHashringCm] = map[string]string{
-		"hashrings.json": baseHashring.String(),
+		"hashring.json": baseHashring.String(),
 	}
 
 	// Controller config

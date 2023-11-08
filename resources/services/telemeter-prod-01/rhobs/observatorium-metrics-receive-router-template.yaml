@@ -373,6 +373,8 @@ objects:
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     creationTimestamp: null

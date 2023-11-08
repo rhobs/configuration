@@ -158,6 +158,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	baseHashringCm := "thanos-receive-hashring"
 	manifests := router.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), router.Namespace)
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
 
 	// Add pod disruption budget
 	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)
@@ -277,6 +278,7 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	statefulSetLabels := getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels
 	statefulSetLabels[ingestorControllerLabel] = ingestorControllerLabelValue
 	statefulSetLabels[ingestorControllerLabelHashring] = instanceCfg.InstanceName
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
 
 	// Add pod disruption budget
 	labels := maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels)
@@ -562,6 +564,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	// Post process
 	manifests := storeStatefulSet.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), storeStatefulSet.Namespace)
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
 	statefulset := getObject[*appsv1.StatefulSet](manifests)
 	defaultMode := int32(0777)
 	// Add volumes and volume mounts for the initContainer
@@ -717,12 +720,7 @@ func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName strin
 	// Post process
 	manifests := memcachedDeployment.Manifests()
 	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), memcachedDeployment.Namespace)
-	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
-	serviceAccount.ImagePullSecrets = []corev1.LocalObjectReference{
-		{
-			Name: "quay.io",
-		},
-	}
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
 
 	// Add pod disruption budget
 	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)
@@ -848,4 +846,10 @@ func defaultTemplateParams(cfg defaultTemplateParamsConfig) []templatev1.Paramet
 			Value: cfg.MemoryRequest.String(),
 		},
 	}
+}
+
+func addQuayPullSecret(sa *corev1.ServiceAccount) {
+	sa.ImagePullSecrets = append(sa.ImagePullSecrets, corev1.LocalObjectReference{
+		Name: "quay.io",
+	})
 }

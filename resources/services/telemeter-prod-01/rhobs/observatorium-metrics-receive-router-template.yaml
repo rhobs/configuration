@@ -54,7 +54,7 @@ objects:
         - args:
           - --configmap-name=thanos-receive-hashring
           - --configmap-generated-name=thanos-receive-hashring-generated
-          - --file-name=hashrings.json
+          - --file-name=hashring.json
           - --namespace=rhobs
           env:
           - name: NAMESPACE

@@ -507,6 +507,8 @@ objects:
       app.kubernetes.io/part-of: observatorium
       observatorium/tenant: rhel
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     creationTimestamp: null

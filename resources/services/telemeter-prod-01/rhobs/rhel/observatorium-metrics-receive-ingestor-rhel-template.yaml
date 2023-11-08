@@ -144,8 +144,7 @@ objects:
           - receive
           - --grpc-address=0.0.0.0:10901
           - --http-address=0.0.0.0:10902
-          - --label=receive=true
-          - --label=receive-replica=$(NAME)
+          - --label=replica="$(POD_NAME)"
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
@@ -190,6 +189,10 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
           livenessProbe:

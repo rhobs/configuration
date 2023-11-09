@@ -24,6 +24,7 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
+	"github.com/pelletier/go-toml/query"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
@@ -55,10 +56,11 @@ type ObservatoriumMetrics struct {
 	Namespace                     string
 	ThanosImageTag                string
 	Instances                     []*ObservatoriumMetricsInstance
-	ReceiveRouterPreManifestsHook func(*receive.Router)
 	ReceiveLimitsGlobal           receive.GlobalLimitsConfig
 	ReceiveLimitsDefault          receive.DefaultLimitsConfig
 	ReceiveControllerImageTag     string
+	ReceiveRouterPreManifestsHook func(*receive.Router)
+	QueryPreManifestsHook         func(*query.Query)
 }
 
 // ObservatoriumMetricsInstance contains the configuration for a metrics instance in an observatorium instance.
@@ -73,6 +75,7 @@ type ObservatoriumMetricsInstance struct {
 	BucketCachePreManifestsHook     func(*memcached.MemcachedDeployment)
 	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
 	ReceiveIngestorPreManifestsHook func(*receive.Ingestor)
+	QueryRulePreManifestsHook       func(*query.Query)
 }
 
 // Tenants contains the configuration for a tenant in a metrics instance.

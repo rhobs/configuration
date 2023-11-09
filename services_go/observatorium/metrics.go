@@ -538,7 +538,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	bucketCacheName := fmt.Sprintf("observatorium-thanos-store-bucket-cache-memcached-%s", instanceCfg.InstanceName)
 	storeStatefulSet.Options.IndexCacheConfig = cache.NewIndexCacheConfig(memcachedclientcfg.MemcachedClientConfig{
 		Addresses: []string{
-			fmt.Sprintf("dnssrv+_client._tcp.%s.observatorium-mst-stage.svc", indexCacheName),
+			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", indexCacheName, o.Namespace),
 		},
 		DNSProviderUpdateInterval: 10 * time.Second,
 		MaxAsyncBufferSize:        2500000,
@@ -551,7 +551,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	})
 	memCache := cache.NewBucketCacheConfig(memcachedclientcfg.MemcachedClientConfig{
 		Addresses: []string{
-			fmt.Sprintf("dnssrv+_client._tcp.%s.observatorium-mst-stage.svc", indexCacheName),
+			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", indexCacheName, o.Namespace),
 		},
 		DNSProviderUpdateInterval: 10 * time.Second,
 		MaxAsyncBufferSize:        2500000,

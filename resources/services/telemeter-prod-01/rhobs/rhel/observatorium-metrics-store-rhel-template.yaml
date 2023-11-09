@@ -628,7 +628,7 @@ objects:
           - --log.level=${LOG_LEVEL}
           - --max-time=-22h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
-          - --selector.relabel-config-file=/tmp/config/hashmod-config.yaml
+          - --selector.relabel-config-file=/etc/thanos/hashmod/hashmod-config.yaml
           - |
             --tracing.config=type: JAEGER
             config:
@@ -724,7 +724,7 @@ objects:
           volumeMounts:
           - mountPath: /var/thanos/store
             name: data
-          - mountPath: /etc/config
+          - mountPath: /etc/thanos/hashmod
             name: hashmod-config
         - args:
           - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250

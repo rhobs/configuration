@@ -488,6 +488,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	storeStatefulSet.ConfigMaps[hasmodCMName] = map[string]string{
 		"entrypoint.sh": storeAutoShardRelabelConfigMap,
 	}
+	hashmodVolumeName := "hashmod-config"
 	initContainer := corev1.Container{
 		Name:            "init-hashmod-file",
 		Image:           "quay.io/openshift/origin-cli:4.15",
@@ -511,7 +512,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 				MountPath: "/tmp/entrypoint",
 			},
 			{
-				Name:      "hashmod-config",
+				Name:      hashmodVolumeName,
 				MountPath: "/tmp/config",
 			},
 		},
@@ -523,7 +524,8 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	storeStatefulSet.Options.IgnoreDeletionMarksDelay = 24 * time.Hour
 	maxTimeDur := time.Duration(-22) * time.Hour
 	storeStatefulSet.Options.MaxTime = &thanostime.TimeOrDurationValue{Dur: &maxTimeDur}
-	storeStatefulSet.Options.SelectorRelabelConfigFile = "/tmp/config/hashmod-config.yaml"
+	hasmodConfigPath := "/etc/thanos/hashmod"
+	storeStatefulSet.Options.SelectorRelabelConfigFile = fmt.Sprintf("%s/hashmod-config.yaml", hasmodConfigPath)
 	storeStatefulSet.Options.TracingConfig = &trclient.TracingConfig{
 		Type: trclient.Jaeger,
 		Config: jaeger.Config{
@@ -583,7 +585,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	defaultMode := int32(0777)
 	// Add volumes and volume mounts for the initContainer
 	statefulset.Spec.Template.Spec.Volumes = append(statefulset.Spec.Template.Spec.Volumes, corev1.Volume{
-		Name: "hashmod-config",
+		Name: hashmodVolumeName,
 		VolumeSource: corev1.VolumeSource{
 			EmptyDir: &corev1.EmptyDirVolumeSource{},
 		},
@@ -601,8 +603,8 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	statefulset.Spec.Template.Spec.InitContainers = append(statefulset.Spec.Template.Spec.InitContainers, initContainer)
 	mainContainer := &statefulset.Spec.Template.Spec.Containers[0]
 	mainContainer.VolumeMounts = append(mainContainer.VolumeMounts, corev1.VolumeMount{
-		Name:      "hashmod-config",
-		MountPath: "/etc/config",
+		Name:      hashmodVolumeName,
+		MountPath: hasmodConfigPath,
 	})
 
 	// add rbac for reading the number of replicas from the statefulset in the initContainer

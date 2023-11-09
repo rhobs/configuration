@@ -22,7 +22,6 @@ import (
 	thanostime "github.com/observatorium/observatorium/configuration_go/schemas/thanos/time"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
-	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/units"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -547,7 +546,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 		MaxGetMultiBatchSize:      100000,
 		MaxGetMultiConcurrency:    1000,
 		MaxIdleConnections:        2500,
-		MaxItemSize:               5 * 1024 * 1024,
+		MaxItemSize:               "5MiB",
 		Timeout:                   2 * time.Second,
 	})
 	memCache := cache.NewBucketCacheConfig(memcachedclientcfg.MemcachedClientConfig{
@@ -560,11 +559,11 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 		MaxGetMultiBatchSize:      100000,
 		MaxGetMultiConcurrency:    1000,
 		MaxIdleConnections:        2500,
-		MaxItemSize:               5 * 1024 * 1024,
+		MaxItemSize:               "1MiB",
 		Timeout:                   2 * time.Second,
 	})
 	memCache.MaxChunksGetRangeRequests = 3
-	memCache.MetafileMaxSize = 1 * units.MiB
+	memCache.MetafileMaxSize = "1MiB"
 	memCache.MetafileExistsTTL = 2 * time.Hour
 	memCache.MetafileDoesntExistTTL = 15 * time.Minute
 	memCache.MetafileContentTTL = 24 * time.Hour

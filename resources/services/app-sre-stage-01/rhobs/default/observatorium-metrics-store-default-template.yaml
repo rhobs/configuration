@@ -621,7 +621,7 @@ objects:
               max_async_concurrency: 1000
               max_async_buffer_size: 2500000
               max_get_multi_concurrency: 1000
-              max_item_size: 5242880
+              max_item_size: 5MiB
               max_get_multi_batch_size: 100000
               dns_provider_update_interval: 10s
           - --log.format=logfmt
@@ -646,11 +646,11 @@ objects:
               max_async_concurrency: 1000
               max_async_buffer_size: 2500000
               max_get_multi_concurrency: 1000
-              max_item_size: 5242880
+              max_item_size: 1MiB
               max_get_multi_batch_size: 100000
               dns_provider_update_interval: 10s
             max_chunks_get_range_requests: 3
-            metafile_max_size: 1048576
+            metafile_max_size: 1MiB
             metafile_exists_ttl: 2h0m0s
             metafile_doesnt_exist_ttl: 15m0s
             metafile_content_ttl: 24h0m0s

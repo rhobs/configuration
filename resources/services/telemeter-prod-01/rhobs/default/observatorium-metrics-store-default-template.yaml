@@ -629,13 +629,13 @@ objects:
           - --max-time=-22h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --selector.relabel-config-file=/tmp/config/hashmod-config.yaml
-          - --store.enable-index-header-lazy-reader=true
           - |
             --tracing.config=type: JAEGER
             config:
               service_name: thanos-store
               sampler_type: ratelimiting
               sampler_param: 2
+          - --store.enable-index-header-lazy-reader
           - |
             --store.caching-bucket.config=type: MEMCACHED
             config:

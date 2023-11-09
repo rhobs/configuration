@@ -441,9 +441,9 @@ objects:
       -o=jsonpath='{.status.replicas}')\n\n# Logging parameters\necho \"generating
       store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS_STORE_REPLICAS=${STATEFULSET_NAME}
       HOSTNAME=${HOSTNAME} NAMESPACE=${NAMESPACE} THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS}\"\n\ncat
-      <<EOF >/tmp/config/hashmod-config.yaml\n- action: hashmod\n    source_labels:
-      [\"__block_id\"]\n    target_label: shard\n    modulus: ${THANOS_STORE_REPLICAS}\n-
-      action: keep\n    source_labels: [\"shard\"]\n    regex: ${ORDINAL_INDEX}\nEOF\n"
+      <<EOF >/tmp/config/hashmod-config.yaml\n- action: hashmod\n  source_labels:\n
+      \   - __block_id\n  target_label: shard\n  modulus: ${THANOS_STORE_REPLICAS}\n-
+      action: keep\n  source_labels:\n    - shard\n  regex: ${ORDINAL_INDEX}\nEOF\n"
   kind: ConfigMap
   metadata:
     creationTimestamp: null

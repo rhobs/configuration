@@ -615,7 +615,7 @@ objects:
             --index-cache.config=type: MEMCACHED
             config:
               addresses:
-              - dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached-default.observatorium-mst-stage.svc
+              - dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached-default.rhobs.svc
               timeout: 2s
               max_idle_connections: 2500
               max_async_concurrency: 1000
@@ -640,7 +640,7 @@ objects:
             --store.caching-bucket.config=type: MEMCACHED
             config:
               addresses:
-              - dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached-default.observatorium-mst-stage.svc
+              - dnssrv+_client._tcp.observatorium-thanos-store-index-cache-memcached-default.rhobs.svc
               timeout: 2s
               max_idle_connections: 2500
               max_async_concurrency: 1000

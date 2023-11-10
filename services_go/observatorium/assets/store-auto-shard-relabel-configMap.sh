@@ -12,10 +12,12 @@ echo "generating store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS
 
 cat <<EOF >/tmp/config/hashmod-config.yaml
 - action: hashmod
-    source_labels: ["__block_id"]
-    target_label: shard
-    modulus: ${THANOS_STORE_REPLICAS}
+  source_labels:
+    - __block_id
+  target_label: shard
+  modulus: ${THANOS_STORE_REPLICAS}
 - action: keep
-    source_labels: ["shard"]
-    regex: ${ORDINAL_INDEX}
+  source_labels:
+    - shard
+  regex: ${ORDINAL_INDEX}
 EOF

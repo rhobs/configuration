@@ -151,6 +151,15 @@ func GenerateRBAC(gen *mimic.Generator) {
 		envs:    []env{stagingEnv, productionEnv},
 	})
 
+	// SD TCS (App-interface progressive delivery feature)
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "observatorium-sdtcs",
+		tenant:  telemeterTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv, productionEnv},
+	})
+
 	// Subwatch
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-subwatch",

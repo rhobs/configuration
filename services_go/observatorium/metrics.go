@@ -222,7 +222,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	controller.Options.ConfigMapName = baseHashringCm
 	controller.Options.ConfigMapGeneratedName = generatedHashringCm
 	controller.Options.Namespace = o.Namespace
-	controller.Options.FileName = "hashring.json"
+	controller.Options.FileName = "hashrings.json"
 
 	controllerManifests := controller.Manifests()
 	for k, v := range controllerManifests {
@@ -262,7 +262,6 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
-	ingestor.Env = append(ingestor.Env, k8sutil.NewEnvFromField("POD_NAME", "metadata.name"))
 	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config

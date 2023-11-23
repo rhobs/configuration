@@ -1253,8 +1253,8 @@ github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG
 github.com/syndtr/gocapability v0.0.0-20180916011248-d98352740cb2/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
-github.com/thibaultmg/observatorium v0.0.0-20231109122152-cc47e5be397b h1:HDy/lsnObTgZgeNnq/ZUwQ+5unJdR4gvd3JOKMarQKM=
-github.com/thibaultmg/observatorium v0.0.0-20231109122152-cc47e5be397b/go.mod h1:P+7t9O8AitkuZjUhXC4LHw4iwAzTpIrs0tHz8X3xTvM=
+github.com/thibaultmg/observatorium v0.0.0-20231123172357-0705fe74fcd5 h1:EQ3Qb3hsVxrhlWKl3DWettTcHwKGbGyJp4t6j0q4W3E=
+github.com/thibaultmg/observatorium v0.0.0-20231123172357-0705fe74fcd5/go.mod h1:P+7t9O8AitkuZjUhXC4LHw4iwAzTpIrs0tHz8X3xTvM=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tinylib/msgp v1.0.2/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=
 github.com/tinylib/msgp v1.1.0/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=

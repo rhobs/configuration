@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"maps"
+	"sort"
 	"time"
 
 	"github.com/bwplotka/mimic"
@@ -110,79 +111,80 @@ func (o ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 }
 
 func (o ObservatoriumMetrics) makeQueryConfig(instanceName string, preManifestHook func(*query.QueryDeployment)) encoding.Encoder {
-	queryRule := query.NewQuery()
+	queryDplt := query.NewQuery()
 
 	// K8s config
 	if instanceName != "" {
-		queryRule.Name = fmt.Sprintf("%s-rule-%s", queryRule.Name, instanceName)
-		queryRule.CommonLabels[k8sutil.NameLabel] = queryRule.CommonLabels[k8sutil.NameLabel] + "-rule"
+		queryDplt.Name = fmt.Sprintf("%s-rule-%s", queryDplt.Name, instanceName)
+		queryDplt.CommonLabels[k8sutil.NameLabel] = queryDplt.CommonLabels[k8sutil.NameLabel] + "-rule"
 		// Regenerate the affinity to update the name selector
-		queryRule.Affinity = k8sutil.NewAntiAffinity(nil, map[string]string{
-			k8sutil.NameLabel:     queryRule.CommonLabels[k8sutil.NameLabel],
-			k8sutil.InstanceLabel: queryRule.CommonLabels[k8sutil.InstanceLabel],
+		queryDplt.Affinity = k8sutil.NewAntiAffinity(nil, map[string]string{
+			k8sutil.NameLabel:     queryDplt.CommonLabels[k8sutil.NameLabel],
+			k8sutil.InstanceLabel: queryDplt.CommonLabels[k8sutil.InstanceLabel],
 		})
 	}
-	queryRule.Image = thanosImage
-	queryRule.ImageTag = o.ThanosImageTag
-	queryRule.Namespace = o.Namespace
-	queryRule.Replicas = 1
-	delete(queryRule.PodResources.Limits, corev1.ResourceCPU)
-	queryRule.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("250m")
-	queryRule.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
-	queryRule.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("8Gi")
+	queryDplt.Image = thanosImage
+	queryDplt.ImageTag = o.ThanosImageTag
+	queryDplt.Namespace = o.Namespace
+	queryDplt.Replicas = 1
+	delete(queryDplt.PodResources.Limits, corev1.ResourceCPU)
+	queryDplt.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("250m")
+	queryDplt.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
+	queryDplt.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("8Gi")
 	var tlsSecret string
 	if instanceName != "" {
 		tlsSecret = "query-rule-tls-" + instanceName
 	} else {
 		tlsSecret = "query-adhoc-tls"
 	}
-	queryRule.Sidecars = []k8sutil.ContainerProvider{
+	queryDplt.Sidecars = []k8sutil.ContainerProvider{
 		makeJaegerAgent("observatorium-tools"),
-		makeOauthProxy(10902, o.Namespace, queryRule.Name, tlsSecret),
+		makeOauthProxy(10902, o.Namespace, queryDplt.Name, tlsSecret),
 	}
 
 	// Query config
-	queryRule.Options.LogLevel = log.LogLevelWarn
-	queryRule.Options.LogFormat = log.LogFormatLogfmt
-	queryRule.Options.QueryReplicaLabel = []string{"replica", "prometheus_replica", "rule_replica"}
+	queryDplt.Options.LogLevel = log.LogLevelWarn
+	queryDplt.Options.LogFormat = log.LogFormatLogfmt
+	queryDplt.Options.QueryReplicaLabel = []string{"replica", "prometheus_replica", "rule_replica"}
 	for instance, stores := range o.storesRegister {
 		if instance == instanceName || instanceName == "" {
-			queryRule.Options.Endpoint = append(queryRule.Options.Endpoint, stores...)
+			queryDplt.Options.Endpoint = append(queryDplt.Options.Endpoint, stores...)
 		}
 	}
-	queryRule.Options.QueryTimeout = model.Duration(15 * time.Minute)
-	queryRule.Options.QueryLookbackDelta = model.Duration(15 * time.Minute)
-	queryRule.Options.WebPrefixHeader = "X-Forwarded-Prefix"
-	queryRule.Options.TracingConfig = &trclient.TracingConfig{
+	sort.Strings(queryDplt.Options.Endpoint) // sort to make the output deterministic and avoid noisy diffs
+	queryDplt.Options.QueryTimeout = model.Duration(15 * time.Minute)
+	queryDplt.Options.QueryLookbackDelta = model.Duration(15 * time.Minute)
+	queryDplt.Options.WebPrefixHeader = "X-Forwarded-Prefix"
+	queryDplt.Options.TracingConfig = &trclient.TracingConfig{
 		Type: trclient.Jaeger,
 		Config: jaeger.Config{
 			SamplerParam: 2,
 			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  queryRule.CommonLabels[k8sutil.NameLabel],
+			ServiceName:  queryDplt.CommonLabels[k8sutil.NameLabel],
 		},
 	}
-	queryRule.Options.QueryAutoDownsampling = true
-	queryRule.Options.QueryPromQLEngine = "prometheus"
-	queryRule.Options.QueryMaxConcurrent = 10
+	queryDplt.Options.QueryAutoDownsampling = true
+	queryDplt.Options.QueryPromQLEngine = "prometheus"
+	queryDplt.Options.QueryMaxConcurrent = 10
 
 	// Execute preManifestsHook
 	if preManifestHook != nil {
-		preManifestHook(queryRule)
+		preManifestHook(queryDplt)
 	}
 
 	// Post process
-	manifests := queryRule.Manifests()
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryRule.Namespace)
+	manifests := queryDplt.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryDplt.Namespace)
 	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
 	service := getObject[*corev1.Service](manifests)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryRule.Namespace)
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryDplt.Namespace)
 	// Add annotations for openshift oauth so that the route to access the query ui works
 	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
 	if serviceAccount.Annotations == nil {
 		serviceAccount.Annotations = map[string]string{}
 	}
-	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryRule.Name)
+	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryDplt.Name)
 
 	// Add route for oauth-proxy
 	manifests["oauth-proxy-route"] = &routev1.Route{
@@ -191,7 +193,7 @@ func (o ObservatoriumMetrics) makeQueryConfig(instanceName string, preManifestHo
 			APIVersion: routev1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      queryRule.Name,
+			Name:      queryDplt.Name,
 			Namespace: o.Namespace,
 			Labels:    maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels),
 			Annotations: map[string]string{
@@ -209,21 +211,21 @@ func (o ObservatoriumMetrics) makeQueryConfig(instanceName string, preManifestHo
 			},
 			To: routev1.RouteTargetReference{
 				Kind: "Service",
-				Name: queryRule.Name,
+				Name: queryDplt.Name,
 			},
 		},
 	}
 
 	// Wrap in template, add parameters
 	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
-		LogLevel:      string(queryRule.Options.LogLevel),
-		Replicas:      queryRule.Replicas,
-		CPURequest:    queryRule.PodResources.Requests[corev1.ResourceCPU],
-		MemoryLimit:   queryRule.PodResources.Limits[corev1.ResourceMemory],
-		MemoryRequest: queryRule.PodResources.Requests[corev1.ResourceMemory],
+		LogLevel:      string(queryDplt.Options.LogLevel),
+		Replicas:      queryDplt.Replicas,
+		CPURequest:    queryDplt.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   queryDplt.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: queryDplt.PodResources.Requests[corev1.ResourceMemory],
 	})
 	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
-		Name: queryRule.Name,
+		Name: queryDplt.Name,
 	}, append(defaultParams, []templatev1.Parameter{
 		{
 			Name:     "OAUTH_PROXY_COOKIE_SECRET",
@@ -233,7 +235,7 @@ func (o ObservatoriumMetrics) makeQueryConfig(instanceName string, preManifestHo
 	}...))
 
 	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
-	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), queryRule.Name)
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), queryDplt.Name)
 }
 
 // makeReceiveRouter creates a base receive router component that can be derived from using the preManifestsHook

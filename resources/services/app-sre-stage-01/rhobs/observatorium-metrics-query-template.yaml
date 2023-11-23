@@ -163,10 +163,10 @@ objects:
         - args:
           - query
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-default.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-default.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-rhel.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-rhel.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-telemeter.rhobs.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-default.rhobs.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-rhel.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-telemeter.rhobs.svc.cluster.local
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}

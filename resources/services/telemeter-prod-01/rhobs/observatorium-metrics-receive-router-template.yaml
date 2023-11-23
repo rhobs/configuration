@@ -68,10 +68,6 @@ objects:
           image: quay.io/observatorium/thanos-receive-controller:main-2023-09-22-f168dd7
           imagePullPolicy: IfNotPresent
           name: observatorium-thanos-receive-controller
-          ports:
-          - containerPort: 8080
-            name: http
-            protocol: TCP
           resources:
             limits:
               cpu: 24Mi
@@ -239,7 +235,7 @@ objects:
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
           - --receive.hashrings-algorithm=ketama
-          - --receive.hashrings-file=/etc/thanos/hashring/hashring.json
+          - --receive.hashrings-file=/etc/thanos/hashring/hashrings.json
           - --receive.hashrings-file-refresh-interval=5s
           - --receive.limits-config-file=/etc/thanos/receive-limits/limits.yaml
           - --remote-write.address=0.0.0.0:19291

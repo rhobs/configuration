@@ -166,6 +166,9 @@ func (o ObservatoriumMetrics) makeQueryConfig(instanceName string, preManifestHo
 	queryDplt.Options.QueryAutoDownsampling = true
 	queryDplt.Options.QueryPromQLEngine = "prometheus"
 	queryDplt.Options.QueryMaxConcurrent = 10
+	if instanceName == "" {
+		queryDplt.Options.QueryTelemetryRequestDurationSecondsQuantiles = []float64{0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120}
+	}
 
 	// Execute preManifestsHook
 	if preManifestHook != nil {

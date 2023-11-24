@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-query-rule-rhel
+  name: observatorium-thanos-query-rule
 objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
@@ -16,8 +16,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-    name: observatorium-thanos-query-rule-rhel
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
     namespace: rhobs
   spec:
     host: ""
@@ -28,21 +28,21 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-query-rule-rhel
+      name: observatorium-thanos-query-rule
       weight: null
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: query-rule-tls-rhel
+      service.alpha.openshift.io/serving-cert-secret-name: query-rule-tls
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: query-layer
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-    name: observatorium-thanos-query-rule-rhel
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
     namespace: rhobs
   spec:
     ports:
@@ -69,15 +69,15 @@ objects:
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-query-rule-rhel"}}'
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-query-rule"}}'
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: query-layer
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-    name: observatorium-thanos-query-rule-rhel
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -88,9 +88,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       prometheus: app-sre
-    name: observatorium-thanos-query-rule-rhel
+    name: observatorium-thanos-query-rule
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -120,8 +120,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-    name: observatorium-thanos-query-rule-rhel
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
     namespace: rhobs
   spec:
     replicas: ${{REPLICAS}}
@@ -140,7 +140,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-query-rule
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
         namespace: rhobs
       spec:
         affinity:
@@ -162,8 +162,12 @@ objects:
         containers:
         - args:
           - query
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-default.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-rhel.rhobs.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-telemeter.rhobs.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-default.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-rhel.rhobs.svc.cluster.local
+          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-telemeter.rhobs.svc.cluster.local
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
           - --query.auto-downsampling
@@ -186,7 +190,7 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
-          image: quay.io/thanos/thanos:v0.32.4
+          image: quay.io/thanos/thanos:v0.32.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -265,7 +269,7 @@ objects:
           - -http-address=
           - -email-domain=*
           - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-query-rule-rhel
+          - -openshift-service-account=observatorium-thanos-query-rule
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
             "namespace": "rhobs"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
@@ -296,12 +300,12 @@ objects:
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: observatorium-thanos-query-rule-rhel
+        serviceAccountName: observatorium-thanos-query-rule
         terminationGracePeriodSeconds: 120
         volumes:
         - name: tls
           secret:
-            secretName: query-rule-tls-rhel
+            secretName: query-rule-tls
 parameters:
 - name: LOG_LEVEL
   value: warn

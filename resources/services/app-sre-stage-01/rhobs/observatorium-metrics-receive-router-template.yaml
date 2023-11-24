@@ -180,7 +180,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router-limits
     namespace: rhobs
 - apiVersion: apps/v1
@@ -192,7 +192,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
@@ -212,7 +212,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-receive-router
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
         namespace: rhobs
       spec:
         affinity:
@@ -250,7 +250,7 @@ objects:
               service_name: thanos-receive-router
               sampler_type: ratelimiting
               sampler_param: 2
-          image: quay.io/thanos/thanos:v0.32.4
+          image: quay.io/thanos/thanos:v0.32.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -352,7 +352,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
@@ -385,7 +385,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -397,7 +397,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       prometheus: app-sre
     name: observatorium-thanos-receive-router
     namespace: openshift-customer-monitoring

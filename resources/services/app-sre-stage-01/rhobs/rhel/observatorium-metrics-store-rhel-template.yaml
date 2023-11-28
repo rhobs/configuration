@@ -452,7 +452,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: rhel
     name: hashmod-config-template-rhel
     namespace: rhobs
@@ -486,7 +486,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: rhel
     name: observatorium-thanos-store-rhel
     namespace: rhobs
@@ -517,7 +517,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: rhel
     name: observatorium-thanos-store-rhel
     namespace: rhobs
@@ -530,7 +530,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: rhel
       prometheus: app-sre
     name: observatorium-thanos-store-rhel
@@ -564,7 +564,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-store
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: rhel
     name: observatorium-thanos-store-rhel
     namespace: rhobs
@@ -586,7 +586,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-store
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
           observatorium/tenant: rhel
         namespace: rhobs
       spec:
@@ -691,7 +691,7 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
-          image: quay.io/thanos/thanos:v0.32.4
+          image: quay.io/thanos/thanos:v0.32.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -806,7 +806,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-store
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
           observatorium/tenant: rhel
         name: data
       spec:

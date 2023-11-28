@@ -45,13 +45,13 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 		},
 		VolumeMounts: []corev1.VolumeMount{
 			{
-				Name:      "compact-tls",
+				Name:      "tls",
 				MountPath: "/etc/tls/private",
 				ReadOnly:  true,
 			},
 		},
 		Volumes: []corev1.Volume{
-			k8sutil.NewPodVolumeFromSecret("compact-tls", tlsSecret),
+			k8sutil.NewPodVolumeFromSecret("tls", tlsSecret),
 		},
 	}
 }

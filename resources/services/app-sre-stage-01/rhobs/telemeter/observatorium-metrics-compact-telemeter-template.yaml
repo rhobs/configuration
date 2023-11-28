@@ -15,7 +15,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
     name: observatorium-thanos-compact-telemeter
     namespace: rhobs
@@ -46,7 +46,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
     name: observatorium-thanos-compact-telemeter
     namespace: rhobs
@@ -59,7 +59,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
       prometheus: app-sre
     name: observatorium-thanos-compact-telemeter
@@ -93,7 +93,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
     name: observatorium-thanos-compact-telemeter
     namespace: rhobs
@@ -115,7 +115,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-compact
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
           observatorium/tenant: telemeter
         namespace: rhobs
       spec:
@@ -185,7 +185,7 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
-          image: quay.io/thanos/thanos:v0.32.4
+          image: quay.io/thanos/thanos:v0.32.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 4
@@ -247,14 +247,14 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /etc/tls/private
-            name: compact-tls
+            name: tls
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
         serviceAccountName: observatorium-thanos-compact-telemeter
         terminationGracePeriodSeconds: 120
         volumes:
-        - name: compact-tls
+        - name: tls
           secret:
             secretName: compact-tls-telemeter
     updateStrategy: {}
@@ -266,7 +266,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-compact
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
           observatorium/tenant: telemeter
         name: data
       spec:

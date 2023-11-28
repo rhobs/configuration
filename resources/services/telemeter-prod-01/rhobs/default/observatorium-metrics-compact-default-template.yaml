@@ -247,14 +247,14 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /etc/tls/private
-            name: compact-tls
+            name: tls
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
         serviceAccountName: observatorium-thanos-compact-default
         terminationGracePeriodSeconds: 120
         volumes:
-        - name: compact-tls
+        - name: tls
           secret:
             secretName: compact-tls-default
     updateStrategy: {}

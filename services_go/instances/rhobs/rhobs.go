@@ -76,7 +76,7 @@ func stageConfig() observatorium.Observatorium {
 		Instance: "rhobs",
 		MetricsInstances: observatorium.ObservatoriumMetrics{
 			Namespace:                 "rhobs",
-			ThanosImageTag:            "v0.32.4",
+			ThanosImageTag:            "v0.32.5",
 			ReceiveControllerImageTag: "main-2023-09-22-f168dd7",
 			ReceiveLimitsGlobal: receive.GlobalLimitsConfig{
 				MetaMonitoringURL:        metaMonitoringURL,

@@ -8,6 +8,7 @@ require (
 	github.com/observatorium/observatorium v0.0.0-00010101000000-000000000000
 	github.com/openshift/api v3.9.0+incompatible
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.68.0
+	github.com/prometheus/common v0.44.0
 	github.com/pyrra-dev/pyrra v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.28.2
@@ -50,7 +51,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
-	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/prometheus/prometheus v1.8.2-0.20220211202545-56e14463bccf // indirect
 	github.com/rodaine/hclencoder v0.0.1 // indirect
@@ -83,4 +83,4 @@ require (
 )
 
 // Delete when https://github.com/observatorium/observatorium/pull/543 is merged to main branch
-replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231109122152-cc47e5be397b
+replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231123172357-0705fe74fcd5

@@ -54,7 +54,7 @@ objects:
         - args:
           - --configmap-name=thanos-receive-hashring
           - --configmap-generated-name=thanos-receive-hashring-generated
-          - --file-name=hashring.json
+          - --file-name=hashrings.json
           - --namespace=rhobs
           env:
           - name: NAMESPACE
@@ -68,10 +68,6 @@ objects:
           image: quay.io/observatorium/thanos-receive-controller:main-2023-09-22-f168dd7
           imagePullPolicy: IfNotPresent
           name: observatorium-thanos-receive-controller
-          ports:
-          - containerPort: 8080
-            name: http
-            protocol: TCP
           resources:
             limits:
               cpu: 24Mi
@@ -184,7 +180,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router-limits
     namespace: rhobs
 - apiVersion: apps/v1
@@ -196,7 +192,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
@@ -216,7 +212,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: thanos-receive-router
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.32.5
         namespace: rhobs
       spec:
         affinity:
@@ -244,7 +240,7 @@ objects:
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
           - --receive.hashrings-algorithm=ketama
-          - --receive.hashrings-file=/etc/thanos/hashring/hashring.json
+          - --receive.hashrings-file=/etc/thanos/hashring/hashrings.json
           - --receive.hashrings-file-refresh-interval=5s
           - --receive.limits-config-file=/etc/thanos/receive-limits/limits.yaml
           - --remote-write.address=0.0.0.0:19291
@@ -254,7 +250,7 @@ objects:
               service_name: thanos-receive-router
               sampler_type: ratelimiting
               sampler_param: 2
-          image: quay.io/thanos/thanos:v0.32.4
+          image: quay.io/thanos/thanos:v0.32.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -356,7 +352,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
@@ -389,7 +385,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-receive-router
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -401,7 +397,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.32.5
       prometheus: app-sre
     name: observatorium-thanos-receive-router
     namespace: openshift-customer-monitoring

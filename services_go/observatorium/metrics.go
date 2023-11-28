@@ -4,12 +4,14 @@ import (
 	_ "embed"
 	"fmt"
 	"maps"
+	"sort"
 	"time"
 
 	"github.com/bwplotka/mimic"
 	"github.com/bwplotka/mimic/encoding"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/memcached"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/query"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
@@ -25,6 +27,7 @@ import (
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"github.com/prometheus/common/model"
 	"gopkg.in/yaml.v3"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -55,10 +58,13 @@ type ObservatoriumMetrics struct {
 	Namespace                     string
 	ThanosImageTag                string
 	Instances                     []*ObservatoriumMetricsInstance
-	ReceiveRouterPreManifestsHook func(*receive.Router)
 	ReceiveLimitsGlobal           receive.GlobalLimitsConfig
 	ReceiveLimitsDefault          receive.DefaultLimitsConfig
 	ReceiveControllerImageTag     string
+	ReceiveRouterPreManifestsHook func(*receive.Router)
+	QueryRulePreManifestsHook     func(*query.QueryDeployment)
+	QueryAdhocPreManifestsHook    func(*query.QueryDeployment)
+	storesRegister                []string
 }
 
 // ObservatoriumMetricsInstance contains the configuration for a metrics instance in an observatorium instance.
@@ -83,7 +89,7 @@ type Tenants struct {
 }
 
 // Manifests generates the manifests for the metrics instance of observatorium.
-func (o ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
+func (o *ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 	makeFileName := func(name, instanceName string) string {
 		return fmt.Sprintf("observatorium-metrics-%s-%s-template.yaml", name, instanceName)
 	}
@@ -99,11 +105,140 @@ func (o ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 	}
 
 	generator.Add("observatorium-metrics-receive-router-template.yaml", withStatusRemove(o.makeReceiveRouter()))
+	generator.Add("observatorium-metrics-query-rule-template.yaml", withStatusRemove(o.makeQueryConfig(true, o.QueryRulePreManifestsHook)))
+	generator.Add("observatorium-metrics-query-template.yaml", withStatusRemove(o.makeQueryConfig(false, o.QueryAdhocPreManifestsHook)))
+}
+
+func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook func(*query.QueryDeployment)) encoding.Encoder {
+	queryDplt := query.NewQuery()
+
+	// K8s config
+	if isRuleQuery {
+		queryDplt.Name = queryDplt.Name + "-rule"
+		queryDplt.CommonLabels[k8sutil.NameLabel] = queryDplt.CommonLabels[k8sutil.NameLabel] + "-rule"
+		// Regenerate the affinity to update the name selector
+		queryDplt.Affinity = k8sutil.NewAntiAffinity(nil, map[string]string{
+			k8sutil.NameLabel:     queryDplt.CommonLabels[k8sutil.NameLabel],
+			k8sutil.InstanceLabel: queryDplt.CommonLabels[k8sutil.InstanceLabel],
+		})
+	}
+	queryDplt.Image = thanosImage
+	queryDplt.ImageTag = o.ThanosImageTag
+	queryDplt.Namespace = o.Namespace
+	queryDplt.Replicas = 1
+	delete(queryDplt.PodResources.Limits, corev1.ResourceCPU)
+	queryDplt.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("250m")
+	queryDplt.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
+	queryDplt.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("8Gi")
+	var tlsSecret string
+	if isRuleQuery {
+		tlsSecret = "query-rule-tls"
+	} else {
+		tlsSecret = "query-adhoc-tls"
+	}
+	queryDplt.Sidecars = []k8sutil.ContainerProvider{
+		makeJaegerAgent("observatorium-tools"),
+		makeOauthProxy(10902, o.Namespace, queryDplt.Name, tlsSecret),
+	}
+
+	// Query config
+	queryDplt.Options.LogLevel = log.LogLevelWarn
+	queryDplt.Options.LogFormat = log.LogFormatLogfmt
+	queryDplt.Options.QueryReplicaLabel = []string{"replica", "prometheus_replica", "rule_replica"}
+	queryDplt.Options.Endpoint = append(queryDplt.Options.Endpoint, o.storesRegister...)
+	sort.Strings(queryDplt.Options.Endpoint) // sort to make the output deterministic and avoid noisy diffs
+	queryDplt.Options.QueryTimeout = model.Duration(15 * time.Minute)
+	queryDplt.Options.QueryLookbackDelta = model.Duration(15 * time.Minute)
+	queryDplt.Options.WebPrefixHeader = "X-Forwarded-Prefix"
+	queryDplt.Options.TracingConfig = &trclient.TracingConfig{
+		Type: trclient.Jaeger,
+		Config: jaeger.Config{
+			SamplerParam: 2,
+			SamplerType:  jaeger.SamplerTypeRateLimiting,
+			ServiceName:  queryDplt.CommonLabels[k8sutil.NameLabel],
+		},
+	}
+	queryDplt.Options.QueryAutoDownsampling = true
+	queryDplt.Options.QueryPromQLEngine = "prometheus"
+	queryDplt.Options.QueryMaxConcurrent = 10
+	if !isRuleQuery {
+		queryDplt.Options.QueryTelemetryRequestDurationSecondsQuantiles = []float64{0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120}
+	}
+
+	// Execute preManifestsHook
+	if preManifestHook != nil {
+		preManifestHook(queryDplt)
+	}
+
+	// Post process
+	manifests := queryDplt.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryDplt.Namespace)
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
+	service := getObject[*corev1.Service](manifests)
+	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryDplt.Namespace)
+	// Add annotations for openshift oauth so that the route to access the query ui works
+	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
+	if serviceAccount.Annotations == nil {
+		serviceAccount.Annotations = map[string]string{}
+	}
+	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryDplt.Name)
+
+	// Add route for oauth-proxy
+	manifests["oauth-proxy-route"] = &routev1.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: routev1.SchemeGroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      queryDplt.Name,
+			Namespace: o.Namespace,
+			Labels:    maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels),
+			Annotations: map[string]string{
+				"cert-manager.io/issuer-kind": "ClusterIssuer",
+				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
+			},
+		},
+		Spec: routev1.RouteSpec{
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.FromString("https"),
+			},
+			TLS: &routev1.TLSConfig{
+				Termination:                   routev1.TLSTerminationReencrypt,
+				InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+			},
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: queryDplt.Name,
+			},
+		},
+	}
+
+	// Wrap in template, add parameters
+	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(queryDplt.Options.LogLevel),
+		Replicas:      queryDplt.Replicas,
+		CPURequest:    queryDplt.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   queryDplt.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: queryDplt.PodResources.Requests[corev1.ResourceMemory],
+	})
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: queryDplt.Name,
+	}, append(defaultParams, []templatev1.Parameter{
+		{
+			Name:     "OAUTH_PROXY_COOKIE_SECRET",
+			Generate: "expression",
+			From:     "[a-zA-Z0-9]{40}",
+		},
+	}...))
+
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), queryDplt.Name)
 }
 
 // makeReceiveRouter creates a base receive router component that can be derived from using the preManifestsHook
 // for each tenant instance of the observatorium metrics.
-func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
+func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	router := receive.NewRouter()
 
 	// K8s config
@@ -219,7 +354,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	controller.Options.ConfigMapName = baseHashringCm
 	controller.Options.ConfigMapGeneratedName = generatedHashringCm
 	controller.Options.Namespace = o.Namespace
-	controller.Options.FileName = "hashring.json"
+	controller.Options.FileName = "hashrings.json"
 
 	controllerManifests := controller.Manifests()
 	for k, v := range controllerManifests {
@@ -243,7 +378,7 @@ func (o ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 }
 
 // makeReceiveIngestor creates a base receive ingestor component that can be derived from using the preManifestsHook
-func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
+func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	ingestor := receive.NewIngestor()
 	ingestor.Name = fmt.Sprintf("%s-%s", ingestor.Name, instanceCfg.InstanceName)
 	ingestor.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
@@ -259,7 +394,6 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
-	ingestor.Env = append(ingestor.Env, k8sutil.NewEnvFromField("POD_NAME", "metadata.name"))
 	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config
@@ -284,6 +418,9 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 	if instanceCfg.ReceiveIngestorPreManifestsHook != nil {
 		instanceCfg.ReceiveIngestorPreManifestsHook(ingestor)
 	}
+
+	// Register the store for the query component
+	o.storesRegister = append(o.storesRegister, fmt.Sprintf("dnssrv+_grpc._tcp.%s.%s.svc.cluster.local", ingestor.Name, o.Namespace))
 
 	// Post process
 	manifests := ingestor.Manifests()
@@ -335,7 +472,7 @@ func (o ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observatori
 }
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
-func (o ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
+func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	// K8s config
 	compactorSatefulset := compactor.NewCompactor()
 	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, instanceCfg.InstanceName)
@@ -461,7 +598,7 @@ func (o ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIns
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
-func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
+func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	// K8s config
 	storeStatefulSet := store.NewStore()
 	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, instanceCfg.InstanceName)
@@ -576,6 +713,9 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	if instanceCfg.StorePreManifestsHook != nil {
 		instanceCfg.StorePreManifestsHook(storeStatefulSet)
 	}
+
+	// Register the store for the query component
+	o.storesRegister = append(o.storesRegister, fmt.Sprintf("dnssrv+_grpc._tcp.%s.%s.svc.cluster.local", storeStatefulSet.Name, o.Namespace))
 
 	// Post process
 	manifests := storeStatefulSet.Manifests()
@@ -704,7 +844,7 @@ func (o ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstanc
 	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), storeStatefulSet.Name)
 }
 
-func (o ObservatoriumMetrics) makeStoreCache(name, component, instanceName string, preManifestHook func(*memcached.MemcachedDeployment)) k8sutil.ObjectMap {
+func (o *ObservatoriumMetrics) makeStoreCache(name, component, instanceName string, preManifestHook func(*memcached.MemcachedDeployment)) k8sutil.ObjectMap {
 	// K8s config
 	memcachedDeployment := memcached.NewMemcachedStatefulSet()
 	memcachedDeployment.Name = name

@@ -67,3 +67,16 @@ spec:
       labels:
         service: telemeter
         severity: high
+    - alert: ObservatoriumExpectedReplicasUnavailable
+      annotations:
+        dashboard: https://grafana.app-sre.devshift.net/d/no-dashboard/observatorium-metrics?orgId=1&refresh=10s&var-datasource={{$externalLabels.cluster}}-prometheus&var-namespace={{$labels.namespace}}&var-job=All&var-pod=All&var-interval=5m
+        description: The StatefulSet {{ $labels.statefulset }} in namespace {{ $labels.namespace }} has a mismatch between the expected and ready replicas.
+        message: The StatefulSet {{ $labels.statefulset }} in namespace {{ $labels.namespace }} has a mismatch between the expected and ready replicas.
+        runbook: https://github.com/rhobs/configuration/blob/main/docs/sop/observatorium.md#observatoriumexpectedreplicasunavailable
+        summary: One or more workloads in Observatorium persistently have less replicas in a ready state than expected for an extended period.
+      expr: |
+        kube_statefulset_replicas - kube_statefulset_status_replicas_ready > 0
+      for: 20m
+      labels:
+        service: telemeter
+        severity: high

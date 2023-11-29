@@ -31,6 +31,7 @@
   * [ObservatoriumNoRulesLoaded](#observatoriumnorulesloaded)
   * [ObservatoriumPersistentVolumeUsageHigh](#observatoriumpersistentvolumeusagehigh)
   * [ObservatoriumPersistentVolumeUsageCritical](#observatoriumpersistentvolumeusagecritical)
+  * [ObservatoriumExpectedReplicasUnavailable](#observatoriumexpectedreplicasunavailable)
 * [Observatorium Gubernator Alerts](#observatorium-gubernator-alerts)
   * [GubernatorIsDown](#gubernatorisdown)
 * [Observatorium Obsctl Reloader Alerts](#observatorium-obsctl-reloader-alerts)
@@ -865,6 +866,39 @@ One or more PVCs are filled to more than 95%. The remaining free space does not 
 - Check the pods belonging to the component and establish what object do they belong to
 - Locate the affected deployment in the [AppSRE Interface](https://gitlab.cee.redhat.com/service/app-interface/-/tree/master/data/services/rhobs), depending on which namespace the alert is coming from
 - Increase the size of the PVC by adjusting the relevant parameter in one of the `saas.yaml` files
+
+## ObservatoriumExpectedReplicasUnavailable
+
+### Impact
+
+A StatefulSet belonging to the RHOBS service is not running the expected number of replicas for a prolonged period of time.
+This may impact the metric query or ingest performance of the system.
+
+### Summary
+
+A StatefulSet has an undesired amount of replicas. This may be caused by a number of reasons, including:
+
+1. Pod stuck in a terminating state.
+2. Pod unable to be scheduled due to constraints on the cluster such as node capacity or resource limits.
+
+### Severity
+
+`critical`
+
+### Access Required
+
+- Console access to the cluster that runs Observatorium.
+- Edit access to the Observatorium namespaces:
+  - `observatorium-metrics-stage`
+  - `observatorium-metrics-production`
+  - `observatorium-mst-stage`
+  - `observatorium-mst-production`
+
+### Steps
+
+- Check the alert and establish which component is the one affected.
+- Determine the reason for the missing replica(s).
+- Act on the above information to address the issue.
 
 # Observatorium Gubernator Alerts
 

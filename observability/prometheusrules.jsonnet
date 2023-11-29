@@ -357,6 +357,20 @@ local renderAlerts(name, environment, mixin) = {
                 severity: 'critical',
               },
             },
+            {
+              alert: 'ObservatoriumExpectedReplicasUnavailable',
+              annotations: {
+                description: 'The StatefulSet {{ $labels.statefulset }} in namespace {{ $labels.namespace }} has a mismatch between the expected and ready replicas.',
+                summary: 'One or more workloads in Observatorium persistently have less replicas in a ready state than expected for an extended period.',
+              },
+              expr: |||
+                kube_statefulset_replicas - kube_statefulset_status_replicas_ready > 0
+              |||,
+              'for': '20m',
+              labels: {
+                severity: 'critical',
+              },
+            },
           ],
         },
       ],

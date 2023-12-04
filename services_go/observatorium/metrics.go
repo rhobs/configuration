@@ -12,6 +12,7 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/memcached"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/compactor"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/query"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/queryfrontend"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
@@ -64,7 +65,9 @@ type ObservatoriumMetrics struct {
 	ReceiveRouterPreManifestsHook func(*receive.Router)
 	QueryRulePreManifestsHook     func(*query.QueryDeployment)
 	QueryAdhocPreManifestsHook    func(*query.QueryDeployment)
+	QueryFrontendPreManifestsHook func(*queryfrontend.QueryFrontendDeployment)
 	storesRegister                []string
+	queryAdhocURL                 string
 }
 
 // ObservatoriumMetricsInstance contains the configuration for a metrics instance in an observatorium instance.
@@ -107,6 +110,118 @@ func (o *ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 	generator.Add("observatorium-metrics-receive-router-template.yaml", withStatusRemove(o.makeReceiveRouter()))
 	generator.Add("observatorium-metrics-query-rule-template.yaml", withStatusRemove(o.makeQueryConfig(true, o.QueryRulePreManifestsHook)))
 	generator.Add("observatorium-metrics-query-template.yaml", withStatusRemove(o.makeQueryConfig(false, o.QueryAdhocPreManifestsHook)))
+	generator.Add("observatorium-metrics-query-frontend-template.yaml", withStatusRemove(o.makeQueryFrontend()))
+}
+
+func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
+	queryFrontend := queryfrontend.NewQueryFrontend()
+
+	// K8s config
+	queryFrontend.Image = thanosImage
+	queryFrontend.ImageTag = o.ThanosImageTag
+	queryFrontend.Namespace = o.Namespace
+	queryFrontend.Replicas = 1
+	delete(queryFrontend.PodResources.Limits, corev1.ResourceCPU)
+	queryFrontend.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
+	queryFrontend.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")
+	queryFrontend.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("1Gi")
+	tlsSecret := "query-frontend-tls"
+	queryFrontend.Sidecars = []k8sutil.ContainerProvider{
+		makeOauthProxy(10902, o.Namespace, queryFrontend.Name, tlsSecret),
+		makeJaegerAgent("observatorium-tools"),
+	}
+
+	// Query-fe config
+	queryFrontend.Options.LogLevel = log.LogLevelWarn
+	queryFrontend.Options.LogFormat = log.LogFormatLogfmt
+	queryFrontend.Options.QueryFrontendCompressResponses = true
+	queryFrontend.Options.QueryFrontendDownstreamURL = o.queryAdhocURL
+	queryFrontend.Options.QueryFrontendLogQueriesLongerThan = model.Duration(5 * time.Second)
+	// Add memcached config
+	queryFrontend.Options.TracingConfig = &trclient.TracingConfig{
+		Type: trclient.Jaeger,
+		Config: jaeger.Config{
+			SamplerParam: 2,
+			SamplerType:  jaeger.SamplerTypeRateLimiting,
+			ServiceName:  queryFrontend.CommonLabels[k8sutil.NameLabel],
+		},
+	}
+	queryFrontend.Options.QueryRangeSplitInterval = model.Duration(24 * time.Hour)
+	queryFrontend.Options.LabelsSplitInterval = model.Duration(24 * time.Hour)
+	zero := 0
+	queryFrontend.Options.QueryRangeMaxRetriesPerRequest = &zero
+	queryFrontend.Options.LabelsMaxRetriesPerRequest = &zero
+	queryFrontend.Options.LabelsDefaultTimeRange = model.Duration(14 * 24 * time.Hour)
+	queryFrontend.Options.CacheCompressionType = queryfrontend.CacheCompressionTypeSnappy
+
+	// Execute preManifestsHook
+	if o.QueryFrontendPreManifestsHook != nil {
+		o.QueryFrontendPreManifestsHook(queryFrontend)
+	}
+
+	// Post process
+	manifests := queryFrontend.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), queryFrontend.Namespace)
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
+	service := getObject[*corev1.Service](manifests)
+	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
+	// Add annotations for openshift oauth so that the route to access the query ui works
+	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
+	if serviceAccount.Annotations == nil {
+		serviceAccount.Annotations = map[string]string{}
+	}
+	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryFrontend.Name)
+
+	// Add route for oauth-proxy
+	manifests["oauth-proxy-route"] = &routev1.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: routev1.SchemeGroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      queryFrontend.Name,
+			Namespace: o.Namespace,
+			Labels:    maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels),
+			Annotations: map[string]string{
+				"cert-manager.io/issuer-kind": "ClusterIssuer",
+				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
+			},
+		},
+		Spec: routev1.RouteSpec{
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.FromString("https"),
+			},
+			TLS: &routev1.TLSConfig{
+				Termination:                   routev1.TLSTerminationReencrypt,
+				InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+			},
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: queryFrontend.Name,
+			},
+		},
+	}
+
+	// Wrap in template, add parameters
+	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(queryFrontend.Options.LogLevel),
+		Replicas:      queryFrontend.Replicas,
+		CPURequest:    queryFrontend.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   queryFrontend.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: queryFrontend.PodResources.Requests[corev1.ResourceMemory],
+	})
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: queryFrontend.Name,
+	}, append(defaultParams, []templatev1.Parameter{
+		{
+			Name:     "OAUTH_PROXY_COOKIE_SECRET",
+			Generate: "expression",
+			From:     "[a-zA-Z0-9]{40}",
+		},
+	}...))
+
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), queryFrontend.Name)
 }
 
 func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook func(*query.QueryDeployment)) encoding.Encoder {
@@ -163,6 +278,10 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 	queryDplt.Options.QueryMaxConcurrent = 10
 	if !isRuleQuery {
 		queryDplt.Options.QueryTelemetryRequestDurationSecondsQuantiles = []float64{0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120}
+	}
+
+	if !isRuleQuery {
+		o.queryAdhocURL = fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryDplt.Name, queryDplt.Namespace)
 	}
 
 	// Execute preManifestsHook
@@ -346,15 +465,16 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 
 		baseHashring = append(baseHashring, newHashring)
 	}
+	hashringFileName := "hashrings.json"
 	controller.ConfigMaps[baseHashringCm] = map[string]string{
-		"hashring.json": baseHashring.String(),
+		hashringFileName: baseHashring.String(),
 	}
 
 	// Controller config
 	controller.Options.ConfigMapName = baseHashringCm
 	controller.Options.ConfigMapGeneratedName = generatedHashringCm
 	controller.Options.Namespace = o.Namespace
-	controller.Options.FileName = "hashrings.json"
+	controller.Options.FileName = hashringFileName
 
 	controllerManifests := controller.Manifests()
 	for k, v := range controllerManifests {

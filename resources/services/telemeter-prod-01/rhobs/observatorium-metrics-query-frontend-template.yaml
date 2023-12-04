@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-query
+  name: observatorium-thanos-query-frontend
 objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
@@ -12,12 +12,12 @@ objects:
       cert-manager.io/issuer-name: letsencrypt-prod-http
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-thanos-query-frontend
     namespace: rhobs
   spec:
     host: ""
@@ -28,40 +28,36 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-query
+      name: observatorium-thanos-query-frontend
       weight: null
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: query-adhoc-tls
+      service.alpha.openshift.io/serving-cert-secret-name: query-frontend-tls
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-thanos-query-frontend
     namespace: rhobs
   spec:
     ports:
     - name: http
-      port: 10902
+      port: 9090
       protocol: TCP
-      targetPort: 10902
-    - name: grpc
-      port: 10901
-      protocol: TCP
-      targetPort: 10901
+      targetPort: 9090
     - name: https
       port: 8443
       protocol: TCP
       targetPort: 8443
     selector:
-      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   imagePullSecrets:
@@ -69,28 +65,28 @@ objects:
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-query"}}'
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-query-frontend"}}'
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-thanos-query-frontend
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
+      app.kubernetes.io/version: v0.32.4
       prometheus: app-sre
-    name: observatorium-thanos-query
+    name: observatorium-thanos-query-frontend
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -107,40 +103,40 @@ objects:
       - rhobs
     selector:
       matchLabels:
-        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/component: query-cache
         app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/name: thanos-query-frontend
         app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/component: query-cache
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query
+      app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-thanos-query-frontend
     namespace: rhobs
   spec:
     replicas: ${{REPLICAS}}
     selector:
       matchLabels:
-        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/component: query-cache
         app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/name: thanos-query-frontend
         app.kubernetes.io/part-of: observatorium
     strategy: {}
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: query-layer
+          app.kubernetes.io/component: query-cache
           app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: thanos-query
+          app.kubernetes.io/name: thanos-query-frontend
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.5
+          app.kubernetes.io/version: v0.32.4
         namespace: rhobs
       spec:
         affinity:
@@ -156,75 +152,53 @@ objects:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - thanos-query
+                    - thanos-query-frontend
                 topologyKey: kubernetes.io/hostname
               weight: 100
         containers:
         - args:
-          - query
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-default.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-rhel.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-ingestor-telemeter.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-default.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-rhel.rhobs.svc.cluster.local
-          - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-telemeter.rhobs.svc.cluster.local
+          - query-frontend
+          - --cache-compression-type=snappy
+          - --labels.default-time-range=2w
+          - --labels.max-retries-per-request=0
+          - --labels.split-interval=1d
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
-          - --query.auto-downsampling
-          - --query.lookback-delta=15m
-          - --query.max-concurrent=10
-          - --query.promql-engine=prometheus
-          - --query.replica-label=replica
-          - --query.replica-label=prometheus_replica
-          - --query.replica-label=rule_replica
-          - --query.telemetry.request-duration-seconds-quantiles=0.1
-          - --query.telemetry.request-duration-seconds-quantiles=0.25
-          - --query.telemetry.request-duration-seconds-quantiles=0.75
-          - --query.telemetry.request-duration-seconds-quantiles=1.25
-          - --query.telemetry.request-duration-seconds-quantiles=1.75
-          - --query.telemetry.request-duration-seconds-quantiles=2.5
-          - --query.telemetry.request-duration-seconds-quantiles=3
-          - --query.telemetry.request-duration-seconds-quantiles=5
-          - --query.telemetry.request-duration-seconds-quantiles=10
-          - --query.telemetry.request-duration-seconds-quantiles=15
-          - --query.telemetry.request-duration-seconds-quantiles=30
-          - --query.telemetry.request-duration-seconds-quantiles=60
-          - --query.telemetry.request-duration-seconds-quantiles=120
-          - --query.timeout=15m
+          - --query-frontend.compress-responses
+          - --query-frontend.downstream-url=http://observatorium-thanos-query.rhobs.svc.cluster.local:10902
+          - --query-frontend.log-queries-longer-than=5s
+          - --query-range.max-retries-per-request=0
+          - --query-range.split-interval=1d
           - |
             --tracing.config=type: JAEGER
             config:
-              service_name: thanos-query
+              service_name: thanos-query-frontend
               sampler_type: ratelimiting
               sampler_param: 2
-          - --web.prefix-header=X-Forwarded-Prefix
           env:
           - name: HOST_IP_ADDRESS
             valueFrom:
               fieldRef:
                 fieldPath: status.hostIP
-          image: quay.io/thanos/thanos:v0.32.5
+          image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
             httpGet:
               path: /-/healthy
-              port: 10902
+              port: 9090
             periodSeconds: 30
             timeoutSeconds: 1
           name: thanos
           ports:
-          - containerPort: 10902
+          - containerPort: 9090
             name: http
-            protocol: TCP
-          - containerPort: 10901
-            name: grpc
             protocol: TCP
           readinessProbe:
             failureThreshold: 20
             httpGet:
               path: /-/ready
-              port: 10902
+              port: 9090
             periodSeconds: 5
           resources:
             limits:
@@ -233,6 +207,41 @@ objects:
               cpu: ${CPU_REQUEST}
               memory: ${MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - -provider=openshift
+          - -https-address=:8443
+          - -http-address=
+          - -email-domain=*
+          - -upstream=http://localhost:10902
+          - -openshift-service-account=observatorium-thanos-query-frontend
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
+            "namespace": "rhobs"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
+            "name": "rhobs", "namespace": "rhobs"}}'
+          - -tls-cert=/etc/tls/private/tls.crt
+          - -tls-key=/etc/tls/private/tls.key
+          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
+          - -openshift-ca=/etc/pki/tls/cert.pem
+          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          image: quay.io/openshift/origin-oauth-proxy:4.15
+          name: oauth-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: tls
+            readOnly: true
         - args:
           - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
           - --reporter.type=grpc
@@ -276,60 +285,25 @@ objects:
               cpu: 32m
               memory: 64Mi
           terminationMessagePolicy: FallbackToLogsOnError
-        - args:
-          - -provider=openshift
-          - -https-address=:8443
-          - -http-address=
-          - -email-domain=*
-          - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-query
-          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
-            "namespace": "rhobs"}'
-          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-            "name": "rhobs", "namespace": "rhobs"}}'
-          - -tls-cert=/etc/tls/private/tls.crt
-          - -tls-key=/etc/tls/private/tls.key
-          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-          - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
-          - -openshift-ca=/etc/pki/tls/cert.pem
-          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          image: quay.io/openshift/origin-oauth-proxy:4.15
-          name: oauth-proxy
-          ports:
-          - containerPort: 8443
-            name: https
-            protocol: TCP
-          resources:
-            limits:
-              cpu: 200m
-              memory: 200Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          terminationMessagePolicy: FallbackToLogsOnError
-          volumeMounts:
-          - mountPath: /etc/tls/private
-            name: tls
-            readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: observatorium-thanos-query
+        serviceAccountName: observatorium-thanos-query-frontend
         terminationGracePeriodSeconds: 120
         volumes:
         - name: tls
           secret:
-            secretName: query-adhoc-tls
+            secretName: query-frontend-tls
 parameters:
 - name: LOG_LEVEL
   value: warn
 - name: REPLICAS
   value: "1"
 - name: CPU_REQUEST
-  value: 250m
+  value: 100m
 - name: MEMORY_LIMIT
-  value: 8Gi
+  value: 1Gi
 - name: MEMORY_REQUEST
-  value: 2Gi
+  value: 256Mi
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET

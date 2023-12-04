@@ -56,18 +56,19 @@ var storeAutoShardRelabelConfigMap string
 // ObservatoriumMetrics contains the configuration common to all metrics instances in an observatorium instance
 // and a list of ObservatoriumMetricsInstance configuring the individual metrics instances.
 type ObservatoriumMetrics struct {
-	Namespace                     string
-	ThanosImageTag                string
-	Instances                     []*ObservatoriumMetricsInstance
-	ReceiveLimitsGlobal           receive.GlobalLimitsConfig
-	ReceiveLimitsDefault          receive.DefaultLimitsConfig
-	ReceiveControllerImageTag     string
-	ReceiveRouterPreManifestsHook func(*receive.Router)
-	QueryRulePreManifestsHook     func(*query.QueryDeployment)
-	QueryAdhocPreManifestsHook    func(*query.QueryDeployment)
-	QueryFrontendPreManifestsHook func(*queryfrontend.QueryFrontendDeployment)
-	storesRegister                []string
-	queryAdhocURL                 string
+	Namespace                          string
+	ThanosImageTag                     string
+	Instances                          []*ObservatoriumMetricsInstance
+	ReceiveLimitsGlobal                receive.GlobalLimitsConfig
+	ReceiveLimitsDefault               receive.DefaultLimitsConfig
+	ReceiveControllerImageTag          string
+	ReceiveRouterPreManifestsHook      func(*receive.Router)
+	QueryRulePreManifestsHook          func(*query.QueryDeployment)
+	QueryAdhocPreManifestsHook         func(*query.QueryDeployment)
+	QueryFrontendPreManifestsHook      func(*queryfrontend.QueryFrontendDeployment)
+	QueryFrontendCachePreManifestsHook func(*memcached.MemcachedDeployment)
+	storesRegister                     []string
+	queryAdhocURL                      string
 }
 
 // ObservatoriumMetricsInstance contains the configuration for a metrics instance in an observatorium instance.
@@ -153,6 +154,19 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	queryFrontend.Options.LabelsMaxRetriesPerRequest = &zero
 	queryFrontend.Options.LabelsDefaultTimeRange = model.Duration(14 * 24 * time.Hour)
 	queryFrontend.Options.CacheCompressionType = queryfrontend.CacheCompressionTypeSnappy
+	cacheName := "observatorium-thanos-query-range-cache-memcached"
+	queryFrontend.Options.QueryRangeResponseCacheConfig = cache.NewResponseCacheConfig(memcachedclientcfg.MemcachedClientConfig{
+		Addresses: []string{
+			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", cacheName, o.Namespace),
+		},
+		MaxAsyncBufferSize:     2 * 10e5,
+		MaxAsyncConcurrency:    200,
+		MaxGetMultiBatchSize:   100,
+		MaxGetMultiConcurrency: 1000,
+		MaxIdleConnections:     1300,
+		MaxItemSize:            "64MiB",
+		Timeout:                2 * time.Second,
+	})
 
 	// Execute preManifestsHook
 	if o.QueryFrontendPreManifestsHook != nil {
@@ -200,6 +214,12 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 				Name: queryFrontend.Name,
 			},
 		},
+	}
+
+	// Add cache
+	res := makeMemcached(queryFrontend.Name, o.Namespace, o.QueryFrontendCachePreManifestsHook)
+	for k, v := range res {
+		manifests[k] = v
 	}
 
 	// Wrap in template, add parameters
@@ -940,12 +960,26 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 	}
 
 	// Add index cache
-	for k, v := range o.makeStoreCache(indexCacheName, "store-index-cache", instanceCfg.InstanceName, instanceCfg.IndexCachePreManifestsHook) {
+	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {
+		memdep.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
+		memdep.CommonLabels[k8sutil.ComponentLabel] = "store-index-cache"
+		if instanceCfg.IndexCachePreManifestsHook != nil {
+			instanceCfg.IndexCachePreManifestsHook(memdep)
+		}
+	}
+	for k, v := range makeMemcached(indexCacheName, o.Namespace, cachePreManHook) {
 		manifests["index-cache-"+k] = v
 	}
 
 	// Add bucket cache
-	for k, v := range o.makeStoreCache(bucketCacheName, "store-bucket-cache", instanceCfg.InstanceName, instanceCfg.BucketCachePreManifestsHook) {
+	cachePreManHook = func(memdep *memcached.MemcachedDeployment) {
+		memdep.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
+		memdep.CommonLabels[k8sutil.ComponentLabel] = "store-bucket-cache"
+		if instanceCfg.BucketCachePreManifestsHook != nil {
+			instanceCfg.BucketCachePreManifestsHook(memdep)
+		}
+	}
+	for k, v := range makeMemcached(bucketCacheName, o.Namespace, cachePreManHook) {
 		manifests["bucket-cache-"+k] = v
 	}
 
@@ -962,68 +996,6 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 
 	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
 	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), storeStatefulSet.Name)
-}
-
-func (o *ObservatoriumMetrics) makeStoreCache(name, component, instanceName string, preManifestHook func(*memcached.MemcachedDeployment)) k8sutil.ObjectMap {
-	// K8s config
-	memcachedDeployment := memcached.NewMemcachedStatefulSet()
-	memcachedDeployment.Name = name
-	memcachedDeployment.CommonLabels[observatoriumInstanceLabel] = instanceName
-	memcachedDeployment.CommonLabels[k8sutil.ComponentLabel] = component
-	memcachedDeployment.Image = "quay.io/app-sre/memcached"
-	memcachedDeployment.ImageTag = "1.5"
-	memcachedDeployment.Namespace = o.Namespace
-	memcachedDeployment.Replicas = 1
-	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)
-	memcachedDeployment.SecurityContext = nil
-	memcachedDeployment.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
-	memcachedDeployment.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
-	memcachedDeployment.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")
-	memcachedDeployment.ExporterImage = "quay.io/prometheus/memcached-exporter"
-	memcachedDeployment.ExporterImageTag = "v0.13.0"
-
-	// Compactor config
-	memcachedDeployment.Options.MemoryLimit = 2048
-	memcachedDeployment.Options.MaxItemSize = "5m"
-	memcachedDeployment.Options.ConnLimit = 3072
-	memcachedDeployment.Options.Verbose = true
-
-	// Execute preManifestsHook
-	if preManifestHook != nil {
-		preManifestHook(memcachedDeployment)
-	}
-
-	// Post process
-	manifests := memcachedDeployment.Manifests()
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), memcachedDeployment.Namespace)
-	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
-
-	// Add pod disruption budget
-	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)
-	delete(labels, k8sutil.VersionLabel)
-	manifests["store-index-cache-pdb"] = &policyv1.PodDisruptionBudget{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "PodDisruptionBudget",
-			APIVersion: policyv1.SchemeGroupVersion.String(),
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      memcachedDeployment.Name,
-			Namespace: o.Namespace,
-			Labels:    labels,
-		},
-		Spec: policyv1.PodDisruptionBudgetSpec{
-			MaxUnavailable: &intstr.IntOrString{
-
-				Type:   intstr.Int,
-				IntVal: 1,
-			},
-			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
-			},
-		},
-	}
-
-	return manifests
 }
 
 type kubeObject interface {

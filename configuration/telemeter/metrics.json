@@ -1,6 +1,7 @@
 [
   "{__name__=\":apiserver_v1_image_imports:sum\"}",
   "{__name__=\"ALERTS\",alertstate=\"firing\"}",
+  "{__name__=\"acm_console_page_count:sum\", page=~\"overview-classic|overview-fleet|search|search-details|clusters|application|governance\"}",
   "{__name__=\"acm_managed_cluster_info\"}",
   "{__name__=\"apiserver_list_watch_request_success_total:rate:sum\", verb=~\"LIST|WATCH\"}",
   "{__name__=\"appsvcs:cores_by_product:sum\"}",
@@ -51,6 +52,10 @@
   "{__name__=\"cluster:velero_restore_total:max\"}",
   "{__name__=\"cluster:virt_platform_nodes:sum\"}",
   "{__name__=\"cluster:vmi_request_cpu_cores:sum\"}",
+  "{__name__=\"cluster:volume_manager_selinux_pod_context_mismatch_total\"}",
+  "{__name__=\"cluster:volume_manager_selinux_volume_context_mismatch_errors_total\"}",
+  "{__name__=\"cluster:volume_manager_selinux_volume_context_mismatch_warnings_total\"}",
+  "{__name__=\"cluster:volume_manager_selinux_volumes_admitted_total\"}",
   "{__name__=\"cluster:vsphere_csi_migration:max\"}",
   "{__name__=\"cluster:vsphere_esxi_version_total:sum\"}",
   "{__name__=\"cluster:vsphere_infrastructure_failure_domains:max\"}",

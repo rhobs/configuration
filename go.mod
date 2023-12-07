@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/bwplotka/mimic v0.2.1-0.20230303101552-f705cca2f4a4
+	github.com/google/go-jsonnet v0.20.0
 	github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44
 	github.com/observatorium/observatorium v0.0.0-00010101000000-000000000000
 	github.com/openshift/api v3.9.0+incompatible
@@ -83,4 +84,4 @@ require (
 )
 
 // Delete when https://github.com/observatorium/observatorium/pull/543 is merged to main branch
-replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231204171717-54b9405e5fab
+replace github.com/observatorium/observatorium => github.com/thibaultmg/observatorium v0.0.0-20231207162400-60f91aef7aea

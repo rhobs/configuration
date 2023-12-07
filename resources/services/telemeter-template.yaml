@@ -95,6 +95,7 @@ objects:
           - --memcached=memcached-2.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing"}
+          - --whitelist={__name__="acm_console_page_count:sum", page=~"overview-classic|overview-fleet|search|search-details|clusters|application|governance"}
           - --whitelist={__name__="acm_managed_cluster_info"}
           - --whitelist={__name__="apiserver_list_watch_request_success_total:rate:sum", verb=~"LIST|WATCH"}
           - --whitelist={__name__="appsvcs:cores_by_product:sum"}
@@ -145,6 +146,10 @@ objects:
           - --whitelist={__name__="cluster:velero_restore_total:max"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_pod_context_mismatch_total"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_errors_total"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_warnings_total"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_volumes_admitted_total"}
           - --whitelist={__name__="cluster:vsphere_csi_migration:max"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_infrastructure_failure_domains:max"}
@@ -359,6 +364,7 @@ objects:
           - --memcached=memcached-2.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing"}
+          - --whitelist={__name__="acm_console_page_count:sum", page=~"overview-classic|overview-fleet|search|search-details|clusters|application|governance"}
           - --whitelist={__name__="acm_managed_cluster_info"}
           - --whitelist={__name__="apiserver_list_watch_request_success_total:rate:sum", verb=~"LIST|WATCH"}
           - --whitelist={__name__="appsvcs:cores_by_product:sum"}
@@ -409,6 +415,10 @@ objects:
           - --whitelist={__name__="cluster:velero_restore_total:max"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_pod_context_mismatch_total"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_errors_total"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_warnings_total"}
+          - --whitelist={__name__="cluster:volume_manager_selinux_volumes_admitted_total"}
           - --whitelist={__name__="cluster:vsphere_csi_migration:max"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_infrastructure_failure_domains:max"}

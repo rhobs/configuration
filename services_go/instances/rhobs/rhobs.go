@@ -1,11 +1,16 @@
 package rhobs
 
 import (
+	"encoding/json"
+	"fmt"
 	"sort"
 
+	"github.com/google/go-jsonnet"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/ruler"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/rhobs/configuration/services_go/observatorium"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -123,6 +128,16 @@ func stageConfig() observatorium.Observatorium {
 					StorePreManifestsHook: func(store *store.StoreStatefulSet) {
 						store.VolumeSize = "5Gi"
 					},
+					RulerPreManifestsHook: func(rulerSs *ruler.RulerStatefulSet) {
+						rulerSs.ConfigMaps["observatorium-rules"] = map[string]string{
+							"observatorium.yaml": getTelemeterRules(),
+						}
+						rulerSs.Options.RuleFile = append(rulerSs.Options.RuleFile, ruler.RuleFileOption{
+							FileName:      "observatorium.yaml",
+							ConfigMapName: "observatorium-rules",
+							ParentDir:     "telemeter-rules",
+						})
+					},
 				},
 			},
 		},
@@ -224,4 +239,49 @@ func buildTenants(tenants map[string]observatorium.Tenants, instance InstanceNam
 	sortTenants(ret)
 
 	return ret
+}
+
+func getTelemeterRules() string {
+	vm := jsonnet.MakeVM()
+	vm.Importer(&jsonnet.FileImporter{
+		JPaths: []string{"./vendor_jsonnet"},
+	})
+
+	snippet := fmt.Sprintf(`
+	local telemeterRules = (import 'github.com/openshift/telemeter/jsonnet/telemeter/rules.libsonnet');
+	{
+		groups: std.map(function(group) {
+			name: 'telemeter-' + group.name,
+			interval: group.interval,
+			rules: std.map(function(rule) rule {
+			labels+: {
+				tenant_id: '%s',
+			},
+			}, group.rules),
+		}, telemeterRules.prometheus.recordingrules.groups),
+	}`, tenantsMapping[TelemeterInstanceName]["telemeter"])
+
+	// Evaluate the Jsonnet content
+	jsonStr, err := vm.EvaluateAnonymousSnippet("telemeter-rules", snippet)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to evaluate Jsonnet content: %v\n", err))
+	}
+
+	return jsonToYaml(jsonStr)
+}
+
+func jsonToYaml(jsonStr string) string {
+	// Unmarshal the jsonStr into a map
+	var data map[string]interface{}
+	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
+		panic(fmt.Sprintf("Failed to unmarshal Jsonnet content: %v\n", err))
+	}
+
+	// Marshal the map into YAML
+	yamlBytes, err := yaml.Marshal(data)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to marshal Jsonnet content: %v\n", err))
+	}
+
+	return string(yamlBytes)
 }

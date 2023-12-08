@@ -18,8 +18,6 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	// K8s config
 	memcachedDeployment := memcached.NewMemcachedStatefulSet()
 	memcachedDeployment.Name = name
-	// memcachedDeployment.CommonLabels[observatoriumInstanceLabel] = instanceName
-	// memcachedDeployment.CommonLabels[k8sutil.ComponentLabel] = component
 	memcachedDeployment.Image = "quay.io/app-sre/memcached"
 	memcachedDeployment.ImageTag = "1.5"
 	memcachedDeployment.Namespace = namespace

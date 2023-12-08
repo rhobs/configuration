@@ -9,18 +9,18 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: memcached
+      app.kubernetes.io/component: query-range-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: "1.5"
-    name: observatorium-thanos-query-frontend
+    name: observatorium-thanos-query-range-cache-memcached
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: 1
     selector:
       matchLabels:
-        app.kubernetes.io/component: memcached
+        app.kubernetes.io/component: query-range-cache
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
@@ -29,7 +29,7 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: memcached
+          app.kubernetes.io/component: query-range-cache
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: memcached
           app.kubernetes.io/part-of: observatorium
@@ -60,17 +60,17 @@ objects:
           - --verbose=true
           image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
-          name: observatorium-thanos-query-frontend
+          name: observatorium-thanos-query-range-cache-memcached
           ports:
           - containerPort: 11211
             name: client
             protocol: TCP
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: 3Gi
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: 500m
+              memory: 2Gi
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:0
@@ -92,19 +92,19 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: observatorium-thanos-query-frontend
+        serviceAccountName: observatorium-thanos-query-range-cache-memcached
         terminationGracePeriodSeconds: 120
 - apiVersion: v1
   kind: Service
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: memcached
+      app.kubernetes.io/component: query-range-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: "1.5"
-    name: observatorium-thanos-query-frontend
+    name: observatorium-thanos-query-range-cache-memcached
     namespace: rhobs
   spec:
     clusterIP: None
@@ -118,7 +118,7 @@ objects:
       protocol: TCP
       targetPort: 9150
     selector:
-      app.kubernetes.io/component: memcached
+      app.kubernetes.io/component: query-range-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
@@ -129,25 +129,25 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: memcached
+      app.kubernetes.io/component: query-range-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: "1.5"
-    name: observatorium-thanos-query-frontend
+    name: observatorium-thanos-query-range-cache-memcached
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: memcached
+      app.kubernetes.io/component: query-range-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: "1.5"
       prometheus: app-sre
-    name: observatorium-thanos-query-frontend
+    name: observatorium-thanos-query-range-cache-memcached
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -164,7 +164,7 @@ objects:
       - rhobs
     selector:
       matchLabels:
-        app.kubernetes.io/component: memcached
+        app.kubernetes.io/component: query-range-cache
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
@@ -474,17 +474,17 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: memcached
+      app.kubernetes.io/component: query-range-cache
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-    name: observatorium-thanos-query-frontend
+    name: observatorium-thanos-query-range-cache-memcached
     namespace: rhobs
   spec:
     maxUnavailable: 1
     selector:
       matchLabels:
-        app.kubernetes.io/component: memcached
+        app.kubernetes.io/component: query-range-cache
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium

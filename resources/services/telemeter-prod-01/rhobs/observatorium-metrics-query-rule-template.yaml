@@ -168,6 +168,9 @@ objects:
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-default.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-rhel.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-telemeter.rhobs.svc.cluster.local
+          - --endpoint=http://observatorium-thanos-ruler-default.rhobs.svc.cluster.local:10902
+          - --endpoint=http://observatorium-thanos-ruler-rhel.rhobs.svc.cluster.local:10902
+          - --endpoint=http://observatorium-thanos-ruler-telemeter.rhobs.svc.cluster.local:10902
           - --log.format=logfmt
           - --log.level=${LOG_LEVEL}
           - --query.auto-downsampling

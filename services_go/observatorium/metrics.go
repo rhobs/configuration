@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"maps"
+	"net"
 	"sort"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/query"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/queryfrontend"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/ruler"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
@@ -48,6 +50,7 @@ const (
 	ingestorControllerLabel         = "controller.receive.thanos.io"
 	ingestorControllerLabelValue    = "thanos-receive-controller"
 	ingestorControllerLabelHashring = ingestorControllerLabel + "/hashring"
+	queryRuleName                   = "observatorium-thanos-query-rule"
 )
 
 //go:embed assets/store-auto-shard-relabel-configMap.sh
@@ -68,6 +71,7 @@ type ObservatoriumMetrics struct {
 	QueryFrontendPreManifestsHook      func(*queryfrontend.QueryFrontendDeployment)
 	QueryFrontendCachePreManifestsHook func(*memcached.MemcachedDeployment)
 	storesRegister                     []string
+	queryRuleURL                       string
 	queryAdhocURL                      string
 }
 
@@ -83,6 +87,7 @@ type ObservatoriumMetricsInstance struct {
 	BucketCachePreManifestsHook     func(*memcached.MemcachedDeployment)
 	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
 	ReceiveIngestorPreManifestsHook func(*receive.Ingestor)
+	RulerPreManifestsHook           func(*ruler.RulerStatefulSet)
 }
 
 // Tenants contains the configuration for a tenant in a metrics instance.
@@ -106,12 +111,171 @@ func (o *ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 		gen.Add(makeFileName("receive-ingestor", instanceCfg.InstanceName), withStatusRemove(o.makeTenantReceiveIngestor(instanceCfg)))
 		gen.Add(makeFileName("compact", instanceCfg.InstanceName), withStatusRemove(o.makeCompactor(instanceCfg)))
 		gen.Add(makeFileName("store", instanceCfg.InstanceName), withStatusRemove(o.makeStore(instanceCfg)))
+		gen.Add(makeFileName("ruler", instanceCfg.InstanceName), withStatusRemove(o.makeRuler(instanceCfg)))
 	}
 
+	// Order matters here, each component registers itself in the storesRegister slice or the queryRuleURL variable
 	generator.Add("observatorium-metrics-receive-router-template.yaml", withStatusRemove(o.makeReceiveRouter()))
 	generator.Add("observatorium-metrics-query-rule-template.yaml", withStatusRemove(o.makeQueryConfig(true, o.QueryRulePreManifestsHook)))
 	generator.Add("observatorium-metrics-query-template.yaml", withStatusRemove(o.makeQueryConfig(false, o.QueryAdhocPreManifestsHook)))
 	generator.Add("observatorium-metrics-query-frontend-template.yaml", withStatusRemove(o.makeQueryFrontend()))
+}
+
+func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
+	rulerStatefulset := ruler.NewRuler()
+
+	// K8s config
+	rulerStatefulset.Name = fmt.Sprintf("%s-%s", rulerStatefulset.Name, instanceCfg.InstanceName)
+	rulerStatefulset.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
+	rulerStatefulset.Image = thanosImage
+	rulerStatefulset.ImageTag = o.ThanosImageTag
+	rulerStatefulset.Namespace = o.Namespace
+	rulerStatefulset.Replicas = 1
+	delete(rulerStatefulset.PodResources.Limits, corev1.ResourceCPU)
+	rulerStatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
+	rulerStatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")
+	rulerStatefulset.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("1Gi")
+	tlsSecret := "ruler-tls"
+	rulesObjstoreName := "observatorium-rules-objstore"
+	rulesSyncer := ruler.NewRulesSyncerContainer(&ruler.RulesSyncerOptions{
+		File:            "/etc/thanos-rule-syncer/observatorium.yaml",
+		Interval:        60,
+		RulesBackendUrl: fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", rulesObjstoreName, o.Namespace),
+		ThanosRuleUrl: &net.TCPAddr{
+			IP:   net.ParseIP("127.0.0.1"),
+			Port: 10902,
+		},
+	})
+	rulesSyncer.Image = "quay.io/observatorium/thanos-rule-syncer"
+	rulesSyncer.ImageTag = "main-2022-09-14-338f9ec"
+
+	rulerStatefulset.Options.RuleFile = append(rulerStatefulset.Options.RuleFile, ruler.RuleFileOption{
+		FileName:   "observatorium.yaml",
+		VolumeName: "rule-syncer",
+		ParentDir:  "synced-rules",
+	})
+	rulerStatefulset.Sidecars = []k8sutil.ContainerProvider{
+		rulesSyncer,
+		&k8sutil.Container{
+			Name:  "configmap-reloader",
+			Image: "quay.io/openshift/origin-configmap-reloader:4.5.0",
+			Args: []string{
+				"-volume-dir=/etc/thanos-rule-syncer",
+				"-webhook-url=http://localhost:10902/-/reload",
+			},
+			Resources: k8sutil.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
+			VolumeMounts: []corev1.VolumeMount{
+				{
+					Name:      "observatorium-rules",
+					MountPath: "/etc/thanos/rules/observatorium-rules",
+				},
+			},
+		},
+		makeOauthProxy(10902, o.Namespace, rulerStatefulset.Name, tlsSecret),
+		makeJaegerAgent("observatorium-tools"),
+	}
+	rulerStatefulset.Env = append(rulerStatefulset.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
+
+	// Ruler config
+	rulerStatefulset.Options.LogLevel = log.LogLevelWarn
+	rulerStatefulset.Options.LogFormat = log.LogFormatLogfmt
+	rulerStatefulset.Options.Label = []ruler.Label{
+		{Key: "rule_replica", Value: "\"$(NAME)\""},
+	}
+	rulerStatefulset.Options.TracingConfig = &trclient.TracingConfig{
+		Type: trclient.Jaeger,
+		Config: jaeger.Config{
+			SamplerParam: 2,
+			SamplerType:  jaeger.SamplerTypeRateLimiting,
+			ServiceName:  rulerStatefulset.CommonLabels[k8sutil.NameLabel],
+		},
+	}
+	rulerStatefulset.Options.AlertLabelDrop = []string{"rule_replica"}
+	rulerStatefulset.Options.TsdbRetention = model.Duration(2 * 24 * time.Hour)
+	rulerStatefulset.Options.Query = []string{
+		fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryRuleName, o.Namespace), // hardcoded
+	}
+
+	//           --alertmanagers.url=dnssrv+http://observatorium-alertmanager-peers.observatorium-mst-stage.svc.cluster.local:9093
+
+	// Register the store api
+	o.storesRegister = append(o.storesRegister, fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", rulerStatefulset.Name, rulerStatefulset.Namespace))
+
+	// Execute preManifestsHook
+	if instanceCfg.RulerPreManifestsHook != nil {
+		instanceCfg.RulerPreManifestsHook(rulerStatefulset)
+	}
+
+	// Post process
+	manifests := rulerStatefulset.Manifests()
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), rulerStatefulset.Namespace)
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
+	service := getObject[*corev1.Service](manifests)
+	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
+	// Add annotations for openshift oauth so that the route to access the query ui works
+	serviceAccount := getObject[*corev1.ServiceAccount](manifests)
+	if serviceAccount.Annotations == nil {
+		serviceAccount.Annotations = map[string]string{}
+	}
+	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, rulerStatefulset.Name)
+
+	// Add route for oauth-proxy
+	manifests["oauth-proxy-route"] = &routev1.Route{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Route",
+			APIVersion: routev1.SchemeGroupVersion.String(),
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      rulerStatefulset.Name,
+			Namespace: o.Namespace,
+			Labels:    maps.Clone(getObject[*appsv1.StatefulSet](manifests).ObjectMeta.Labels),
+			Annotations: map[string]string{
+				"cert-manager.io/issuer-kind": "ClusterIssuer",
+				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
+			},
+		},
+		Spec: routev1.RouteSpec{
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.FromString("https"),
+			},
+			TLS: &routev1.TLSConfig{
+				Termination:                   routev1.TLSTerminationReencrypt,
+				InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+			},
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: rulerStatefulset.Name,
+			},
+		},
+	}
+
+	// Add rules objstore
+	rulesObjstore := ruler.NewRulesObjstore()
+	rulesObjstore.Name = rulesObjstoreName
+	for key, val := range rulesObjstore.Manifests() {
+		manifests[key] = val
+	}
+
+	// Wrap in template, add parameters
+	defaultParams := defaultTemplateParams(defaultTemplateParamsConfig{
+		LogLevel:      string(rulerStatefulset.Options.LogLevel),
+		Replicas:      rulerStatefulset.Replicas,
+		CPURequest:    rulerStatefulset.PodResources.Requests[corev1.ResourceCPU],
+		MemoryLimit:   rulerStatefulset.PodResources.Limits[corev1.ResourceMemory],
+		MemoryRequest: rulerStatefulset.PodResources.Requests[corev1.ResourceMemory],
+	})
+	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+		Name: rulerStatefulset.Name,
+	}, append(defaultParams, []templatev1.Parameter{
+		{
+			Name:     "OAUTH_PROXY_COOKIE_SECRET",
+			Generate: "expression",
+			From:     "[a-zA-Z0-9]{40}",
+		},
+	}...))
+
+	// Adding a special encoder wrapper to replace the templated values in the template with their corresponding template parameter.
+	return NewDefaultTemplateYAML(encoding.GhodssYAML(template[""]), rulerStatefulset.Name)
 }
 
 func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
@@ -217,7 +381,14 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	}
 
 	// Add cache
-	res := makeMemcached(queryFrontend.Name, o.Namespace, o.QueryFrontendCachePreManifestsHook)
+	rangeCache := "observatorium-thanos-query-range-cache-memcached"
+	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {
+		memdep.CommonLabels[k8sutil.ComponentLabel] = "query-range-cache"
+		if o.QueryFrontendCachePreManifestsHook != nil {
+			o.QueryFrontendCachePreManifestsHook(memdep)
+		}
+	}
+	res := makeMemcached(rangeCache, o.Namespace, cachePreManHook)
 	for k, v := range res {
 		manifests[k] = v
 	}
@@ -249,7 +420,7 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 
 	// K8s config
 	if isRuleQuery {
-		queryDplt.Name = queryDplt.Name + "-rule"
+		queryDplt.Name = queryRuleName
 		queryDplt.CommonLabels[k8sutil.NameLabel] = queryDplt.CommonLabels[k8sutil.NameLabel] + "-rule"
 		// Regenerate the affinity to update the name selector
 		queryDplt.Affinity = k8sutil.NewAntiAffinity(nil, map[string]string{
@@ -300,8 +471,11 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 		queryDplt.Options.QueryTelemetryRequestDurationSecondsQuantiles = []float64{0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120}
 	}
 
-	if !isRuleQuery {
-		o.queryAdhocURL = fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryDplt.Name, queryDplt.Namespace)
+	ruleUrl := fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryDplt.Name, queryDplt.Namespace)
+	if isRuleQuery {
+		o.queryRuleURL = ruleUrl
+	} else {
+		o.queryAdhocURL = ruleUrl
 	}
 
 	// Execute preManifestsHook

@@ -381,7 +381,14 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	}
 
 	// Add cache
-	res := makeMemcached(queryFrontend.Name, o.Namespace, o.QueryFrontendCachePreManifestsHook)
+	rangeCache := "observatorium-thanos-query-range-cache-memcached"
+	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {
+		memdep.CommonLabels[k8sutil.ComponentLabel] = "query-range-cache"
+		if o.QueryFrontendCachePreManifestsHook != nil {
+			o.QueryFrontendCachePreManifestsHook(memdep)
+		}
+	}
+	res := makeMemcached(rangeCache, o.Namespace, cachePreManHook)
 	for k, v := range res {
 		manifests[k] = v
 	}

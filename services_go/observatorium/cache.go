@@ -43,11 +43,11 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 
 	// Post process
 	manifests := memcachedDeployment.Manifests()
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), memcachedDeployment.Namespace)
-	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
+	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests, ""), memcachedDeployment.Namespace)
+	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests, ""))
 
 	// Add pod disruption budget
-	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)
+	labels := maps.Clone(getObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
 	manifests["store-index-cache-pdb"] = &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{

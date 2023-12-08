@@ -1,0 +1,293 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: observatorium-alertmanager
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager-cluster
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: cluster-tcp
+      port: 9094
+      protocol: TCP
+      targetPort: 9094
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: alertmanager-tls
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 9093
+      protocol: TCP
+      targetPort: 9093
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-alertmanager"}}'
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      prometheus: app-sre
+    name: observatorium-alertmanager
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager
+    namespace: rhobs
+  spec:
+    replicas: ${{REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/part-of: observatorium
+    serviceName: observatorium-alertmanager
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: alertmanager
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: alertmanager
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v0.32.4
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - alertmanager
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - --storage.path=/data
+          - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
+          - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
+          - --cluster.reconnect-timeout=5m
+          - --log.level=${LOG_LEVEL}
+          - --log.format=logfmt
+          image: quay.io/thanos/thanos:v0.32.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /-/healthy
+              port: 9093
+            periodSeconds: 30
+            timeoutSeconds: 1
+          name: alertmanager
+          ports:
+          - containerPort: 9093
+            name: http
+            protocol: TCP
+          - containerPort: 9094
+            name: cluster-tcp
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 20
+            httpGet:
+              path: /-/ready
+              port: 9093
+            periodSeconds: 5
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+            requests:
+              cpu: ${CPU_REQUEST}
+              memory: ${MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /data
+            name: alertmanager-data
+        - args:
+          - -provider=openshift
+          - -https-address=:8443
+          - -http-address=
+          - -email-domain=*
+          - -upstream=http://localhost:9093
+          - -openshift-service-account=observatorium-alertmanager
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
+            "namespace": "rhobs"}'
+          - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
+            "name": "rhobs", "namespace": "rhobs"}}'
+          - -tls-cert=/etc/tls/private/tls.crt
+          - -tls-key=/etc/tls/private/tls.key
+          - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+          - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
+          - -openshift-ca=/etc/pki/tls/cert.pem
+          - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          image: quay.io/openshift/origin-oauth-proxy:4.15
+          name: oauth-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: tls
+            readOnly: true
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-alertmanager
+        terminationGracePeriodSeconds: 120
+        volumes:
+        - name: tls
+          secret:
+            secretName: alertmanager-tls
+    updateStrategy: {}
+    volumeClaimTemplates:
+    - metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: alertmanager
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: alertmanager
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v0.32.4
+        name: alertmanager-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: ""
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/issuer-name: letsencrypt-prod-http
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager
+    namespace: rhobs
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: observatorium-alertmanager
+      weight: null
+parameters:
+- name: LOG_LEVEL
+  value: warn
+- name: REPLICAS
+  value: "2"
+- name: CPU_REQUEST
+  value: 100m
+- name: MEMORY_LIMIT
+  value: 1Gi
+- name: MEMORY_REQUEST
+  value: 256Mi
+- from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: OAUTH_PROXY_COOKIE_SECRET

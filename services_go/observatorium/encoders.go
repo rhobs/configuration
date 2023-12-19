@@ -114,8 +114,7 @@ func (c *templateYAML) Read(p []byte) (n int, err error) {
 			// it will be injected into the template paramter's value
 			valueMatch := replRegex.FindStringSubmatch(string(yamlData))
 			if valueMatch == nil {
-				fmt.Printf("replacement not found: %s\n", r[0])
-				continue
+				panic(fmt.Sprintf("replacement not found: %s\n", r[0]))
 			}
 
 			var value string

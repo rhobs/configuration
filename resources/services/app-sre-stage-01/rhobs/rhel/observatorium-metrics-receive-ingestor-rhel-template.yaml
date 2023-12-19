@@ -102,7 +102,7 @@ objects:
     name: observatorium-thanos-receive-ingestor-rhel
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{INGESTOR_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-ingestor
@@ -146,7 +146,7 @@ objects:
           - --http-address=0.0.0.0:10902
           - --label=replica="$(POD_NAME)"
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${INGESTOR_LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --remote-write.address=0.0.0.0:19291
           - |
@@ -222,10 +222,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${INGESTOR_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${INGESTOR_CPU_REQUEST}
+              memory: ${INGESTOR_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/receive
@@ -322,13 +322,13 @@ objects:
         controller.receive.thanos.io/hashring: rhel
         observatorium/tenant: rhel
 parameters:
-- name: LOG_LEVEL
+- name: INGESTOR_CPU_REQUEST
+  value: "1"
+- name: INGESTOR_LOG_LEVEL
   value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
-  value: "1"
-- name: MEMORY_LIMIT
+- name: INGESTOR_MEMORY_LIMIT
   value: 24Gi
-- name: MEMORY_REQUEST
+- name: INGESTOR_MEMORY_REQUEST
   value: 10Gi
+- name: INGESTOR_REPLICAS
+  value: "1"

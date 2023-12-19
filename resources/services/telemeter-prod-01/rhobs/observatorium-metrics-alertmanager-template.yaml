@@ -114,7 +114,7 @@ objects:
     name: observatorium-alertmanager
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{ALERTMGR_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: alertmanager
@@ -155,7 +155,7 @@ objects:
           - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
           - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
           - --cluster.reconnect-timeout=5m
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${ALERTMGR_LOG_LEVEL}
           - --log.format=logfmt
           image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
@@ -182,10 +182,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${ALERTMGR_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${ALERTMGR_CPU_REQUEST}
+              memory: ${ALERTMGR_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /data
@@ -278,16 +278,16 @@ objects:
       name: observatorium-alertmanager
       weight: null
 parameters:
-- name: LOG_LEVEL
-  value: warn
-- name: REPLICAS
-  value: "2"
-- name: CPU_REQUEST
+- name: ALERTMGR_CPU_REQUEST
   value: 100m
-- name: MEMORY_LIMIT
+- name: ALERTMGR_LOG_LEVEL
+  value: warn
+- name: ALERTMGR_MEMORY_LIMIT
   value: 1Gi
-- name: MEMORY_REQUEST
+- name: ALERTMGR_MEMORY_REQUEST
   value: 256Mi
+- name: ALERTMGR_REPLICAS
+  value: "2"
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET

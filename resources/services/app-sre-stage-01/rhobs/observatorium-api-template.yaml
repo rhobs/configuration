@@ -1,0 +1,2105 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: observatorium-api
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: avalanche
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main
+    name: avalanche
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: avalanche
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: avalanche
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: avalanche
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: avalanche
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: main
+        namespace: rhobs
+      spec:
+        containers:
+        - args:
+          - --metric-count=1
+          - --series-count=8333
+          - --value-interval=3600
+          - --series-interval=315360000
+          - --metric-interval=315360000
+          - --remote-url=http://observatorium-thanos-receive-router.rhobs.svc.cluster.local:19291/api/v1/receive
+          - --remote-requests-count=10000000
+          - --remote-write-interval=30s
+          - --remote-tenant=0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+          - --remote-tenant-header=THANOS-TENANT
+          image: quay.io/prometheuscommunity/avalanche:main
+          imagePullPolicy: IfNotPresent
+          name: avalanche
+          ports:
+          - containerPort: 9001
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: avalanche
+        terminationGracePeriodSeconds: 30
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: avalanche
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main
+    name: avalanche
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 9001
+      protocol: TCP
+      targetPort: 9001
+    selector:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: avalanche
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: avalanche
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main
+    name: avalanche
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: avalanche
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main
+      prometheus: app-sre
+    name: avalanche
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: avalanche
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: avalanche
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  data:
+    config.yaml: |
+      tenants:
+      - name: appsre
+        id: 3833951d-bede-4a53-85e5-f73f4913973f
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/appsre/callback
+          usernameClaim: preferred_username
+      - name: cnvqe
+        id: 9ca26972-4328-4fe3-92db-31302013d03f
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/cnvqe/callback
+          usernameClaim: preferred_username
+      - name: dptp
+        id: AC879303-C60F-4D0D-A6D5-A485CFD638B8
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/dptp/callback
+          usernameClaim: preferred_username
+      - name: odfms
+        id: 99c885bc-2d64-4c4d-b55e-8bf30d98c657
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/odfms/callback
+          usernameClaim: preferred_username
+      - name: osd
+        id: 770c1124-6ae8-4324-a9d4-9ce08590094b
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/osd/callback
+          usernameClaim: preferred_username
+        opa:
+          url: http://127.0.0.1:8082/v1/data/observatorium/allow
+        rateLimits:
+        - endpoint: /api/metrics/v1/.+/api/v1/receive
+          limit: 10000
+          window: 30s
+      - name: psiocp
+        id: 37b8fd3f-56ff-4b64-8272-917c9b0d1623
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/psiocp/callback
+          usernameClaim: preferred_username
+      - name: reference-addon
+        id: d17ea8ce-d4c6-42ef-b259-7d10c9227e93
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/reference-addon/callback
+          usernameClaim: preferred_username
+      - name: rhacs
+        id: 1b9b6e43-9128-4bbf-bfff-3c120bbe6f11
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhacs/callback
+          usernameClaim: preferred_username
+      - name: rhel
+        id: ""
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhel/callback
+          usernameClaim: preferred_username
+        rateLimits:
+        - endpoint: /api/metrics/v1/rhel/api/v1/receive
+          limit: 10000
+          window: 30s
+      - name: rhobs
+        id: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          groupClaim: email
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhobs/callback
+          usernameClaim: preferred_username
+      - name: rhods
+        id: 8ace13a2-1c72-4559-b43d-ab43e32a255a
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhods/callback
+          usernameClaim: preferred_username
+      - name: rhtap
+        id: 0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhtap/callback
+          usernameClaim: preferred_username
+      - name: telemeter
+        id: ""
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/telemeter/callback
+          usernameClaim: preferred_username
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: observatorium-tenants
+    namespace: rhobs
+- apiVersion: v1
+  data:
+    config.yaml: |
+      roleBindings:
+          - name: observatorium-cnv-qe
+            roles:
+              - cnvqe-metrics-write
+              - cnvqe-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-cnv-qe-staging
+              - kind: user
+                name: service-account-observatorium-cnv-qe
+          - name: observatorium-starburst-isv-write
+            roles:
+              - rhods-metrics-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-starburst-isv-write-staging
+          - name: observatorium-starburst-isv-read
+            roles:
+              - rhods-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-starburst-isv-read-staging
+          - name: observatorium-rhacs-metrics
+            roles:
+              - rhacs-metrics-write
+              - rhacs-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhacs-metrics-staging
+              - kind: user
+                name: service-account-observatorium-rhacs-metrics
+          - name: observatorium-rhacs-grafana
+            roles:
+              - rhacs-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhacs-grafana-staging
+              - kind: user
+                name: service-account-observatorium-rhacs-grafana
+          - name: observatorium-rhacs-logs
+            roles:
+              - rhacs-logs-write
+              - rhacs-logs-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhacs-logs-staging
+              - kind: user
+                name: service-account-observatorium-rhacs-logs
+          - name: observatorium-rhobs
+            roles:
+              - rhobs-metrics-write
+              - rhobs-metrics-read
+              - rhobs-logs-write
+              - rhobs-logs-read
+              - rhobs-traces-write
+              - rhobs-traces-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhobs-testing
+              - kind: user
+                name: service-account-observatorium-rhobs-staging
+              - kind: user
+                name: service-account-observatorium-rhobs
+          - name: observatorium-rhobs-mst
+            roles:
+              - rhobs-metrics-write
+              - rhobs-metrics-read
+              - rhobs-logs-write
+              - rhobs-logs-read
+              - rhobs-traces-write
+              - rhobs-traces-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhobs-mst-staging
+              - kind: user
+                name: service-account-observatorium-rhobs-mst
+          - name: rhobs-admin
+            roles:
+              - telemeter-metrics-read
+              - rhobs-metrics-read
+              - rhobs-logs-read
+              - rhobs-traces-read
+            subjects:
+              - kind: group
+                name: team-monitoring@redhat.com
+          - name: telemeter-service
+            roles:
+              - telemeter-metrics-write
+              - telemeter-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-telemeter-service-staging
+              - kind: user
+                name: service-account-telemeter-service
+          - name: observatorium-ccx-processing
+            roles:
+              - telemeter-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-ccx-processing-staging
+              - kind: user
+                name: service-account-observatorium-ccx-processing
+          - name: observatorium-sdtcs
+            roles:
+              - telemeter-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-sdtcs-staging
+              - kind: user
+                name: service-account-observatorium-sdtcs
+          - name: observatorium-subwatch
+            roles:
+              - telemeter-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-subwatch-staging
+              - kind: user
+                name: service-account-observatorium-subwatch
+          - name: observatorium-psiocp
+            roles:
+              - psiocp-metrics-write
+              - psiocp-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-psiocp-staging
+          - name: observatorium-odfms-write
+            roles:
+              - odfms-metrics-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-odfms-write
+          - name: observatorium-odfms-read
+            roles:
+              - odfms-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-odfms-read
+          - name: observatorium-odfms
+            roles:
+              - odfms-metrics-read
+              - odfms-metrics-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-odfms-staging
+          - name: observatorium-reference-addon
+            roles:
+              - reference-addon-metrics-write
+              - reference-addon-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-reference-addon-staging
+              - kind: user
+                name: service-account-observatorium-reference-addon
+          - name: observatorium-hypershift-platform
+            roles:
+              - hypershift-platform-metrics-write
+              - hypershift-platform-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-hypershift-platform
+          - name: observatorium-hypershift-platform-read
+            roles:
+              - hypershift-platform-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-hypershift-platform-read
+          - name: observatorium-hypershift-platform-qe-read
+            roles:
+              - hypershift-platform-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-hypershift-platform-qe-read
+          - name: observatorium-hypershift-platform-staging
+            roles:
+              - hypershift-platform-staging-metrics-write
+              - hypershift-platform-staging-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-hypershift-platform-staging
+          - name: observatorium-hypershift-platform-staging-read
+            roles:
+              - hypershift-platform-staging-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-hypershift-platform-staging-read
+          - name: observatorium-hypershift-platform-staging-qe-read
+            roles:
+              - hypershift-platform-staging-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-hypershift-platform-staging-qe-read
+          - name: observatorium-dptp-reader
+            roles:
+              - dptp-logs-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-dptp-reader-staging
+              - kind: user
+                name: service-account-observatorium-dptp-reader
+          - name: observatorium-dptp-collector
+            roles:
+              - dptp-logs-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-dptp-collector-staging
+              - kind: user
+                name: service-account-observatorium-dptp-collector
+          - name: observatorium-appsre
+            roles:
+              - appsre-logs-read
+              - appsre-logs-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-appsre-staging
+              - kind: user
+                name: service-account-observatorium-appsre
+          - name: observatorium-rhtap
+            roles:
+              - rhtap-metrics-read
+              - rhtap-metrics-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhtap-staging
+              - kind: user
+                name: service-account-observatorium-rhtap
+          - name: observatorium-rhel-read
+            roles:
+              - rhel-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhel-read-staging
+              - kind: user
+                name: service-account-observatorium-rhel-read
+          - name: observatorium-rhel-write
+            roles:
+              - rhel-metrics-write
+            subjects:
+              - kind: user
+                name: service-account-observatorium-rhel-write-staging
+              - kind: user
+                name: service-account-observatorium-rhel-write
+      roles:
+          - name: cnvqe-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - cnvqe
+          - name: cnvqe-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - cnvqe
+          - name: rhods-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - rhods
+          - name: rhods-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - rhods
+          - name: rhacs-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - rhacs
+          - name: rhacs-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - rhacs
+          - name: rhacs-logs-write
+            permissions:
+              - write
+            resources:
+              - logs
+            tenants:
+              - rhacs
+          - name: rhacs-logs-read
+            permissions:
+              - read
+            resources:
+              - logs
+            tenants:
+              - rhacs
+          - name: rhobs-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - rhobs
+          - name: rhobs-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - rhobs
+          - name: rhobs-logs-write
+            permissions:
+              - write
+            resources:
+              - logs
+            tenants:
+              - rhobs
+          - name: rhobs-logs-read
+            permissions:
+              - read
+            resources:
+              - logs
+            tenants:
+              - rhobs
+          - name: rhobs-traces-write
+            permissions:
+              - write
+            resources:
+              - traces
+            tenants:
+              - rhobs
+          - name: rhobs-traces-read
+            permissions:
+              - read
+            resources:
+              - traces
+            tenants:
+              - rhobs
+          - name: telemeter-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - telemeter
+          - name: telemeter-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - telemeter
+          - name: psiocp-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - psiocp
+          - name: psiocp-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - psiocp
+          - name: odfms-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - odfms
+          - name: odfms-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - odfms
+          - name: reference-addon-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - reference-addon
+          - name: reference-addon-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - reference-addon
+          - name: hypershift-platform-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - hypershift-platform
+          - name: hypershift-platform-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - hypershift-platform
+          - name: hypershift-platform-staging-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - hypershift-platform-staging
+          - name: hypershift-platform-staging-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - hypershift-platform-staging
+          - name: dptp-logs-read
+            permissions:
+              - read
+            resources:
+              - logs
+            tenants:
+              - dptp
+          - name: dptp-logs-write
+            permissions:
+              - write
+            resources:
+              - logs
+            tenants:
+              - dptp
+          - name: appsre-logs-read
+            permissions:
+              - read
+            resources:
+              - logs
+            tenants:
+              - appsre
+          - name: appsre-logs-write
+            permissions:
+              - write
+            resources:
+              - logs
+            tenants:
+              - appsre
+          - name: rhtap-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - rhtap
+          - name: rhtap-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - rhtap
+          - name: rhel-metrics-read
+            permissions:
+              - read
+            resources:
+              - metrics
+            tenants:
+              - rhel
+          - name: rhel-metrics-write
+            permissions:
+              - write
+            resources:
+              - metrics
+            tenants:
+              - rhel
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: rbac.yaml
+    namespace: rhobs
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: observatorium-api
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http-public
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: http-internal
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    - name: grpc
+      port: 8090
+      protocol: TCP
+      targetPort: 8090
+    - name: opa-ams-api
+      port: 8082
+      protocol: TCP
+      targetPort: 8082
+    - name: opa-ams-metrics
+      port: 8083
+      protocol: TCP
+      targetPort: 8083
+    selector:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: observatorium-api
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+      prometheus: app-sre
+    name: observatorium-api
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http-internal
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    - port: opa-ams-metrics
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: observatorium-api
+    namespace: rhobs
+  spec:
+    replicas: ${{OBSAPI_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: observatorium-api
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: main-2023-12-06-62d7703
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - observatorium-api
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - --internal.tracing.endpoint=localhost:6831
+          - --log.level=${OBSAPI_LOG_LEVEL}
+          - --metrics.alertmanager.endpoint=http://observatorium-alertmanager.rhobs.svc.cluster.local:9093
+          - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.rhobs.svc.cluster.local:9090
+          - --metrics.rules.endpoint=http://observatorium-rules-objstore.rhobs.svc.cluster.local:8080
+          - --metrics.write.endpoint=http://observatorium-thanos-receive-router.rhobs.svc.cluster.local:19291
+          - --middleware.rate-limiter.grpc-address=observatorium-gubernator.rhobs.svc.cluster.local:8081
+          - --rbac.config=/etc/observatorium/rbac/config.yaml
+          - --tenants.config=/etc/observatorium/tenants/config.yaml
+          env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: quay.io/observatorium/api:main-2023-12-06-62d7703
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /live
+              port: 8081
+            periodSeconds: 30
+            timeoutSeconds: 1
+          name: observatorium-api
+          ports:
+          - containerPort: 8080
+            name: http-public
+            protocol: TCP
+          - containerPort: 8081
+            name: http-internal
+            protocol: TCP
+          - containerPort: 8090
+            name: grpc
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 20
+            httpGet:
+              path: /ready
+              port: 8081
+            periodSeconds: 5
+          resources:
+            limits:
+              memory: ${OBSAPI_MEMORY_LIMIT}
+            requests:
+              cpu: ${OBSAPI_CPU_REQUEST}
+              memory: ${OBSAPI_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/observatorium/rbac
+            name: rbac-config
+            readOnly: true
+          - mountPath: /etc/observatorium/tenants
+            name: tenants
+        - args:
+          - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          image: quay.io/app-sre/jaegertracing-jaeger-agent:1.22.0
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+            protocol: TCP
+          - containerPort: 6831
+            name: jaeger-thrift
+            protocol: TCP
+          - containerPort: 14271
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 14271
+            initialDelaySeconds: 1
+          resources:
+            limits:
+              cpu: 128m
+              memory: 128Mi
+            requests:
+              cpu: 32m
+              memory: 64Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --ams.url=https://api.stage.openshift.com
+          - --internal.tracing.endpoint=127.0.0.1:6831
+          - --log.level=warn
+          - --memcached=observatorium-api-cache-memcached.rhobs.svc.cluster.local:11211
+          - --memcached.expire=300
+          - --oidc.client-id=$(CLIENT_ID)
+          - --oidc.client-secret=$(CLIENT_SECRET)
+          - --oidc.issuer-url=$(ISSUER_URL)
+          - --opa.package=observatorium
+          - --resource-type-prefix=observatorium
+          - --web.healthchecks.url=http://localhost:8082
+          - --web.internal.listen=0.0.0.0:8083
+          - --web.listen=127.0.0.1:8082
+          env:
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: observatorium-api-oidc-client
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: observatorium-api-oidc-client
+          - name: ISSUER_URL
+            valueFrom:
+              secretKeyRef:
+                key: issuer-url
+                name: observatorium-api-oidc-client
+          image: quay.io/observatorium/opa-ams:master-2022-11-03-222daab
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8083
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: opa-ams
+          ports:
+          - containerPort: 8082
+            name: opa-ams-api
+            protocol: TCP
+          - containerPort: 8083
+            name: opa-ams-metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8083
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-api
+        terminationGracePeriodSeconds: 120
+        volumes:
+        - configMap:
+            name: config.yaml
+          name: rbac-config
+        - configMap:
+            name: observatorium-tenants
+          name: tenants
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: "1.5"
+    name: observatorium-api-cache-memcached
+    namespace: rhobs
+  spec:
+    replicas: ${{CACHE_REPLICAS}}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: api-cache
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: memcached
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: "1.5"
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - memcached
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - --conn-limit=3072
+          - --max-item-size=5m
+          - --memory-limit=2048
+          - --verbose=true
+          image: quay.io/app-sre/memcached:1.5
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          resources:
+            limits:
+              memory: ${CACHE_MEMORY_LIMIT}
+            requests:
+              cpu: ${CACHE_CPU_REQUEST}
+              memory: ${CACHE_MEMORY_REQUEST}
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:0
+          - --web.listen-address=:9150
+          image: quay.io/prometheus/memcached-exporter:v0.13.0
+          imagePullPolicy: IfNotPresent
+          name: memcached-exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-api-cache-memcached
+        terminationGracePeriodSeconds: 120
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: "1.5"
+    name: observatorium-api-cache-memcached
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: "1.5"
+    name: observatorium-api-cache-memcached
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: "1.5"
+      prometheus: app-sre
+    name: observatorium-api-cache-memcached
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: metrics
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v2.0.0-rc.36
+    name: observatorium-gubernator
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rate-limiter
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: gubernator
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: rate-limiter
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: gubernator
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v2.0.0-rc.36
+        namespace: rhobs
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - gubernator
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - env:
+          - name: GUBER_K8S_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: GUBER_K8S_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: GUBER_HTTP_ADDRESS
+            value: 0.0.0.0:8080
+          - name: GUBER_GRPC_ADDRESS
+            value: 0.0.0.0:8081
+          - name: GUBER_K8S_POD_PORT
+            value: "8081"
+          - name: GUBER_K8S_ENDPOINTS_SELECTOR
+            value: app.kubernetes.io/name=gubernator
+          - name: GUBER_PEER_DISCOVERY_TYPE
+            value: k8s
+          - name: GUBER_LOG_LEVEL
+            value: info
+          image: quay.io/app-sre/gubernator:v2.0.0-rc.36
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 8
+            httpGet:
+              path: /-/healthy
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 1
+          name: gubernator
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          - containerPort: 8081
+            name: grpc
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 20
+            httpGet:
+              path: /-/ready
+              port: 8080
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: 600m
+              memory: 200Mi
+            requests:
+              cpu: 300m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-gubernator
+        terminationGracePeriodSeconds: 120
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v2.0.0-rc.36
+    name: observatorium-gubernator
+    namespace: rhobs
+  rules:
+  - apiGroups:
+    - ""
+    resources:
+    - endpoints
+    verbs:
+    - list
+    - watch
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v2.0.0-rc.36
+    name: observatorium-gubernator
+    namespace: rhobs
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: observatorium-gubernator
+  subjects:
+  - kind: ServiceAccount
+    name: observatorium-gubernator
+    namespace: rhobs
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v2.0.0-rc.36
+    name: observatorium-gubernator
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: grpc
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    selector:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v2.0.0-rc.36
+    name: observatorium-gubernator
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v2.0.0-rc.36
+      prometheus: app-sre
+    name: observatorium-gubernator
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rate-limiter
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: gubernator
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 9c789b9
+    name: observatorium-obsctl-reloader
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-obsctl-reloader
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-obsctl-reloader
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: rules-obsctl-reloader
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: rules-obsctl-reloader
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: 9c789b9
+        namespace: rhobs
+      spec:
+        containers:
+        - args:
+          - --log.level=debug
+          - --web.internal.listen=0.0.0.0:8081
+          - --sleep-duration-seconds=16
+          - --observatorium-api-url=http://observatorium-api.rhobs.svc.cluster.local:8080
+          - --managed-tenants=rhobs,osd,appsre,rhtap
+          - --issuer-url=https://sso.redhat.com/auth/realms/redhat-external
+          - --audience=observatorium
+          - --log-rules-enabled=false
+          image: quay.io/app-sre/obsctl-reloader:9c789b9
+          imagePullPolicy: IfNotPresent
+          name: obsctl-reloader
+          ports:
+          - containerPort: 8081
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              memory: 2Gi
+            requests:
+              cpu: 50m
+              memory: 500Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-obsctl-reloader
+        terminationGracePeriodSeconds: 30
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 9c789b9
+    name: observatorium-obsctl-reloader
+    namespace: rhobs
+  rules:
+  - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - prometheusrules
+    verbs:
+    - list
+    - watch
+    - get
+  - apiGroups:
+    - loki.grafana.com
+    resources:
+    - alertingrules
+    - recordingrules
+    verbs:
+    - list
+    - watch
+    - get
+  - apiGroups:
+    - ""
+    resources:
+    - secrets
+    verbs:
+    - list
+    - watch
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 9c789b9
+    name: observatorium-obsctl-reloader
+    namespace: rhobs
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: observatorium-obsctl-reloader
+  subjects:
+  - kind: ServiceAccount
+    name: observatorium-obsctl-reloader
+    namespace: rhobs
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 9c789b9
+    name: observatorium-obsctl-reloader
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    selector:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 9c789b9
+    name: observatorium-obsctl-reloader
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: 9c789b9
+      prometheus: app-sre
+    name: observatorium-obsctl-reloader
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-obsctl-reloader
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-obsctl-reloader
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  data:
+    queries.yaml: |
+      queries:
+      - name: query-path-sli-1M-samples
+        query: avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id="0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"}[1h])
+      - name: query-path-sli-10M-samples
+        query: avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id="0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"}[10h])
+      - name: query-path-sli-100M-samples
+        query: avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id="0fc2b00e-201b-4c17-b9f2-19d91adc4fd2"}[100h])
+      labels: []
+      series: []
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-queries
+    namespace: rhobs
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-query-frontend
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: blackbox-prober
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: observatorium-up
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v0.0.0
+        namespace: rhobs
+      spec:
+        containers:
+        - args:
+          - --duration=0s
+          - --endpoint-read=http://observatorium-thanos-query-frontend.rhobs.svc.cluster.local:9090
+          - --endpoint-type=metrics
+          - --log.level=info
+          - --queries-file=/etc/up/config/queries/queries.yaml
+          image: quay.io/observatorium/up:v0.0.0
+          imagePullPolicy: IfNotPresent
+          name: observatorium-up
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/up/config/queries
+            name: queries-file
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-up-query-frontend
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            name: observatorium-up-queries
+          name: queries-file
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-query-frontend
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-query-frontend
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+      prometheus: app-sre
+    name: observatorium-up-query-frontend
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-query-rule
+    namespace: rhobs
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: blackbox-prober
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: observatorium-up
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: v0.0.0
+        namespace: rhobs
+      spec:
+        containers:
+        - args:
+          - --duration=0s
+          - --endpoint-read=http://observatorium-thanos-query-frontend.rhobs.svc.cluster.local:9090
+          - --endpoint-type=metrics
+          - --log.level=info
+          - --queries-file=/etc/up/config/queries/queries.yaml
+          image: quay.io/observatorium/up:v0.0.0
+          imagePullPolicy: IfNotPresent
+          name: observatorium-up
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 1Gi
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/up/config/queries
+            name: queries-file
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-up-query-rule
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            name: observatorium-up-queries
+          name: queries-file
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-query-rule
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+    name: observatorium-up-query-rule
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.0.0
+      prometheus: app-sre
+    name: observatorium-up-query-rule
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ""
+    name: observatorium-rules-objstore
+    namespace: observatorium
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: rules-storage
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: rules-objstore
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: ""
+        namespace: observatorium
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - rules-objstore
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - -log.format=logfmt
+          - -log.level=warn
+          image: 'quay.io/observatorium/rules-objstore:'
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8081
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: thanos
+          ports:
+          - containerPort: 8081
+            name: internal
+            protocol: TCP
+          - containerPort: 8080
+            name: public
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8081
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 400Mi
+            requests:
+              cpu: 50m
+              memory: 200Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-rules-objstore
+        terminationGracePeriodSeconds: 120
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ""
+    name: observatorium-rules-objstore
+    namespace: observatorium
+  spec:
+    ports:
+    - name: internal
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    - name: public
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ""
+    name: observatorium-rules-objstore
+    namespace: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ""
+    name: observatorium-rules-objstore
+    namespace: observatorium
+  spec:
+    endpoints:
+    - port: internal
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector: {}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-api-cache-memcached
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+parameters:
+- name: CACHE_CPU_REQUEST
+  value: 500m
+- name: CACHE_MEMORY_LIMIT
+  value: 3Gi
+- name: CACHE_MEMORY_REQUEST
+  value: 2Gi
+- name: CACHE_REPLICAS
+  value: "1"
+- name: OBSAPI_CPU_REQUEST
+  value: 100m
+- name: OBSAPI_LOG_LEVEL
+  value: warn
+- name: OBSAPI_MEMORY_LIMIT
+  value: 4Gi
+- name: OBSAPI_MEMORY_REQUEST
+  value: 1Gi
+- name: OBSAPI_REPLICAS
+  value: "1"

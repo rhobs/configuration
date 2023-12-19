@@ -124,7 +124,7 @@ objects:
     name: observatorium-thanos-query-rule
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{QUERY_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-layer
@@ -172,7 +172,7 @@ objects:
           - --endpoint=http://observatorium-thanos-ruler-rhel.rhobs.svc.cluster.local:10902
           - --endpoint=http://observatorium-thanos-ruler-telemeter.rhobs.svc.cluster.local:10902
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${QUERY_LOG_LEVEL}
           - --query.auto-downsampling
           - --query.lookback-delta=15m
           - --query.max-concurrent=10
@@ -218,10 +218,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${QUERY_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${QUERY_CPU_REQUEST}
+              memory: ${QUERY_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
@@ -310,16 +310,16 @@ objects:
           secret:
             secretName: query-rule-tls
 parameters:
-- name: LOG_LEVEL
-  value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
-  value: 250m
-- name: MEMORY_LIMIT
-  value: 8Gi
-- name: MEMORY_REQUEST
-  value: 2Gi
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET
+- name: QUERY_CPU_REQUEST
+  value: 250m
+- name: QUERY_LOG_LEVEL
+  value: warn
+- name: QUERY_MEMORY_LIMIT
+  value: 8Gi
+- name: QUERY_MEMORY_REQUEST
+  value: 2Gi
+- name: QUERY_REPLICAS
+  value: "1"

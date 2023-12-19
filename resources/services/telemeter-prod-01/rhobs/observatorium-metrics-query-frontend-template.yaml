@@ -4,6 +4,32 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-query-frontend
 objects:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/issuer-name: letsencrypt-prod-http
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-frontend
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-thanos-query-frontend
+    namespace: rhobs
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: observatorium-thanos-query-frontend
+      weight: null
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -60,7 +86,7 @@ objects:
           - --verbose=true
           image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
-          name: observatorium-thanos-query-range-cache-memcached
+          name: memcached
           ports:
           - containerPort: 11211
             name: client
@@ -168,32 +194,6 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    annotations:
-      cert-manager.io/issuer-kind: ClusterIssuer
-      cert-manager.io/issuer-name: letsencrypt-prod-http
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: query-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-frontend
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-    name: observatorium-thanos-query-frontend
-    namespace: rhobs
-  spec:
-    host: ""
-    port:
-      targetPort: https
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: reencrypt
-    to:
-      kind: Service
-      name: observatorium-thanos-query-frontend
-      weight: null
 - apiVersion: v1
   kind: Service
   metadata:
@@ -284,7 +284,7 @@ objects:
     name: observatorium-thanos-query-frontend
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{QFE_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: query-cache
@@ -327,7 +327,7 @@ objects:
           - --labels.max-retries-per-request=0
           - --labels.split-interval=1d
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${QFE_LOG_LEVEL}
           - --query-frontend.compress-responses
           - --query-frontend.downstream-url=http://observatorium-thanos-query.rhobs.svc.cluster.local:10902
           - --query-frontend.log-queries-longer-than=5s
@@ -378,10 +378,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${QFE_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${QFE_CPU_REQUEST}
+              memory: ${QFE_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - -provider=openshift
@@ -489,16 +489,16 @@ objects:
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
 parameters:
-- name: LOG_LEVEL
-  value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
-  value: 100m
-- name: MEMORY_LIMIT
-  value: 1Gi
-- name: MEMORY_REQUEST
-  value: 256Mi
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET
+- name: QFE_CPU_REQUEST
+  value: 100m
+- name: QFE_LOG_LEVEL
+  value: warn
+- name: QFE_MEMORY_LIMIT
+  value: 1Gi
+- name: QFE_MEMORY_REQUEST
+  value: 256Mi
+- name: QFE_REPLICAS
+  value: "1"

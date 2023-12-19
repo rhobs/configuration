@@ -13,7 +13,7 @@ func main() {
 
 	cfgobservatorium.GenSLO(gen.With("observability", "prometheusrules", "pyrra"), gen.With("observability", "prometheusrules"))
 
-	cfgobservatorium.GenerateRBAC(gen.With(".tmp", "tenants"))
+	cfgobservatorium.GenerateRBACFile(gen.With(".tmp", "tenants"))
 
 	// Generate the manifests for all observatorium instances.
 	services.Generate(gen.With("services"))

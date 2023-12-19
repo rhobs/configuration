@@ -98,7 +98,7 @@ objects:
     name: observatorium-thanos-compact-default
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{COMPACTOR_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-compactor
@@ -144,7 +144,7 @@ objects:
           - --delete-delay=24h0m0s
           - --downsample.concurrency=1
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${COMPACTOR_LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --wait
           - --debug.max-compaction-level=3
@@ -206,10 +206,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${COMPACTOR_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${COMPACTOR_CPU_REQUEST}
+              memory: ${COMPACTOR_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/compactor
@@ -324,16 +324,16 @@ objects:
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: default
 parameters:
-- name: LOG_LEVEL
-  value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
+- name: COMPACTOR_CPU_REQUEST
   value: 200m
-- name: MEMORY_LIMIT
+- name: COMPACTOR_LOG_LEVEL
+  value: warn
+- name: COMPACTOR_MEMORY_LIMIT
   value: 5Gi
-- name: MEMORY_REQUEST
+- name: COMPACTOR_MEMORY_REQUEST
   value: 1Gi
+- name: COMPACTOR_REPLICAS
+  value: "1"
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET

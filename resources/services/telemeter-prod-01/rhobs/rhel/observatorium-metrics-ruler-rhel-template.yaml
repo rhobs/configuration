@@ -143,7 +143,7 @@ objects:
     name: observatorium-thanos-ruler-rhel
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{RULER_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: rule-evaluation-engine
@@ -187,7 +187,7 @@ objects:
           - --data-dir=/var/thanos/ruler
           - --label=rule_replica="$(NAME)"
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${RULER_LOG_LEVEL}
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --query=http://observatorium-thanos-query-rule.rhobs.svc.cluster.local:10902
           - --rule-file=/etc/thanos/rules/synced-rules/observatorium.yaml
@@ -260,10 +260,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${RULER_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${RULER_CPU_REQUEST}
+              memory: ${RULER_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/ruler
@@ -416,175 +416,17 @@ objects:
           requests:
             storage: 50Gi
         storageClassName: ""
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
-    name: observatorium-rules-objstore
-    namespace: observatorium
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-objstore
-        app.kubernetes.io/part-of: observatorium
-    strategy: {}
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app.kubernetes.io/component: rules-storage
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: rules-objstore
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ""
-        namespace: observatorium
-      spec:
-        affinity:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: app.kubernetes.io/instance
-                    operator: In
-                    values:
-                    - observatorium
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - rules-objstore
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-        containers:
-        - args:
-          - -log.format=logfmt
-          - -log.level=warn
-          image: 'quay.io/observatorium/rules-objstore:'
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 10
-            httpGet:
-              path: /live
-              port: 8081
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 1
-          name: thanos
-          ports:
-          - containerPort: 8081
-            name: internal
-            protocol: TCP
-          - containerPort: 8080
-            name: public
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 12
-            httpGet:
-              path: /ready
-              port: 8081
-            periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: "1"
-              memory: 400Mi
-            requests:
-              cpu: 50m
-              memory: 200Mi
-          terminationMessagePolicy: FallbackToLogsOnError
-        nodeSelector:
-          kubernetes.io/os: linux
-        serviceAccountName: observatorium-rules-objstore
-        terminationGracePeriodSeconds: 120
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
-    name: observatorium-rules-objstore
-    namespace: observatorium
-  spec:
-    ports:
-    - name: internal
-      port: 8081
-      protocol: TCP
-      targetPort: 8081
-    - name: public
-      port: 8080
-      protocol: TCP
-      targetPort: 8080
-    selector:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
-    name: observatorium-rules-objstore
-    namespace: observatorium
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
-    name: observatorium-rules-objstore
-    namespace: observatorium
-  spec:
-    endpoints:
-    - port: internal
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector: {}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-objstore
-        app.kubernetes.io/part-of: observatorium
 parameters:
-- name: LOG_LEVEL
-  value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
-  value: 100m
-- name: MEMORY_LIMIT
-  value: 1Gi
-- name: MEMORY_REQUEST
-  value: 256Mi
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET
+- name: RULER_CPU_REQUEST
+  value: 100m
+- name: RULER_LOG_LEVEL
+  value: warn
+- name: RULER_MEMORY_LIMIT
+  value: 1Gi
+- name: RULER_MEMORY_REQUEST
+  value: 256Mi
+- name: RULER_REPLICAS
+  value: "1"

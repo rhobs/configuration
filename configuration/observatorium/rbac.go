@@ -44,6 +44,10 @@ const (
 	productionEnv env = "production"
 )
 
+func GenerateRBACFile(gen *mimic.Generator) {
+	gen.Add("rbac.json", encoding.JSON(GenerateRBAC()))
+}
+
 // GenerateRBAC generates rbac.json that is meant to be consumed by observatorium.libsonnet
 // and put into config map consumed by observatorium-api.
 //
@@ -51,7 +55,7 @@ const (
 // against 'user' field in the incoming JWT token that contains service account.
 //
 // TODO(bwplotka): Generate tenants.yaml (without secrets) using the same tenant definitions.
-func GenerateRBAC(gen *mimic.Generator) {
+func GenerateRBAC() *observatoriumRBAC {
 	obsRBAC := observatoriumRBAC{
 		mappedRoleNames: map[roleMapKey]string{},
 	}
@@ -341,7 +345,7 @@ func GenerateRBAC(gen *mimic.Generator) {
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.
-	gen.Add("rbac.json", encoding.JSON(obsRBAC))
+	return &obsRBAC
 }
 
 type roleMapKey struct {

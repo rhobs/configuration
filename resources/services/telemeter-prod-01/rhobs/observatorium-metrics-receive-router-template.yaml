@@ -191,7 +191,7 @@ objects:
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{ROUTER_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-router
@@ -233,7 +233,7 @@ objects:
           - --http-address=0.0.0.0:10902
           - --label=receive="true"
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${ROUTER_LOG_LEVEL}
           - --receive.hashrings-algorithm=ketama
           - --receive.hashrings-file=/etc/thanos/hashring/hashrings.json
           - --receive.hashrings-file-refresh-interval=5s
@@ -274,10 +274,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_LIMIT}
+              memory: ${ROUTER_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: ${MEMORY_REQUEST}
+              cpu: ${ROUTER_CPU_REQUEST}
+              memory: ${ROUTER_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /etc/thanos/hashring
@@ -435,13 +435,13 @@ objects:
         app.kubernetes.io/name: thanos-receive-router
         app.kubernetes.io/part-of: observatorium
 parameters:
-- name: LOG_LEVEL
+- name: ROUTER_CPU_REQUEST
+  value: "1"
+- name: ROUTER_LOG_LEVEL
   value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
-  value: "1"
-- name: MEMORY_LIMIT
+- name: ROUTER_MEMORY_LIMIT
   value: 24Gi
-- name: MEMORY_REQUEST
+- name: ROUTER_MEMORY_REQUEST
   value: 5Gi
+- name: ROUTER_REPLICAS
+  value: "1"

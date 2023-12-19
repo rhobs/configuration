@@ -2,67 +2,85 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-compact-rhel
+  name: observatorium-alertmanager
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: compact-tls-rhel
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/component: alertmanager
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+    name: observatorium-alertmanager-cluster
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: cluster-tcp
+      port: 9094
+      protocol: TCP
+      targetPort: 9094
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: alertmanager-tls
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager
     namespace: rhobs
   spec:
     ports:
     - name: http
-      port: 10902
+      port: 9093
       protocol: TCP
-      targetPort: 10902
-    - name: https
-      port: 8443
-      protocol: TCP
-      targetPort: 8443
+      targetPort: 9093
     selector:
-      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/component: alertmanager
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
 - apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-compact-rhel"}}'
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-alertmanager"}}'
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/component: alertmanager
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+    name: observatorium-alertmanager
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/component: alertmanager
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
       prometheus: app-sre
-    name: observatorium-thanos-compact-rhel
+    name: observatorium-alertmanager
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -79,44 +97,40 @@ objects:
       - rhobs
     selector:
       matchLabels:
-        app.kubernetes.io/component: database-compactor
+        app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-compact
+        app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/component: alertmanager
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+    name: observatorium-alertmanager
     namespace: rhobs
   spec:
-    replicas: ${{COMPACTOR_REPLICAS}}
+    replicas: ${{ALERTMGR_REPLICAS}}
     selector:
       matchLabels:
-        app.kubernetes.io/component: database-compactor
+        app.kubernetes.io/component: alertmanager
         app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-compact
+        app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
-    serviceName: observatorium-thanos-compact-rhel
+    serviceName: observatorium-alertmanager
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: database-compactor
+          app.kubernetes.io/component: alertmanager
           app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: thanos-compact
+          app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: rhel
         namespace: rhobs
       spec:
         affinity:
@@ -132,95 +146,57 @@ objects:
                   - key: app.kubernetes.io/name
                     operator: In
                     values:
-                    - thanos-compact
+                    - alertmanager
                 topologyKey: kubernetes.io/hostname
               weight: 100
         containers:
         - args:
-          - compact
-          - --compact.concurrency=1
-          - --data-dir=/var/thanos/compactor
-          - --deduplication.replica-label=replica
-          - --delete-delay=24h0m0s
-          - --downsample.concurrency=1
+          - --storage.path=/data
+          - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
+          - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
+          - --cluster.reconnect-timeout=5m
+          - --log.level=${ALERTMGR_LOG_LEVEL}
           - --log.format=logfmt
-          - --log.level=${COMPACTOR_LOG_LEVEL}
-          - --objstore.config=$(OBJSTORE_CONFIG)
-          - --wait
-          - --debug.max-compaction-level=3
-          env:
-          - name: HOST_IP_ADDRESS
-            valueFrom:
-              fieldRef:
-                fieldPath: status.hostIP
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                key: aws_access_key_id
-                name: rhelemeter-tenant-s3
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                key: aws_secret_access_key
-                name: rhelemeter-tenant-s3
-          - name: OBJ_STORE_BUCKET
-            valueFrom:
-              secretKeyRef:
-                key: bucket
-                name: rhelemeter-tenant-s3
-          - name: OBJ_STORE_REGION
-            valueFrom:
-              secretKeyRef:
-                key: aws_region
-                name: rhelemeter-tenant-s3
-          - name: OBJ_STORE_ENDPOINT
-            valueFrom:
-              secretKeyRef:
-                key: endpoint
-                name: rhelemeter-tenant-s3
-          - name: OBJSTORE_CONFIG
-            value: |
-              type: S3
-              config:
-                  bucket: $(OBJ_STORE_BUCKET)
-                  endpoint: $(OBJ_STORE_ENDPOINT)
-                  region: $(OBJ_STORE_REGION)
           image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
           livenessProbe:
-            failureThreshold: 4
+            failureThreshold: 8
             httpGet:
               path: /-/healthy
-              port: 10902
+              port: 9093
             periodSeconds: 30
-          name: thanos
+            timeoutSeconds: 1
+          name: alertmanager
           ports:
-          - containerPort: 10902
+          - containerPort: 9093
             name: http
+            protocol: TCP
+          - containerPort: 9094
+            name: cluster-tcp
             protocol: TCP
           readinessProbe:
             failureThreshold: 20
             httpGet:
               path: /-/ready
-              port: 10902
+              port: 9093
             periodSeconds: 5
           resources:
             limits:
-              memory: ${COMPACTOR_MEMORY_LIMIT}
+              memory: ${ALERTMGR_MEMORY_LIMIT}
             requests:
-              cpu: ${COMPACTOR_CPU_REQUEST}
-              memory: ${COMPACTOR_MEMORY_REQUEST}
+              cpu: ${ALERTMGR_CPU_REQUEST}
+              memory: ${ALERTMGR_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
-          - mountPath: /var/thanos/compactor
-            name: data
+          - mountPath: /data
+            name: alertmanager-data
         - args:
           - -provider=openshift
           - -https-address=:8443
           - -http-address=
           - -email-domain=*
-          - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-compact-rhel
+          - -upstream=http://localhost:9093
+          - -openshift-service-account=observatorium-alertmanager
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
             "namespace": "rhobs"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
@@ -251,31 +227,30 @@ objects:
             readOnly: true
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: observatorium-thanos-compact-rhel
+        serviceAccountName: observatorium-alertmanager
         terminationGracePeriodSeconds: 120
         volumes:
         - name: tls
           secret:
-            secretName: compact-tls-rhel
+            secretName: alertmanager-tls
     updateStrategy: {}
     volumeClaimTemplates:
     - metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: database-compactor
+          app.kubernetes.io/component: alertmanager
           app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: thanos-compact
+          app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.32.4
-          observatorium/tenant: rhel
-        name: data
+        name: alertmanager-data
       spec:
         accessModes:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
-        storageClassName: gp2
+            storage: 10Gi
+        storageClassName: ""
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
@@ -284,12 +259,12 @@ objects:
       cert-manager.io/issuer-name: letsencrypt-prod-http
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/component: alertmanager
       app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
+      app.kubernetes.io/version: v0.32.4
+    name: observatorium-alertmanager
     namespace: rhobs
   spec:
     host: ""
@@ -300,40 +275,19 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-compact-rhel
+      name: observatorium-alertmanager
       weight: null
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-compactor
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
-    name: observatorium-thanos-compact-rhel
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-compactor
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-compact
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
 parameters:
-- name: COMPACTOR_CPU_REQUEST
-  value: 200m
-- name: COMPACTOR_LOG_LEVEL
+- name: ALERTMGR_CPU_REQUEST
+  value: 100m
+- name: ALERTMGR_LOG_LEVEL
   value: warn
-- name: COMPACTOR_MEMORY_LIMIT
-  value: 5Gi
-- name: COMPACTOR_MEMORY_REQUEST
+- name: ALERTMGR_MEMORY_LIMIT
   value: 1Gi
-- name: COMPACTOR_REPLICAS
-  value: "1"
+- name: ALERTMGR_MEMORY_REQUEST
+  value: 256Mi
+- name: ALERTMGR_REPLICAS
+  value: "2"
 - from: '[a-zA-Z0-9]{40}'
   generate: expression
   name: OAUTH_PROXY_COOKIE_SECRET

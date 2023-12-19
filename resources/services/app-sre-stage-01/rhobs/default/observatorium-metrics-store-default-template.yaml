@@ -4,6 +4,46 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-store-default
 objects:
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+    name: list-pods-default
+    namespace: rhobs
+  rules:
+  - apiGroups:
+    - apps
+    resources:
+    - statefulsets
+    verbs:
+    - get
+    - list
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+    name: list-pods-default
+    namespace: rhobs
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: list-pods-default
+  subjects:
+  - kind: ServiceAccount
+    name: observatorium-thanos-store-default
+    namespace: rhobs
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -63,7 +103,7 @@ objects:
           - --verbose=true
           image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
-          name: observatorium-thanos-store-bucket-cache-memcached-default
+          name: memcached
           ports:
           - containerPort: 11211
             name: client
@@ -176,27 +216,6 @@ objects:
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: default
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: store-bucket-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: observatorium-thanos-store-bucket-cache-memcached-default
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-bucket-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: default
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -256,7 +275,7 @@ objects:
           - --verbose=true
           image: quay.io/app-sre/memcached:1.5
           imagePullPolicy: IfNotPresent
-          name: observatorium-thanos-store-index-cache-memcached-default
+          name: memcached
           ports:
           - containerPort: 11211
             name: client
@@ -369,67 +388,6 @@ objects:
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: default
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: store-index-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: observatorium-thanos-store-index-cache-memcached-default
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-index-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: default
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: object-store-gateway
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-store
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: list-pods-default
-    namespace: rhobs
-  rules:
-  - apiGroups:
-    - apps
-    resources:
-    - statefulsets
-    verbs:
-    - get
-    - list
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: object-store-gateway
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-store
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: list-pods-default
-    namespace: rhobs
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: list-pods-default
-  subjects:
-  - kind: ServiceAccount
-    name: observatorium-thanos-store-default
-    namespace: rhobs
 - apiVersion: v1
   data:
     entrypoint.sh: "#!/bin/bash\n\n# Kubernetes replicas are named with the following
@@ -456,6 +414,27 @@ objects:
       observatorium/tenant: default
     name: hashmod-config-template-default
     namespace: rhobs
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+    name: observatorium-thanos-store-bucket-cache-memcached-default
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-bucket-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:
@@ -569,7 +548,7 @@ objects:
     name: observatorium-thanos-store-default
     namespace: rhobs
   spec:
-    replicas: ${{REPLICAS}}
+    replicas: ${{STORE_REPLICAS}}
     selector:
       matchLabels:
         app.kubernetes.io/component: object-store-gateway
@@ -625,7 +604,7 @@ objects:
               max_get_multi_batch_size: 100000
               dns_provider_update_interval: 10s
           - --log.format=logfmt
-          - --log.level=${LOG_LEVEL}
+          - --log.level=${STORE_LOG_LEVEL}
           - --max-time=-22h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --selector.relabel-config-file=/etc/thanos/hashmod/hashmod-config.yaml
@@ -716,10 +695,10 @@ objects:
             periodSeconds: 5
           resources:
             limits:
-              memory: ${MEMORY_REQUEST}
+              memory: ${STORE_MEMORY_LIMIT}
             requests:
-              cpu: ${CPU_REQUEST}
-              memory: 20Gi
+              cpu: ${STORE_CPU_REQUEST}
+              memory: ${STORE_MEMORY_REQUEST}
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/store
@@ -817,13 +796,13 @@ objects:
             storage: 5Gi
         storageClassName: gp2
 parameters:
-- name: LOG_LEVEL
-  value: warn
-- name: REPLICAS
-  value: "1"
-- name: CPU_REQUEST
+- name: STORE_CPU_REQUEST
   value: "4"
-- name: MEMORY_LIMIT
+- name: STORE_LOG_LEVEL
+  value: warn
+- name: STORE_MEMORY_LIMIT
   value: 80Gi
-- name: MEMORY_REQUEST
+- name: STORE_MEMORY_REQUEST
   value: 20Gi
+- name: STORE_REPLICAS
+  value: "1"

@@ -16,7 +16,7 @@ import (
 
 func makeMemcached(name, namespace string, preManifestHook func(*memcached.MemcachedDeployment)) k8sutil.ObjectMap {
 	// K8s config
-	memcachedDeployment := memcached.NewMemcachedStatefulSet()
+	memcachedDeployment := memcached.NewMemcached()
 	memcachedDeployment.Name = name
 	memcachedDeployment.Image = "quay.io/app-sre/memcached"
 	memcachedDeployment.ImageTag = "1.5"
@@ -37,17 +37,15 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	memcachedDeployment.Options.Verbose = true
 
 	// Execute preManifestsHook
-	if preManifestHook != nil {
-		preManifestHook(memcachedDeployment)
-	}
+	executeIfNotNil(preManifestHook, memcachedDeployment)
 
 	// Post process
 	manifests := memcachedDeployment.Manifests()
-	postProcessServiceMonitor(getObject[*monv1.ServiceMonitor](manifests), memcachedDeployment.Namespace)
-	addQuayPullSecret(getObject[*corev1.ServiceAccount](manifests))
+	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), memcachedDeployment.Namespace)
+	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
 
 	// Add pod disruption budget
-	labels := maps.Clone(getObject[*appsv1.Deployment](manifests).ObjectMeta.Labels)
+	labels := maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
 	manifests["store-index-cache-pdb"] = &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{

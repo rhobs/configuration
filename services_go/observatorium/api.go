@@ -68,12 +68,27 @@ func (o *ObservatoriumAPI) Manifests(generator *mimic.Generator) {
 }
 
 func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
-	obsapi := observatoriumapi.NewObservatoriumAPI()
+	// Observatorium api config
+	gubernatorName := "observatorium-gubernator"
+	tenantsConfig := observatoriumapi.Tenants{Tenants: o.Tenants}
+	opts := &observatoriumapi.ObservatoriumAPIOptions{
+		InternalTracingEndpoint:          "localhost:6831",
+		LogLevel:                         log.LogLevelWarn,
+		MiddlewareRateLimiterGrpcAddress: fmt.Sprintf("%s.%s.svc.cluster.local:8081", gubernatorName, o.Namespace),
+		MetricsReadEndpoint:              fmt.Sprintf("http://%s.%s.svc.cluster.local:9090", obsQueryFrontendName, o.Namespace),
+		MetricsWriteEndpoint:             fmt.Sprintf("http://%s.%s.svc.cluster.local:19291", receiveRouterName, o.Namespace),
+		MetricsRulesEndpoint:             fmt.Sprintf("http://%s.%s.svc.cluster.local:8080", rulesObjstoreName, o.Namespace),
+		MetricsAlertmanagerEndpoint:      fmt.Sprintf("http://%s.%s.svc.cluster.local:9093", alertManagerName, o.Namespace),
+		TenantsConfig:                    observatoriumapi.NewTenantsConfig().WithValue(tenantsConfig),
+	}
+
+	if o.RBAC != "" {
+		opts.RbacConfig = observatoriumapi.NewRbacConfig().WithValue(o.RBAC)
+	}
 
 	// K8s config
+	obsapi := observatoriumapi.NewObservatoriumAPI(opts, o.Namespace, obsApiTag)
 	obsapi.Image = obsApiImage
-	obsapi.ImageTag = obsApiTag
-	obsapi.Namespace = o.Namespace
 	obsapi.Replicas = 1
 	delete(obsapi.PodResources.Limits, corev1.ResourceCPU)
 	opaAmsCache := "observatorium-api-cache-memcached"
@@ -82,21 +97,6 @@ func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
 		makeJaegerAgent("observatorium-tools"),
 		o.makeOpaAms(o.AmsUrl, cacheURL, o.AmsClientSecretName),
 	}
-
-	// Observatorium api config
-	obsapi.Options.InternalTracingEndpoint = "localhost:6831"
-	if o.RBAC != "" {
-		obsapi.Options.RbacConfig = observatoriumapi.NewRbacConfig("rbac.yaml", o.RBAC)
-	}
-	gubernatorName := "observatorium-gubernator"
-	obsapi.Options.LogLevel = log.LogLevelWarn
-	obsapi.Options.MiddlewareRateLimiterGrpcAddress = fmt.Sprintf("%s.%s.svc.cluster.local:8081", gubernatorName, o.Namespace)
-	obsapi.Options.MetricsReadEndpoint = fmt.Sprintf("http://%s.%s.svc.cluster.local:9090", obsQueryFrontendName, o.Namespace)
-	obsapi.Options.MetricsWriteEndpoint = fmt.Sprintf("http://%s.%s.svc.cluster.local:19291", receiveRouterName, o.Namespace)
-	obsapi.Options.MetricsRulesEndpoint = fmt.Sprintf("http://%s.%s.svc.cluster.local:8080", rulesObjstoreName, o.Namespace)
-	obsapi.Options.MetricsAlertmanagerEndpoint = fmt.Sprintf("http://%s.%s.svc.cluster.local:9093", alertManagerName, o.Namespace)
-	tenantsConfig := observatoriumapi.Tenants{Tenants: o.Tenants}
-	obsapi.Options.TenantsConfig = observatoriumapi.NewTenantsConfig("tenants.yaml", tenantsConfig).WithValue(tenantsConfig)
 
 	// Execute preManifestsHook
 	executeIfNotNil(o.APIPremanifestsHook, obsapi)

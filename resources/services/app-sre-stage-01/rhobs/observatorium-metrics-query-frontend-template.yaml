@@ -323,9 +323,9 @@ objects:
         - args:
           - query-frontend
           - --cache-compression-type=snappy
-          - --labels.default-time-range=2w
+          - --labels.default-time-range=336h0m0s
           - --labels.max-retries-per-request=0
-          - --labels.split-interval=1d
+          - --labels.split-interval=24h0m0s
           - --log.format=logfmt
           - --log.level=${QFE_LOG_LEVEL}
           - --query-frontend.compress-responses
@@ -344,7 +344,7 @@ objects:
               max_get_multi_concurrency: 1000
               max_item_size: 64MiB
               max_get_multi_batch_size: 100
-          - --query-range.split-interval=1d
+          - --query-range.split-interval=24h0m0s
           - |
             --tracing.config=type: JAEGER
             config:

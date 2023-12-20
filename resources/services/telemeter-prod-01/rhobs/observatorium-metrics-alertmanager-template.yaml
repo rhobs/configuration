@@ -4,6 +4,32 @@ metadata:
   creationTimestamp: null
   name: observatorium-alertmanager
 objects:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/issuer-name: letsencrypt-prod-http
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.26.0
+    name: observatorium-alertmanager
+    namespace: rhobs
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: observatorium-alertmanager
+      weight: null
 - apiVersion: v1
   kind: Service
   metadata:
@@ -13,7 +39,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.26.0
     name: observatorium-alertmanager-cluster
     namespace: rhobs
   spec:
@@ -39,7 +65,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.26.0
     name: observatorium-alertmanager
     namespace: rhobs
   spec:
@@ -66,7 +92,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.26.0
     name: observatorium-alertmanager
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -78,7 +104,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.26.0
       prometheus: app-sre
     name: observatorium-alertmanager
     namespace: openshift-customer-monitoring
@@ -110,7 +136,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
+      app.kubernetes.io/version: v0.26.0
     name: observatorium-alertmanager
     namespace: rhobs
   spec:
@@ -130,7 +156,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.26.0
         namespace: rhobs
       spec:
         affinity:
@@ -151,13 +177,14 @@ objects:
               weight: 100
         containers:
         - args:
+          - --config.file=/etc/alertmanager/config/alertmanager.yaml
           - --storage.path=/data
           - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
           - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
           - --cluster.reconnect-timeout=5m
           - --log.level=${ALERTMGR_LOG_LEVEL}
           - --log.format=logfmt
-          image: quay.io/thanos/thanos:v0.32.4
+          image: quay.io/prometheus/alertmanager:v0.26.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -190,6 +217,9 @@ objects:
           volumeMounts:
           - mountPath: /data
             name: alertmanager-data
+          - mountPath: /etc/alertmanager/config
+            name: config-file
+            readOnly: true
         - args:
           - -provider=openshift
           - -https-address=:8443
@@ -230,6 +260,9 @@ objects:
         serviceAccountName: observatorium-alertmanager
         terminationGracePeriodSeconds: 120
         volumes:
+        - name: config-file
+          secret:
+            secretName: alertmanager-config
         - name: tls
           secret:
             secretName: alertmanager-tls
@@ -242,7 +275,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.32.4
+          app.kubernetes.io/version: v0.26.0
         name: alertmanager-data
       spec:
         accessModes:
@@ -251,32 +284,6 @@ objects:
           requests:
             storage: 10Gi
         storageClassName: ""
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    annotations:
-      cert-manager.io/issuer-kind: ClusterIssuer
-      cert-manager.io/issuer-name: letsencrypt-prod-http
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: alertmanager
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: alertmanager
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-    name: observatorium-alertmanager
-    namespace: rhobs
-  spec:
-    host: ""
-    port:
-      targetPort: https
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: reencrypt
-    to:
-      kind: Service
-      name: observatorium-alertmanager
-      weight: null
 parameters:
 - name: ALERTMGR_CPU_REQUEST
   value: 100m

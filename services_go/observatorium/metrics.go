@@ -52,6 +52,8 @@ const (
 	obsQueryFrontendName            = "observatorium-thanos-query-frontend"
 	receiveRouterName               = "observatorium-thanos-receive-router"
 	alertManagerName                = "observatorium-alertmanager"
+	alertManagerImage               = "quay.io/prometheus/alertmanager"
+	alertManagerTag                 = "v0.26.0"
 )
 
 //go:embed assets/store-auto-shard-relabel-configMap.sh
@@ -71,7 +73,8 @@ type ObservatoriumMetrics struct {
 	QueryAdhocPreManifestsHook         func(*query.QueryDeployment)
 	QueryFrontendPreManifestsHook      func(*queryfrontend.QueryFrontendDeployment)
 	QueryFrontendCachePreManifestsHook func(*memcached.MemcachedDeployment)
-	AlertManagerPreManifestsHook       func(*alertmanager.AlertManagerStatefulSet)
+	AlertManagerOpts                   func(*alertmanager.AlertManagerOptions)
+	AlertManagerDeploy                 func(*alertmanager.AlertManagerStatefulSet)
 	storesRegister                     []string
 	queryRuleURL                       string
 	queryAdhocURL                      string
@@ -125,12 +128,15 @@ func (o *ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 }
 
 func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
-	alertmanSts := alertmanager.NewAlertManager()
+	// Alertmanager config
+	opts := alertmanager.NewDefaultOptions()
+	opts.ConfigFile = alertmanager.NewConfigFile().WithExistingResource("alertmanager-config", "alertmanager.yaml").AsSecret()
+	opts.ClusterReconnectTimeout = model.Duration(5 * time.Minute)
+	executeIfNotNil(o.AlertManagerOpts, opts)
 
 	// K8s config
-	alertmanSts.Image = thanosImage
-	alertmanSts.ImageTag = o.ThanosImageTag
-	alertmanSts.Namespace = o.Namespace
+	alertmanSts := alertmanager.NewAlertManager(opts, o.Namespace, alertManagerTag)
+	alertmanSts.Image = alertManagerImage
 	alertmanSts.Replicas = 2
 	alertmanSts.Name = alertManagerName
 	delete(alertmanSts.PodResources.Limits, corev1.ResourceCPU)
@@ -141,19 +147,14 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	alertmanSts.Sidecars = []k8sutil.ContainerProvider{
 		makeOauthProxy(9093, o.Namespace, alertmanSts.Name, tlsSecret),
 	}
+	executeIfNotNil(o.AlertManagerDeploy, alertmanSts)
 
-	// Alertmanager config
-	alertmanSts.Options.LogLevel = log.LogLevelWarn
-	alertmanSts.Options.LogFormat = log.LogFormatLogfmt
-	alertmanSts.Options.StoragePath = "/data"
 	headlessServiceName := alertmanSts.Name + "-cluster"
 	if alertmanSts.Replicas > 1 {
 		for i := 0; i < int(alertmanSts.Replicas); i++ {
-			alertmanSts.Options.ClusterPeer = append(alertmanSts.Options.ClusterPeer, fmt.Sprintf("%s-%d.%s.%s.svc.cluster.local:9094", alertmanSts.Name, i, headlessServiceName, o.Namespace))
+			opts.ClusterPeer = append(opts.ClusterPeer, fmt.Sprintf("%s-%d.%s.%s.svc.cluster.local:9094", alertmanSts.Name, i, headlessServiceName, o.Namespace))
 		}
 	}
-	alertmanSts.Options.ClusterReconnectTimeout = model.Duration(5 * time.Minute)
-	executeIfNotNil(o.AlertManagerPreManifestsHook, alertmanSts)
 
 	// Post process
 	manifests := alertmanSts.Manifests()
@@ -378,7 +379,7 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	queryFrontend.Options.LogFormat = log.LogFormatLogfmt
 	queryFrontend.Options.QueryFrontendCompressResponses = true
 	queryFrontend.Options.QueryFrontendDownstreamURL = o.queryAdhocURL
-	queryFrontend.Options.QueryFrontendLogQueriesLongerThan = model.Duration(5 * time.Second)
+	queryFrontend.Options.QueryFrontendLogQueriesLongerThan = time.Duration(5 * time.Second)
 	// Add memcached config
 	queryFrontend.Options.TracingConfig = &trclient.TracingConfig{
 		Type: trclient.Jaeger,
@@ -388,12 +389,12 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 			ServiceName:  queryFrontend.CommonLabels[k8sutil.NameLabel],
 		},
 	}
-	queryFrontend.Options.QueryRangeSplitInterval = model.Duration(24 * time.Hour)
-	queryFrontend.Options.LabelsSplitInterval = model.Duration(24 * time.Hour)
+	queryFrontend.Options.QueryRangeSplitInterval = time.Duration(24 * time.Hour)
+	queryFrontend.Options.LabelsSplitInterval = time.Duration(24 * time.Hour)
 	zero := 0
 	queryFrontend.Options.QueryRangeMaxRetriesPerRequest = &zero
 	queryFrontend.Options.LabelsMaxRetriesPerRequest = &zero
-	queryFrontend.Options.LabelsDefaultTimeRange = model.Duration(14 * 24 * time.Hour)
+	queryFrontend.Options.LabelsDefaultTimeRange = time.Duration(14 * 24 * time.Hour)
 	queryFrontend.Options.CacheCompressionType = queryfrontend.CacheCompressionTypeSnappy
 	cacheName := "observatorium-thanos-query-range-cache-memcached"
 	queryFrontend.Options.QueryRangeResponseCacheConfig = cache.NewResponseCacheConfig(memcachedclientcfg.MemcachedClientConfig{

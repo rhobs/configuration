@@ -414,8 +414,8 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 50Gi
-        storageClassName: ""
+            storage: 10Gi
+        storageClassName: gp2
 parameters:
 - from: '[a-zA-Z0-9]{40}'
   generate: expression

@@ -283,7 +283,7 @@ objects:
         resources:
           requests:
             storage: 10Gi
-        storageClassName: ""
+        storageClassName: gp2
 parameters:
 - name: ALERTMGR_CPU_REQUEST
   value: 100m

@@ -250,8 +250,9 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	rulerStatefulset.Sidecars = []k8sutil.ContainerProvider{
 		rulesSyncer,
 		&k8sutil.Container{
-			Name:  "configmap-reloader",
-			Image: "quay.io/openshift/origin-configmap-reloader:4.5.0",
+			Name:     "configmap-reloader",
+			Image:    "quay.io/openshift/origin-configmap-reloader",
+			ImageTag: "4.5.0",
 			Args: []string{
 				"-volume-dir=/etc/thanos-rule-syncer",
 				"-webhook-url=http://localhost:10902/-/reload",
@@ -616,9 +617,9 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	router.Namespace = o.Namespace
 	router.Replicas = 1
 	delete(router.PodResources.Limits, corev1.ResourceCPU)
-	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("1")
-	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("5Gi")
-	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
+	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
+	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("3Gi")
+	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("10Gi")
 	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Router config
@@ -751,9 +752,9 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 	ingestor.VolumeType = "gp2"
 	ingestor.VolumeSize = "50Gi"
 	delete(ingestor.PodResources.Limits, corev1.ResourceCPU)
-	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("1")
-	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("10Gi")
-	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("24Gi")
+	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
+	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("3Gi")
+	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("10Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
 	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}

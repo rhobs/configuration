@@ -436,12 +436,12 @@ objects:
         app.kubernetes.io/part-of: observatorium
 parameters:
 - name: ROUTER_CPU_REQUEST
-  value: "1"
+  value: 200m
 - name: ROUTER_LOG_LEVEL
   value: warn
 - name: ROUTER_MEMORY_LIMIT
-  value: 24Gi
+  value: 10Gi
 - name: ROUTER_MEMORY_REQUEST
-  value: 5Gi
+  value: 3Gi
 - name: ROUTER_REPLICAS
   value: "1"

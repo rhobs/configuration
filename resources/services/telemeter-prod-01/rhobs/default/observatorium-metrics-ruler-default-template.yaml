@@ -296,7 +296,7 @@ objects:
         - args:
           - -volume-dir=/etc/thanos-rule-syncer
           - -webhook-url=http://localhost:10902/-/reload
-          image: 'quay.io/openshift/origin-configmap-reloader:4.5.0:'
+          image: quay.io/openshift/origin-configmap-reloader:4.5.0
           name: configmap-reloader
           resources:
             limits:

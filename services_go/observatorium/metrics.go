@@ -139,6 +139,7 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	alertmanSts.Image = alertManagerImage
 	alertmanSts.Replicas = 2
 	alertmanSts.Name = alertManagerName
+	alertmanSts.VolumeType = "gp2"
 	delete(alertmanSts.PodResources.Limits, corev1.ResourceCPU)
 	alertmanSts.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
 	alertmanSts.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")
@@ -225,6 +226,8 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	rulerStatefulset.ImageTag = o.ThanosImageTag
 	rulerStatefulset.Namespace = o.Namespace
 	rulerStatefulset.Replicas = 1
+	rulerStatefulset.VolumeType = "gp2"
+	rulerStatefulset.VolumeSize = "10Gi"
 	delete(rulerStatefulset.PodResources.Limits, corev1.ResourceCPU)
 	rulerStatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
 	rulerStatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")

@@ -91,7 +91,7 @@ objects:
       app.kubernetes.io/version: v0.32.5
       prometheus: app-sre
     name: observatorium-thanos-query-rule
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http

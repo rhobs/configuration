@@ -100,7 +100,7 @@ objects:
       observatorium/tenant: telemeter
       prometheus: app-sre
     name: observatorium-thanos-ruler-telemeter
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http

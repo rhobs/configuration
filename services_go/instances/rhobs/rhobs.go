@@ -174,6 +174,7 @@ func stageConfig() observatorium.Observatorium {
 			UpQueriesTenant:              tenantsMapping[DefaultInstanceName][rhobsTenantName],
 			ObsCtlReloaderManagedTenants: []string{string(rhobsTenantName), string(osdTenantName), string(appsreTenantName), string(rhtapTenantName)},
 			Tenants:                      makeObsTenants(tenants),
+			RuleObjStoreSecret:           "rhobs-rules-objstore-stage-s3",
 		},
 		MetricsInstances: observatorium.ObservatoriumMetrics{
 			Namespace:                 "rhobs",

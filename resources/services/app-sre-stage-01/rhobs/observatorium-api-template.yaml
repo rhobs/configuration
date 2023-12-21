@@ -116,7 +116,7 @@ objects:
       app.kubernetes.io/version: main
       prometheus: app-sre
     name: avalanche
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http
@@ -273,7 +273,7 @@ objects:
       app.kubernetes.io/version: "1.5"
       prometheus: app-sre
     name: observatorium-api-cache-memcached
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: metrics
@@ -579,7 +579,7 @@ objects:
       app.kubernetes.io/version: main-2023-12-06-62d7703
       prometheus: app-sre
     name: observatorium-api
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http-internal
@@ -807,7 +807,7 @@ objects:
       app.kubernetes.io/version: v2.0.0-rc.36
       prometheus: app-sre
     name: observatorium-gubernator
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http
@@ -994,7 +994,7 @@ objects:
       app.kubernetes.io/version: 9c789b9
       prometheus: app-sre
     name: observatorium-obsctl-reloader
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http
@@ -1769,7 +1769,7 @@ objects:
       app.kubernetes.io/version: v0.0.0
       prometheus: app-sre
     name: observatorium-up-query-frontend
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http
@@ -1897,7 +1897,7 @@ objects:
       app.kubernetes.io/version: v0.0.0
       prometheus: app-sre
     name: observatorium-up-query-rule
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http
@@ -1910,6 +1910,25 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: observatorium-up
         app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  data:
+    config.yaml: |
+      type: S3
+      config:
+        bucket: $(OBJ_STORE_BUCKET)
+        endpoint: $(OBJ_STORE_ENDPOINT)
+        region: $(OBJ_STORE_REGION)
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
+    name: observatorium-rules-objstore
+    namespace: rhobs
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1919,9 +1938,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
-    namespace: observatorium
+    namespace: rhobs
   spec:
     replicas: 1
     selector:
@@ -1939,8 +1958,8 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: rules-objstore
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ""
-        namespace: observatorium
+          app.kubernetes.io/version: main-2022-09-21-9df4d2c
+        namespace: rhobs
       spec:
         affinity:
           podAntiAffinity:
@@ -1962,7 +1981,34 @@ objects:
         - args:
           - -log.format=logfmt
           - -log.level=warn
-          image: 'quay.io/observatorium/rules-objstore:'
+          - -objstore.config-file=/etc/rules-objstore/objstore/config.yaml
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+                name: rhobs-rules-objstore-stage-s3
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+                name: rhobs-rules-objstore-stage-s3
+          - name: OBJ_STORE_BUCKET
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: rhobs-rules-objstore-stage-s3
+          - name: OBJ_STORE_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+                name: rhobs-rules-objstore-stage-s3
+          - name: OBJ_STORE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                key: endpoint
+                name: rhobs-rules-objstore-stage-s3
+          image: quay.io/observatorium/rules-objstore:main-2022-09-21-9df4d2c
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 10
@@ -1996,10 +2042,17 @@ objects:
               cpu: 50m
               memory: 200Mi
           terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/rules-objstore/objstore
+            name: objstore
         nodeSelector:
           kubernetes.io/os: linux
         serviceAccountName: observatorium-rules-objstore
         terminationGracePeriodSeconds: 120
+        volumes:
+        - configMap:
+            name: observatorium-rules-objstore
+          name: objstore
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2009,9 +2062,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
-    namespace: observatorium
+    namespace: rhobs
   spec:
     ports:
     - name: internal
@@ -2036,9 +2089,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
-    namespace: observatorium
+    namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -2048,9 +2101,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
-    namespace: observatorium
+    namespace: rhobs
   spec:
     endpoints:
     - port: internal

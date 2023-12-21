@@ -174,7 +174,7 @@ objects:
       app.kubernetes.io/version: "1.5"
       prometheus: app-sre
     name: observatorium-thanos-query-range-cache-memcached
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: metrics
@@ -251,7 +251,7 @@ objects:
       app.kubernetes.io/version: v0.32.5
       prometheus: app-sre
     name: observatorium-thanos-query-frontend
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http

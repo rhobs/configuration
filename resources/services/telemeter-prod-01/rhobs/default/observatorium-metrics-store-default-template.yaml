@@ -195,7 +195,7 @@ objects:
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-store-bucket-cache-memcached-default
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: metrics
@@ -367,7 +367,7 @@ objects:
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-store-index-cache-memcached-default
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: metrics
@@ -513,7 +513,7 @@ objects:
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-store-default
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http

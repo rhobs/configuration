@@ -17,6 +17,8 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
 	"github.com/observatorium/observatorium/configuration_go/schemas/log"
+	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
+	objstoreS3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	upoptions "github.com/observatorium/up/pkg/options"
 	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -57,6 +59,7 @@ type ObservatoriumAPI struct {
 	AvalancheOpts                func(*avalanche.AvalancheOptions)
 	AvalancheDeploy              func(*avalanche.AvalancheDeployment)
 	ObsCtlReloaderManagedTenants []string
+	RuleObjStoreSecret           string
 }
 
 func (o *ObservatoriumAPI) Manifests(generator *mimic.Generator) {
@@ -107,11 +110,7 @@ func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
 	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
 
 	// Add rules objstore
-	rulesObjstore := ruler.NewRulesObjstore()
-	rulesObjstore.Name = rulesObjstoreName
-	for key, val := range rulesObjstore.Manifests() {
-		manifests[key] = val
-	}
+	maps.Copy(manifests, o.makeRulesObjstore())
 
 	// Add cache
 	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {
@@ -148,6 +147,26 @@ func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
 	}, sortTemplateParams(params))
 
 	return cacheEncoder.Wrap(apiEncoder.Wrap(encoding.GhodssYAML(template[""])))
+}
+
+func (o *ObservatoriumAPI) makeRulesObjstore() k8sutil.ObjectMap {
+	rulesObjstore := ruler.NewRulesObjstore()
+	rulesObjstore.ImageTag = "main-2022-09-21-9df4d2c"
+	rulesObjstore.Namespace = o.Namespace
+	rulesObjstore.Name = rulesObjstoreName
+	rulesObjstore.Env = append(rulesObjstore.Env, objStoreEnvVars(o.RuleObjStoreSecret)...)
+	rulesObjstore.Env = deleteObjStoreEnv(rulesObjstore.Env)
+	rulesObjstore.Options.ObjstoreConfigFile = ruler.NewObjstoreConfigFile("observatorium-rules-objstore", objstore.BucketConfig{
+		Type: objstore.S3,
+		Config: objstoreS3.Config{
+			Bucket:   "$(OBJ_STORE_BUCKET)",
+			Endpoint: "$(OBJ_STORE_ENDPOINT)",
+			Region:   "$(OBJ_STORE_REGION)",
+		},
+	})
+	rulesObjstore.Options.LogLevel = string(log.LogLevelWarn)
+	rulesObjstore.Options.LogFormat = string(log.LogFormatLogfmt)
+	return rulesObjstore.Manifests()
 }
 
 func (o *ObservatoriumAPI) makeOpaAms(amsURL, memcachedUrl, clientSecretName string) *k8sutil.Container {

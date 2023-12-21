@@ -14,7 +14,6 @@ import (
 
 // postProcessServiceMonitor updates the service monitor to work with the app-sre prometheus.
 func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSelector string) {
-	serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels["prometheus"] = "app-sre"
 }

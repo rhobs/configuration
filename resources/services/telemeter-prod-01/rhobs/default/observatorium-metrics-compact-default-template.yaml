@@ -63,7 +63,7 @@ objects:
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-compact-default
-    namespace: openshift-customer-monitoring
+    namespace: rhobs
   spec:
     endpoints:
     - port: http

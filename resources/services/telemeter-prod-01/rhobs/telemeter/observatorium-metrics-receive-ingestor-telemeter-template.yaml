@@ -323,12 +323,12 @@ objects:
         observatorium/tenant: telemeter
 parameters:
 - name: INGESTOR_CPU_REQUEST
-  value: "1"
+  value: 200m
 - name: INGESTOR_LOG_LEVEL
   value: warn
 - name: INGESTOR_MEMORY_LIMIT
-  value: 24Gi
-- name: INGESTOR_MEMORY_REQUEST
   value: 10Gi
+- name: INGESTOR_MEMORY_REQUEST
+  value: 3Gi
 - name: INGESTOR_REPLICAS
   value: "1"

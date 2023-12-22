@@ -100,7 +100,7 @@ objects:
       observatorium/tenant: rhel
       prometheus: app-sre
     name: observatorium-thanos-ruler-rhel
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -184,6 +184,7 @@ objects:
         - args:
           - rule
           - --alert.label-drop=rule_replica
+          - --alertmanagers.url=http://observatorium-alertmanager.rhobs.svc.cluster.local:9093
           - --data-dir=/var/thanos/ruler
           - --label=rule_replica="$(NAME)"
           - --log.format=logfmt
@@ -293,22 +294,6 @@ objects:
           volumeMounts:
           - mountPath: /etc/thanos-rule-syncer
             name: rule-syncer
-        - args:
-          - -volume-dir=/etc/thanos-rule-syncer
-          - -webhook-url=http://localhost:10902/-/reload
-          image: quay.io/openshift/origin-configmap-reloader:4.5.0
-          name: configmap-reloader
-          resources:
-            limits:
-              cpu: 200m
-              memory: 200Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
-          terminationMessagePolicy: FallbackToLogsOnError
-          volumeMounts:
-          - mountPath: /etc/thanos/rules/observatorium-rules
-            name: observatorium-rules
         - args:
           - -provider=openshift
           - -https-address=:8443

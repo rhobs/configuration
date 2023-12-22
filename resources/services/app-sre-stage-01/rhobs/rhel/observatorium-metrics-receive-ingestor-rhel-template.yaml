@@ -65,7 +65,7 @@ objects:
       observatorium/tenant: rhel
       prometheus: app-sre
     name: observatorium-thanos-receive-ingestor-rhel
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http

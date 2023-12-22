@@ -1651,7 +1651,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-queries
     namespace: rhobs
 - apiVersion: apps/v1
@@ -1663,7 +1663,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-frontend
     namespace: rhobs
   spec:
@@ -1683,7 +1683,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: observatorium-up
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.0.0
+          app.kubernetes.io/version: master-2022-03-24-098c31a
         namespace: rhobs
       spec:
         containers:
@@ -1693,7 +1693,7 @@ objects:
           - --endpoint-type=metrics
           - --log.level=info
           - --queries-file=/etc/up/config/queries/queries.yaml
-          image: quay.io/observatorium/up:v0.0.0
+          image: quay.io/observatorium/up:master-2022-03-24-098c31a
           imagePullPolicy: IfNotPresent
           name: observatorium-up
           ports:
@@ -1729,7 +1729,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-frontend
     namespace: rhobs
   spec:
@@ -1754,7 +1754,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-frontend
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -1766,7 +1766,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
       prometheus: app-sre
     name: observatorium-up-query-frontend
     namespace: openshift-customer-monitoring
@@ -1791,7 +1791,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-rule
     namespace: rhobs
   spec:
@@ -1811,7 +1811,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: observatorium-up
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.0.0
+          app.kubernetes.io/version: master-2022-03-24-098c31a
         namespace: rhobs
       spec:
         containers:
@@ -1821,7 +1821,7 @@ objects:
           - --endpoint-type=metrics
           - --log.level=info
           - --queries-file=/etc/up/config/queries/queries.yaml
-          image: quay.io/observatorium/up:v0.0.0
+          image: quay.io/observatorium/up:master-2022-03-24-098c31a
           imagePullPolicy: IfNotPresent
           name: observatorium-up
           ports:
@@ -1857,7 +1857,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-rule
     namespace: rhobs
   spec:
@@ -1882,7 +1882,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-rule
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -1894,7 +1894,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.0.0
+      app.kubernetes.io/version: master-2022-03-24-098c31a
       prometheus: app-sre
     name: observatorium-up-query-rule
     namespace: openshift-customer-monitoring

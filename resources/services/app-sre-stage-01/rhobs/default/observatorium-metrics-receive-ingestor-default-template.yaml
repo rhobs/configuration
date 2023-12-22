@@ -65,7 +65,7 @@ objects:
       observatorium/tenant: default
       prometheus: app-sre
     name: observatorium-thanos-receive-ingestor-default
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http

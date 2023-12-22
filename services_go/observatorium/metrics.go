@@ -252,22 +252,6 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	})
 	rulerStatefulset.Sidecars = []k8sutil.ContainerProvider{
 		rulesSyncer,
-		&k8sutil.Container{
-			Name:     "configmap-reloader",
-			Image:    "quay.io/openshift/origin-configmap-reloader",
-			ImageTag: "4.5.0",
-			Args: []string{
-				"-volume-dir=/etc/thanos-rule-syncer",
-				"-webhook-url=http://localhost:10902/-/reload",
-			},
-			Resources: k8sutil.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
-			VolumeMounts: []corev1.VolumeMount{
-				{
-					Name:      "observatorium-rules",
-					MountPath: "/etc/thanos/rules/observatorium-rules",
-				},
-			},
-		},
 		makeOauthProxy(10902, o.Namespace, rulerStatefulset.Name, tlsSecret),
 		makeJaegerAgent("observatorium-tools"),
 	}
@@ -290,10 +274,11 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	rulerStatefulset.Options.AlertLabelDrop = []string{"rule_replica"}
 	rulerStatefulset.Options.TsdbRetention = model.Duration(2 * 24 * time.Hour)
 	rulerStatefulset.Options.Query = []string{
-		fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryRuleName, o.Namespace), // hardcoded
+		fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryRuleName, o.Namespace),
 	}
-
-	//           --alertmanagers.url=dnssrv+http://observatorium-alertmanager-peers.observatorium-mst-stage.svc.cluster.local:9093
+	rulerStatefulset.Options.AlertmanagersUrl = []string{
+		fmt.Sprintf("http://%s.%s.svc.cluster.local:9093", alertManagerName, o.Namespace),
+	}
 
 	// Register the store api
 	o.storesRegister = append(o.storesRegister, fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", rulerStatefulset.Name, rulerStatefulset.Namespace))

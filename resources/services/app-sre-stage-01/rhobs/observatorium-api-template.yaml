@@ -116,7 +116,7 @@ objects:
       app.kubernetes.io/version: main
       prometheus: app-sre
     name: avalanche
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -273,7 +273,7 @@ objects:
       app.kubernetes.io/version: "1.5"
       prometheus: app-sre
     name: observatorium-api-cache-memcached
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: metrics
@@ -579,7 +579,7 @@ objects:
       app.kubernetes.io/version: main-2023-12-06-62d7703
       prometheus: app-sre
     name: observatorium-api
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http-internal
@@ -807,7 +807,7 @@ objects:
       app.kubernetes.io/version: v2.0.0-rc.36
       prometheus: app-sre
     name: observatorium-gubernator
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -994,7 +994,7 @@ objects:
       app.kubernetes.io/version: 9c789b9
       prometheus: app-sre
     name: observatorium-obsctl-reloader
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -1769,7 +1769,7 @@ objects:
       app.kubernetes.io/version: v0.0.0
       prometheus: app-sre
     name: observatorium-up-query-frontend
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http
@@ -1897,7 +1897,7 @@ objects:
       app.kubernetes.io/version: v0.0.0
       prometheus: app-sre
     name: observatorium-up-query-rule
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http

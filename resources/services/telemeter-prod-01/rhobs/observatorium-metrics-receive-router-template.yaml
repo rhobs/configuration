@@ -395,7 +395,7 @@ objects:
       app.kubernetes.io/version: v0.32.4
       prometheus: app-sre
     name: observatorium-thanos-receive-router
-    namespace: rhobs
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http

@@ -11,10 +11,12 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/ruler"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
+	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/prometheus/common/model"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
 	"github.com/rhobs/configuration/services_go/observatorium"
 	"gopkg.in/yaml.v3"
+	corev1 "k8s.io/api/core/v1"
 )
 
 const (
@@ -233,6 +235,22 @@ func stageConfig() observatorium.Observatorium {
 							FileName:      "observatorium.yaml",
 							ConfigMapName: "observatorium-rules",
 							ParentDir:     "telemeter-rules",
+						})
+						rulerSs.Sidecars = append(rulerSs.Sidecars, &k8sutil.Container{
+							Name:     "configmap-reloader",
+							Image:    "quay.io/openshift/origin-configmap-reloader",
+							ImageTag: "4.5.0",
+							Args: []string{
+								"-volume-dir=/etc/thanos-rule-syncer",
+								"-webhook-url=http://localhost:10902/-/reload",
+							},
+							Resources: k8sutil.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "observatorium-rules",
+									MountPath: "/etc/thanos/rules/observatorium-rules",
+								},
+							},
 						})
 					},
 				},

@@ -1491,11 +1491,8 @@ objects:
         app.kubernetes.io/part-of: observatorium
 parameters:
 - name: AMS_OIDC_CLIENT_ID
-  required: true
 - name: AMS_OIDC_CLIENT_SECRET
-  required: true
 - name: AMS_OIDC_ISSUER_URL
-  required: true
 - name: CACHE_CPU_REQUEST
   value: 500m
 - name: CACHE_MEMORY_LIMIT

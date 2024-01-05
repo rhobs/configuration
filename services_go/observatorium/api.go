@@ -107,9 +107,9 @@ func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
 			"issuer-url":    []byte("${AMS_OIDC_ISSUER_URL}"),
 		},
 	}
-	templateParams = append(templateParams, templatev1.Parameter{Name: "AMS_OIDC_CLIENT_ID", Required: true})
-	templateParams = append(templateParams, templatev1.Parameter{Name: "AMS_OIDC_CLIENT_SECRET", Required: true})
-	templateParams = append(templateParams, templatev1.Parameter{Name: "AMS_OIDC_ISSUER_URL", Required: true})
+	templateParams = append(templateParams, templatev1.Parameter{Name: "AMS_OIDC_CLIENT_ID"})
+	templateParams = append(templateParams, templatev1.Parameter{Name: "AMS_OIDC_CLIENT_SECRET"})
+	templateParams = append(templateParams, templatev1.Parameter{Name: "AMS_OIDC_ISSUER_URL"})
 
 	obsapi.Sidecars = []k8sutil.ContainerProvider{
 		makeJaegerAgent("observatorium-tools"),

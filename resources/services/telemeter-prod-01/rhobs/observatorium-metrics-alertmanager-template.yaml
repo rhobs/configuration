@@ -147,7 +147,7 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
-    serviceName: observatorium-alertmanager
+    serviceName: observatorium-alertmanager-cluster
     template:
       metadata:
         creationTimestamp: null

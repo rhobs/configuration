@@ -172,7 +172,6 @@ func stageConfig() observatorium.Observatorium {
 			Namespace:                    "rhobs",
 			RBAC:                         rbacConfig,
 			AmsUrl:                       "https://api.stage.openshift.com",
-			AmsClientSecretName:          "observatorium-api-oidc-client",
 			UpQueriesTenant:              tenantsMapping[DefaultInstanceName][rhobsTenantName],
 			ObsCtlReloaderManagedTenants: []string{string(rhobsTenantName), string(osdTenantName), string(appsreTenantName), string(rhtapTenantName)},
 			Tenants:                      makeObsTenants(tenants),
@@ -358,8 +357,9 @@ func buildMetricTenants(tenants map[tenantName]TenantConfig, instance InstanceNa
 
 func makeIODC(tenant tenantName, env string) *observatoriumapi.TenantOIDC {
 	return &observatoriumapi.TenantOIDC{
-		ClientID:      "${CLIENT_ID}",
-		ClientSecret:  "${CLIENT_SECRET}",
+		// Template parameters CLIENT_ID and CLIENT_SECRET to be kept in sync with the observatorium api ams sidecar parameters that both consume this value
+		ClientID:      "${AMS_OIDC_CLIENT_ID}",
+		ClientSecret:  "${AMS_OIDC_CLIENT_SECRET}",
 		IssuerURL:     "https://sso.redhat.com/auth/realms/redhat-external",
 		RedirectURL:   fmt.Sprintf("https://observatorium-mst.api.%s.openshift.com/oidc/%s/callback", env, tenant),
 		UsernameClaim: "preferred_username",

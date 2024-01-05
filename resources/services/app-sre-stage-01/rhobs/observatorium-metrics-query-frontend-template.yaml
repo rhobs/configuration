@@ -211,9 +211,9 @@ objects:
   spec:
     ports:
     - name: http
-      port: 9090
+      port: 10902
       protocol: TCP
-      targetPort: 9090
+      targetPort: 10902
     - name: https
       port: 8443
       protocol: TCP
@@ -362,19 +362,19 @@ objects:
             failureThreshold: 8
             httpGet:
               path: /-/healthy
-              port: 9090
+              port: 10902
             periodSeconds: 30
             timeoutSeconds: 1
           name: thanos
           ports:
-          - containerPort: 9090
+          - containerPort: 10902
             name: http
             protocol: TCP
           readinessProbe:
             failureThreshold: 20
             httpGet:
               path: /-/ready
-              port: 9090
+              port: 10902
             periodSeconds: 5
           resources:
             limits:

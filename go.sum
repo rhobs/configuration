@@ -1259,8 +1259,8 @@ github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG
 github.com/syndtr/gocapability v0.0.0-20180916011248-d98352740cb2/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
-github.com/thibaultmg/observatorium v0.0.0-20231220163412-1ab33d0d2970 h1:s8EY8D5uaMn2WrxdLhM36XFDPveL39e6ufpO0X8RbXQ=
-github.com/thibaultmg/observatorium v0.0.0-20231220163412-1ab33d0d2970/go.mod h1:VFiHODMs9Mnd2DGCtYBr6qdKBZwj6gmwgxilTmnv4EE=
+github.com/thibaultmg/observatorium v0.0.0-20240105161024-101d341092f9 h1:A+TcmA/7KHIAvUce9049FRZK1jBdKDPYBCyq4j5ff18=
+github.com/thibaultmg/observatorium v0.0.0-20240105161024-101d341092f9/go.mod h1:VFiHODMs9Mnd2DGCtYBr6qdKBZwj6gmwgxilTmnv4EE=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tinylib/msgp v1.0.2/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=
 github.com/tinylib/msgp v1.1.0/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=

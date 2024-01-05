@@ -130,7 +130,7 @@ func (o *ObservatoriumMetrics) Manifests(generator *mimic.Generator) {
 func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	// Alertmanager config
 	opts := alertmanager.NewDefaultOptions()
-	opts.ConfigFile = alertmanager.NewConfigFile().WithExistingResource("alertmanager-config", "alertmanager.yaml").AsSecret()
+	opts.ConfigFile = alertmanager.NewConfigFile(nil).WithExistingResource("alertmanager-config", "alertmanager.yaml").AsSecret()
 	opts.ClusterReconnectTimeout = model.Duration(5 * time.Minute)
 	executeIfNotNil(o.AlertManagerOpts, opts)
 

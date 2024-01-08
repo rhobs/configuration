@@ -39,7 +39,7 @@ const (
 	avalancheImage       = "quay.io/prometheuscommunity/avalanche"
 	avalancheTag         = "main"
 	obsctlReloaderImage  = "quay.io/app-sre/obsctl-reloader"
-	obsctlReloaderTag    = "9c789b9"
+	obsctlReloaderTag    = "973bc7a"
 	rulesObjstoreName    = "observatorium-rules-objstore"
 )
 

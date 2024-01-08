@@ -168,7 +168,6 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       oidcIssuerURL: '${OIDC_ISSUER_URL}',
       sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
       configReloadIntervalSeconds: '${CONFIG_RELOAD_INTERVAL_SECONDS}',
-
       managedTenants: '${MANAGED_TENANTS}',
       logRulesEnabled: '${LOG_RULES_ENABLED}',
     },

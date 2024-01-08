@@ -194,6 +194,7 @@ objects:
           - --log.level=debug
           - --web.internal.listen=0.0.0.0:8081
           - --sleep-duration-seconds=${SLEEP_DURATION_SECONDS}
+          - --config-reload-interval-seconds=${CONFIG_RELOAD_INTERVAL_SECONDS}
           - --observatorium-api-url=${OBSERVATORIUM_URL}
           - --managed-tenants=${MANAGED_TENANTS}
           - --issuer-url=${OIDC_ISSUER_URL}
@@ -1868,6 +1869,8 @@ parameters:
   value: https://sso.redhat.com/auth/realms/redhat-external
 - name: SLEEP_DURATION_SECONDS
   value: "15"
+- name: CONFIG_RELOAD_INTERVAL_SECONDS
+  value: "60"
 - name: MANAGED_TENANTS
   value: rhobs,osd,appsre
 - name: RHOBS_RELOADER_SECRET_NAME
@@ -1887,7 +1890,7 @@ parameters:
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
-  value: 9c789b9
+  value: 973bc7a
 - name: METRICS_WRITE_SERVICE_NAME
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT

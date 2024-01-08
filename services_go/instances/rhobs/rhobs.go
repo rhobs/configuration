@@ -12,6 +12,7 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/ruler"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/prometheus/common/model"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
 	"github.com/rhobs/configuration/services_go/observatorium"
@@ -176,6 +177,10 @@ func stageConfig() observatorium.Observatorium {
 			ObsCtlReloaderManagedTenants: []string{string(rhobsTenantName), string(osdTenantName), string(appsreTenantName), string(rhtapTenantName)},
 			Tenants:                      makeObsTenants(tenants),
 			RuleObjStoreSecret:           "rhobs-rules-objstore-stage-s3",
+			TemplateParams: []templatev1.Parameter{
+				{Name: "TENANT_OIDC_CLIENT_ID"},
+				{Name: "TENANT_OIDC_CLIENT_SECRET"},
+			},
 		},
 		MetricsInstances: observatorium.ObservatoriumMetrics{
 			Namespace:                 "rhobs",
@@ -357,9 +362,8 @@ func buildMetricTenants(tenants map[tenantName]TenantConfig, instance InstanceNa
 
 func makeIODC(tenant tenantName, env string) *observatoriumapi.TenantOIDC {
 	return &observatoriumapi.TenantOIDC{
-		// Template parameters CLIENT_ID and CLIENT_SECRET to be kept in sync with the observatorium api ams sidecar parameters that both consume this value
-		ClientID:      "${AMS_OIDC_CLIENT_ID}",
-		ClientSecret:  "${AMS_OIDC_CLIENT_SECRET}",
+		ClientID:      "${TENANT_OIDC_CLIENT_ID}",
+		ClientSecret:  "${TENANT_OIDC_CLIENT_SECRET}",
 		IssuerURL:     "https://sso.redhat.com/auth/realms/redhat-external",
 		RedirectURL:   fmt.Sprintf("https://observatorium-mst.api.%s.openshift.com/oidc/%s/callback", env, tenant),
 		UsernameClaim: "preferred_username",

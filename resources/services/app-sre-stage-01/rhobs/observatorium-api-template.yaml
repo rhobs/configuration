@@ -129,6 +129,22 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: avalanche
         app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: observatorium-ams-oidc-client-secret
+    namespace: rhobs
+  stringData:
+    client-id: ${AMS_OIDC_CLIENT_ID}
+    client-secret: ${AMS_OIDC_CLIENT_SECRET}
+    issuer-url: ${AMS_OIDC_ISSUER_URL}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -459,17 +475,17 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: client-id
-                name: observatorium-api-oidc-client
+                name: observatorium-ams-oidc-client-secret
           - name: CLIENT_SECRET
             valueFrom:
               secretKeyRef:
                 key: client-secret
-                name: observatorium-api-oidc-client
+                name: observatorium-ams-oidc-client-secret
           - name: ISSUER_URL
             valueFrom:
               secretKeyRef:
                 key: issuer-url
-                name: observatorium-api-oidc-client
+                name: observatorium-ams-oidc-client-secret
           image: quay.io/observatorium/opa-ams:master-2022-11-03-222daab
           livenessProbe:
             failureThreshold: 10
@@ -511,9 +527,9 @@ objects:
         - configMap:
             name: observatorium-rbac
           name: rbac-config
-        - configMap:
-            name: observatorium-tenants
-          name: tenants
+        - name: tenants
+          secret:
+            secretName: observatorium-tenants
 - apiVersion: v1
   kind: Service
   metadata:
@@ -1502,46 +1518,57 @@ objects:
     name: observatorium-rbac
     namespace: rhobs
 - apiVersion: v1
-  data:
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-12-06-62d7703
+    name: observatorium-tenants
+    namespace: rhobs
+  stringData:
     config.yaml: |
       tenants:
       - name: appsre
         id: 3833951d-bede-4a53-85e5-f73f4913973f
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/appsre/callback
           usernameClaim: preferred_username
       - name: cnvqe
         id: 9ca26972-4328-4fe3-92db-31302013d03f
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/cnvqe/callback
           usernameClaim: preferred_username
       - name: dptp
         id: AC879303-C60F-4D0D-A6D5-A485CFD638B8
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/dptp/callback
           usernameClaim: preferred_username
       - name: odfms
         id: 99c885bc-2d64-4c4d-b55e-8bf30d98c657
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/odfms/callback
           usernameClaim: preferred_username
       - name: osd
         id: 770c1124-6ae8-4324-a9d4-9ce08590094b
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/osd/callback
           usernameClaim: preferred_username
@@ -1554,32 +1581,32 @@ objects:
       - name: psiocp
         id: 37b8fd3f-56ff-4b64-8272-917c9b0d1623
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/psiocp/callback
           usernameClaim: preferred_username
       - name: reference-addon
         id: d17ea8ce-d4c6-42ef-b259-7d10c9227e93
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/reference-addon/callback
           usernameClaim: preferred_username
       - name: rhacs
         id: 1b9b6e43-9128-4bbf-bfff-3c120bbe6f11
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhacs/callback
           usernameClaim: preferred_username
       - name: rhel
         id: ""
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhel/callback
           usernameClaim: preferred_username
@@ -1590,8 +1617,8 @@ objects:
       - name: rhobs
         id: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           groupClaim: email
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhobs/callback
@@ -1599,38 +1626,27 @@ objects:
       - name: rhods
         id: 8ace13a2-1c72-4559-b43d-ab43e32a255a
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhods/callback
           usernameClaim: preferred_username
       - name: rhtap
         id: 0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/rhtap/callback
           usernameClaim: preferred_username
       - name: telemeter
         id: ""
         oidc:
-          clientID: ${CLIENT_ID}
-          clientSecret: ${CLIENT_SECRET}
+          clientID: ${TENANT_OIDC_CLIENT_ID}
+          clientSecret: ${TENANT_OIDC_CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium-mst.api.stage.openshift.com/oidc/telemeter/callback
           usernameClaim: preferred_username
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-api
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-12-06-62d7703
-    name: observatorium-tenants
-    namespace: rhobs
 - apiVersion: v1
   data:
     queries.yaml: |
@@ -2141,6 +2157,9 @@ objects:
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
 parameters:
+- name: AMS_OIDC_CLIENT_ID
+- name: AMS_OIDC_CLIENT_SECRET
+- name: AMS_OIDC_ISSUER_URL
 - name: CACHE_CPU_REQUEST
   value: 500m
 - name: CACHE_MEMORY_LIMIT
@@ -2159,3 +2178,5 @@ parameters:
   value: 1Gi
 - name: OBSAPI_REPLICAS
   value: "1"
+- name: TENANT_OIDC_CLIENT_ID
+- name: TENANT_OIDC_CLIENT_SECRET

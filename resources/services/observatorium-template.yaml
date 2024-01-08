@@ -194,7 +194,6 @@ objects:
           - --log.level=debug
           - --web.internal.listen=0.0.0.0:8081
           - --sleep-duration-seconds=${SLEEP_DURATION_SECONDS}
-          - --config-reload-interval-seconds=${CONFIG_RELOAD_INTERVAL_SECONDS}
           - --observatorium-api-url=${OBSERVATORIUM_URL}
           - --managed-tenants=${MANAGED_TENANTS}
           - --issuer-url=${OIDC_ISSUER_URL}

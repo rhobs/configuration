@@ -1889,7 +1889,7 @@ parameters:
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG
-  value: 973bc7a
+  value: 969b895
 - name: METRICS_WRITE_SERVICE_NAME
   value: observatorium-thanos-receive
 - name: METRICS_WRITE_SERVICE_PORT

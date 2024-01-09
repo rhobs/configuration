@@ -880,6 +880,7 @@ objects:
           - --log.level=debug
           - --web.internal.listen=0.0.0.0:8081
           - --sleep-duration-seconds=16
+          - --config-reload-interval-seconds=60
           - --observatorium-api-url=http://observatorium-api.rhobs.svc.cluster.local:8080
           - --managed-tenants=rhobs,osd,appsre,rhtap
           - --issuer-url=https://sso.redhat.com/auth/realms/redhat-external

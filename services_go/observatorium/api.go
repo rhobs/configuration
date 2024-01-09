@@ -317,6 +317,7 @@ func (o *ObservatoriumAPI) makeObsCtlReloader(obsApiName string) k8sutil.ObjectM
 		"--log.level=debug",
 		fmt.Sprintf("--web.internal.listen=0.0.0.0:%d", internalPort),
 		"--sleep-duration-seconds=16",
+		"--config-reload-interval-seconds=60",
 		fmt.Sprintf("--observatorium-api-url=http://%s.%s.svc.cluster.local:8080", obsApiName, o.Namespace),
 		"--managed-tenants=" + strings.Join(o.ObsCtlReloaderManagedTenants, ","),
 		"--issuer-url=https://sso.redhat.com/auth/realms/redhat-external",

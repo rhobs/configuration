@@ -90,6 +90,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'OIDC_AUDIENCE', value: 'observatorium' },
     { name: 'OIDC_ISSUER_URL', value: 'https://sso.redhat.com/auth/realms/redhat-external' },
     { name: 'SLEEP_DURATION_SECONDS', value: '15' },
+    { name: 'CONFIG_RELOAD_INTERVAL_SECONDS', value: '60' },
     { name: 'MANAGED_TENANTS', value: 'rhobs,osd,appsre' },
     { name: 'RHOBS_RELOADER_SECRET_NAME', value: 'rhobs-tenant' },
     { name: 'OSD_RELOADER_SECRET_NAME', value: 'observatorium-observatorium-mst-api' },
@@ -99,7 +100,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'RHTAP_RELOADER_SECRET_NAME', value: 'observatorium-rhtap' },
     { name: 'LOG_RULES_ENABLED', value: 'true' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
-    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: '9c789b9' },
+    { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: '969b895' },
     { name: 'METRICS_WRITE_SERVICE_NAME', value: obs.thanos.receiversService.metadata.name },
     { name: 'METRICS_WRITE_SERVICE_PORT', value: std.toString(obs.thanos.receiversService.spec.ports[2].port) },
     // AMS Org IDs

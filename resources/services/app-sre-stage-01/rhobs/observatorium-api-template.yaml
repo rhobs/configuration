@@ -852,7 +852,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 9c789b9
+      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
     namespace: rhobs
   spec:
@@ -872,7 +872,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: rules-obsctl-reloader
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: 9c789b9
+          app.kubernetes.io/version: 969b895
         namespace: rhobs
       spec:
         containers:
@@ -880,12 +880,13 @@ objects:
           - --log.level=debug
           - --web.internal.listen=0.0.0.0:8081
           - --sleep-duration-seconds=16
+          - --config-reload-interval-seconds=60
           - --observatorium-api-url=http://observatorium-api.rhobs.svc.cluster.local:8080
           - --managed-tenants=rhobs,osd,appsre,rhtap
           - --issuer-url=https://sso.redhat.com/auth/realms/redhat-external
           - --audience=observatorium
           - --log-rules-enabled=false
-          image: quay.io/app-sre/obsctl-reloader:9c789b9
+          image: quay.io/app-sre/obsctl-reloader:969b895
           imagePullPolicy: IfNotPresent
           name: obsctl-reloader
           ports:
@@ -912,7 +913,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 9c789b9
+      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
     namespace: rhobs
   rules:
@@ -950,7 +951,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 9c789b9
+      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
     namespace: rhobs
   roleRef:
@@ -970,7 +971,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 9c789b9
+      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
     namespace: rhobs
   spec:
@@ -995,7 +996,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 9c789b9
+      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -1007,7 +1008,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 9c789b9
+      app.kubernetes.io/version: 969b895
       prometheus: app-sre
     name: observatorium-obsctl-reloader
     namespace: openshift-customer-monitoring

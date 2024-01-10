@@ -1105,7 +1105,7 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
-          image: quay.io/app-sre/ubi8-ubi-minimal
+          image: quay.io/app-sre/ubi8-ubi-minimal:8.9
           imagePullPolicy: IfNotPresent
           name: init
           resources: {}

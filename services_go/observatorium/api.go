@@ -178,7 +178,7 @@ func (o *ObservatoriumAPI) makeRulesObjstore() k8sutil.ObjectMap {
 	// that writes the file to a shared volume.
 	initContainer := corev1.Container{
 		Name:            "init",
-		Image:           "quay.io/app-sre/ubi8-ubi-minimal",
+		Image:           "quay.io/app-sre/ubi8-ubi-minimal:8.9",
 		ImagePullPolicy: corev1.PullIfNotPresent,
 		Command: []string{
 			"/bin/sh",

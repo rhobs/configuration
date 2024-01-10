@@ -152,11 +152,15 @@ objects:
           - |
             --tracing.config=type: JAEGER
             config:
-              service_name: thanos-receive-router
+              service_name: thanos-receive-ingestor-default
               sampler_type: ratelimiting
               sampler_param: 2
           - --tsdb.path=/var/thanos/receive
           env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -189,10 +193,6 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
           image: quay.io/thanos/thanos:v0.32.4
           imagePullPolicy: IfNotPresent
           livenessProbe:

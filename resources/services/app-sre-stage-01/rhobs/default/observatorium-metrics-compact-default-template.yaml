@@ -4,6 +4,32 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-compact-default
 objects:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/issuer-name: letsencrypt-prod-http
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+    name: observatorium-thanos-compact-default
+    namespace: rhobs
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: observatorium-thanos-compact-default
+      weight: null
 - apiVersion: v1
   kind: Service
   metadata:
@@ -276,32 +302,6 @@ objects:
           requests:
             storage: 50Gi
         storageClassName: gp2
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    annotations:
-      cert-manager.io/issuer-kind: ClusterIssuer
-      cert-manager.io/issuer-name: letsencrypt-prod-http
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-compactor
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: default
-    name: observatorium-thanos-compact-default
-    namespace: rhobs
-  spec:
-    host: ""
-    port:
-      targetPort: https
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: reencrypt
-    to:
-      kind: Service
-      name: observatorium-thanos-compact-default
-      weight: null
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:

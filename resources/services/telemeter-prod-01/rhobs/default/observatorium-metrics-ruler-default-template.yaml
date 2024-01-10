@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-ruler-default
+  name: observatorium-thanos-rule-default
 objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
@@ -18,7 +18,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
-    name: observatorium-thanos-ruler-default
+    name: observatorium-thanos-rule-default
     namespace: rhobs
   spec:
     host: ""
@@ -29,7 +29,7 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-ruler-default
+      name: observatorium-thanos-rule-default
       weight: null
 - apiVersion: v1
   kind: Service
@@ -44,7 +44,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
-    name: observatorium-thanos-ruler-default
+    name: observatorium-thanos-rule-default
     namespace: rhobs
   spec:
     ports:
@@ -76,7 +76,7 @@ objects:
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-ruler-default"}}'
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-rule-default"}}'
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
@@ -85,7 +85,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
-    name: observatorium-thanos-ruler-default
+    name: observatorium-thanos-rule-default
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -99,7 +99,7 @@ objects:
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
       prometheus: app-sre
-    name: observatorium-thanos-ruler-default
+    name: observatorium-thanos-rule-default
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -140,7 +140,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
-    name: observatorium-thanos-ruler-default
+    name: observatorium-thanos-rule-default
     namespace: rhobs
   spec:
     replicas: ${{RULER_REPLICAS}}
@@ -151,7 +151,7 @@ objects:
         app.kubernetes.io/name: thanos-rule
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: default
-    serviceName: observatorium-thanos-ruler-default
+    serviceName: observatorium-thanos-rule-default
     template:
       metadata:
         creationTimestamp: null
@@ -195,10 +195,10 @@ objects:
           - |
             --tracing.config=type: JAEGER
             config:
-              service_name: thanos-rule
+              service_name: thanos-rule-default
               sampler_type: ratelimiting
               sampler_param: 2
-          - --tsdb.retention=2d
+          - --tsdb.retention=48h0m0s
           env:
           - name: POD_NAME
             valueFrom:
@@ -300,7 +300,7 @@ objects:
           - -http-address=
           - -email-domain=*
           - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-ruler-default
+          - -openshift-service-account=observatorium-thanos-rule-default
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
             "namespace": "rhobs"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
@@ -374,7 +374,7 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: observatorium-thanos-ruler-default
+        serviceAccountName: observatorium-thanos-rule-default
         terminationGracePeriodSeconds: 120
         volumes:
         - emptyDir: {}

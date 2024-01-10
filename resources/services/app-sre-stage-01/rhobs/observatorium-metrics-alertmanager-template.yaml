@@ -181,7 +181,7 @@ objects:
           - --storage.path=/data
           - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
           - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
-          - --cluster.reconnect-timeout=5m
+          - --cluster.reconnect-timeout=5m0s
           - --log.level=${ALERTMGR_LOG_LEVEL}
           - --log.format=logfmt
           image: quay.io/prometheus/alertmanager:v0.26.0

@@ -22,11 +22,11 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	memcachedDeployment.ImageTag = "1.5"
 	memcachedDeployment.Namespace = namespace
 	memcachedDeployment.Replicas = 1
-	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)
+	delete(memcachedDeployment.ContainerResources.Limits, corev1.ResourceCPU)
 	memcachedDeployment.SecurityContext = nil
-	memcachedDeployment.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
-	memcachedDeployment.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
-	memcachedDeployment.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")
+	memcachedDeployment.ContainerResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
+	memcachedDeployment.ContainerResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
+	memcachedDeployment.ContainerResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")
 	memcachedDeployment.ExporterImage = "quay.io/prometheus/memcached-exporter"
 	memcachedDeployment.ExporterImageTag = "v0.13.0"
 

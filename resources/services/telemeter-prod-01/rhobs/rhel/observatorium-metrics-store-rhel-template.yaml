@@ -4,6 +4,32 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-store-rhel
 objects:
+- apiVersion: v1
+  data:
+    entrypoint.sh: "#!/bin/bash\n\n# Kubernetes replicas are named with the following
+      convention \"<statefulset-name>-<ordinal>\". \n# This parameter expansion removes
+      all characters until the last hyphen, capturing only the ordinal.\nexport ORDINAL_INDEX=${HOSTNAME##*-}\n#
+      This parameter expansion removes all characters after the last hyphen, capturing
+      only the statefulset name.\nexport STATEFULSET_NAME=\"${HOSTNAME%-*}\"\nexport
+      THANOS_STORE_REPLICAS=$(oc get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE}
+      -o=jsonpath='{.status.replicas}')\n\n# Logging parameters\necho \"generating
+      store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS_STORE_REPLICAS=${STATEFULSET_NAME}
+      HOSTNAME=${HOSTNAME} NAMESPACE=${NAMESPACE} THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS}\"\n\ncat
+      <<EOF >/tmp/config/hashmod-config.yaml\n- action: hashmod\n  source_labels:\n
+      \   - __block_id\n  target_label: shard\n  modulus: ${THANOS_STORE_REPLICAS}\n-
+      action: keep\n  source_labels:\n    - shard\n  regex: ${ORDINAL_INDEX}\nEOF\n"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: object-store-gateway
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-store
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.4
+      observatorium/tenant: rhel
+    name: hashmod-config-template-rhel
+    namespace: rhobs
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
@@ -388,53 +414,6 @@ objects:
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: rhel
-- apiVersion: v1
-  data:
-    entrypoint.sh: "#!/bin/bash\n\n# Kubernetes replicas are named with the following
-      convention \"<statefulset-name>-<ordinal>\". \n# This parameter expansion removes
-      all characters until the last hyphen, capturing only the ordinal.\nexport ORDINAL_INDEX=${HOSTNAME##*-}\n#
-      This parameter expansion removes all characters after the last hyphen, capturing
-      only the statefulset name.\nexport STATEFULSET_NAME=\"${HOSTNAME%-*}\"\nexport
-      THANOS_STORE_REPLICAS=$(oc get statefulset ${STATEFULSET_NAME} -n ${NAMESPACE}
-      -o=jsonpath='{.status.replicas}')\n\n# Logging parameters\necho \"generating
-      store hashmod config with ORDINAL_INDEX=${ORDINAL_INDEX} THANOS_STORE_REPLICAS=${STATEFULSET_NAME}
-      HOSTNAME=${HOSTNAME} NAMESPACE=${NAMESPACE} THANOS_STORE_REPLICAS=${THANOS_STORE_REPLICAS}\"\n\ncat
-      <<EOF >/tmp/config/hashmod-config.yaml\n- action: hashmod\n  source_labels:\n
-      \   - __block_id\n  target_label: shard\n  modulus: ${THANOS_STORE_REPLICAS}\n-
-      action: keep\n  source_labels:\n    - shard\n  regex: ${ORDINAL_INDEX}\nEOF\n"
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: object-store-gateway
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-store
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-      observatorium/tenant: rhel
-    name: hashmod-config-template-rhel
-    namespace: rhobs
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: store-bucket-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: rhel
-    name: observatorium-thanos-store-bucket-cache-memcached-rhel
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: store-bucket-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: rhel
 - apiVersion: policy/v1
   kind: PodDisruptionBudget
   metadata:
@@ -611,7 +590,7 @@ objects:
           - |
             --tracing.config=type: JAEGER
             config:
-              service_name: thanos-store
+              service_name: thanos-store-rhel
               sampler_type: ratelimiting
               sampler_param: 2
           - --store.enable-index-header-lazy-reader
@@ -795,14 +774,35 @@ objects:
           requests:
             storage: 5Gi
         storageClassName: gp2
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: store-bucket-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: rhel
+    name: observatorium-thanos-store-bucket-cache-memcached-rhel
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: store-bucket-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: rhel
 parameters:
 - name: STORE_CPU_REQUEST
-  value: "4"
+  value: "2"
 - name: STORE_LOG_LEVEL
   value: warn
 - name: STORE_MEMORY_LIMIT
-  value: 80Gi
-- name: STORE_MEMORY_REQUEST
   value: 20Gi
+- name: STORE_MEMORY_REQUEST
+  value: 5Gi
 - name: STORE_REPLICAS
   value: "1"

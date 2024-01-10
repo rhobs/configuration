@@ -6,6 +6,7 @@ import (
 	"maps"
 	"net"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/bwplotka/mimic"
@@ -20,21 +21,19 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
+	"github.com/observatorium/observatorium/configuration_go/schemas/log"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache"
 	memcachedclientcfg "github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache/memcached"
-	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/log"
 	thanostime "github.com/observatorium/observatorium/configuration_go/schemas/thanos/time"
 	trclient "github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/client"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/tracing/jaeger"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	"github.com/prometheus/common/model"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	policyv1 "k8s.io/api/policy/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
@@ -93,6 +92,7 @@ type ObservatoriumMetricsInstance struct {
 	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
 	ReceiveIngestorPreManifestsHook func(*receive.Ingestor)
 	RulerPreManifestsHook           func(*ruler.RulerStatefulSet)
+	RulerOpts                       func(opts *ruler.RulerOptions)
 }
 
 // Tenants contains the configuration for a tenant in a metrics instance.
@@ -131,7 +131,7 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	// Alertmanager config
 	opts := alertmanager.NewDefaultOptions()
 	opts.ConfigFile = alertmanager.NewConfigFile(nil).WithExistingResource("alertmanager-config", "alertmanager.yaml").AsSecret()
-	opts.ClusterReconnectTimeout = model.Duration(5 * time.Minute)
+	opts.ClusterReconnectTimeout = time.Duration(5 * time.Minute)
 	executeIfNotNil(o.AlertManagerOpts, opts)
 
 	// K8s config
@@ -140,10 +140,7 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	alertmanSts.Replicas = 2
 	alertmanSts.Name = alertManagerName
 	alertmanSts.VolumeType = "gp2"
-	delete(alertmanSts.PodResources.Limits, corev1.ResourceCPU)
-	alertmanSts.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
-	alertmanSts.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")
-	alertmanSts.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("1Gi")
+	alertmanSts.ContainerResources = k8sutil.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
 	tlsSecret := "alertmanager-tls"
 	alertmanSts.Sidecars = []k8sutil.ContainerProvider{
 		makeOauthProxy(9093, o.Namespace, alertmanSts.Name, tlsSecret),
@@ -217,22 +214,48 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 }
 
 func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
-	rulerStatefulset := ruler.NewRuler()
+	name := "observatorium-thanos-rule-" + instanceCfg.InstanceName
+
+	// Ruler config
+	opts := ruler.NewDefaultOptions()
+	opts.LogLevel = log.LogLevelWarn
+	opts.LogFormat = log.LogFormatLogfmt
+	opts.Label = []ruler.Label{
+		{Key: "rule_replica", Value: "\"$(NAME)\""},
+	}
+	opts.TracingConfig = &trclient.TracingConfig{
+		Type: trclient.Jaeger,
+		Config: jaeger.Config{
+			SamplerParam: 2,
+			SamplerType:  jaeger.SamplerTypeRateLimiting,
+			ServiceName:  strings.TrimPrefix(name, "observatorium-"),
+		},
+	}
+	opts.AlertLabelDrop = []string{"rule_replica"}
+	opts.TsdbRetention = time.Duration(2 * 24 * time.Hour)
+	opts.Query = []string{
+		fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryRuleName, o.Namespace),
+	}
+	opts.AlertmanagersUrl = []string{
+		fmt.Sprintf("http://%s.%s.svc.cluster.local:9093", alertManagerName, o.Namespace),
+	}
+	opts.RuleFile = append(opts.RuleFile, ruler.RuleFileOption{ // Keep in sync with the syncer sidecar config
+		FileName:   "observatorium.yaml",
+		VolumeName: "rule-syncer",
+		ParentDir:  "synced-rules",
+	})
+	executeIfNotNil(instanceCfg.RulerOpts, opts)
 
 	// K8s config
-	rulerStatefulset.Name = fmt.Sprintf("%s-%s", rulerStatefulset.Name, instanceCfg.InstanceName)
+	rulerStatefulset := ruler.NewRuler(opts, o.Namespace, o.ThanosImageTag)
+	rulerStatefulset.Name = name
 	rulerStatefulset.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	rulerStatefulset.Image = thanosImage
-	rulerStatefulset.ImageTag = o.ThanosImageTag
-	rulerStatefulset.Namespace = o.Namespace
 	rulerStatefulset.Replicas = 1
 	rulerStatefulset.VolumeType = "gp2"
 	rulerStatefulset.VolumeSize = "10Gi"
-	delete(rulerStatefulset.PodResources.Limits, corev1.ResourceCPU)
-	rulerStatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
-	rulerStatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")
-	rulerStatefulset.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("1Gi")
-	tlsSecret := "ruler-tls"
+	rulerStatefulset.ContainerResources = k8sutil.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
+
 	rulesSyncer := ruler.NewRulesSyncerContainer(&ruler.RulesSyncerOptions{
 		File:            "/etc/thanos-rule-syncer/observatorium.yaml",
 		Interval:        60,
@@ -245,40 +268,13 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	rulesSyncer.Image = "quay.io/observatorium/thanos-rule-syncer"
 	rulesSyncer.ImageTag = "main-2022-09-14-338f9ec"
 
-	rulerStatefulset.Options.RuleFile = append(rulerStatefulset.Options.RuleFile, ruler.RuleFileOption{
-		FileName:   "observatorium.yaml",
-		VolumeName: "rule-syncer",
-		ParentDir:  "synced-rules",
-	})
+	tlsSecret := "ruler-tls"
 	rulerStatefulset.Sidecars = []k8sutil.ContainerProvider{
 		rulesSyncer,
 		makeOauthProxy(10902, o.Namespace, rulerStatefulset.Name, tlsSecret),
 		makeJaegerAgent("observatorium-tools"),
 	}
 	rulerStatefulset.Env = append(rulerStatefulset.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
-
-	// Ruler config
-	rulerStatefulset.Options.LogLevel = log.LogLevelWarn
-	rulerStatefulset.Options.LogFormat = log.LogFormatLogfmt
-	rulerStatefulset.Options.Label = []ruler.Label{
-		{Key: "rule_replica", Value: "\"$(NAME)\""},
-	}
-	rulerStatefulset.Options.TracingConfig = &trclient.TracingConfig{
-		Type: trclient.Jaeger,
-		Config: jaeger.Config{
-			SamplerParam: 2,
-			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  rulerStatefulset.CommonLabels[k8sutil.NameLabel],
-		},
-	}
-	rulerStatefulset.Options.AlertLabelDrop = []string{"rule_replica"}
-	rulerStatefulset.Options.TsdbRetention = model.Duration(2 * 24 * time.Hour)
-	rulerStatefulset.Options.Query = []string{
-		fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryRuleName, o.Namespace),
-	}
-	rulerStatefulset.Options.AlertmanagersUrl = []string{
-		fmt.Sprintf("http://%s.%s.svc.cluster.local:9093", alertManagerName, o.Namespace),
-	}
 
 	// Register the store api
 	o.storesRegister = append(o.storesRegister, fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", rulerStatefulset.Name, rulerStatefulset.Namespace))
@@ -345,59 +341,55 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 }
 
 func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
-	queryFrontend := queryfrontend.NewQueryFrontend()
+	// Query-frontend config
+	cacheName := "observatorium-thanos-query-range-cache-memcached"
+	zero := 0
+	opts := &queryfrontend.QueryFrontendOptions{
+		LogLevel:                          log.LogLevelWarn,
+		LogFormat:                         log.LogFormatLogfmt,
+		QueryFrontendCompressResponses:    true,
+		QueryFrontendDownstreamURL:        o.queryAdhocURL,
+		QueryFrontendLogQueriesLongerThan: time.Duration(5 * time.Second),
+		TracingConfig: &trclient.TracingConfig{
+			Type: trclient.Jaeger,
+			Config: jaeger.Config{
+				SamplerParam: 2,
+				SamplerType:  jaeger.SamplerTypeRateLimiting,
+				ServiceName:  strings.TrimPrefix(obsQueryFrontendName, "observatorium-"),
+			},
+		},
+		QueryRangeSplitInterval:        time.Duration(24 * time.Hour),
+		LabelsSplitInterval:            time.Duration(24 * time.Hour),
+		QueryRangeMaxRetriesPerRequest: &zero,
+		LabelsMaxRetriesPerRequest:     &zero,
+		LabelsDefaultTimeRange:         time.Duration(14 * 24 * time.Hour),
+		CacheCompressionType:           queryfrontend.CacheCompressionTypeSnappy,
+		QueryRangeResponseCacheConfig: cache.NewResponseCacheConfig(memcachedclientcfg.MemcachedClientConfig{
+			Addresses: []string{
+				fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", cacheName, o.Namespace),
+			},
+			MaxAsyncBufferSize:     2 * 10e5,
+			MaxAsyncConcurrency:    200,
+			MaxGetMultiBatchSize:   100,
+			MaxGetMultiConcurrency: 1000,
+			MaxIdleConnections:     1300,
+			MaxItemSize:            "64MiB",
+			Timeout:                2 * time.Second,
+		}),
+	}
+
+	queryFrontend := queryfrontend.NewQueryFrontend(opts, o.Namespace, o.ThanosImageTag)
 
 	// K8s config
 	queryFrontend.Name = obsQueryFrontendName
 	queryFrontend.Image = thanosImage
-	queryFrontend.ImageTag = o.ThanosImageTag
-	queryFrontend.Namespace = o.Namespace
 	queryFrontend.Replicas = 1
-	delete(queryFrontend.PodResources.Limits, corev1.ResourceCPU)
-	queryFrontend.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("100m")
-	queryFrontend.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("256Mi")
-	queryFrontend.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("1Gi")
+	queryFrontend.ContainerResources = k8sutil.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
 	tlsSecret := "query-frontend-tls"
 	queryFrontend.Sidecars = []k8sutil.ContainerProvider{
 		makeOauthProxy(10902, o.Namespace, queryFrontend.Name, tlsSecret),
 		makeJaegerAgent("observatorium-tools"),
 	}
-
-	// Query-fe config
-	queryFrontend.Options.LogLevel = log.LogLevelWarn
-	queryFrontend.Options.LogFormat = log.LogFormatLogfmt
-	queryFrontend.Options.QueryFrontendCompressResponses = true
-	queryFrontend.Options.QueryFrontendDownstreamURL = o.queryAdhocURL
-	queryFrontend.Options.QueryFrontendLogQueriesLongerThan = time.Duration(5 * time.Second)
-	// Add memcached config
-	queryFrontend.Options.TracingConfig = &trclient.TracingConfig{
-		Type: trclient.Jaeger,
-		Config: jaeger.Config{
-			SamplerParam: 2,
-			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  queryFrontend.CommonLabels[k8sutil.NameLabel],
-		},
-	}
-	queryFrontend.Options.QueryRangeSplitInterval = time.Duration(24 * time.Hour)
-	queryFrontend.Options.LabelsSplitInterval = time.Duration(24 * time.Hour)
-	zero := 0
-	queryFrontend.Options.QueryRangeMaxRetriesPerRequest = &zero
-	queryFrontend.Options.LabelsMaxRetriesPerRequest = &zero
-	queryFrontend.Options.LabelsDefaultTimeRange = time.Duration(14 * 24 * time.Hour)
-	queryFrontend.Options.CacheCompressionType = queryfrontend.CacheCompressionTypeSnappy
-	cacheName := "observatorium-thanos-query-range-cache-memcached"
-	queryFrontend.Options.QueryRangeResponseCacheConfig = cache.NewResponseCacheConfig(memcachedclientcfg.MemcachedClientConfig{
-		Addresses: []string{
-			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", cacheName, o.Namespace),
-		},
-		MaxAsyncBufferSize:     2 * 10e5,
-		MaxAsyncConcurrency:    200,
-		MaxGetMultiBatchSize:   100,
-		MaxGetMultiConcurrency: 1000,
-		MaxIdleConnections:     1300,
-		MaxItemSize:            "64MiB",
-		Timeout:                2 * time.Second,
-	})
 
 	executeIfNotNil(o.QueryFrontendPreManifestsHook, queryFrontend)
 
@@ -469,9 +461,41 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 }
 
 func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook func(*query.QueryDeployment)) encoding.Encoder {
-	queryDplt := query.NewQuery()
+	name := "observatorium-thanos-query"
+	if isRuleQuery {
+		name = queryRuleName
+	}
+
+	// Query config
+	opts := &query.QueryOptions{
+		LogLevel:           log.LogLevelWarn,
+		LogFormat:          log.LogFormatLogfmt,
+		QueryReplicaLabel:  []string{"replica", "prometheus_replica", "rule_replica"},
+		QueryTimeout:       time.Duration(15 * time.Minute),
+		QueryLookbackDelta: time.Duration(15 * time.Minute),
+		WebPrefixHeader:    "X-Forwarded-Prefix",
+		TracingConfig: &trclient.TracingConfig{
+			Type: trclient.Jaeger,
+			Config: jaeger.Config{
+				SamplerParam: 2,
+				SamplerType:  jaeger.SamplerTypeRateLimiting,
+				ServiceName:  strings.TrimPrefix(name, "observatorium-"),
+			},
+		},
+		QueryAutoDownsampling: true,
+		QueryPromQLEngine:     "prometheus",
+		QueryMaxConcurrent:    10,
+	}
+	opts.Endpoint = append(opts.Endpoint, o.storesRegister...)
+	sort.Strings(opts.Endpoint) // sort to make the output deterministic and avoid noisy diffs
+
+	if !isRuleQuery {
+		opts.QueryTelemetryRequestDurationSecondsQuantiles = []float64{0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120}
+	}
 
 	// K8s config
+	queryDplt := query.NewQuery(opts, o.Namespace, o.ThanosImageTag)
+
 	if isRuleQuery {
 		queryDplt.Name = queryRuleName
 		queryDplt.CommonLabels[k8sutil.NameLabel] = queryDplt.CommonLabels[k8sutil.NameLabel] + "-rule"
@@ -482,13 +506,10 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 		})
 	}
 	queryDplt.Image = thanosImage
-	queryDplt.ImageTag = o.ThanosImageTag
-	queryDplt.Namespace = o.Namespace
+	queryDplt.Name = name
 	queryDplt.Replicas = 1
-	delete(queryDplt.PodResources.Limits, corev1.ResourceCPU)
-	queryDplt.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("250m")
-	queryDplt.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
-	queryDplt.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("8Gi")
+	queryDplt.ContainerResources = k8sutil.NewResourcesRequirements("250m", "", "2Gi", "8Gi")
+
 	var tlsSecret string
 	if isRuleQuery {
 		tlsSecret = "query-rule-tls"
@@ -500,29 +521,7 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 		makeOauthProxy(10902, o.Namespace, queryDplt.Name, tlsSecret),
 	}
 
-	// Query config
-	queryDplt.Options.LogLevel = log.LogLevelWarn
-	queryDplt.Options.LogFormat = log.LogFormatLogfmt
-	queryDplt.Options.QueryReplicaLabel = []string{"replica", "prometheus_replica", "rule_replica"}
-	queryDplt.Options.Endpoint = append(queryDplt.Options.Endpoint, o.storesRegister...)
-	sort.Strings(queryDplt.Options.Endpoint) // sort to make the output deterministic and avoid noisy diffs
-	queryDplt.Options.QueryTimeout = model.Duration(15 * time.Minute)
-	queryDplt.Options.QueryLookbackDelta = model.Duration(15 * time.Minute)
-	queryDplt.Options.WebPrefixHeader = "X-Forwarded-Prefix"
-	queryDplt.Options.TracingConfig = &trclient.TracingConfig{
-		Type: trclient.Jaeger,
-		Config: jaeger.Config{
-			SamplerParam: 2,
-			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  queryDplt.CommonLabels[k8sutil.NameLabel],
-		},
-	}
-	queryDplt.Options.QueryAutoDownsampling = true
-	queryDplt.Options.QueryPromQLEngine = "prometheus"
-	queryDplt.Options.QueryMaxConcurrent = 10
-	if !isRuleQuery {
-		queryDplt.Options.QueryTelemetryRequestDurationSecondsQuantiles = []float64{0.1, 0.25, 0.75, 1.25, 1.75, 2.5, 3, 5, 10, 15, 30, 60, 120}
-	}
+	executeIfNotNil(preManifestHook, queryDplt)
 
 	ruleUrl := fmt.Sprintf("http://%s.%s.svc.cluster.local:10902", queryDplt.Name, queryDplt.Namespace)
 	if isRuleQuery {
@@ -530,8 +529,6 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 	} else {
 		o.queryAdhocURL = ruleUrl
 	}
-
-	executeIfNotNil(preManifestHook, queryDplt)
 
 	// Post process
 	manifests := queryDplt.Manifests()
@@ -596,42 +593,30 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 // makeReceiveRouter creates a base receive router component that can be derived from using the preManifestsHook
 // for each tenant instance of the observatorium metrics.
 func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
-	router := receive.NewRouter()
-
-	// K8s config
-	router.Name = receiveRouterName
-	router.Image = thanosImage
-	router.ImageTag = o.ThanosImageTag
-	router.Namespace = o.Namespace
-	router.Replicas = 1
-	delete(router.PodResources.Limits, corev1.ResourceCPU)
-	router.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
-	router.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("3Gi")
-	router.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("10Gi")
-	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
-
-	// Router config
-	router.Options.LogLevel = log.LogLevelWarn
-	router.Options.LogFormat = log.LogFormatLogfmt
-	router.Options.TracingConfig = &trclient.TracingConfig{
+	// Receive router config
+	opts := receive.NewDefaultRouterOptions()
+	opts.TracingConfig = &trclient.TracingConfig{
 		Type: trclient.Jaeger,
 		Config: jaeger.Config{
 			SamplerParam: 2,
 			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  "thanos-receive-router",
+			ServiceName:  strings.TrimPrefix(receiveRouterName, "observatorium-"),
 		},
 	}
-	router.Options.Label = []receive.Label{
+	opts.Label = []receive.Label{
 		{
 			Key:   "receive",
 			Value: "\"true\"",
 		},
 	}
 
-	receiveLimits := receive.NewReceiveLimitsConfig()
-	receiveLimits.WriteLimits.DefaultLimits = o.ReceiveLimitsDefault
-	receiveLimits.WriteLimits.GlobalLimits = o.ReceiveLimitsGlobal
-	receiveLimits.WriteLimits.TenantsLimits = map[string]receive.WriteLimitConfig{}
+	receiveLimits := &receive.ReceiveLimitsConfig{
+		WriteLimits: receive.WriteLimitsConfig{
+			DefaultLimits: o.ReceiveLimitsDefault,
+			GlobalLimits:  o.ReceiveLimitsGlobal,
+			TenantsLimits: map[string]receive.WriteLimitConfig{},
+		},
+	}
 	for _, instanceCfg := range o.Instances {
 		for _, tenant := range instanceCfg.Tenants {
 			if tenant.ReceiveLimits == nil {
@@ -641,11 +626,20 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 			receiveLimits.WriteLimits.TenantsLimits[tenant.ID] = *tenant.ReceiveLimits
 		}
 	}
-	router.Options.ReceiveLimitsConfigFile = receive.NewReceiveLimitsConfigFile(router.Name+"-limits", receiveLimits)
+	opts.ReceiveLimitsConfigFile = receive.NewReceiveLimitsConfigFile(receiveLimits).WithResourceName("observatorium-thanos-receive-router-limits")
 
 	generatedHashringCm := "thanos-receive-hashring-generated"
 	// Leave the config map empty, it is generated by the controller
-	router.Options.ReceiveHashringsFile = receive.NewReceiveHashringConfigFile(generatedHashringCm, receive.HashRingsConfig{})
+	opts.ReceiveHashringsFile = receive.NewReceiveHashringConfigFile(nil).WithResourceName(generatedHashringCm)
+
+	router := receive.NewRouter(opts, o.Namespace, o.ThanosImageTag)
+
+	// K8s config
+	router.Name = receiveRouterName
+	router.Image = thanosImage
+	router.Replicas = 1
+	router.ContainerResources = k8sutil.NewResourcesRequirements("200m", "", "3Gi", "10Gi")
+	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	executeIfNotNil(o.ReceiveRouterPreManifestsHook, router)
 
@@ -681,11 +675,17 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	}
 
 	// Add thanos-receive-controller
-	controller := receive.NewController()
+	hashringFileName := "hashrings.json"
+	ctrlOpts := &receive.ControllerOptions{
+		ConfigMapName:          baseHashringCm,
+		ConfigMapGeneratedName: generatedHashringCm,
+		Namespace:              o.Namespace,
+		FileName:               hashringFileName,
+	}
+
 	// Controller k8s config
+	controller := receive.NewController(ctrlOpts, o.Namespace, o.ReceiveControllerImageTag)
 	controller.Image = thanosReceiveControllerImage
-	controller.ImageTag = o.ReceiveControllerImageTag
-	controller.Namespace = o.Namespace
 	controller.Replicas = 1
 
 	var baseHashring receive.HashRingsConfig = []receive.HashringConfig{}
@@ -701,21 +701,11 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 
 		baseHashring = append(baseHashring, newHashring)
 	}
-	hashringFileName := "hashrings.json"
 	controller.ConfigMaps[baseHashringCm] = map[string]string{
 		hashringFileName: baseHashring.String(),
 	}
 
-	// Controller config
-	controller.Options.ConfigMapName = baseHashringCm
-	controller.Options.ConfigMapGeneratedName = generatedHashringCm
-	controller.Options.Namespace = o.Namespace
-	controller.Options.FileName = hashringFileName
-
-	controllerManifests := controller.Manifests()
-	for k, v := range controllerManifests {
-		manifests[k] = v
-	}
+	maps.Copy(manifests, controller.Manifests())
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
@@ -730,40 +720,36 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 
 // makeReceiveIngestor creates a base receive ingestor component that can be derived from using the preManifestsHook
 func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
-	ingestor := receive.NewIngestor()
-	ingestor.Name = fmt.Sprintf("%s-%s", ingestor.Name, instanceCfg.InstanceName)
-	ingestor.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
-	ingestor.Image = thanosImage
-	ingestor.ImageTag = o.ThanosImageTag
-	ingestor.Namespace = o.Namespace
-	ingestor.Replicas = 1
-	ingestor.VolumeType = "gp2"
-	ingestor.VolumeSize = "50Gi"
-	delete(ingestor.PodResources.Limits, corev1.ResourceCPU)
-	ingestor.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
-	ingestor.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("3Gi")
-	ingestor.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("10Gi")
-	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
-	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
-	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
-
+	name := "observatorium-thanos-receive-ingestor-" + instanceCfg.InstanceName
 	// Router config
-	ingestor.Options.LogLevel = log.LogLevelWarn
-	ingestor.Options.LogFormat = log.LogFormatLogfmt
-	ingestor.Options.TracingConfig = &trclient.TracingConfig{
+	opts := receive.NewDefaultIngestorOptions()
+	opts.TracingConfig = &trclient.TracingConfig{
 		Type: trclient.Jaeger,
 		Config: jaeger.Config{
 			SamplerParam: 2,
 			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  "thanos-receive-router",
+			ServiceName:  strings.TrimPrefix(name, "observatorium-"),
 		},
 	}
-	ingestor.Options.Label = []receive.Label{
+	opts.Label = []receive.Label{
 		{
 			Key:   "replica",
 			Value: "\"$(POD_NAME)\"",
 		},
 	}
+
+	// K8s config
+	ingestor := receive.NewIngestor(opts, o.Namespace, o.ThanosImageTag)
+	ingestor.Name = name
+	ingestor.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
+	ingestor.Image = thanosImage
+	ingestor.Replicas = 1
+	ingestor.VolumeType = "gp2"
+	ingestor.VolumeSize = "50Gi"
+	ingestor.ContainerResources = k8sutil.NewResourcesRequirements("200m", "", "3Gi", "10Gi")
+	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
+	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
+	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	executeIfNotNil(instanceCfg.ReceiveIngestorPreManifestsHook, ingestor)
 
@@ -816,35 +802,31 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
 func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
+	// Compactor config
+	opts := compactor.NewDefaultOptions()
+	opts.LogLevel = log.LogLevelWarn
+	opts.RetentionResolutionRaw = 0
+	opts.RetentionResolution5m = 0
+	opts.RetentionResolution1h = 0
+	opts.DeleteDelay = 24 * time.Hour
+	opts.CompactConcurrency = 1
+	opts.DownsampleConcurrency = 1
+	opts.DeduplicationReplicaLabel = "replica"
+	opts.AddExtraOpts("--debug.max-compaction-level=3")
+
 	// K8s config
-	compactorSatefulset := compactor.NewCompactor()
+	compactorSatefulset := compactor.NewCompactor(opts, o.Namespace, o.ThanosImageTag)
 	compactorSatefulset.Name = fmt.Sprintf("%s-%s", compactorSatefulset.Name, instanceCfg.InstanceName)
 	compactorSatefulset.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	compactorSatefulset.Image = thanosImage
-	compactorSatefulset.ImageTag = o.ThanosImageTag
-	compactorSatefulset.Namespace = o.Namespace
 	compactorSatefulset.Replicas = 1
-	delete(compactorSatefulset.PodResources.Limits, corev1.ResourceCPU)
-	compactorSatefulset.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("200m")
-	compactorSatefulset.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("1Gi")
-	compactorSatefulset.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("5Gi")
+	compactorSatefulset.ContainerResources = k8sutil.NewResourcesRequirements("200m", "", "1Gi", "5Gi")
 	compactorSatefulset.VolumeType = "gp2"
 	compactorSatefulset.VolumeSize = "50Gi"
 	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
 	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
 	tlsSecret := "compact-tls-" + instanceCfg.InstanceName
 	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, o.Namespace, compactorSatefulset.Name, tlsSecret)}
-
-	// Compactor config
-	compactorSatefulset.Options.LogLevel = log.LogLevelWarn
-	compactorSatefulset.Options.RetentionResolutionRaw = 0
-	compactorSatefulset.Options.RetentionResolution5m = 0
-	compactorSatefulset.Options.RetentionResolution1h = 0
-	compactorSatefulset.Options.DeleteDelay = 24 * time.Hour
-	compactorSatefulset.Options.CompactConcurrency = 1
-	compactorSatefulset.Options.DownsampleConcurrency = 1
-	compactorSatefulset.Options.DeduplicationReplicaLabel = "replica"
-	compactorSatefulset.Options.AddExtraOpts("--debug.max-compaction-level=3")
 
 	executeIfNotNil(instanceCfg.CompactorPreManifestsHook, compactorSatefulset)
 
@@ -933,18 +915,73 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
 func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
+	name := "observatorium-thanos-store-" + instanceCfg.InstanceName
+
+	// Store config
+	maxTimeDur := time.Duration(-22) * time.Hour
+	hasmodConfigPath := "/etc/thanos/hashmod"
+	opts := &store.StoreOptions{
+		LogFormat:                 log.LogFormatLogfmt,
+		LogLevel:                  log.LogLevelWarn,
+		IgnoreDeletionMarksDelay:  24 * time.Hour,
+		DataDir:                   "/var/thanos/store",
+		ObjstoreConfig:            "$(OBJSTORE_CONFIG)",
+		MaxTime:                   &thanostime.TimeOrDurationValue{Dur: &maxTimeDur},
+		SelectorRelabelConfigFile: fmt.Sprintf("%s/hashmod-config.yaml", hasmodConfigPath),
+		TracingConfig: &trclient.TracingConfig{
+			Type: trclient.Jaeger,
+			Config: jaeger.Config{
+				SamplerParam: 2,
+				SamplerType:  jaeger.SamplerTypeRateLimiting,
+				ServiceName:  strings.TrimPrefix(name, "observatorium-"),
+			},
+		},
+	}
+	opts.AddExtraOpts("--store.enable-index-header-lazy-reader")
+
+	indexCacheName := fmt.Sprintf("observatorium-thanos-store-index-cache-memcached-%s", instanceCfg.InstanceName)
+	bucketCacheName := fmt.Sprintf("observatorium-thanos-store-bucket-cache-memcached-%s", instanceCfg.InstanceName)
+	opts.IndexCacheConfig = cache.NewIndexCacheConfig(memcachedclientcfg.MemcachedClientConfig{
+		Addresses: []string{
+			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", indexCacheName, o.Namespace),
+		},
+		DNSProviderUpdateInterval: 10 * time.Second,
+		MaxAsyncBufferSize:        2500000,
+		MaxAsyncConcurrency:       1000,
+		MaxGetMultiBatchSize:      100000,
+		MaxGetMultiConcurrency:    1000,
+		MaxIdleConnections:        2500,
+		MaxItemSize:               "5MiB",
+		Timeout:                   2 * time.Second,
+	})
+	memCache := cache.NewBucketCacheConfig(memcachedclientcfg.MemcachedClientConfig{
+		Addresses: []string{
+			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", indexCacheName, o.Namespace),
+		},
+		DNSProviderUpdateInterval: 10 * time.Second,
+		MaxAsyncBufferSize:        2500000,
+		MaxAsyncConcurrency:       1000,
+		MaxGetMultiBatchSize:      100000,
+		MaxGetMultiConcurrency:    1000,
+		MaxIdleConnections:        2500,
+		MaxItemSize:               "1MiB",
+		Timeout:                   2 * time.Second,
+	})
+	memCache.MaxChunksGetRangeRequests = 3
+	memCache.MetafileMaxSize = "1MiB"
+	memCache.MetafileExistsTTL = 2 * time.Hour
+	memCache.MetafileDoesntExistTTL = 15 * time.Minute
+	memCache.MetafileContentTTL = 24 * time.Hour
+
+	opts.AddExtraOpts(fmt.Sprintf("--store.caching-bucket.config=%s", memCache.String()))
+
 	// K8s config
-	storeStatefulSet := store.NewStore()
-	storeStatefulSet.Name = fmt.Sprintf("%s-%s", storeStatefulSet.Name, instanceCfg.InstanceName)
+	storeStatefulSet := store.NewStore(opts, o.Namespace, o.ThanosImageTag)
+	storeStatefulSet.Name = name
 	storeStatefulSet.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	storeStatefulSet.Image = thanosImage
-	storeStatefulSet.ImageTag = o.ThanosImageTag
-	storeStatefulSet.Namespace = o.Namespace
 	storeStatefulSet.Replicas = 1
-	delete(storeStatefulSet.PodResources.Limits, corev1.ResourceCPU)
-	storeStatefulSet.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("4")
-	storeStatefulSet.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("20Gi")
-	storeStatefulSet.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("80Gi")
+	storeStatefulSet.ContainerResources = k8sutil.NewResourcesRequirements("2", "", "5Gi", "20Gi")
 	storeStatefulSet.VolumeType = "gp2"
 	storeStatefulSet.VolumeSize = "50Gi"
 	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
@@ -988,60 +1025,6 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			},
 		},
 	}
-
-	// Store config
-	storeStatefulSet.Options.LogLevel = log.LogLevelWarn
-	storeStatefulSet.Options.LogFormat = log.LogFormatLogfmt
-	storeStatefulSet.Options.IgnoreDeletionMarksDelay = 24 * time.Hour
-	maxTimeDur := time.Duration(-22) * time.Hour
-	storeStatefulSet.Options.MaxTime = &thanostime.TimeOrDurationValue{Dur: &maxTimeDur}
-	hasmodConfigPath := "/etc/thanos/hashmod"
-	storeStatefulSet.Options.SelectorRelabelConfigFile = fmt.Sprintf("%s/hashmod-config.yaml", hasmodConfigPath)
-	storeStatefulSet.Options.TracingConfig = &trclient.TracingConfig{
-		Type: trclient.Jaeger,
-		Config: jaeger.Config{
-			SamplerParam: 2,
-			SamplerType:  jaeger.SamplerTypeRateLimiting,
-			ServiceName:  "thanos-store",
-		},
-	}
-	// storeStatefulSet.Options.StoreEnableIndexHeaderLazyReader = true // Enables parallel rolling update of store nodes.
-	storeStatefulSet.Options.AddExtraOpts("--store.enable-index-header-lazy-reader")
-	indexCacheName := fmt.Sprintf("observatorium-thanos-store-index-cache-memcached-%s", instanceCfg.InstanceName)
-	bucketCacheName := fmt.Sprintf("observatorium-thanos-store-bucket-cache-memcached-%s", instanceCfg.InstanceName)
-	storeStatefulSet.Options.IndexCacheConfig = cache.NewIndexCacheConfig(memcachedclientcfg.MemcachedClientConfig{
-		Addresses: []string{
-			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", indexCacheName, o.Namespace),
-		},
-		DNSProviderUpdateInterval: 10 * time.Second,
-		MaxAsyncBufferSize:        2500000,
-		MaxAsyncConcurrency:       1000,
-		MaxGetMultiBatchSize:      100000,
-		MaxGetMultiConcurrency:    1000,
-		MaxIdleConnections:        2500,
-		MaxItemSize:               "5MiB",
-		Timeout:                   2 * time.Second,
-	})
-	memCache := cache.NewBucketCacheConfig(memcachedclientcfg.MemcachedClientConfig{
-		Addresses: []string{
-			fmt.Sprintf("dnssrv+_client._tcp.%s.%s.svc", indexCacheName, o.Namespace),
-		},
-		DNSProviderUpdateInterval: 10 * time.Second,
-		MaxAsyncBufferSize:        2500000,
-		MaxAsyncConcurrency:       1000,
-		MaxGetMultiBatchSize:      100000,
-		MaxGetMultiConcurrency:    1000,
-		MaxIdleConnections:        2500,
-		MaxItemSize:               "1MiB",
-		Timeout:                   2 * time.Second,
-	})
-	memCache.MaxChunksGetRangeRequests = 3
-	memCache.MetafileMaxSize = "1MiB"
-	memCache.MetafileExistsTTL = 2 * time.Hour
-	memCache.MetafileDoesntExistTTL = 15 * time.Minute
-	memCache.MetafileContentTTL = 24 * time.Hour
-
-	storeStatefulSet.Options.AddExtraOpts(fmt.Sprintf("--store.caching-bucket.config=%s", memCache.String()))
 
 	executeIfNotNil(instanceCfg.StorePreManifestsHook, storeStatefulSet)
 
@@ -1099,10 +1082,9 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			},
 		},
 	}
+	manifests.Add(listPodsRole)
 
-	manifests["list-pods-rbac"] = listPodsRole
-
-	manifests["list-pods-rbac-binding"] = &rbacv1.RoleBinding{
+	roleBinding := &rbacv1.RoleBinding{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "RoleBinding",
 			APIVersion: rbacv1.SchemeGroupVersion.String(),
@@ -1126,9 +1108,10 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			APIGroup: "rbac.authorization.k8s.io",
 		},
 	}
+	manifests.Add(roleBinding)
 
 	// Add pod disruption budget
-	manifests["store-pdb"] = &policyv1.PodDisruptionBudget{
+	pdb := &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -1149,6 +1132,7 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			},
 		},
 	}
+	manifests.Add(pdb)
 
 	// Add index cache
 	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {

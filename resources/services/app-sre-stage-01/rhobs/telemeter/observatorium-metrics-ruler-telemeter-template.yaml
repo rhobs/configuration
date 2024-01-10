@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: observatorium-thanos-ruler-telemeter
+  name: observatorium-thanos-rule-telemeter
 objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
@@ -18,7 +18,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
-    name: observatorium-thanos-ruler-telemeter
+    name: observatorium-thanos-rule-telemeter
     namespace: rhobs
   spec:
     host: ""
@@ -29,7 +29,7 @@ objects:
       termination: reencrypt
     to:
       kind: Service
-      name: observatorium-thanos-ruler-telemeter
+      name: observatorium-thanos-rule-telemeter
       weight: null
 - apiVersion: v1
   data:
@@ -176,7 +176,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
-    name: observatorium-thanos-ruler-telemeter
+    name: observatorium-thanos-rule-telemeter
     namespace: rhobs
   spec:
     ports:
@@ -208,7 +208,7 @@ objects:
   kind: ServiceAccount
   metadata:
     annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-ruler-telemeter"}}'
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-rule-telemeter"}}'
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: rule-evaluation-engine
@@ -217,7 +217,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
-    name: observatorium-thanos-ruler-telemeter
+    name: observatorium-thanos-rule-telemeter
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -231,7 +231,7 @@ objects:
       app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
       prometheus: app-sre
-    name: observatorium-thanos-ruler-telemeter
+    name: observatorium-thanos-rule-telemeter
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -272,7 +272,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
-    name: observatorium-thanos-ruler-telemeter
+    name: observatorium-thanos-rule-telemeter
     namespace: rhobs
   spec:
     replicas: ${{RULER_REPLICAS}}
@@ -283,7 +283,7 @@ objects:
         app.kubernetes.io/name: thanos-rule
         app.kubernetes.io/part-of: observatorium
         observatorium/tenant: telemeter
-    serviceName: observatorium-thanos-ruler-telemeter
+    serviceName: observatorium-thanos-rule-telemeter
     template:
       metadata:
         creationTimestamp: null
@@ -328,10 +328,10 @@ objects:
           - |
             --tracing.config=type: JAEGER
             config:
-              service_name: thanos-rule
+              service_name: thanos-rule-telemeter
               sampler_type: ratelimiting
               sampler_param: 2
-          - --tsdb.retention=2d
+          - --tsdb.retention=48h0m0s
           env:
           - name: POD_NAME
             valueFrom:
@@ -435,7 +435,7 @@ objects:
           - -http-address=
           - -email-domain=*
           - -upstream=http://localhost:10902
-          - -openshift-service-account=observatorium-thanos-ruler-telemeter
+          - -openshift-service-account=observatorium-thanos-rule-telemeter
           - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
             "namespace": "rhobs"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
@@ -525,7 +525,7 @@ objects:
             name: observatorium-rules
         nodeSelector:
           kubernetes.io/os: linux
-        serviceAccountName: observatorium-thanos-ruler-telemeter
+        serviceAccountName: observatorium-thanos-rule-telemeter
         terminationGracePeriodSeconds: 120
         volumes:
         - configMap:

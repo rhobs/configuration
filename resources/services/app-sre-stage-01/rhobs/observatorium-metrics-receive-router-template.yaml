@@ -4,20 +4,6 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-receive-router
 objects:
-- apiVersion: v1
-  data:
-    hashrings.json: '[{"hashring":"default","tenants":["3833951d-bede-4a53-85e5-f73f4913973f","9ca26972-4328-4fe3-92db-31302013d03f","AC879303-C60F-4D0D-A6D5-A485CFD638B8","99c885bc-2d64-4c4d-b55e-8bf30d98c657","770c1124-6ae8-4324-a9d4-9ce08590094b","37b8fd3f-56ff-4b64-8272-917c9b0d1623","d17ea8ce-d4c6-42ef-b259-7d10c9227e93","1b9b6e43-9128-4bbf-bfff-3c120bbe6f11","0fc2b00e-201b-4c17-b9f2-19d91adc4fd2","8ace13a2-1c72-4559-b43d-ab43e32a255a","0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1"],"algorithm":"ketama"},{"hashring":"rhel","tenants":["72e6f641-b2e2-47eb-bbc2-fee3c8fbda26"],"algorithm":"ketama"},{"hashring":"telemeter","tenants":["FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"],"algorithm":"ketama"}]'
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: kubernetes-controller
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-controller
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-09-22-f168dd7
-    name: thanos-receive-hashring
-    namespace: rhobs
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -286,9 +272,11 @@ objects:
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /etc/thanos/hashring
-            name: hashring-config
+            name: hashring
+            readOnly: true
           - mountPath: /etc/thanos/receive-limits
-            name: receive-limits-config
+            name: receive-limits
+            readOnly: true
         - args:
           - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
           - --reporter.type=grpc
@@ -339,10 +327,10 @@ objects:
         volumes:
         - configMap:
             name: thanos-receive-hashring-generated
-          name: hashring-config
+          name: hashring
         - configMap:
             name: observatorium-thanos-receive-router-limits
-          name: receive-limits-config
+          name: receive-limits
 - apiVersion: v1
   kind: Service
   metadata:
@@ -439,6 +427,20 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: thanos-receive-router
         app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  data:
+    hashrings.json: '[{"hashring":"default","tenants":["3833951d-bede-4a53-85e5-f73f4913973f","9ca26972-4328-4fe3-92db-31302013d03f","AC879303-C60F-4D0D-A6D5-A485CFD638B8","99c885bc-2d64-4c4d-b55e-8bf30d98c657","770c1124-6ae8-4324-a9d4-9ce08590094b","37b8fd3f-56ff-4b64-8272-917c9b0d1623","d17ea8ce-d4c6-42ef-b259-7d10c9227e93","1b9b6e43-9128-4bbf-bfff-3c120bbe6f11","0fc2b00e-201b-4c17-b9f2-19d91adc4fd2","8ace13a2-1c72-4559-b43d-ab43e32a255a","0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1"],"algorithm":"ketama"},{"hashring":"rhel","tenants":["72e6f641-b2e2-47eb-bbc2-fee3c8fbda26"],"algorithm":"ketama"},{"hashring":"telemeter","tenants":["FB870BF3-9F3A-44FF-9BF7-D7A047A52F43"],"algorithm":"ketama"}]'
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: kubernetes-controller
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-controller
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2023-09-22-f168dd7
+    name: thanos-receive-hashring
+    namespace: rhobs
 parameters:
 - name: ROUTER_CPU_REQUEST
   value: 200m

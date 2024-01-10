@@ -13,7 +13,6 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	templatev1 "github.com/openshift/api/template/v1"
-	"github.com/prometheus/common/model"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
 	"github.com/rhobs/configuration/services_go/observatorium"
 	"gopkg.in/yaml.v3"
@@ -114,7 +113,7 @@ func stageConfig() observatorium.Observatorium {
 				{
 					Endpoint: "/api/metrics/v1/rhel/api/v1/receive",
 					Limit:    10000,
-					Window:   model.Duration(30 * time.Second),
+					Window:   time.Duration(30 * time.Second),
 				},
 			},
 		},
@@ -130,7 +129,7 @@ func stageConfig() observatorium.Observatorium {
 				{
 					Endpoint: "/api/metrics/v1/.+/api/v1/receive",
 					Limit:    10000,
-					Window:   model.Duration(30 * time.Second),
+					Window:   time.Duration(30 * time.Second),
 				},
 			},
 		},
@@ -231,15 +230,17 @@ func stageConfig() observatorium.Observatorium {
 					StorePreManifestsHook: func(store *store.StoreStatefulSet) {
 						store.VolumeSize = "5Gi"
 					},
-					RulerPreManifestsHook: func(rulerSs *ruler.RulerStatefulSet) {
-						rulerSs.ConfigMaps["observatorium-rules"] = map[string]string{
-							"observatorium.yaml": getTelemeterRules(),
-						}
-						rulerSs.Options.RuleFile = append(rulerSs.Options.RuleFile, ruler.RuleFileOption{
+					RulerOpts: func(opts *ruler.RulerOptions) {
+						opts.RuleFile = append(opts.RuleFile, ruler.RuleFileOption{
 							FileName:      "observatorium.yaml",
 							ConfigMapName: "observatorium-rules",
 							ParentDir:     "telemeter-rules",
 						})
+					},
+					RulerPreManifestsHook: func(rulerSs *ruler.RulerStatefulSet) {
+						rulerSs.ConfigMaps["observatorium-rules"] = map[string]string{
+							"observatorium.yaml": getTelemeterRules(),
+						}
 						rulerSs.Sidecars = append(rulerSs.Sidecars, &k8sutil.Container{
 							Name:     "configmap-reloader",
 							Image:    "quay.io/openshift/origin-configmap-reloader",

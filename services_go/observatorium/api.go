@@ -17,16 +17,13 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/k8sutil"
 	"github.com/observatorium/observatorium/configuration_go/openshift"
 	"github.com/observatorium/observatorium/configuration_go/schemas/log"
-	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
-	objstoreS3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	upoptions "github.com/observatorium/up/pkg/options"
 	templatev1 "github.com/openshift/api/template/v1"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
-	"github.com/prometheus/common/model"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
 const (
@@ -41,6 +38,7 @@ const (
 	obsctlReloaderImage  = "quay.io/app-sre/obsctl-reloader"
 	obsctlReloaderTag    = "969b895"
 	rulesObjstoreName    = "observatorium-rules-objstore"
+	rulesObjstoreTag     = "main-2022-09-21-9df4d2c"
 )
 
 type ObservatoriumAPI struct {
@@ -89,14 +87,14 @@ func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
 	}
 
 	if o.RBAC != "" {
-		opts.RbacConfig = observatoriumapi.NewRbacConfig(&o.RBAC)
+		opts.RbacConfig = observatoriumapi.NewRbacConfig(nil).WithValue(o.RBAC)
 	}
 
 	// K8s config
 	obsapi := observatoriumapi.NewObservatoriumAPI(opts, o.Namespace, obsApiTag)
 	obsapi.Image = obsApiImage
 	obsapi.Replicas = 1
-	delete(obsapi.PodResources.Limits, corev1.ResourceCPU)
+	delete(obsapi.ContainerResources.Limits, corev1.ResourceCPU)
 	opaAmsCache := "observatorium-api-cache-memcached"
 	cacheURL := fmt.Sprintf("%s.%s.svc.cluster.local:11211", opaAmsCache, o.Namespace)
 
@@ -166,23 +164,54 @@ func (o *ObservatoriumAPI) makeAPI() encoding.Encoder {
 }
 
 func (o *ObservatoriumAPI) makeRulesObjstore() k8sutil.ObjectMap {
-	rulesObjstore := ruler.NewRulesObjstore()
-	rulesObjstore.ImageTag = "main-2022-09-21-9df4d2c"
-	rulesObjstore.Namespace = o.Namespace
+	opts := ruler.NewRulesObjstoreDefaultOptions()
+	// Not using the opts.ObjstoreConfigFile because it doesn't support setting the resource from an init container
+	// Doing some manifest post processing instead
+	opts.LogLevel = string(log.LogLevelWarn)
+	opts.LogFormat = string(log.LogFormatLogfmt)
+
+	rulesObjstore := ruler.NewRulesObjstore(opts, o.Namespace, rulesObjstoreTag)
 	rulesObjstore.Name = rulesObjstoreName
-	rulesObjstore.Env = append(rulesObjstore.Env, objStoreEnvVars(o.RuleObjStoreSecret)...)
-	rulesObjstore.Env = deleteObjStoreEnv(rulesObjstore.Env)
-	rulesObjstore.Options.ObjstoreConfigFile = ruler.NewObjstoreConfigFile("observatorium-rules-objstore", objstore.BucketConfig{
-		Type: objstore.S3,
-		Config: objstoreS3.Config{
-			Bucket:   "$(OBJ_STORE_BUCKET)",
-			Endpoint: "$(OBJ_STORE_ENDPOINT)",
-			Region:   "$(OBJ_STORE_REGION)",
+
+	// Rules objstore expects a file with the objstore config.
+	// We generate the file from the env vars using an init container
+	// that writes the file to a shared volume.
+	initContainer := corev1.Container{
+		Name:            "init",
+		Image:           "quay.io/app-sre/ubi8-ubi-minimal",
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		Command: []string{
+			"/bin/sh",
+			"-c",
+			"echo \"${OBJSTORE_CONFIG}\" > /tmp/config/config.yaml",
+		},
+		Env: objStoreEnvVars(o.RuleObjStoreSecret),
+		VolumeMounts: []corev1.VolumeMount{
+			{
+				Name:      "objstore-config",
+				MountPath: "/tmp/config",
+			},
+		},
+	}
+
+	manifests := rulesObjstore.Manifests()
+	deployment := k8sutil.GetObject[*appsv1.Deployment](manifests, "")
+	deployment.Spec.Template.Spec.InitContainers = []corev1.Container{initContainer}
+	deployment.Spec.Template.Spec.Volumes = append(deployment.Spec.Template.Spec.Volumes, corev1.Volume{
+		Name: "objstore-config",
+		VolumeSource: corev1.VolumeSource{
+			EmptyDir: &corev1.EmptyDirVolumeSource{},
 		},
 	})
-	rulesObjstore.Options.LogLevel = string(log.LogLevelWarn)
-	rulesObjstore.Options.LogFormat = string(log.LogFormatLogfmt)
-	return rulesObjstore.Manifests()
+	mainContainer := &deployment.Spec.Template.Spec.Containers[0]
+	mainContainer.VolumeMounts = append(mainContainer.VolumeMounts, corev1.VolumeMount{
+		Name:      "objstore-config",
+		MountPath: "/etc/rules-objstore/objstore",
+		ReadOnly:  true,
+	})
+	mainContainer.Args = append(mainContainer.Args, "-objstore.config-file=/etc/rules-objstore/objstore/config.yaml")
+
+	return manifests
 }
 
 func (o *ObservatoriumAPI) makeOpaAms(amsURL, memcachedUrl, clientSecretName string) *k8sutil.Container {
@@ -231,7 +260,7 @@ func (o *ObservatoriumAPI) makeUp(name, endpoint string) k8sutil.ObjectMap {
 	opts.LogLevel = log.LogLevelInfo
 	opts.EndpointType = observatoriumup.EndpointTypeMetrics
 	opts.EndpointRead = fmt.Sprintf("http://observatorium-thanos-query-frontend.%s.svc.cluster.local:9090", o.Namespace)
-	zeroDur := model.Duration(0)
+	zeroDur := time.Duration(0)
 	opts.Duration = &zeroDur
 	opts.QueriesFile = observatoriumup.NewQueriesFileOption(&observatoriumup.QueriesFile{
 		Queries: []upoptions.QuerySpec{
@@ -306,7 +335,7 @@ func (o *ObservatoriumAPI) makeObsCtlReloader(obsApiName string) k8sutil.ObjectM
 			k8sutil.ComponentLabel: "rules-obsctl-reloader",
 			k8sutil.VersionLabel:   obsctlReloaderTag,
 		},
-		PodResources:                  k8sutil.NewResourcesRequirements("50m", "", "500Mi", "2Gi"),
+		ContainerResources:            k8sutil.NewResourcesRequirements("50m", "", "500Mi", "2Gi"),
 		TerminationGracePeriodSeconds: 30,
 	}
 
@@ -335,32 +364,52 @@ func (o *ObservatoriumAPI) makeObsCtlReloader(obsApiName string) k8sutil.ObjectM
 	container.MonitorPorts = []monv1.Endpoint{{Port: "http"}}
 
 	manifests := k8sutil.ObjectMap{}
-	manifests.AddAll(depl.GenerateObjects(container))
+	manifests.AddAll(depl.GenerateObjectsDeployment(container))
 
 	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), depl.Namespace)
 	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, depl.Name))
 
-	rbacRules := []rbacv1.PolicyRule{
-		{
-			APIGroups: []string{"monitoring.coreos.com"},
-			Resources: []string{"prometheusrules"},
-			Verbs:     []string{"list", "watch", "get"},
-		},
-		{
-			APIGroups: []string{"loki.grafana.com"},
-			Resources: []string{"alertingrules", "recordingrules"},
-			Verbs:     []string{"list", "watch", "get"},
-		},
-		{
-			APIGroups: []string{""},
-			Resources: []string{"secrets"},
-			Verbs:     []string{"list", "watch", "get"},
+	rbacRole := &rbacv1.Role{
+		TypeMeta:   k8sutil.RoleMeta,
+		ObjectMeta: depl.ObjectMeta().MakeMeta(),
+		Rules: []rbacv1.PolicyRule{
+			{
+				APIGroups: []string{"monitoring.coreos.com"},
+				Resources: []string{"prometheusrules"},
+				Verbs:     []string{"list", "watch", "get"},
+			},
+			{
+				APIGroups: []string{"loki.grafana.com"},
+				Resources: []string{"alertingrules", "recordingrules"},
+				Verbs:     []string{"list", "watch", "get"},
+			},
+			{
+				APIGroups: []string{""},
+				Resources: []string{"secrets"},
+				Verbs:     []string{"list", "watch", "get"},
+			},
 		},
 	}
-	rbacRole := depl.RBACRole(rbacRules)
 	manifests.Add(rbacRole)
+
 	sa := k8sutil.GetObject[*corev1.ServiceAccount](manifests, depl.Name)
-	manifests.Add(depl.RBACRoleBinding([]runtime.Object{sa}, rbacRole))
+	roleBinding := &rbacv1.RoleBinding{
+		TypeMeta:   k8sutil.RoleBindingMeta,
+		ObjectMeta: depl.ObjectMeta().MakeMeta(),
+		Subjects: []rbacv1.Subject{
+			{
+				Kind:      sa.GetObjectKind().GroupVersionKind().Kind,
+				Name:      sa.GetName(),
+				Namespace: sa.GetNamespace(),
+			},
+		},
+		RoleRef: rbacv1.RoleRef{
+			Kind:     rbacRole.GetObjectKind().GroupVersionKind().Kind,
+			APIGroup: rbacRole.GetObjectKind().GroupVersionKind().Group,
+			Name:     rbacRole.GetName(),
+		},
+	}
+	manifests.Add(roleBinding)
 
 	return manifests
 }

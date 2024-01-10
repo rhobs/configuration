@@ -30,87 +30,6 @@ objects:
       kind: Service
       name: observatorium-thanos-query-rule
       weight: null
-- apiVersion: v1
-  kind: Service
-  metadata:
-    annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: query-rule-tls
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-rule
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query-rule
-    namespace: rhobs
-  spec:
-    ports:
-    - name: http
-      port: 10902
-      protocol: TCP
-      targetPort: 10902
-    - name: grpc
-      port: 10901
-      protocol: TCP
-      targetPort: 10901
-    - name: https
-      port: 8443
-      protocol: TCP
-      targetPort: 8443
-    selector:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-rule
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  imagePullSecrets:
-  - name: quay.io
-  kind: ServiceAccount
-  metadata:
-    annotations:
-      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-query-rule"}}'
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-rule
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query-rule
-    namespace: rhobs
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-rule
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-      prometheus: app-sre
-    name: observatorium-thanos-query-rule
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - rhobs
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: query-layer
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-query-rule
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -168,19 +87,19 @@ objects:
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-default.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-rhel.rhobs.svc.cluster.local
           - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-store-telemeter.rhobs.svc.cluster.local
-          - --endpoint=http://observatorium-thanos-ruler-default.rhobs.svc.cluster.local:10902
-          - --endpoint=http://observatorium-thanos-ruler-rhel.rhobs.svc.cluster.local:10902
-          - --endpoint=http://observatorium-thanos-ruler-telemeter.rhobs.svc.cluster.local:10902
+          - --endpoint=http://observatorium-thanos-rule-default.rhobs.svc.cluster.local:10902
+          - --endpoint=http://observatorium-thanos-rule-rhel.rhobs.svc.cluster.local:10902
+          - --endpoint=http://observatorium-thanos-rule-telemeter.rhobs.svc.cluster.local:10902
           - --log.format=logfmt
           - --log.level=${QUERY_LOG_LEVEL}
           - --query.auto-downsampling
-          - --query.lookback-delta=15m
+          - --query.lookback-delta=15m0s
           - --query.max-concurrent=10
           - --query.promql-engine=prometheus
           - --query.replica-label=replica
           - --query.replica-label=prometheus_replica
           - --query.replica-label=rule_replica
-          - --query.timeout=15m
+          - --query.timeout=15m0s
           - |
             --tracing.config=type: JAEGER
             config:
@@ -309,6 +228,87 @@ objects:
         - name: tls
           secret:
             secretName: query-rule-tls
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      service.alpha.openshift.io/serving-cert-secret-name: query-rule-tls
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
+    namespace: rhobs
+  spec:
+    ports:
+    - name: http
+      port: 10902
+      protocol: TCP
+      targetPort: 10902
+    - name: grpc
+      port: 10901
+      protocol: TCP
+      targetPort: 10901
+    - name: https
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-rule
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  imagePullSecrets:
+  - name: quay.io
+  kind: ServiceAccount
+  metadata:
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"observatorium-thanos-query-rule"}}'
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
+    namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.5
+      prometheus: app-sre
+    name: observatorium-thanos-query-rule
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-query-rule
+        app.kubernetes.io/part-of: observatorium
 parameters:
 - from: '[a-zA-Z0-9]{40}'
   generate: expression

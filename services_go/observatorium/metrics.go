@@ -168,7 +168,7 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, alertmanSts.Name)
 
 	// Add route for oauth-proxy
-	manifests["oauth-proxy-route"] = &routev1.Route{
+	manifests.Add(&routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -195,7 +195,7 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 				Name: alertmanSts.Name,
 			},
 		},
-	}
+	})
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
@@ -295,7 +295,7 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, rulerStatefulset.Name)
 
 	// Add route for oauth-proxy
-	manifests["oauth-proxy-route"] = &routev1.Route{
+	manifests.Add(&routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -322,7 +322,7 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 				Name: rulerStatefulset.Name,
 			},
 		},
-	}
+	})
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
@@ -407,7 +407,7 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryFrontend.Name)
 
 	// Add route for oauth-proxy
-	manifests["oauth-proxy-route"] = &routev1.Route{
+	manifests.Add(&routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -434,7 +434,7 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 				Name: queryFrontend.Name,
 			},
 		},
-	}
+	})
 
 	// Add cache
 	rangeCache := "observatorium-thanos-query-range-cache-memcached"
@@ -545,7 +545,7 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryDplt.Name)
 
 	// Add route for oauth-proxy
-	manifests["oauth-proxy-route"] = &routev1.Route{
+	manifests.Add(&routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -572,7 +572,7 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 				Name: queryDplt.Name,
 			},
 		},
-	}
+	})
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
@@ -652,7 +652,7 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	// Add pod disruption budget
 	labels := maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
-	manifests["router-pdb"] = &policyv1.PodDisruptionBudget{
+	manifests.Add(&policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -672,7 +672,7 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 				MatchLabels: labels,
 			},
 		},
-	}
+	})
 
 	// Add thanos-receive-controller
 	hashringFileName := "hashrings.json"
@@ -767,7 +767,7 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 	// Add pod disruption budget
 	labels := maps.Clone(k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
-	manifests["store-pdb"] = &policyv1.PodDisruptionBudget{
+	manifests.Add(&policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -787,7 +787,7 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 				MatchLabels: labels,
 			},
 		},
-	}
+	})
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
@@ -845,7 +845,7 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 	// Add pod disruption budget
 	labels := maps.Clone(k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
-	manifests["store-pdb"] = &policyv1.PodDisruptionBudget{
+	manifests.Add(&policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -865,10 +865,10 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 				MatchLabels: labels,
 			},
 		},
-	}
+	})
 
 	// Add route for oauth-proxy
-	manifests["oauth-proxy-route"] = &routev1.Route{
+	manifests.Add(&routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -895,7 +895,7 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 				Name: compactorSatefulset.Name,
 			},
 		},
-	}
+	})
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}

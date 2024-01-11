@@ -331,6 +331,25 @@ objects:
         - configMap:
             name: observatorium-thanos-receive-router-limits
           name: receive-limits
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-write-hashring-router
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-router
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-thanos-receive-router
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring-router
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-router
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:
@@ -402,25 +421,6 @@ objects:
     namespaceSelector:
       matchNames:
       - rhobs
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-write-hashring-router
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-receive-router
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-write-hashring-router
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-router
-      app.kubernetes.io/part-of: observatorium
-    name: observatorium-thanos-receive-router
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
     selector:
       matchLabels:
         app.kubernetes.io/component: database-write-hashring-router

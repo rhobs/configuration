@@ -4,6 +4,31 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-receive-ingestor-default
 objects:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-write-hashring-ingestor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-ingestor
+      app.kubernetes.io/part-of: observatorium
+      controller.receive.thanos.io: thanos-receive-controller
+      controller.receive.thanos.io/hashring: default
+      observatorium/tenant: default
+    name: observatorium-thanos-receive-ingestor-default
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring-ingestor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-ingestor
+        app.kubernetes.io/part-of: observatorium
+        controller.receive.thanos.io: thanos-receive-controller
+        controller.receive.thanos.io/hashring: default
+        observatorium/tenant: default
 - apiVersion: v1
   kind: Service
   metadata:
@@ -296,31 +321,6 @@ objects:
           requests:
             storage: 5Gi
         storageClassName: gp2
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-write-hashring-ingestor
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-ingestor
-      app.kubernetes.io/part-of: observatorium
-      controller.receive.thanos.io: thanos-receive-controller
-      controller.receive.thanos.io/hashring: default
-      observatorium/tenant: default
-    name: observatorium-thanos-receive-ingestor-default
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-write-hashring-ingestor
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-receive-ingestor
-        app.kubernetes.io/part-of: observatorium
-        controller.receive.thanos.io: thanos-receive-controller
-        controller.receive.thanos.io/hashring: default
-        observatorium/tenant: default
 parameters:
 - name: INGESTOR_CPU_REQUEST
   value: 200m

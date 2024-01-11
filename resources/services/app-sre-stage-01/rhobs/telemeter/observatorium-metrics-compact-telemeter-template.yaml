@@ -4,6 +4,27 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-compact-telemeter
 objects:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-compactor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-compact-telemeter
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-compactor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-compact
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: telemeter
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
@@ -302,27 +323,6 @@ objects:
           requests:
             storage: 50Gi
         storageClassName: gp2
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-compactor
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-compact
-      app.kubernetes.io/part-of: observatorium
-      observatorium/tenant: telemeter
-    name: observatorium-thanos-compact-telemeter
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-compactor
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-compact
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: telemeter
 parameters:
 - name: COMPACTOR_CPU_REQUEST
   value: 200m

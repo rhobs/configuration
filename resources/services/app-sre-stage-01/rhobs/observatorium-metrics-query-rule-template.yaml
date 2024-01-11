@@ -4,32 +4,6 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-query-rule
 objects:
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    annotations:
-      cert-manager.io/issuer-kind: ClusterIssuer
-      cert-manager.io/issuer-name: letsencrypt-prod-http
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: query-layer
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-rule
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-    name: observatorium-thanos-query-rule
-    namespace: rhobs
-  spec:
-    host: ""
-    port:
-      targetPort: https
-    tls:
-      insecureEdgeTerminationPolicy: Redirect
-      termination: reencrypt
-    to:
-      kind: Service
-      name: observatorium-thanos-query-rule
-      weight: null
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -228,6 +202,32 @@ objects:
         - name: tls
           secret:
             secretName: query-rule-tls
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      cert-manager.io/issuer-kind: ClusterIssuer
+      cert-manager.io/issuer-name: letsencrypt-prod-http
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-rule
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.32.5
+    name: observatorium-thanos-query-rule
+    namespace: rhobs
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: observatorium-thanos-query-rule
+      weight: null
 - apiVersion: v1
   kind: Service
   metadata:

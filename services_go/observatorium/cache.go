@@ -47,7 +47,7 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	// Add pod disruption budget
 	labels := maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
-	manifests["store-index-cache-pdb"] = &policyv1.PodDisruptionBudget{
+	manifests.Add(&policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -67,7 +67,7 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 				MatchLabels: labels,
 			},
 		},
-	}
+	})
 
 	return manifests
 }

@@ -89,7 +89,7 @@ objects:
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: default
       prometheus: app-sre
-    name: observatorium-thanos-receive-ingestor-default
+    name: rhobs-observatorium-thanos-receive-ingestor-default
     namespace: openshift-customer-monitoring
   spec:
     endpoints:

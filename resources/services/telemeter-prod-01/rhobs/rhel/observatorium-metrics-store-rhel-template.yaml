@@ -241,7 +241,7 @@ objects:
       app.kubernetes.io/version: "1.5"
       observatorium/tenant: rhel
       prometheus: app-sre
-    name: observatorium-thanos-store-bucket-cache-memcached-rhel
+    name: rhobs-observatorium-thanos-store-bucket-cache-memcached-rhel
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -434,7 +434,7 @@ objects:
       app.kubernetes.io/version: "1.5"
       observatorium/tenant: rhel
       prometheus: app-sre
-    name: observatorium-thanos-store-index-cache-memcached-rhel
+    name: rhobs-observatorium-thanos-store-index-cache-memcached-rhel
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -533,7 +533,7 @@ objects:
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: rhel
       prometheus: app-sre
-    name: observatorium-thanos-store-rhel
+    name: rhobs-observatorium-thanos-store-rhel
     namespace: openshift-customer-monitoring
   spec:
     endpoints:

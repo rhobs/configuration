@@ -110,7 +110,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: main
       prometheus: app-sre
-    name: avalanche
+    name: -avalanche
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -296,7 +296,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: "1.5"
       prometheus: app-sre
-    name: observatorium-api-cache-memcached
+    name: -observatorium-api-cache-memcached
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -585,7 +585,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: main-2023-12-06-62d7703
       prometheus: app-sre
-    name: observatorium-api
+    name: -observatorium-api
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -806,7 +806,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v2.0.0-rc.36
       prometheus: app-sre
-    name: observatorium-gubernator
+    name: -observatorium-gubernator
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -987,7 +987,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: 969b895
       prometheus: app-sre
-    name: observatorium-obsctl-reloader
+    name: -observatorium-obsctl-reloader
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -1348,7 +1348,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-2022-03-24-098c31a
       prometheus: app-sre
-    name: observatorium-up-query-frontend
+    name: -observatorium-up-query-frontend
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -1472,7 +1472,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-2022-03-24-098c31a
       prometheus: app-sre
-    name: observatorium-up-query-rule
+    name: -observatorium-up-query-rule
     namespace: openshift-customer-monitoring
   spec:
     endpoints:

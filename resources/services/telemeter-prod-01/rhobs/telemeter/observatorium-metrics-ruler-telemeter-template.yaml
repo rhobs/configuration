@@ -99,7 +99,7 @@ objects:
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: telemeter
       prometheus: app-sre
-    name: observatorium-thanos-rule-telemeter
+    name: rhobs-observatorium-thanos-rule-telemeter
     namespace: openshift-customer-monitoring
   spec:
     endpoints:

@@ -109,7 +109,7 @@ objects:
       app.kubernetes.io/version: v0.32.4
       observatorium/tenant: rhel
       prometheus: app-sre
-    name: observatorium-thanos-compact-rhel
+    name: rhobs-observatorium-thanos-compact-rhel
     namespace: openshift-customer-monitoring
   spec:
     endpoints:

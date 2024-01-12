@@ -22,11 +22,11 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	memcachedDeployment.ImageTag = "1.5"
 	memcachedDeployment.Namespace = namespace
 	memcachedDeployment.Replicas = 1
-	delete(memcachedDeployment.PodResources.Limits, corev1.ResourceCPU)
+	delete(memcachedDeployment.ContainerResources.Limits, corev1.ResourceCPU)
 	memcachedDeployment.SecurityContext = nil
-	memcachedDeployment.PodResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
-	memcachedDeployment.PodResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
-	memcachedDeployment.PodResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")
+	memcachedDeployment.ContainerResources.Requests[corev1.ResourceCPU] = resource.MustParse("500m")
+	memcachedDeployment.ContainerResources.Requests[corev1.ResourceMemory] = resource.MustParse("2Gi")
+	memcachedDeployment.ContainerResources.Limits[corev1.ResourceMemory] = resource.MustParse("3Gi")
 	memcachedDeployment.ExporterImage = "quay.io/prometheus/memcached-exporter"
 	memcachedDeployment.ExporterImageTag = "v0.13.0"
 
@@ -47,7 +47,7 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	// Add pod disruption budget
 	labels := maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
 	delete(labels, k8sutil.VersionLabel)
-	manifests["store-index-cache-pdb"] = &policyv1.PodDisruptionBudget{
+	manifests.Add(&policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -67,7 +67,7 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 				MatchLabels: labels,
 			},
 		},
-	}
+	})
 
 	return manifests
 }

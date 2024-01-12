@@ -17,6 +17,8 @@ func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSe
 	serviceMonitor.ObjectMeta.Namespace = monitoringNamespace
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels["prometheus"] = "app-sre"
+	// Prefix the service monitor name with the namespace to avoid conflicts.
+	serviceMonitor.ObjectMeta.Name = namespaceSelector + "-" + serviceMonitor.ObjectMeta.Name
 }
 
 // deleteObjStoreEnv deletes the objstore env var from the list of env vars.

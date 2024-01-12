@@ -110,7 +110,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: main
       prometheus: app-sre
-    name: avalanche
+    name: -avalanche
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -227,6 +227,24 @@ objects:
           kubernetes.io/os: linux
         serviceAccountName: observatorium-api-cache-memcached
         terminationGracePeriodSeconds: 120
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+    name: observatorium-api-cache-memcached
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:
@@ -278,7 +296,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: "1.5"
       prometheus: app-sre
-    name: observatorium-api-cache-memcached
+    name: -observatorium-api-cache-memcached
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -355,11 +373,6 @@ objects:
           - --metrics.write.endpoint=http://observatorium-thanos-receive-router..svc.cluster.local:19291
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator..svc.cluster.local:8081
           - --tenants.config=/etc/observatorium/tenants/config.yaml
-          env:
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
           image: quay.io/observatorium/api:main-2023-12-06-62d7703
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -572,7 +585,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: main-2023-12-06-62d7703
       prometheus: app-sre
-    name: observatorium-api
+    name: -observatorium-api
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -793,7 +806,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v2.0.0-rc.36
       prometheus: app-sre
-    name: observatorium-gubernator
+    name: -observatorium-gubernator
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -974,7 +987,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: 969b895
       prometheus: app-sre
-    name: observatorium-obsctl-reloader
+    name: -observatorium-obsctl-reloader
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -987,6 +1000,207 @@ objects:
         app.kubernetes.io/component: rules-obsctl-reloader
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: rules-obsctl-reloader
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
+    name: observatorium-rules-objstore
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-objstore
+        app.kubernetes.io/part-of: observatorium
+    strategy: {}
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: rules-storage
+          app.kubernetes.io/instance: observatorium
+          app.kubernetes.io/name: rules-objstore
+          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/version: main-2022-09-21-9df4d2c
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                    - observatorium
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - rules-objstore
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - -log.format=logfmt
+          - -log.level=warn
+          - -objstore.config-file=/etc/rules-objstore/objstore/config.yaml
+          image: quay.io/observatorium/rules-objstore:main-2022-09-21-9df4d2c
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8081
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: thanos
+          ports:
+          - containerPort: 8081
+            name: internal
+            protocol: TCP
+          - containerPort: 8080
+            name: public
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8081
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 400Mi
+            requests:
+              cpu: 50m
+              memory: 200Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+          volumeMounts:
+          - mountPath: /etc/rules-objstore/objstore
+            name: objstore-config
+            readOnly: true
+        initContainers:
+        - command:
+          - /bin/sh
+          - -c
+          - echo "${OBJSTORE_CONFIG}" > /tmp/config/config.yaml
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                key: aws_access_key_id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                key: aws_secret_access_key
+          - name: OBJ_STORE_BUCKET
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+          - name: OBJ_STORE_REGION
+            valueFrom:
+              secretKeyRef:
+                key: aws_region
+          - name: OBJ_STORE_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                key: endpoint
+          - name: OBJSTORE_CONFIG
+            value: |
+              type: S3
+              config:
+                  bucket: $(OBJ_STORE_BUCKET)
+                  endpoint: $(OBJ_STORE_ENDPOINT)
+                  region: $(OBJ_STORE_REGION)
+          image: quay.io/app-sre/ubi8-ubi-minimal:8.9
+          imagePullPolicy: IfNotPresent
+          name: init
+          resources: {}
+          volumeMounts:
+          - mountPath: /tmp/config
+            name: objstore-config
+        nodeSelector:
+          kubernetes.io/os: linux
+        serviceAccountName: observatorium-rules-objstore
+        terminationGracePeriodSeconds: 120
+        volumes:
+        - emptyDir: {}
+          name: objstore-config
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
+    name: observatorium-rules-objstore
+  spec:
+    ports:
+    - name: internal
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    - name: public
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
+    name: observatorium-rules-objstore
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-storage
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-objstore
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: main-2022-09-21-9df4d2c
+    name: observatorium-rules-objstore
+  spec:
+    endpoints:
+    - port: internal
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector: {}
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-storage
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-objstore
         app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Secret
@@ -1134,7 +1348,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-2022-03-24-098c31a
       prometheus: app-sre
-    name: observatorium-up-query-frontend
+    name: -observatorium-up-query-frontend
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -1258,7 +1472,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: master-2022-03-24-098c31a
       prometheus: app-sre
-    name: observatorium-up-query-rule
+    name: -observatorium-up-query-rule
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -1271,224 +1485,6 @@ objects:
         app.kubernetes.io/component: blackbox-prober
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: observatorium-up
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  data:
-    config.yaml: |
-      type: S3
-      config:
-        bucket: $(OBJ_STORE_BUCKET)
-        endpoint: $(OBJ_STORE_ENDPOINT)
-        region: $(OBJ_STORE_REGION)
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
-    name: observatorium-rules-objstore
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
-    name: observatorium-rules-objstore
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-objstore
-        app.kubernetes.io/part-of: observatorium
-    strategy: {}
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app.kubernetes.io/component: rules-storage
-          app.kubernetes.io/instance: observatorium
-          app.kubernetes.io/name: rules-objstore
-          app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: main-2022-09-21-9df4d2c
-      spec:
-        affinity:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: app.kubernetes.io/instance
-                    operator: In
-                    values:
-                    - observatorium
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                    - rules-objstore
-                topologyKey: kubernetes.io/hostname
-              weight: 100
-        containers:
-        - args:
-          - -log.format=logfmt
-          - -log.level=warn
-          - -objstore.config-file=/etc/rules-objstore/objstore/config.yaml
-          env:
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                key: aws_access_key_id
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                key: aws_secret_access_key
-          - name: OBJ_STORE_BUCKET
-            valueFrom:
-              secretKeyRef:
-                key: bucket
-          - name: OBJ_STORE_REGION
-            valueFrom:
-              secretKeyRef:
-                key: aws_region
-          - name: OBJ_STORE_ENDPOINT
-            valueFrom:
-              secretKeyRef:
-                key: endpoint
-          image: quay.io/observatorium/rules-objstore:main-2022-09-21-9df4d2c
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            failureThreshold: 10
-            httpGet:
-              path: /live
-              port: 8081
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 1
-          name: thanos
-          ports:
-          - containerPort: 8081
-            name: internal
-            protocol: TCP
-          - containerPort: 8080
-            name: public
-            protocol: TCP
-          readinessProbe:
-            failureThreshold: 12
-            httpGet:
-              path: /ready
-              port: 8081
-            periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: "1"
-              memory: 400Mi
-            requests:
-              cpu: 50m
-              memory: 200Mi
-          terminationMessagePolicy: FallbackToLogsOnError
-          volumeMounts:
-          - mountPath: /etc/rules-objstore/objstore
-            name: objstore
-        nodeSelector:
-          kubernetes.io/os: linux
-        serviceAccountName: observatorium-rules-objstore
-        terminationGracePeriodSeconds: 120
-        volumes:
-        - configMap:
-            name: observatorium-rules-objstore
-          name: objstore
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
-    name: observatorium-rules-objstore
-  spec:
-    ports:
-    - name: internal
-      port: 8081
-      protocol: TCP
-      targetPort: 8081
-    - name: public
-      port: 8080
-      protocol: TCP
-      targetPort: 8080
-    selector:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
-    name: observatorium-rules-objstore
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-storage
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-objstore
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
-    name: observatorium-rules-objstore
-  spec:
-    endpoints:
-    - port: internal
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector: {}
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-storage
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-objstore
-        app.kubernetes.io/part-of: observatorium
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: api-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-    name: observatorium-api-cache-memcached
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: api-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
 parameters:
 - name: AMS_OIDC_CLIENT_ID

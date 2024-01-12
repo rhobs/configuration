@@ -4,6 +4,31 @@ metadata:
   creationTimestamp: null
   name: observatorium-thanos-receive-ingestor-telemeter
 objects:
+- apiVersion: policy/v1
+  kind: PodDisruptionBudget
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-write-hashring-ingestor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-ingestor
+      app.kubernetes.io/part-of: observatorium
+      controller.receive.thanos.io: thanos-receive-controller
+      controller.receive.thanos.io/hashring: telemeter
+      observatorium/tenant: telemeter
+    name: observatorium-thanos-receive-ingestor-telemeter
+    namespace: rhobs
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring-ingestor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-ingestor
+        app.kubernetes.io/part-of: observatorium
+        controller.receive.thanos.io: thanos-receive-controller
+        controller.receive.thanos.io/hashring: telemeter
+        observatorium/tenant: telemeter
 - apiVersion: v1
   kind: Service
   metadata:
@@ -64,7 +89,7 @@ objects:
       app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
       prometheus: app-sre
-    name: observatorium-thanos-receive-ingestor-telemeter
+    name: rhobs-observatorium-thanos-receive-ingestor-telemeter
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -152,11 +177,15 @@ objects:
           - |
             --tracing.config=type: JAEGER
             config:
-              service_name: thanos-receive-router
+              service_name: thanos-receive-ingestor-telemeter
               sampler_type: ratelimiting
               sampler_param: 2
           - --tsdb.path=/var/thanos/receive
           env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
@@ -189,10 +218,6 @@ objects:
                   bucket: $(OBJ_STORE_BUCKET)
                   endpoint: $(OBJ_STORE_ENDPOINT)
                   region: $(OBJ_STORE_REGION)
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
           image: quay.io/thanos/thanos:v0.32.5
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -296,31 +321,6 @@ objects:
           requests:
             storage: 5Gi
         storageClassName: gp2
-- apiVersion: policy/v1
-  kind: PodDisruptionBudget
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-write-hashring-ingestor
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-ingestor
-      app.kubernetes.io/part-of: observatorium
-      controller.receive.thanos.io: thanos-receive-controller
-      controller.receive.thanos.io/hashring: telemeter
-      observatorium/tenant: telemeter
-    name: observatorium-thanos-receive-ingestor-telemeter
-    namespace: rhobs
-  spec:
-    maxUnavailable: 1
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-write-hashring-ingestor
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-receive-ingestor
-        app.kubernetes.io/part-of: observatorium
-        controller.receive.thanos.io: thanos-receive-controller
-        controller.receive.thanos.io/hashring: telemeter
-        observatorium/tenant: telemeter
 parameters:
 - name: INGESTOR_CPU_REQUEST
   value: 200m

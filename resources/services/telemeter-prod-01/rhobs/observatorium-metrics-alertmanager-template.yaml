@@ -4,6 +4,30 @@ metadata:
   creationTimestamp: null
   name: observatorium-alertmanager
 objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: v0.26.0
+    name: observatorium-alertmanager-cluster
+    namespace: rhobs
+  spec:
+    clusterIP: None
+    ports:
+    - name: cluster-tcp
+      port: 9094
+      protocol: TCP
+      targetPort: 9094
+    selector:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
@@ -30,30 +54,6 @@ objects:
       kind: Service
       name: observatorium-alertmanager
       weight: null
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: alertmanager
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: alertmanager
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.26.0
-    name: observatorium-alertmanager-cluster
-    namespace: rhobs
-  spec:
-    clusterIP: None
-    ports:
-    - name: cluster-tcp
-      port: 9094
-      protocol: TCP
-      targetPort: 9094
-    selector:
-      app.kubernetes.io/component: alertmanager
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: alertmanager
-      app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Service
   metadata:
@@ -106,7 +106,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.26.0
       prometheus: app-sre
-    name: observatorium-alertmanager
+    name: rhobs-observatorium-alertmanager
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -181,7 +181,7 @@ objects:
           - --storage.path=/data
           - --cluster.peer=observatorium-alertmanager-0.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
           - --cluster.peer=observatorium-alertmanager-1.observatorium-alertmanager-cluster.rhobs.svc.cluster.local:9094
-          - --cluster.reconnect-timeout=5m
+          - --cluster.reconnect-timeout=5m0s
           - --log.level=${ALERTMGR_LOG_LEVEL}
           - --log.format=logfmt
           image: quay.io/prometheus/alertmanager:v0.26.0

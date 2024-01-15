@@ -118,6 +118,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_RECEIVE_TSDB_RETENTION', value: '4d' },
     { name: 'THANOS_RECEIVE_HASHRING_SERVICE_NAME', value: 'observatorium-thanos-receive-default' },
     { name: 'THANOS_RECEIVE_HASHRINGS_ALGORITHM', value: 'hashmod' },
+    { name: 'THANOS_RECEIVE_TOO_FAR_IN_FUTURE_TIME_WINDOW', value: '0s' },
     { name: 'THANOS_RECEIVE_LIMIT_CONFIG', value: std.manifestJsonMinified(defaultReceiveLimits) },
     { name: 'THANOS_RECEIVE_REQUEST_SERIES_LIMIT', value: '0' },
     { name: 'THANOS_RECEIVE_REQUEST_SAMPLES_LIMIT', value: '0' },

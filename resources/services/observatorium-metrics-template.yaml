@@ -1804,6 +1804,7 @@ objects:
           - --receive.hashrings-file-refresh-interval=5s
           - --store.limits.request-series=${THANOS_RECEIVE_REQUEST_SERIES_LIMIT}
           - --store.limits.request-samples=${THANOS_RECEIVE_REQUEST_SAMPLES_LIMIT}
+          - --tsdb.too-far-in-future.time-window=${THANOS_RECEIVE_TOO_FAR_IN_FUTURE_TIME_WINDOW}
           env:
           - name: NAME
             valueFrom:
@@ -4469,6 +4470,8 @@ parameters:
   value: observatorium-thanos-receive-default
 - name: THANOS_RECEIVE_HASHRINGS_ALGORITHM
   value: hashmod
+- name: THANOS_RECEIVE_TOO_FAR_IN_FUTURE_TIME_WINDOW
+  value: 0s
 - name: THANOS_RECEIVE_LIMIT_CONFIG
   value: '{"write":{"default":{"request":{"samples_limit":0,"series_limit":0,"size_bytes_limit":0}},"global":{"max_concurrency":0}}}'
 - name: THANOS_RECEIVE_REQUEST_SERIES_LIMIT

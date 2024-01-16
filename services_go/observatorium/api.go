@@ -321,11 +321,21 @@ func (o *ObservatoriumAPI) makeAvalanche() k8sutil.ObjectMap {
 
 func (o *ObservatoriumAPI) makeObsCtlReloader(obsApiName string) k8sutil.ObjectMap {
 	depl := k8sutil.DeploymentGenericConfig{
-		Name:                 "observatorium-obsctl-reloader",
-		Namespace:            o.Namespace,
-		Image:                obsctlReloaderImage,
-		ImageTag:             obsctlReloaderTag,
-		ImagePullPolicy:      corev1.PullIfNotPresent,
+		Name:            "observatorium-obsctl-reloader",
+		Namespace:       o.Namespace,
+		Image:           obsctlReloaderImage,
+		ImageTag:        obsctlReloaderTag,
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		Env: []corev1.EnvVar{
+			{
+				Name: "NAMESPACE_NAME",
+				ValueFrom: &corev1.EnvVarSource{
+					FieldRef: &corev1.ObjectFieldSelector{
+						FieldPath: "metadata.namespace",
+					},
+				},
+			},
+		},
 		Replicas:             1,
 		EnableServiceMonitor: true,
 		CommonLabels: map[string]string{

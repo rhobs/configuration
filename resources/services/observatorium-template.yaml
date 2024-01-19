@@ -310,7 +310,6 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: rules-obsctl-reloader
         app.kubernetes.io/part-of: observatorium
-        app.kubernetes.io/version: ${OBSCTL_RELOADER_IMAGE_TAG}
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

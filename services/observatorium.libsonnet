@@ -231,9 +231,15 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       metadata+: {
         labels+: {
           prometheus: 'app-sre',
+          'app.kubernetes.io/version':: 'hidden',
         },
       },
       spec+: {
+        selector+: {
+          matchLabels+: {
+            'app.kubernetes.io/version':: 'hidden',
+          },
+        },
         namespaceSelector: {
           // NOTICE:
           // When using the ${{PARAMETER_NAME}} syntax only a single parameter reference is allowed and leading/trailing characters are not permitted.

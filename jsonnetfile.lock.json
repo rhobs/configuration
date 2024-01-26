@@ -230,7 +230,7 @@
           "subdir": "configuration"
         }
       },
-      "version": "73cf41804053c961ac776f5b2ee375ef67f23f64",
+      "version": "6b4f08ef692e55bcfaa5cc86500b84582a1d739a",
       "sum": "QMVHXmQ6fFl5Cg9XZ/5KgUwwEqyHwA9PGUfhxRLWp+E="
     },
     {
@@ -293,8 +293,8 @@
           "subdir": "jsonnet/telemeter"
         }
       },
-      "version": "e1f625aa31e46a84fb5d9f97c8224b9059e27d8a",
-      "sum": "fe88JuYCGr8pLQPuI2GxdDbrb+5U6ZwyNMQ+0fF8lgE="
+      "version": "38adf6fb06830247fe383989c0e1ac53a286d59a",
+      "sum": "glVY0jBKrooDhYcl9rEHv6ismD600qAHXoJCklLE6ZY="
     },
     {
       "source": {

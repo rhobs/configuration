@@ -3,7 +3,7 @@ package observatorium
 import (
 	"sort"
 
-	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore"
 	objstore3 "github.com/observatorium/observatorium/configuration_go/schemas/thanos/objstore/s3"
 	templatev1 "github.com/openshift/api/template/v1"
@@ -50,11 +50,11 @@ func objStoreEnvVars(objstoreSecret string) []corev1.EnvVar {
 	}
 
 	return []corev1.EnvVar{
-		k8sutil.NewEnvFromSecret("AWS_ACCESS_KEY_ID", objstoreSecret, "aws_access_key_id"),
-		k8sutil.NewEnvFromSecret("AWS_SECRET_ACCESS_KEY", objstoreSecret, "aws_secret_access_key"),
-		k8sutil.NewEnvFromSecret("OBJ_STORE_BUCKET", objstoreSecret, "bucket"),
-		k8sutil.NewEnvFromSecret("OBJ_STORE_REGION", objstoreSecret, "aws_region"),
-		k8sutil.NewEnvFromSecret("OBJ_STORE_ENDPOINT", objstoreSecret, "endpoint"),
+		kghelpers.NewEnvFromSecret("AWS_ACCESS_KEY_ID", objstoreSecret, "aws_access_key_id"),
+		kghelpers.NewEnvFromSecret("AWS_SECRET_ACCESS_KEY", objstoreSecret, "aws_secret_access_key"),
+		kghelpers.NewEnvFromSecret("OBJ_STORE_BUCKET", objstoreSecret, "bucket"),
+		kghelpers.NewEnvFromSecret("OBJ_STORE_REGION", objstoreSecret, "aws_region"),
+		kghelpers.NewEnvFromSecret("OBJ_STORE_ENDPOINT", objstoreSecret, "endpoint"),
 		{
 			Name:  "OBJSTORE_CONFIG",
 			Value: string(objStoreCfg),

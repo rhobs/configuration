@@ -38,7 +38,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-ingestor
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: default
     name: observatorium-thanos-receive-ingestor-default
     namespace: rhobs
@@ -73,44 +72,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-ingestor
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: default
     name: observatorium-thanos-receive-ingestor-default
     namespace: rhobs
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: database-write-hashring-ingestor
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-receive-ingestor
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-      observatorium/tenant: default
-      prometheus: app-sre
-    name: rhobs-observatorium-thanos-receive-ingestor-default
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - rhobs
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: database-write-hashring-ingestor
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-receive-ingestor
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: default
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -314,6 +278,7 @@ objects:
           app.kubernetes.io/version: v0.32.5
           observatorium/tenant: default
         name: data
+        namespace: rhobs
       spec:
         accessModes:
         - ReadWriteOnce
@@ -321,6 +286,39 @@ objects:
           requests:
             storage: 5Gi
         storageClassName: gp2
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: database-write-hashring-ingestor
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-receive-ingestor
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: default
+      prometheus: app-sre
+    name: rhobs-observatorium-thanos-receive-ingestor-default
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: database-write-hashring-ingestor
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-receive-ingestor
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: default
 parameters:
 - name: INGESTOR_CPU_REQUEST
   value: 200m

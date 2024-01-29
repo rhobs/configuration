@@ -252,7 +252,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-query
     namespace: rhobs
   spec:
@@ -287,7 +286,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
     name: observatorium-thanos-query
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -299,7 +297,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
       prometheus: app-sre
     name: rhobs-rhobs-observatorium-thanos-query
     namespace: openshift-customer-monitoring

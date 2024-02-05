@@ -239,7 +239,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
     name: observatorium-thanos-query-frontend
     namespace: rhobs
   spec:
@@ -270,41 +269,8 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-query-frontend
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
     name: observatorium-thanos-query-frontend
     namespace: rhobs
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: query-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-query-frontend
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
-      prometheus: app-sre
-    name: rhobs-observatorium-thanos-query-frontend
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - rhobs
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: query-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-query-frontend
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -423,7 +389,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: "1.5"
     name: observatorium-thanos-query-range-cache-memcached
     namespace: rhobs
   spec:
@@ -453,9 +418,39 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: "1.5"
     name: observatorium-thanos-query-range-cache-memcached
     namespace: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-query-frontend
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: rhobs-observatorium-thanos-query-frontend
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-query-frontend
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -465,7 +460,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: "1.5"
       prometheus: app-sre
     name: rhobs-observatorium-thanos-query-range-cache-memcached
     namespace: openshift-customer-monitoring

@@ -3,16 +3,17 @@ package observatorium
 import (
 	"fmt"
 
-	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
+	"github.com/observatorium/observatorium/configuration_go/kubegen/workload"
 	corev1 "k8s.io/api/core/v1"
 )
 
 // makeOauthProxy creates a container for the oauth-proxy sidecar.
 // It contains a template parameter OAUTH_PROXY_COOKIE_SECRET that must be added to the template parameters.
-func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret string) *k8sutil.Container {
+func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret string) *workload.Container {
 	proxyPort := int32(8443)
 
-	return &k8sutil.Container{
+	return &workload.Container{
 		Name:     "oauth-proxy",
 		Image:    "quay.io/openshift/origin-oauth-proxy",
 		ImageTag: "4.15",
@@ -32,7 +33,7 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 			"-openshift-ca=/etc/pki/tls/cert.pem",
 			"-openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt",
 		},
-		Resources: k8sutil.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
+		Resources: kghelpers.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
 		Ports: []corev1.ContainerPort{
 			{
 				Name:          "https",
@@ -41,7 +42,7 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 			},
 		},
 		ServicePorts: []corev1.ServicePort{
-			k8sutil.NewServicePort("https", int(proxyPort), int(proxyPort)),
+			kghelpers.NewServicePort("https", int(proxyPort), int(proxyPort)),
 		},
 		VolumeMounts: []corev1.VolumeMount{
 			{
@@ -51,17 +52,17 @@ func makeOauthProxy(upstreamPort int32, namespace, serviceAccount, tlsSecret str
 			},
 		},
 		Volumes: []corev1.Volume{
-			k8sutil.NewPodVolumeFromSecret("tls", tlsSecret),
+			kghelpers.NewPodVolumeFromSecret("tls", tlsSecret),
 		},
 	}
 }
 
 // makeJaegerAgent creates a container for the jaeger-agent sidecar.
-func makeJaegerAgent(collectorNamespace string) *k8sutil.Container {
+func makeJaegerAgent(collectorNamespace string) *workload.Container {
 	metricsPort := int32(14271)
-	livelinesProbe := k8sutil.NewProbe("/", int(metricsPort), k8sutil.ProbeConfig{FailureThreshold: 5})
-	readinessProbe := k8sutil.NewProbe("/", int(metricsPort), k8sutil.ProbeConfig{InitialDelaySeconds: 1})
-	return &k8sutil.Container{
+	livelinesProbe := kghelpers.NewProbe("/", int(metricsPort), kghelpers.ProbeConfig{FailureThreshold: 5})
+	readinessProbe := kghelpers.NewProbe("/", int(metricsPort), kghelpers.ProbeConfig{InitialDelaySeconds: 1})
+	return &workload.Container{
 		Name:     "jaeger-agent",
 		Image:    "quay.io/app-sre/jaegertracing-jaeger-agent",
 		ImageTag: "1.22.0",
@@ -70,7 +71,7 @@ func makeJaegerAgent(collectorNamespace string) *k8sutil.Container {
 			"--reporter.type=grpc",
 			"--agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)",
 		},
-		Resources: k8sutil.NewResourcesRequirements("32m", "128m", "64Mi", "128Mi"),
+		Resources: kghelpers.NewResourcesRequirements("32m", "128m", "64Mi", "128Mi"),
 		Ports: []corev1.ContainerPort{
 			{
 				Name:          "configs",

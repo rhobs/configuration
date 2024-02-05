@@ -1000,6 +1000,8 @@ github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLA
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44 h1:QX1PSo1E9PdUbVJkA5FhZ1BA0GzDTfDLW3dbrGbjU5k=
 github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44/go.mod h1:xwDIn6xpTsymHor6ST57bJQm4FXjey31OfHyEKDFsdM=
+github.com/observatorium/observatorium v0.0.0-20240202123905-a8245e065e5c h1:0nKnqyVul1Ggqc03cOnqUrGIBNKAUhJZ23BCZMAfbd4=
+github.com/observatorium/observatorium v0.0.0-20240202123905-a8245e065e5c/go.mod h1:oT7l43ps3f3/7LaJ+IyF+wkVQHBAm04Wvp3Rihti53o=
 github.com/observatorium/up v0.0.0-20240109115132-3a34c4c4fa24 h1:onM/JJDVL9vEQsSyBJhYbc3KseW79vnu64Qe5WMcswM=
 github.com/observatorium/up v0.0.0-20240109115132-3a34c4c4fa24/go.mod h1:06ATHnkbnd7AvcI2GcwUdfS6UKfPzD8bf5LKfd4T89w=
 github.com/oklog/oklog v0.3.2/go.mod h1:FCV+B7mhrz4o+ueLpx+KqkyXRGMWOYEvfiXtdGtbWGs=
@@ -1254,8 +1256,6 @@ github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG
 github.com/syndtr/gocapability v0.0.0-20180916011248-d98352740cb2/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
-github.com/thibaultmg/observatorium v0.0.0-20240110120013-cb54d2f5d8a9 h1:xLfqDEapSzdJ/gmXe6J99jqn2CpNAVj/qrDjIEGIcJM=
-github.com/thibaultmg/observatorium v0.0.0-20240110120013-cb54d2f5d8a9/go.mod h1:zws37roytk03NmLqS7IEiE/rs4v4eQS8Q2lz0LtfHS8=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tinylib/msgp v1.0.2/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=
 github.com/tinylib/msgp v1.1.0/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=

@@ -328,8 +328,8 @@ parameters:
 - name: INGESTOR_LOG_LEVEL
   value: warn
 - name: INGESTOR_MEMORY_LIMIT
-  value: 64Gi
+  value: 30Gi
 - name: INGESTOR_MEMORY_REQUEST
-  value: 32Gi
+  value: 16Gi
 - name: INGESTOR_REPLICAS
   value: "3"

@@ -204,7 +204,10 @@ func stageConfig() observatorium.Observatorium {
 					ObjStoreSecret: "default-tenant-s3",
 					Tenants:        buildMetricTenants(tenants, DefaultInstanceName),
 					ReceiveIngestorPreManifestsHook: func(ingestor *receive.Ingestor) {
-						ingestor.VolumeSize = "5Gi"
+						ingestor.VolumeSize = "50Gi"
+						// TODO @moadz: Increased for testing, remove when load testing RHOBS-961 is completed
+						ingestor.Replicas = 3
+						ingestor.ContainerResources = k8sutil.NewResourcesRequirements("2", "4", "32Gi", "64Gi")
 					},
 					StorePreManifestsHook: func(store *store.StoreStatefulSet) {
 						store.VolumeSize = "5Gi"

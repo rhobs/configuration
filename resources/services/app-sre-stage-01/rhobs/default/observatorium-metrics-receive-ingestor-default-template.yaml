@@ -211,6 +211,7 @@ objects:
             periodSeconds: 5
           resources:
             limits:
+              cpu: "4"
               memory: ${INGESTOR_MEMORY_LIMIT}
             requests:
               cpu: ${INGESTOR_CPU_REQUEST}
@@ -284,7 +285,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 5Gi
+            storage: 50Gi
         storageClassName: gp2
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -321,12 +322,12 @@ objects:
         observatorium/tenant: default
 parameters:
 - name: INGESTOR_CPU_REQUEST
-  value: 200m
+  value: "2"
 - name: INGESTOR_LOG_LEVEL
   value: warn
 - name: INGESTOR_MEMORY_LIMIT
-  value: 10Gi
+  value: 64Gi
 - name: INGESTOR_MEMORY_REQUEST
-  value: 3Gi
+  value: 32Gi
 - name: INGESTOR_REPLICAS
-  value: "1"
+  value: "3"

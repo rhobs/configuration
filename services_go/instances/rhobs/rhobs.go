@@ -207,7 +207,7 @@ func stageConfig() observatorium.Observatorium {
 						ingestor.VolumeSize = "50Gi"
 						// TODO @moadz: Increased for testing, remove when load testing RHOBS-961 is completed
 						ingestor.Replicas = 3
-						ingestor.ContainerResources = k8sutil.NewResourcesRequirements("2", "4", "32Gi", "64Gi")
+						ingestor.ContainerResources = kghelpers.NewResourcesRequirements("2", "4", "16Gi", "30Gi")
 					},
 					StorePreManifestsHook: func(store *store.StoreStatefulSet) {
 						store.VolumeSize = "5Gi"

@@ -4,6 +4,203 @@ metadata:
   creationTimestamp: null
   name: observatorium-api
 objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: avalanche
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: avalanche
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -avalanche
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: avalanche
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: avalanche
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-cache
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -observatorium-api-cache-memcached
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: metrics
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-cache
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -observatorium-api
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http-internal
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    - port: opa-ams-metrics
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rate-limiter
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: gubernator
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -observatorium-gubernator
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rate-limiter
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: gubernator
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rules-obsctl-reloader
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: rules-obsctl-reloader
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -observatorium-obsctl-reloader
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rules-obsctl-reloader
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: rules-obsctl-reloader
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -observatorium-up-query-frontend
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: blackbox-prober
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: observatorium-up
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: -observatorium-up-query-rule
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+    namespaceSelector:
+      matchNames:
+      - ""
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: blackbox-prober
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: observatorium-up
+        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -73,7 +270,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: avalanche
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main
     name: avalanche
   spec:
     ports:
@@ -97,33 +293,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: avalanche
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main
     name: avalanche
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: avalanche
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: avalanche
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main
-      prometheus: app-sre
-    name: -avalanche
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: avalanche
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: avalanche
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -133,7 +303,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-12-06-62d7703
     name: observatorium-ams-oidc-client-secret
   stringData:
     client-id: ${AMS_OIDC_CLIENT_ID}
@@ -254,7 +423,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: "1.5"
     name: observatorium-api-cache-memcached
   spec:
     clusterIP: None
@@ -283,40 +451,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: "1.5"
     name: observatorium-api-cache-memcached
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: api-cache
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: "1.5"
-      prometheus: app-sre
-    name: -observatorium-api-cache-memcached
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: metrics
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: api-cache
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -532,7 +667,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-12-06-62d7703
     name: observatorium-api
   spec:
     ports:
@@ -572,48 +706,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-12-06-62d7703
     name: observatorium-api
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: api
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-api
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-12-06-62d7703
-      prometheus: app-sre
-    name: -observatorium-api
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http-internal
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    - port: opa-ams-metrics
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: api
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: observatorium-api
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -764,7 +857,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
     name: observatorium-gubernator
   spec:
     clusterIP: None
@@ -793,40 +885,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
     name: observatorium-gubernator
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rate-limiter
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: gubernator
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
-      prometheus: app-sre
-    name: -observatorium-gubernator
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rate-limiter
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: gubernator
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -955,7 +1014,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
   spec:
     ports:
@@ -979,33 +1037,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-obsctl-reloader
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 969b895
     name: observatorium-obsctl-reloader
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rules-obsctl-reloader
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: rules-obsctl-reloader
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 969b895
-      prometheus: app-sre
-    name: -observatorium-obsctl-reloader
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rules-obsctl-reloader
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: rules-obsctl-reloader
-        app.kubernetes.io/part-of: observatorium
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1132,6 +1164,7 @@ objects:
           imagePullPolicy: IfNotPresent
           name: init
           resources: {}
+          terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /tmp/config
             name: objstore-config
@@ -1151,7 +1184,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
   spec:
     ports:
@@ -1177,7 +1209,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -1188,7 +1219,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: rules-objstore
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2022-09-21-9df4d2c
     name: observatorium-rules-objstore
   spec:
     endpoints:
@@ -1216,7 +1246,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-12-06-62d7703
     name: observatorium-tenants
   stringData:
     config.yaml: |
@@ -1241,8 +1270,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
-    name: observatorium-up-queries
+    name: observatorium-up-query-frontend-queries
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1305,7 +1333,7 @@ objects:
         terminationGracePeriodSeconds: 30
         volumes:
         - configMap:
-            name: observatorium-up-queries
+            name: observatorium-up-query-frontend-queries
           name: queries-file
 - apiVersion: v1
   kind: Service
@@ -1316,7 +1344,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-frontend
   spec:
     ports:
@@ -1340,10 +1367,20 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-frontend
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
+- apiVersion: v1
+  data:
+    queries.yaml: |
+      queries:
+      - name: query-path-sli-1M-samples
+        query: avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=""}[1h])
+      - name: query-path-sli-10M-samples
+        query: avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=""}[10h])
+      - name: query-path-sli-100M-samples
+        query: avg_over_time(avalanche_metric_mmmmm_0_0{tenant_id=""}[100h])
+      labels: []
+      series: []
+  kind: ConfigMap
   metadata:
     creationTimestamp: null
     labels:
@@ -1351,22 +1388,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
-      prometheus: app-sre
-    name: -observatorium-up-query-frontend
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: blackbox-prober
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: observatorium-up
-        app.kubernetes.io/part-of: observatorium
+    name: observatorium-up-query-rule-queries
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1429,7 +1451,7 @@ objects:
         terminationGracePeriodSeconds: 30
         volumes:
         - configMap:
-            name: observatorium-up-queries
+            name: observatorium-up-query-rule-queries
           name: queries-file
 - apiVersion: v1
   kind: Service
@@ -1440,7 +1462,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-rule
   spec:
     ports:
@@ -1464,33 +1485,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: observatorium-up
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
     name: observatorium-up-query-rule
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: blackbox-prober
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: observatorium-up
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: master-2022-03-24-098c31a
-      prometheus: app-sre
-    name: -observatorium-up-query-rule
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-    namespaceSelector:
-      matchNames:
-      - ""
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: blackbox-prober
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: observatorium-up
-        app.kubernetes.io/part-of: observatorium
 parameters:
 - name: AMS_OIDC_CLIENT_ID
 - name: AMS_OIDC_CLIENT_SECRET

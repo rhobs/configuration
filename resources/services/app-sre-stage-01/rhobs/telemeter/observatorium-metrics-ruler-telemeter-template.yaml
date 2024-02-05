@@ -124,6 +124,27 @@ objects:
                 labels:
                   tenant_id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
                 record: cluster:usage:workload:capacity_virtual_cpu_hours
+              - expr: |
+                  group by(_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos"}) * 0
+                labels:
+                  tenant_id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+                record: cluster:cpu_capacity_cores:_id
+              - expr: |
+                  # worker ht amd64
+                  (sum by (_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos",label_node_role_kubernetes_io_infra!="true",label_node_role_kubernetes_io_master!="true",label_kubernetes_io_arch="amd64",label_node_hyperthread_enabled="true"}) or cluster:cpu_capacity_cores:_id)+
+                  # worker non-ht amd64
+                  (sum by (_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos",label_node_role_kubernetes_io_infra!="true",label_node_role_kubernetes_io_master!="true",label_kubernetes_io_arch="amd64",label_node_hyperthread_enabled="false"}) / 2.0 or cluster:cpu_capacity_cores:_id)+
+                  # worker non-amd64
+                  (sum by (_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos",label_node_role_kubernetes_io_infra!="true",label_node_role_kubernetes_io_master!="true",label_kubernetes_io_arch!="amd64"}) or cluster:cpu_capacity_cores:_id)+
+                  # schedulable control plane ht amd64
+                  (sum by (_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos",label_node_role_kubernetes_io_master="true",label_kubernetes_io_arch="amd64",label_node_hyperthread_enabled="true"}) * on(_id) group by(_id) (cluster_master_schedulable == 1) or cluster:cpu_capacity_cores:_id)+
+                  # schedulable control plane non-ht amd64
+                  (sum by (_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos",label_node_role_kubernetes_io_master="true",label_kubernetes_io_arch="amd64",label_node_hyperthread_enabled="false"}) * on(_id) group by(_id) (cluster_master_schedulable == 1) / 2.0 or cluster:cpu_capacity_cores:_id)+
+                  # schedulable control plane non-amd64
+                  (sum by (_id) (node_role_os_version_machine:cpu_capacity_cores:sum{label_node_openshift_io_os_id="rhcos",label_node_role_kubernetes_io_master="true",label_kubernetes_io_arch!="amd64"}) * on(_id) group by(_id) (cluster_master_schedulable == 1) or cluster:cpu_capacity_cores:_id)
+                labels:
+                  tenant_id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+                record: cluster:capacity_effective_cpu_cores
   kind: ConfigMap
   metadata:
     creationTimestamp: null
@@ -132,7 +153,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
     name: observatorium-rules
     namespace: rhobs
@@ -174,7 +194,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
     name: observatorium-thanos-rule-telemeter
     namespace: rhobs
@@ -215,52 +234,9 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-rule
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
       observatorium/tenant: telemeter
     name: observatorium-thanos-rule-telemeter
     namespace: rhobs
-- apiVersion: monitoring.coreos.com/v1
-  kind: ServiceMonitor
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: rule-evaluation-engine
-      app.kubernetes.io/instance: observatorium
-      app.kubernetes.io/name: thanos-rule
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.5
-      observatorium/tenant: telemeter
-      prometheus: app-sre
-    name: rhobs-observatorium-thanos-rule-telemeter
-    namespace: openshift-customer-monitoring
-  spec:
-    endpoints:
-    - port: http
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    - port: internal
-      relabelings:
-      - action: replace
-        separator: /
-        sourceLabels:
-        - namespace
-        - pod
-        targetLabel: instance
-    namespaceSelector:
-      matchNames:
-      - rhobs
-    selector:
-      matchLabels:
-        app.kubernetes.io/component: rule-evaluation-engine
-        app.kubernetes.io/instance: observatorium
-        app.kubernetes.io/name: thanos-rule
-        app.kubernetes.io/part-of: observatorium
-        observatorium/tenant: telemeter
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -548,6 +524,7 @@ objects:
           app.kubernetes.io/version: v0.32.5
           observatorium/tenant: telemeter
         name: data
+        namespace: rhobs
       spec:
         accessModes:
         - ReadWriteOnce
@@ -555,6 +532,47 @@ objects:
           requests:
             storage: 10Gi
         storageClassName: gp2
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rule-evaluation-engine
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: thanos-rule
+      app.kubernetes.io/part-of: observatorium
+      observatorium/tenant: telemeter
+      prometheus: app-sre
+    name: rhobs-observatorium-thanos-rule-telemeter
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    - port: internal
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: rule-evaluation-engine
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: thanos-rule
+        app.kubernetes.io/part-of: observatorium
+        observatorium/tenant: telemeter
 parameters:
 - from: '[a-zA-Z0-9]{40}'
   generate: expression

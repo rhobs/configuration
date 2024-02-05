@@ -4,17 +4,19 @@ import (
 	"maps"
 
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/memcached"
-	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
+	"github.com/observatorium/observatorium/configuration_go/kubegen/workload"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	policyv1 "k8s.io/api/policy/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func makeMemcached(name, namespace string, preManifestHook func(*memcached.MemcachedDeployment)) k8sutil.ObjectMap {
+func makeMemcached(name, namespace string, preManifestHook func(*memcached.MemcachedDeployment)) []runtime.Object {
 	// K8s config
 	memcachedDeployment := memcached.NewMemcached()
 	memcachedDeployment.Name = name
@@ -40,14 +42,14 @@ func makeMemcached(name, namespace string, preManifestHook func(*memcached.Memca
 	executeIfNotNil(preManifestHook, memcachedDeployment)
 
 	// Post process
-	manifests := memcachedDeployment.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), memcachedDeployment.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
+	manifests := memcachedDeployment.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), memcachedDeployment.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
 
 	// Add pod disruption budget
-	labels := maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
-	delete(labels, k8sutil.VersionLabel)
-	manifests.Add(&policyv1.PodDisruptionBudget{
+	labels := maps.Clone(kghelpers.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
+	delete(labels, workload.VersionLabel)
+	manifests = append(manifests, &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),

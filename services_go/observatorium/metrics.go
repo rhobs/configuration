@@ -19,8 +19,9 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/ruler"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
-	"github.com/observatorium/observatorium/configuration_go/k8sutil"
-	"github.com/observatorium/observatorium/configuration_go/openshift"
+	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
+	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
+	"github.com/observatorium/observatorium/configuration_go/kubegen/workload"
 	"github.com/observatorium/observatorium/configuration_go/schemas/log"
 	"github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache"
 	memcachedclientcfg "github.com/observatorium/observatorium/configuration_go/schemas/thanos/cache/memcached"
@@ -140,9 +141,9 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	alertmanSts.Replicas = 2
 	alertmanSts.Name = alertManagerName
 	alertmanSts.VolumeType = "gp2"
-	alertmanSts.ContainerResources = k8sutil.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
+	alertmanSts.ContainerResources = kghelpers.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
 	tlsSecret := "alertmanager-tls"
-	alertmanSts.Sidecars = []k8sutil.ContainerProvider{
+	alertmanSts.Sidecars = []workload.ContainerProvider{
 		makeOauthProxy(9093, o.Namespace, alertmanSts.Name, tlsSecret),
 	}
 	executeIfNotNil(o.AlertManagerDeploy, alertmanSts)
@@ -155,20 +156,20 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	}
 
 	// Post process
-	manifests := alertmanSts.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), alertmanSts.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
-	service := k8sutil.GetObject[*corev1.Service](manifests, alertmanSts.Name)
+	manifests := alertmanSts.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), alertmanSts.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
+	service := kghelpers.GetObject[*corev1.Service](manifests, alertmanSts.Name)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
 	// Add annotations for openshift oauth so that the route to access the query ui works
-	serviceAccount := k8sutil.GetObject[*corev1.ServiceAccount](manifests, "")
+	serviceAccount := kghelpers.GetObject[*corev1.ServiceAccount](manifests, "")
 	if serviceAccount.Annotations == nil {
 		serviceAccount.Annotations = map[string]string{}
 	}
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, alertmanSts.Name)
 
 	// Add route for oauth-proxy
-	manifests.Add(&routev1.Route{
+	manifests = append(manifests, &routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -176,7 +177,7 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      alertmanSts.Name,
 			Namespace: o.Namespace,
-			Labels:    maps.Clone(k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels),
+			Labels:    maps.Clone(kghelpers.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels),
 			Annotations: map[string]string{
 				"cert-manager.io/issuer-kind": "ClusterIssuer",
 				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
@@ -206,11 +207,11 @@ func (o *ObservatoriumMetrics) makeAlertManager() encoding.Encoder {
 	})
 	alertEncoder := NewStdTemplateYAML(alertmanSts.Name, "ALERTMGR").WithLogLevel()
 	params = append(params, alertEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: alertmanSts.Name,
 	}, sortTemplateParams(params))
 
-	return alertEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return alertEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
@@ -218,8 +219,8 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 
 	// Ruler config
 	opts := ruler.NewDefaultOptions()
-	opts.LogLevel = log.LogLevelWarn
-	opts.LogFormat = log.LogFormatLogfmt
+	opts.LogLevel = log.LevelWarn
+	opts.LogFormat = log.FormatLogfmt
 	opts.Label = []ruler.Label{
 		{Key: "rule_replica", Value: "\"$(NAME)\""},
 	}
@@ -254,7 +255,7 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	rulerStatefulset.Replicas = 1
 	rulerStatefulset.VolumeType = "gp2"
 	rulerStatefulset.VolumeSize = "10Gi"
-	rulerStatefulset.ContainerResources = k8sutil.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
+	rulerStatefulset.ContainerResources = kghelpers.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
 
 	rulesSyncer := ruler.NewRulesSyncerContainer(&ruler.RulesSyncerOptions{
 		File:            "/etc/thanos-rule-syncer/observatorium.yaml",
@@ -269,7 +270,7 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	rulesSyncer.ImageTag = "main-2022-09-14-338f9ec"
 
 	tlsSecret := "ruler-tls"
-	rulerStatefulset.Sidecars = []k8sutil.ContainerProvider{
+	rulerStatefulset.Sidecars = []workload.ContainerProvider{
 		rulesSyncer,
 		makeOauthProxy(10902, o.Namespace, rulerStatefulset.Name, tlsSecret),
 		makeJaegerAgent("observatorium-tools"),
@@ -282,20 +283,20 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	executeIfNotNil(instanceCfg.RulerPreManifestsHook, rulerStatefulset)
 
 	// Post process
-	manifests := rulerStatefulset.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), rulerStatefulset.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
-	service := k8sutil.GetObject[*corev1.Service](manifests, "")
+	manifests := rulerStatefulset.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), rulerStatefulset.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
+	service := kghelpers.GetObject[*corev1.Service](manifests, "")
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
 	// Add annotations for openshift oauth so that the route to access the query ui works
-	serviceAccount := k8sutil.GetObject[*corev1.ServiceAccount](manifests, "")
+	serviceAccount := kghelpers.GetObject[*corev1.ServiceAccount](manifests, "")
 	if serviceAccount.Annotations == nil {
 		serviceAccount.Annotations = map[string]string{}
 	}
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, rulerStatefulset.Name)
 
 	// Add route for oauth-proxy
-	manifests.Add(&routev1.Route{
+	manifests = append(manifests, &routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -303,7 +304,7 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      rulerStatefulset.Name,
 			Namespace: o.Namespace,
-			Labels:    maps.Clone(k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels),
+			Labels:    maps.Clone(kghelpers.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels),
 			Annotations: map[string]string{
 				"cert-manager.io/issuer-kind": "ClusterIssuer",
 				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
@@ -333,11 +334,11 @@ func (o *ObservatoriumMetrics) makeRuler(instanceCfg *ObservatoriumMetricsInstan
 	})
 	rulerEncoder := NewStdTemplateYAML(rulerStatefulset.Name, "RULER").WithLogLevel()
 	params = append(params, rulerEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: rulerStatefulset.Name,
 	}, sortTemplateParams(params))
 
-	return rulerEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return rulerEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
@@ -345,8 +346,8 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	cacheName := "observatorium-thanos-query-range-cache-memcached"
 	zero := 0
 	opts := &queryfrontend.QueryFrontendOptions{
-		LogLevel:                          log.LogLevelWarn,
-		LogFormat:                         log.LogFormatLogfmt,
+		LogLevel:                          log.LevelWarn,
+		LogFormat:                         log.FormatLogfmt,
 		QueryFrontendCompressResponses:    true,
 		QueryFrontendDownstreamURL:        o.queryAdhocURL,
 		QueryFrontendLogQueriesLongerThan: time.Duration(5 * time.Second),
@@ -384,9 +385,9 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	queryFrontend.Name = obsQueryFrontendName
 	queryFrontend.Image = thanosImage
 	queryFrontend.Replicas = 1
-	queryFrontend.ContainerResources = k8sutil.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
+	queryFrontend.ContainerResources = kghelpers.NewResourcesRequirements("100m", "", "256Mi", "1Gi")
 	tlsSecret := "query-frontend-tls"
-	queryFrontend.Sidecars = []k8sutil.ContainerProvider{
+	queryFrontend.Sidecars = []workload.ContainerProvider{
 		makeOauthProxy(10902, o.Namespace, queryFrontend.Name, tlsSecret),
 		makeJaegerAgent("observatorium-tools"),
 	}
@@ -394,20 +395,20 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	executeIfNotNil(o.QueryFrontendPreManifestsHook, queryFrontend)
 
 	// Post process
-	manifests := queryFrontend.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), queryFrontend.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
-	service := k8sutil.GetObject[*corev1.Service](manifests, "")
+	manifests := queryFrontend.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), queryFrontend.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
+	service := kghelpers.GetObject[*corev1.Service](manifests, "")
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
 	// Add annotations for openshift oauth so that the route to access the query ui works
-	serviceAccount := k8sutil.GetObject[*corev1.ServiceAccount](manifests, "")
+	serviceAccount := kghelpers.GetObject[*corev1.ServiceAccount](manifests, "")
 	if serviceAccount.Annotations == nil {
 		serviceAccount.Annotations = map[string]string{}
 	}
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryFrontend.Name)
 
 	// Add route for oauth-proxy
-	manifests.Add(&routev1.Route{
+	manifests = append(manifests, &routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -415,7 +416,7 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      queryFrontend.Name,
 			Namespace: o.Namespace,
-			Labels:    maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels),
+			Labels:    maps.Clone(kghelpers.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels),
 			Annotations: map[string]string{
 				"cert-manager.io/issuer-kind": "ClusterIssuer",
 				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
@@ -439,10 +440,10 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	// Add cache
 	rangeCache := "observatorium-thanos-query-range-cache-memcached"
 	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {
-		memdep.CommonLabels[k8sutil.ComponentLabel] = "query-range-cache"
+		memdep.CommonLabels[workload.ComponentLabel] = "query-range-cache"
 		executeIfNotNil(o.QueryFrontendCachePreManifestsHook, memdep)
 	}
-	maps.Copy(manifests, makeMemcached(rangeCache, o.Namespace, cachePreManHook))
+	manifests = append(manifests, makeMemcached(rangeCache, o.Namespace, cachePreManHook)...)
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
@@ -453,11 +454,11 @@ func (o *ObservatoriumMetrics) makeQueryFrontend() encoding.Encoder {
 	})
 	qfeEncoder := NewStdTemplateYAML(queryFrontend.Name, "QFE").WithLogLevel()
 	params = append(params, qfeEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: queryFrontend.Name,
 	}, sortTemplateParams(params))
 
-	return qfeEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return qfeEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook func(*query.QueryDeployment)) encoding.Encoder {
@@ -468,8 +469,8 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 
 	// Query config
 	opts := &query.QueryOptions{
-		LogLevel:           log.LogLevelWarn,
-		LogFormat:          log.LogFormatLogfmt,
+		LogLevel:           log.LevelWarn,
+		LogFormat:          log.FormatLogfmt,
 		QueryReplicaLabel:  []string{"replica", "prometheus_replica", "rule_replica"},
 		QueryTimeout:       time.Duration(15 * time.Minute),
 		QueryLookbackDelta: time.Duration(15 * time.Minute),
@@ -498,17 +499,17 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 
 	if isRuleQuery {
 		queryDplt.Name = queryRuleName
-		queryDplt.CommonLabels[k8sutil.NameLabel] = queryDplt.CommonLabels[k8sutil.NameLabel] + "-rule"
+		queryDplt.CommonLabels[workload.NameLabel] = queryDplt.CommonLabels[workload.NameLabel] + "-rule"
 		// Regenerate the affinity to update the name selector
-		queryDplt.Affinity = k8sutil.NewAntiAffinity(nil, map[string]string{
-			k8sutil.NameLabel:     queryDplt.CommonLabels[k8sutil.NameLabel],
-			k8sutil.InstanceLabel: queryDplt.CommonLabels[k8sutil.InstanceLabel],
+		queryDplt.Affinity = kghelpers.NewAntiAffinity(nil, map[string]string{
+			workload.NameLabel:     queryDplt.CommonLabels[workload.NameLabel],
+			workload.InstanceLabel: queryDplt.CommonLabels[workload.InstanceLabel],
 		})
 	}
 	queryDplt.Image = thanosImage
 	queryDplt.Name = name
 	queryDplt.Replicas = 1
-	queryDplt.ContainerResources = k8sutil.NewResourcesRequirements("250m", "", "2Gi", "8Gi")
+	queryDplt.ContainerResources = kghelpers.NewResourcesRequirements("250m", "", "2Gi", "8Gi")
 
 	var tlsSecret string
 	if isRuleQuery {
@@ -516,7 +517,7 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 	} else {
 		tlsSecret = "query-adhoc-tls"
 	}
-	queryDplt.Sidecars = []k8sutil.ContainerProvider{
+	queryDplt.Sidecars = []workload.ContainerProvider{
 		makeJaegerAgent("observatorium-tools"),
 		makeOauthProxy(10902, o.Namespace, queryDplt.Name, tlsSecret),
 	}
@@ -531,21 +532,21 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 	}
 
 	// Post process
-	manifests := queryDplt.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), queryDplt.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
-	service := k8sutil.GetObject[*corev1.Service](manifests, "")
+	manifests := queryDplt.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), queryDplt.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
+	service := kghelpers.GetObject[*corev1.Service](manifests, "")
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), queryDplt.Namespace)
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), queryDplt.Namespace)
 	// Add annotations for openshift oauth so that the route to access the query ui works
-	serviceAccount := k8sutil.GetObject[*corev1.ServiceAccount](manifests, "")
+	serviceAccount := kghelpers.GetObject[*corev1.ServiceAccount](manifests, "")
 	if serviceAccount.Annotations == nil {
 		serviceAccount.Annotations = map[string]string{}
 	}
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, queryDplt.Name)
 
 	// Add route for oauth-proxy
-	manifests.Add(&routev1.Route{
+	manifests = append(manifests, &routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -553,7 +554,7 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      queryDplt.Name,
 			Namespace: o.Namespace,
-			Labels:    maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels),
+			Labels:    maps.Clone(kghelpers.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels),
 			Annotations: map[string]string{
 				"cert-manager.io/issuer-kind": "ClusterIssuer",
 				"cert-manager.io/issuer-name": "letsencrypt-prod-http",
@@ -583,11 +584,11 @@ func (o *ObservatoriumMetrics) makeQueryConfig(isRuleQuery bool, preManifestHook
 	})
 	queryEncoder := NewStdTemplateYAML(queryDplt.Name, "QUERY").WithLogLevel()
 	params = append(params, queryEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: queryDplt.Name,
 	}, sortTemplateParams(params))
 
-	return queryEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return queryEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 // makeReceiveRouter creates a base receive router component that can be derived from using the preManifestsHook
@@ -638,21 +639,21 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 	router.Name = receiveRouterName
 	router.Image = thanosImage
 	router.Replicas = 1
-	router.ContainerResources = k8sutil.NewResourcesRequirements("200m", "", "3Gi", "10Gi")
-	router.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
+	router.ContainerResources = kghelpers.NewResourcesRequirements("200m", "", "3Gi", "10Gi")
+	router.Sidecars = []workload.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	executeIfNotNil(o.ReceiveRouterPreManifestsHook, router)
 
 	// Post process
 	baseHashringCm := "thanos-receive-hashring"
-	manifests := router.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), router.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
+	manifests := router.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), router.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
 
 	// Add pod disruption budget
-	labels := maps.Clone(k8sutil.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
-	delete(labels, k8sutil.VersionLabel)
-	manifests.Add(&policyv1.PodDisruptionBudget{
+	labels := maps.Clone(kghelpers.GetObject[*appsv1.Deployment](manifests, "").ObjectMeta.Labels)
+	delete(labels, workload.VersionLabel)
+	manifests = append(manifests, &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -705,17 +706,17 @@ func (o *ObservatoriumMetrics) makeReceiveRouter() encoding.Encoder {
 		hashringFileName: baseHashring.String(),
 	}
 
-	maps.Copy(manifests, controller.Manifests())
+	manifests = append(manifests, controller.Objects()...)
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
 	queryEncoder := NewStdTemplateYAML(router.Name, "ROUTER").WithLogLevel()
 	params = append(params, queryEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: router.Name,
 	}, sortTemplateParams(params))
 
-	return queryEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return queryEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 // makeReceiveIngestor creates a base receive ingestor component that can be derived from using the preManifestsHook
@@ -746,10 +747,10 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 	ingestor.Replicas = 1
 	ingestor.VolumeType = "gp2"
 	ingestor.VolumeSize = "50Gi"
-	ingestor.ContainerResources = k8sutil.NewResourcesRequirements("200m", "", "3Gi", "10Gi")
+	ingestor.ContainerResources = kghelpers.NewResourcesRequirements("200m", "", "3Gi", "10Gi")
 	ingestor.Env = deleteObjStoreEnv(ingestor.Env) // delete the default objstore env vars
 	ingestor.Env = append(ingestor.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
-	ingestor.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
+	ingestor.Sidecars = []workload.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	executeIfNotNil(instanceCfg.ReceiveIngestorPreManifestsHook, ingestor)
 
@@ -757,17 +758,17 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 	o.storesRegister = append(o.storesRegister, fmt.Sprintf("dnssrv+_grpc._tcp.%s.%s.svc.cluster.local", ingestor.Name, o.Namespace))
 
 	// Post process
-	manifests := ingestor.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), ingestor.Namespace)
-	statefulSetLabels := k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels
+	manifests := ingestor.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), ingestor.Namespace)
+	statefulSetLabels := kghelpers.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels
 	statefulSetLabels[ingestorControllerLabel] = ingestorControllerLabelValue
 	statefulSetLabels[ingestorControllerLabelHashring] = instanceCfg.InstanceName
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](manifests, ""))
 
 	// Add pod disruption budget
-	labels := maps.Clone(k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels)
-	delete(labels, k8sutil.VersionLabel)
-	manifests.Add(&policyv1.PodDisruptionBudget{
+	labels := maps.Clone(kghelpers.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels)
+	delete(labels, workload.VersionLabel)
+	manifests = append(manifests, &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -793,18 +794,18 @@ func (o *ObservatoriumMetrics) makeTenantReceiveIngestor(instanceCfg *Observator
 	params := []templatev1.Parameter{}
 	ingestorEncoder := NewStdTemplateYAML(ingestor.Name, "INGESTOR").WithLogLevel()
 	params = append(params, ingestorEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: ingestor.Name,
 	}, sortTemplateParams(params))
 
-	return ingestorEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return ingestorEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 // makeCompactor creates a base compactor component that can be derived from using the preManifestsHook.
 func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsInstance) encoding.Encoder {
 	// Compactor config
 	opts := compactor.NewDefaultOptions()
-	opts.LogLevel = log.LogLevelWarn
+	opts.LogLevel = log.LevelWarn
 	opts.RetentionResolutionRaw = 0
 	opts.RetentionResolution5m = 0
 	opts.RetentionResolution1h = 0
@@ -820,32 +821,32 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 	compactorSatefulset.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	compactorSatefulset.Image = thanosImage
 	compactorSatefulset.Replicas = 1
-	compactorSatefulset.ContainerResources = k8sutil.NewResourcesRequirements("200m", "", "1Gi", "5Gi")
+	compactorSatefulset.ContainerResources = kghelpers.NewResourcesRequirements("200m", "", "1Gi", "5Gi")
 	compactorSatefulset.VolumeType = "gp2"
 	compactorSatefulset.VolumeSize = "50Gi"
 	compactorSatefulset.Env = deleteObjStoreEnv(compactorSatefulset.Env) // delete the default objstore env vars
 	compactorSatefulset.Env = append(compactorSatefulset.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
 	tlsSecret := "compact-tls-" + instanceCfg.InstanceName
-	compactorSatefulset.Sidecars = []k8sutil.ContainerProvider{makeOauthProxy(10902, o.Namespace, compactorSatefulset.Name, tlsSecret)}
+	compactorSatefulset.Sidecars = []workload.ContainerProvider{makeOauthProxy(10902, o.Namespace, compactorSatefulset.Name, tlsSecret)}
 
 	executeIfNotNil(instanceCfg.CompactorPreManifestsHook, compactorSatefulset)
 
 	// Post process
-	manifests := compactorSatefulset.Manifests()
-	service := k8sutil.GetObject[*corev1.Service](manifests, "")
+	manifests := compactorSatefulset.Objects()
+	service := kghelpers.GetObject[*corev1.Service](manifests, "")
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = tlsSecret
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), compactorSatefulset.Namespace)
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), compactorSatefulset.Namespace)
 	// Add annotations for openshift oauth so that the route to access the compactor ui works
-	serviceAccount := k8sutil.GetObject[*corev1.ServiceAccount](manifests, "")
+	serviceAccount := kghelpers.GetObject[*corev1.ServiceAccount](manifests, "")
 	if serviceAccount.Annotations == nil {
 		serviceAccount.Annotations = map[string]string{}
 	}
 	serviceAccount.Annotations["serviceaccounts.openshift.io/oauth-redirectreference.application"] = fmt.Sprintf(`{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"%s"}}`, compactorSatefulset.Name)
 
 	// Add pod disruption budget
-	labels := maps.Clone(k8sutil.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels)
-	delete(labels, k8sutil.VersionLabel)
-	manifests.Add(&policyv1.PodDisruptionBudget{
+	labels := maps.Clone(kghelpers.GetObject[*appsv1.StatefulSet](manifests, "").ObjectMeta.Labels)
+	delete(labels, workload.VersionLabel)
+	manifests = append(manifests, &policyv1.PodDisruptionBudget{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "PodDisruptionBudget",
 			APIVersion: policyv1.SchemeGroupVersion.String(),
@@ -868,7 +869,7 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 	})
 
 	// Add route for oauth-proxy
-	manifests.Add(&routev1.Route{
+	manifests = append(manifests, &routev1.Route{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Route",
 			APIVersion: routev1.SchemeGroupVersion.String(),
@@ -906,11 +907,11 @@ func (o *ObservatoriumMetrics) makeCompactor(instanceCfg *ObservatoriumMetricsIn
 	})
 	compactorEncoder := NewStdTemplateYAML(compactorSatefulset.Name, "COMPACTOR").WithLogLevel()
 	params = append(params, compactorEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(manifests, metav1.ObjectMeta{
 		Name: compactorSatefulset.Name,
 	}, sortTemplateParams(params))
 
-	return compactorEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return compactorEncoder.Wrap(encoding.GhodssYAML(template))
 }
 
 // makeStore creates a base store component that can be derived from using the preManifestsHook.
@@ -921,8 +922,8 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 	maxTimeDur := time.Duration(-22) * time.Hour
 	hasmodConfigPath := "/etc/thanos/hashmod"
 	opts := &store.StoreOptions{
-		LogFormat:                 log.LogFormatLogfmt,
-		LogLevel:                  log.LogLevelWarn,
+		LogFormat:                 log.FormatLogfmt,
+		LogLevel:                  log.LevelWarn,
 		IgnoreDeletionMarksDelay:  24 * time.Hour,
 		DataDir:                   "/var/thanos/store",
 		ObjstoreConfig:            "$(OBJSTORE_CONFIG)",
@@ -981,12 +982,12 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 	storeStatefulSet.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
 	storeStatefulSet.Image = thanosImage
 	storeStatefulSet.Replicas = 1
-	storeStatefulSet.ContainerResources = k8sutil.NewResourcesRequirements("2", "", "5Gi", "20Gi")
+	storeStatefulSet.ContainerResources = kghelpers.NewResourcesRequirements("2", "", "5Gi", "20Gi")
 	storeStatefulSet.VolumeType = "gp2"
 	storeStatefulSet.VolumeSize = "50Gi"
 	storeStatefulSet.Env = deleteObjStoreEnv(storeStatefulSet.Env) // delete the default objstore env vars
 	storeStatefulSet.Env = append(storeStatefulSet.Env, objStoreEnvVars(instanceCfg.ObjStoreSecret)...)
-	storeStatefulSet.Sidecars = []k8sutil.ContainerProvider{makeJaegerAgent("observatorium-tools")}
+	storeStatefulSet.Sidecars = []workload.ContainerProvider{makeJaegerAgent("observatorium-tools")}
 
 	// Store auto-sharding using a configMap and an initContainer
 	// The configMap contains a script that will be executed by the initContainer
@@ -1032,10 +1033,10 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 	o.storesRegister = append(o.storesRegister, fmt.Sprintf("dnssrv+_grpc._tcp.%s.%s.svc.cluster.local", storeStatefulSet.Name, o.Namespace))
 
 	// Post process
-	manifests := storeStatefulSet.Manifests()
-	postProcessServiceMonitor(k8sutil.GetObject[*monv1.ServiceMonitor](manifests, ""), storeStatefulSet.Namespace)
-	addQuayPullSecret(k8sutil.GetObject[*corev1.ServiceAccount](manifests, ""))
-	statefulset := k8sutil.GetObject[*appsv1.StatefulSet](manifests, "")
+	objects := storeStatefulSet.Objects()
+	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](objects, ""), storeStatefulSet.Namespace)
+	addQuayPullSecret(kghelpers.GetObject[*corev1.ServiceAccount](objects, ""))
+	statefulset := kghelpers.GetObject[*appsv1.StatefulSet](objects, "")
 	defaultMode := int32(0777)
 	// Add volumes and volume mounts for the initContainer
 	statefulset.Spec.Template.Spec.Volumes = append(statefulset.Spec.Template.Spec.Volumes, corev1.Volume{
@@ -1063,7 +1064,7 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 
 	// add rbac for reading the number of replicas from the statefulset in the initContainer
 	labels := maps.Clone(statefulset.ObjectMeta.Labels)
-	delete(labels, k8sutil.VersionLabel)
+	delete(labels, workload.VersionLabel)
 	listPodsRole := &rbacv1.Role{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Role",
@@ -1082,7 +1083,7 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			},
 		},
 	}
-	manifests.Add(listPodsRole)
+	objects = append(objects, listPodsRole)
 
 	roleBinding := &rbacv1.RoleBinding{
 		TypeMeta: metav1.TypeMeta{
@@ -1108,7 +1109,7 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			APIGroup: "rbac.authorization.k8s.io",
 		},
 	}
-	manifests.Add(roleBinding)
+	objects = append(objects, roleBinding)
 
 	// Add pod disruption budget
 	pdb := &policyv1.PodDisruptionBudget{
@@ -1132,31 +1133,31 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 			},
 		},
 	}
-	manifests.Add(pdb)
+	objects = append(objects, pdb)
 
 	// Add index cache
 	cachePreManHook := func(memdep *memcached.MemcachedDeployment) {
 		memdep.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
-		memdep.CommonLabels[k8sutil.ComponentLabel] = "store-index-cache"
+		memdep.CommonLabels[workload.ComponentLabel] = "store-index-cache"
 		executeIfNotNil(instanceCfg.IndexCachePreManifestsHook, memdep)
 	}
-	maps.Copy(manifests, makeMemcached(indexCacheName, o.Namespace, cachePreManHook))
+	objects = append(objects, makeMemcached(indexCacheName, o.Namespace, cachePreManHook)...)
 
 	// Add bucket cache
 	cachePreManHook = func(memdep *memcached.MemcachedDeployment) {
 		memdep.CommonLabels[observatoriumInstanceLabel] = instanceCfg.InstanceName
-		memdep.CommonLabels[k8sutil.ComponentLabel] = "store-bucket-cache"
+		memdep.CommonLabels[workload.ComponentLabel] = "store-bucket-cache"
 		executeIfNotNil(instanceCfg.BucketCachePreManifestsHook, memdep)
 	}
-	maps.Copy(manifests, makeMemcached(bucketCacheName, o.Namespace, cachePreManHook))
+	objects = append(objects, makeMemcached(bucketCacheName, o.Namespace, cachePreManHook)...)
 
 	// Set encoders and template params
 	params := []templatev1.Parameter{}
 	storeEncoder := NewStdTemplateYAML(storeStatefulSet.Name, "STORE").WithLogLevel()
 	params = append(params, storeEncoder.TemplateParams()...)
-	template := openshift.WrapInTemplate("", manifests, metav1.ObjectMeta{
+	template := openshift.WrapInTemplate(objects, metav1.ObjectMeta{
 		Name: storeStatefulSet.Name,
 	}, sortTemplateParams(params))
 
-	return storeEncoder.Wrap(encoding.GhodssYAML(template[""]))
+	return storeEncoder.Wrap(encoding.GhodssYAML(template))
 }

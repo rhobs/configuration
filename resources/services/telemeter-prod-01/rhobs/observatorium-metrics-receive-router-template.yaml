@@ -134,7 +134,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-controller
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-09-22-f168dd7
     name: observatorium-thanos-receive-controller
     namespace: rhobs
 - apiVersion: v1
@@ -161,7 +160,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
     name: observatorium-thanos-receive-router-limits
     namespace: rhobs
 - apiVersion: apps/v1
@@ -354,7 +352,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
     name: observatorium-thanos-receive-router
     namespace: rhobs
   spec:
@@ -387,7 +384,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
     name: observatorium-thanos-receive-router
     namespace: rhobs
 - apiVersion: monitoring.coreos.com/v1
@@ -399,7 +395,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-router
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.32.4
       prometheus: app-sre
     name: rhobs-observatorium-thanos-receive-router
     namespace: openshift-customer-monitoring
@@ -433,7 +428,6 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: thanos-receive-controller
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: main-2023-09-22-f168dd7
     name: thanos-receive-hashring
     namespace: rhobs
 parameters:

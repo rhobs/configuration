@@ -11,7 +11,8 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/ruler"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/store"
-	"github.com/observatorium/observatorium/configuration_go/k8sutil"
+	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
+	"github.com/observatorium/observatorium/configuration_go/kubegen/workload"
 	templatev1 "github.com/openshift/api/template/v1"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
 	"github.com/rhobs/configuration/services_go/observatorium"
@@ -206,7 +207,7 @@ func stageConfig() observatorium.Observatorium {
 						ingestor.VolumeSize = "50Gi"
 						// TODO @moadz: Increased for testing, remove when load testing RHOBS-961 is completed
 						ingestor.Replicas = 3
-						ingestor.ContainerResources = k8sutil.NewResourcesRequirements("2", "4", "16Gi", "30Gi")
+						ingestor.ContainerResources = kghelpers.NewResourcesRequirements("2", "4", "16Gi", "30Gi")
 					},
 					StorePreManifestsHook: func(store *store.StoreStatefulSet) {
 						store.VolumeSize = "5Gi"
@@ -244,7 +245,7 @@ func stageConfig() observatorium.Observatorium {
 						rulerSs.ConfigMaps["observatorium-rules"] = map[string]string{
 							"observatorium.yaml": getTelemeterRules(),
 						}
-						rulerSs.Sidecars = append(rulerSs.Sidecars, &k8sutil.Container{
+						rulerSs.Sidecars = append(rulerSs.Sidecars, &workload.Container{
 							Name:     "configmap-reloader",
 							Image:    "quay.io/openshift/origin-configmap-reloader",
 							ImageTag: "4.5.0",
@@ -252,7 +253,7 @@ func stageConfig() observatorium.Observatorium {
 								"-volume-dir=/etc/thanos-rule-syncer",
 								"-webhook-url=http://localhost:10902/-/reload",
 							},
-							Resources: k8sutil.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
+							Resources: kghelpers.NewResourcesRequirements("100m", "200m", "100Mi", "200Mi"),
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      "observatorium-rules",

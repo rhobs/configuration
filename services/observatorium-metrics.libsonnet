@@ -718,7 +718,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
         'app.kubernetes.io/part-of': 'observatorium',
       },
       replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
-      minReadySeconds: 60,
+      minReadySeconds: 120,
       replicationFactor: 3,
       retention: '4d',
       replicaLabels: thanosSharedConfig.replicaLabels,
@@ -798,7 +798,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       replicas: 1,
       hashrings: hashrings,
       annotatePodsOnChange: false,
-      allowOnlyReadyReplicas: false,
+      allowOnlyReadyReplicas: true,
       allowDynamicScaling: false,
       resources: {
         requests: {

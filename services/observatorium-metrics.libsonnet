@@ -798,7 +798,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       replicas: 1,
       hashrings: hashrings,
       annotatePodsOnChange: false,
-      allowOnlyReadyReplicas: false,
+      allowOnlyReadyReplicas: true,
       allowDynamicScaling: false,
       resources: {
         requests: {

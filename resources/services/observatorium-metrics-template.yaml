@@ -1542,6 +1542,7 @@ objects:
           - --configmap-generated-name=observatorium-thanos-receive-controller-tenants-generated
           - --file-name=hashrings.json
           - --namespace=$(NAMESPACE)
+          - --allow-only-ready-replicas
           env:
           - name: NAMESPACE
             valueFrom:

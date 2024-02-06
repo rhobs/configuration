@@ -1720,7 +1720,7 @@ objects:
       controller.receive.thanos.io/hashring: default
     name: observatorium-thanos-receive-default
   spec:
-    minReadySeconds: 60
+    minReadySeconds: 120
     podManagementPolicy: Parallel
     replicas: ${{THANOS_RECEIVE_REPLICAS}}
     selector:

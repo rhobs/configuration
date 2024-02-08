@@ -86,6 +86,7 @@
   "{__name__=\"eo_es_misconfigured_memory_resources_info\"}",
   "{__name__=\"eo_es_redundancy_policy_info\"}",
   "{__name__=\"eo_es_storage_info\"}",
+  "{__name__=\"hypershift_cluster_cores\"}",
   "{__name__=\"imageregistry:imagestreamtags_count:sum\"}",
   "{__name__=\"imageregistry:operations_count:sum\"}",
   "{__name__=\"insightsclient_request_send_total\"}",

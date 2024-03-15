@@ -199,7 +199,6 @@ objects:
           - --managed-tenants=${MANAGED_TENANTS}
           - --issuer-url=${OIDC_ISSUER_URL}
           - --audience=${OIDC_AUDIENCE}
-          - --log-rules-enabled=${LOG_RULES_ENABLED}
           env:
           - name: NAMESPACE_NAME
             valueFrom:
@@ -1723,10 +1722,6 @@ parameters:
   value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]'
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
-- name: OBSERVATORIUM_LOGS_NAMESPACE
-  value: observatorium-logs
-- name: OBSERVATORIUM_TRACES_NAMESPACE
-  value: observatorium-traces
 - name: AMS_URL
   value: https://api.openshift.com
 - name: GUBERNATOR_CPU_LIMIT
@@ -1877,8 +1872,6 @@ parameters:
   value: observatorium-appsre
 - name: RHTAP_RELOADER_SECRET_NAME
   value: observatorium-rhtap
-- name: LOG_RULES_ENABLED
-  value: "true"
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG

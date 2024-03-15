@@ -21,8 +21,6 @@ local obs = import 'observatorium.libsonnet';
     // See https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html#templates-writing-parameters_using-templates
     { name: 'NAMESPACES', value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]' },
     { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
-    { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
-    { name: 'OBSERVATORIUM_TRACES_NAMESPACE', value: 'observatorium-traces' },
     { name: 'AMS_URL', value: 'https://api.openshift.com' },
     { name: 'GUBERNATOR_CPU_LIMIT', value: '600m' },
     { name: 'GUBERNATOR_CPU_REQUEST', value: '300m' },
@@ -98,7 +96,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'HYPERSHIFT_PLATFORM_RELOADER_SECRET_NAME', value: 'rhobs-hypershift-platform-tenant' },
     { name: 'APPSRE_RELOADER_SECRET_NAME', value: 'observatorium-appsre' },
     { name: 'RHTAP_RELOADER_SECRET_NAME', value: 'observatorium-rhtap' },
-    { name: 'LOG_RULES_ENABLED', value: 'true' },
     { name: 'OBSCTL_RELOADER_IMAGE', value: 'quay.io/app-sre/obsctl-reloader' },
     { name: 'OBSCTL_RELOADER_IMAGE_TAG', value: '969b895' },
     { name: 'METRICS_WRITE_SERVICE_NAME', value: obs.thanos.receiversService.metadata.name },

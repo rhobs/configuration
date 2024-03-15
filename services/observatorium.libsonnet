@@ -19,8 +19,6 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     namespaces: {
       default: '${NAMESPACE}',
       metrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
-      logs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
-      traces: '${OBSERVATORIUM_TRACES_NAMESPACE}',
     },
 
     commonLabels:: {
@@ -169,7 +167,6 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
       sleepDurationSeconds: '${SLEEP_DURATION_SECONDS}',
       configReloadIntervalSeconds: '${CONFIG_RELOAD_INTERVAL_SECONDS}',
       managedTenants: '${MANAGED_TENANTS}',
-      logRulesEnabled: '${LOG_RULES_ENABLED}',
     },
     // Tenants normally follows a lower-case format.
     // However tenant attribute in below map items need to be uppercase to be the proper prefix for the env variable to create.
@@ -442,38 +439,6 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
     replicas: 1,
     logLevel: '${OBSERVATORIUM_API_LOG_LEVEL}',
     serviceMonitor: true,
-    traces: {
-      writeEndpoint: '%s-collector-headless.%s.svc.cluster.local:%d' % [
-        obs.tracing.manifests.otelcollector.metadata.name,
-        obs.config.namespaces.traces,
-        4317,
-      ],
-      templateEndpoint: 'http://observatorium-jaeger-{tenant}-query.%s.svc.cluster.local:16686/' % [
-        obs.config.namespaces.traces,
-      ],
-    },
-    logs: {
-      readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['query-frontend-http-service'].metadata.name,
-        obs.config.namespaces.logs,
-        obs.loki.manifests['query-frontend-http-service'].spec.ports[0].port,
-      ],
-      tailEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['querier-http-service'].metadata.name,
-        obs.config.namespaces.logs,
-        obs.loki.manifests['querier-http-service'].spec.ports[0].port,
-      ],
-      writeEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['distributor-http-service'].metadata.name,
-        obs.config.namespaces.logs,
-        obs.loki.manifests['distributor-http-service'].spec.ports[0].port,
-      ],
-      rulesEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
-        obs.loki.manifests['ruler-http-service'].metadata.name,
-        obs.config.namespaces.logs,
-        obs.loki.manifests['ruler-http-service'].spec.ports[0].port,
-      ],
-    },
     metrics: {
       readEndpoint: 'http://%s.%s.svc.cluster.local:%d' % [
         obs.thanos.queryFrontend.service.metadata.name,

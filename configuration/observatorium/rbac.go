@@ -12,9 +12,7 @@ import (
 type tenantID string
 
 const (
-	appsreTenant            tenantID = "appsre"
 	cnvqeTenant             tenantID = "cnvqe"
-	dptpTenant              tenantID = "dptp"
 	telemeterTenant         tenantID = "telemeter"
 	rhobsTenant             tenantID = "rhobs"
 	psiocpTenant            tenantID = "psiocp"
@@ -102,26 +100,19 @@ func GenerateRBAC() *observatoriumRBAC {
 		perms:   []rbac.Permission{rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
 	})
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-rhacs-logs",
-		tenant:  rhacsTenant,
-		signals: []signal{logsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
-	})
 
 	// RHOBS
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhobs",
 		tenant:  rhobsTenant,
-		signals: []signal{metricsSignal, logsSignal, tracesSignal},
+		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{testingEnv, stagingEnv, productionEnv},
 	})
 	attachBinding(&obsRBAC, bindingOpts{
 		name:    "observatorium-rhobs-mst",
 		tenant:  rhobsTenant,
-		signals: []signal{metricsSignal, logsSignal, tracesSignal},
+		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
 	})
@@ -131,8 +122,6 @@ func GenerateRBAC() *observatoriumRBAC {
 		Roles: []string{
 			getOrCreateRoleName(&obsRBAC, telemeterTenant, metricsSignal, rbac.Read),
 			getOrCreateRoleName(&obsRBAC, rhobsTenant, metricsSignal, rbac.Read),
-			getOrCreateRoleName(&obsRBAC, rhobsTenant, logsSignal, rbac.Read),
-			getOrCreateRoleName(&obsRBAC, rhobsTenant, tracesSignal, rbac.Read),
 		},
 		Subjects: []rbac.Subject{{Name: "team-monitoring@redhat.com", Kind: rbac.Group}},
 	})
@@ -283,36 +272,6 @@ func GenerateRBAC() *observatoriumRBAC {
 		perms:               []rbac.Permission{rbac.Read}, // Read only.
 		envs:                []env{productionEnv},
 		skipConventionCheck: true,
-	})
-
-	// RHOBS Logs only tenants
-
-	// DPTP
-	// Reader serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-dptp-reader",
-		tenant:  dptpTenant,
-		signals: []signal{logsSignal},
-		perms:   []rbac.Permission{rbac.Read},
-		envs:    []env{stagingEnv, productionEnv},
-	})
-	// Writer serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-dptp-collector",
-		tenant:  dptpTenant,
-		signals: []signal{logsSignal},
-		perms:   []rbac.Permission{rbac.Write},
-		envs:    []env{stagingEnv, productionEnv},
-	})
-
-	// APPSRE
-	// Reader and Writer serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-appsre",
-		tenant:  appsreTenant,
-		signals: []signal{logsSignal},
-		perms:   []rbac.Permission{rbac.Read, rbac.Write},
-		envs:    []env{stagingEnv, productionEnv},
 	})
 
 	// RHTAP

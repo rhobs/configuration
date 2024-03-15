@@ -12,7 +12,6 @@ local rbacConfig = {
     default: '${NAMESPACE}',
     observatorium: '${OBSERVATORIUM_NAMESPACE}',
     observatoriumMetrics: '${OBSERVATORIUM_METRICS_NAMESPACE}',
-    observatoriumLogs: '${OBSERVATORIUM_LOGS_NAMESPACE}',
     minio: '${MINIO_NAMESPACE}',
     dex: '${DEX_NAMESPACE}',
     telemeter: '${TELEMETER_NAMESPACE}',
@@ -130,12 +129,6 @@ local deployment = d.deployment {
         metadata+: { namespace: '${OBSERVATORIUM_METRICS_NAMESPACE}' },
       },
       role {
-        metadata+: { namespace: '${OBSERVATORIUM_LOGS_NAMESPACE}' },
-      },
-      roleBinding {
-        metadata+: { namespace: '${OBSERVATORIUM_LOGS_NAMESPACE}' },
-      },
-      role {
         metadata+: { namespace: '${MINIO_NAMESPACE}' },
       },
       roleBinding {
@@ -159,7 +152,6 @@ local deployment = d.deployment {
       { name: 'NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_NAMESPACE', value: 'observatorium' },
       { name: 'OBSERVATORIUM_METRICS_NAMESPACE', value: 'observatorium-metrics' },
-      { name: 'OBSERVATORIUM_LOGS_NAMESPACE', value: 'observatorium-logs' },
       { name: 'MINIO_NAMESPACE', value: 'minio' },
       { name: 'DEX_NAMESPACE', value: 'dex' },
       { name: 'TELEMETER_NAMESPACE', value: 'telemeter' },

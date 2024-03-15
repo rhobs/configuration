@@ -199,7 +199,6 @@ objects:
           - --managed-tenants=${MANAGED_TENANTS}
           - --issuer-url=${OIDC_ISSUER_URL}
           - --audience=${OIDC_AUDIENCE}
-          - --log-rules-enabled=${LOG_RULES_ENABLED}
           env:
           - name: NAMESPACE_NAME
             valueFrom:
@@ -783,23 +782,10 @@ objects:
           "name": "service-account-observatorium-rhacs-grafana-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhacs-grafana"
-      - "name": "observatorium-rhacs-logs"
-        "roles":
-        - "rhacs-logs-write"
-        - "rhacs-logs-read"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-rhacs-logs-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-rhacs-logs"
       - "name": "observatorium-rhobs"
         "roles":
         - "rhobs-metrics-write"
         - "rhobs-metrics-read"
-        - "rhobs-logs-write"
-        - "rhobs-logs-read"
-        - "rhobs-traces-write"
-        - "rhobs-traces-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhobs-testing"
@@ -811,10 +797,6 @@ objects:
         "roles":
         - "rhobs-metrics-write"
         - "rhobs-metrics-read"
-        - "rhobs-logs-write"
-        - "rhobs-logs-read"
-        - "rhobs-traces-write"
-        - "rhobs-traces-read"
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-rhobs-mst-staging"
@@ -824,8 +806,6 @@ objects:
         "roles":
         - "telemeter-metrics-read"
         - "rhobs-metrics-read"
-        - "rhobs-logs-read"
-        - "rhobs-traces-read"
         "subjects":
         - "kind": "group"
           "name": "team-monitoring@redhat.com"
@@ -935,31 +915,6 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-observatorium-hypershift-platform-staging-qe-read"
-      - "name": "observatorium-dptp-reader"
-        "roles":
-        - "dptp-logs-read"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-reader-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-reader"
-      - "name": "observatorium-dptp-collector"
-        "roles":
-        - "dptp-logs-write"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-collector-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-dptp-collector"
-      - "name": "observatorium-appsre"
-        "roles":
-        - "appsre-logs-read"
-        - "appsre-logs-write"
-        "subjects":
-        - "kind": "user"
-          "name": "service-account-observatorium-appsre-staging"
-        - "kind": "user"
-          "name": "service-account-observatorium-appsre"
       - "name": "observatorium-rhtap"
         "roles":
         - "rhtap-metrics-read"
@@ -1028,20 +983,6 @@ objects:
         - "metrics"
         "tenants":
         - "rhacs"
-      - "name": "rhacs-logs-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "rhacs"
-      - "name": "rhacs-logs-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "logs"
-        "tenants":
-        - "rhacs"
       - "name": "rhobs-metrics-write"
         "permissions":
         - "write"
@@ -1054,34 +995,6 @@ objects:
         - "read"
         "resources":
         - "metrics"
-        "tenants":
-        - "rhobs"
-      - "name": "rhobs-logs-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "rhobs"
-      - "name": "rhobs-logs-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "logs"
-        "tenants":
-        - "rhobs"
-      - "name": "rhobs-traces-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "traces"
-        "tenants":
-        - "rhobs"
-      - "name": "rhobs-traces-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "traces"
         "tenants":
         - "rhobs"
       - "name": "telemeter-metrics-read"
@@ -1168,34 +1081,6 @@ objects:
         - "metrics"
         "tenants":
         - "hypershift-platform-staging"
-      - "name": "dptp-logs-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "logs"
-        "tenants":
-        - "dptp"
-      - "name": "dptp-logs-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "dptp"
-      - "name": "appsre-logs-read"
-        "permissions":
-        - "read"
-        "resources":
-        - "logs"
-        "tenants":
-        - "appsre"
-      - "name": "appsre-logs-write"
-        "permissions":
-        - "write"
-        "resources":
-        - "logs"
-        "tenants":
-        - "appsre"
       - "name": "rhtap-metrics-read"
         "permissions":
         - "read"
@@ -1287,13 +1172,6 @@ objects:
           - --metrics.read.endpoint=http://observatorium-thanos-query-frontend.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:9090
           - --metrics.write.endpoint=http://${METRICS_WRITE_SERVICE_NAME}.${OBSERVATORIUM_METRICS_NAMESPACE}.svc.cluster.local:${METRICS_WRITE_SERVICE_PORT}
           - --metrics.rules.endpoint=http://rules-objstore.${NAMESPACE}.svc.cluster.local:8080
-          - --logs.read.endpoint=http://observatorium-loki-query-frontend-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
-          - --logs.tail.endpoint=http://observatorium-loki-querier-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
-          - --logs.write.endpoint=http://observatorium-loki-distributor-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
-          - --logs.rules.endpoint=http://observatorium-loki-ruler-http.${OBSERVATORIUM_LOGS_NAMESPACE}.svc.cluster.local:3100
-          - --traces.write.endpoint=observatorium-otel-collector-headless.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:4317
-          - --grpc.listen=0.0.0.0:8090
-          - --experimental.traces.read.endpoint-template=http://observatorium-jaeger-{tenant}-query.${OBSERVATORIUM_TRACES_NAMESPACE}.svc.cluster.local:16686/
           - --metrics.alertmanager.endpoint=${ALERTMANAGER_API_ENDPOINT}
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
@@ -1730,10 +1608,6 @@ parameters:
   value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]'
 - name: OBSERVATORIUM_METRICS_NAMESPACE
   value: observatorium-metrics
-- name: OBSERVATORIUM_LOGS_NAMESPACE
-  value: observatorium-logs
-- name: OBSERVATORIUM_TRACES_NAMESPACE
-  value: observatorium-traces
 - name: AMS_URL
   value: https://api.openshift.com
 - name: GUBERNATOR_CPU_LIMIT
@@ -1884,8 +1758,6 @@ parameters:
   value: observatorium-appsre
 - name: RHTAP_RELOADER_SECRET_NAME
   value: observatorium-rhtap
-- name: LOG_RULES_ENABLED
-  value: "true"
 - name: OBSCTL_RELOADER_IMAGE
   value: quay.io/app-sre/obsctl-reloader
 - name: OBSCTL_RELOADER_IMAGE_TAG

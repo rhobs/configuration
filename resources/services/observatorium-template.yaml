@@ -1485,6 +1485,8 @@ objects:
             value: k8s
           - name: GUBER_LOG_LEVEL
             value: ${GUBERNATOR_LOG_LEVEL}
+          - name: OTEL_TRACES_EXPORTER
+            value: none
           image: ${GUBERNATOR_IMAGE}:${GUBERNATOR_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: gubernator

@@ -233,6 +233,10 @@ objects:
           - --whitelist={__name__="odf_system_raw_capacity_total_bytes"}
           - --whitelist={__name__="odf_system_raw_capacity_used_bytes"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
+          - --whitelist={__name__="ols:provider_model_configuration"}
+          - --whitelist={__name__="ols:rest_api_query_calls_total:2xx"}
+          - --whitelist={__name__="ols:rest_api_query_calls_total:4xx"}
+          - --whitelist={__name__="ols:rest_api_query_calls_total:5xx"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
@@ -503,6 +507,10 @@ objects:
           - --whitelist={__name__="odf_system_raw_capacity_total_bytes"}
           - --whitelist={__name__="odf_system_raw_capacity_used_bytes"}
           - --whitelist={__name__="olm_resolution_duration_seconds"}
+          - --whitelist={__name__="ols:provider_model_configuration"}
+          - --whitelist={__name__="ols:rest_api_query_calls_total:2xx"}
+          - --whitelist={__name__="ols:rest_api_query_calls_total:4xx"}
+          - --whitelist={__name__="ols:rest_api_query_calls_total:5xx"}
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}

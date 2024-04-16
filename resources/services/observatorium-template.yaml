@@ -1617,7 +1617,7 @@ parameters:
 - name: GUBERNATOR_CPU_REQUEST
   value: 300m
 - name: GUBERNATOR_IMAGE_TAG
-  value: v2.0.0-rc.36
+  value: v2.6.0
 - name: GUBERNATOR_IMAGE
   value: quay.io/app-sre/gubernator
 - name: GUBERNATOR_MEMORY_LIMIT

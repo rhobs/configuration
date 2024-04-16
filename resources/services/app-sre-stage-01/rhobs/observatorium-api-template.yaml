@@ -542,7 +542,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
+      app.kubernetes.io/version: v2.6.0
     name: observatorium-gubernator
     namespace: rhobs
   spec:
@@ -562,7 +562,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: gubernator
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v2.0.0-rc.36
+          app.kubernetes.io/version: v2.6.0
         namespace: rhobs
       spec:
         affinity:
@@ -603,7 +603,7 @@ objects:
             value: k8s
           - name: GUBER_LOG_LEVEL
             value: info
-          image: quay.io/app-sre/gubernator:v2.0.0-rc.36
+          image: quay.io/app-sre/gubernator:v2.6.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -647,7 +647,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
+      app.kubernetes.io/version: v2.6.0
     name: observatorium-gubernator
     namespace: rhobs
   rules:
@@ -668,7 +668,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
+      app.kubernetes.io/version: v2.6.0
     name: observatorium-gubernator
     namespace: rhobs
   roleRef:

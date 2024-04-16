@@ -716,7 +716,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
+      app.kubernetes.io/version: v2.6.0
     name: observatorium-gubernator
   spec:
     replicas: 1
@@ -735,7 +735,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: gubernator
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v2.0.0-rc.36
+          app.kubernetes.io/version: v2.6.0
       spec:
         affinity:
           podAntiAffinity:
@@ -775,7 +775,7 @@ objects:
             value: k8s
           - name: GUBER_LOG_LEVEL
             value: info
-          image: quay.io/app-sre/gubernator:v2.0.0-rc.36
+          image: quay.io/app-sre/gubernator:v2.6.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -819,7 +819,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
+      app.kubernetes.io/version: v2.6.0
     name: observatorium-gubernator
   rules:
   - apiGroups:
@@ -839,7 +839,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: gubernator
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v2.0.0-rc.36
+      app.kubernetes.io/version: v2.6.0
     name: observatorium-gubernator
   roleRef:
     apiGroup: rbac.authorization.k8s.io

@@ -31,7 +31,7 @@ const (
 	obsApiImage          = "quay.io/observatorium/api"
 	obsApiTag            = "main-2023-12-06-62d7703"
 	gubernatorImage      = "quay.io/app-sre/gubernator"
-	gubernatorTag        = "v2.0.0-rc.36"
+	gubernatorTag        = "v2.6.0"
 	observatoriumUpImage = "quay.io/observatorium/up"
 	observatoriumUpTag   = "master-2022-03-24-098c31a"
 	avalancheImage       = "quay.io/prometheuscommunity/avalanche"

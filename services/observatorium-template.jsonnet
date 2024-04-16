@@ -24,7 +24,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'AMS_URL', value: 'https://api.openshift.com' },
     { name: 'GUBERNATOR_CPU_LIMIT', value: '600m' },
     { name: 'GUBERNATOR_CPU_REQUEST', value: '300m' },
-    { name: 'GUBERNATOR_IMAGE_TAG', value: 'v2.0.0-rc.36' },
+    { name: 'GUBERNATOR_IMAGE_TAG', value: 'v2.6.0' },
     { name: 'GUBERNATOR_IMAGE', value: 'quay.io/app-sre/gubernator' },
     { name: 'GUBERNATOR_MEMORY_LIMIT', value: '200Mi' },
     { name: 'GUBERNATOR_MEMORY_REQUEST', value: '100Mi' },

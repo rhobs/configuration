@@ -240,6 +240,7 @@ objects:
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
+          - --whitelist={__name__="openshift:openshift_network_operator_ipsec_state:info"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_series:sum"}
           - --whitelist={__name__="openshift_csi_share_configmap"}
@@ -514,6 +515,7 @@ objects:
           - --whitelist={__name__="openshift:build_by_strategy:sum"}
           - --whitelist={__name__="openshift:cpu_usage_cores:sum"}
           - --whitelist={__name__="openshift:memory_usage_bytes:sum"}
+          - --whitelist={__name__="openshift:openshift_network_operator_ipsec_state:info"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_samples_appended_total:sum"}
           - --whitelist={__name__="openshift:prometheus_tsdb_head_series:sum"}
           - --whitelist={__name__="openshift_csi_share_configmap"}

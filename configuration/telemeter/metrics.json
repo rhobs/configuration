@@ -146,6 +146,7 @@
   "{__name__=\"openshift:build_by_strategy:sum\"}",
   "{__name__=\"openshift:cpu_usage_cores:sum\"}",
   "{__name__=\"openshift:memory_usage_bytes:sum\"}",
+  "{__name__=\"openshift:openshift_network_operator_ipsec_state:info\"}",
   "{__name__=\"openshift:prometheus_tsdb_head_samples_appended_total:sum\"}",
   "{__name__=\"openshift:prometheus_tsdb_head_series:sum\"}",
   "{__name__=\"openshift_csi_share_configmap\"}",

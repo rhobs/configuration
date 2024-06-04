@@ -168,6 +168,7 @@ objects:
           - --whitelist={__name__="cluster_version_capability"}
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
+          - --whitelist={__name__="cnv_abnormal", reason=~"memory_working_set_delta_from_request|memory_rss_delta_from_request"}
           - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
           - --whitelist={__name__="code:apiserver_request_total:rate:sum"}
           - --whitelist={__name__="console_url"}
@@ -180,8 +181,8 @@ objects:
           - --whitelist={__name__="eo_es_misconfigured_memory_resources_info"}
           - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="eo_es_storage_info"}
-          - --whitelist={__name__="hypershift_cluster_cores"}
           - --whitelist={__name__="hostedcluster:hypershift_cluster_vcpus:max"}
+          - --whitelist={__name__="hypershift_cluster_cores"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --whitelist={__name__="insightsclient_request_send_total"}
@@ -444,6 +445,7 @@ objects:
           - --whitelist={__name__="cluster_version_capability"}
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
+          - --whitelist={__name__="cnv_abnormal", reason=~"memory_working_set_delta_from_request|memory_rss_delta_from_request"}
           - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
           - --whitelist={__name__="code:apiserver_request_total:rate:sum"}
           - --whitelist={__name__="console_url"}
@@ -456,8 +458,8 @@ objects:
           - --whitelist={__name__="eo_es_misconfigured_memory_resources_info"}
           - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="eo_es_storage_info"}
-          - --whitelist={__name__="hypershift_cluster_cores"}
           - --whitelist={__name__="hostedcluster:hypershift_cluster_vcpus:max"}
+          - --whitelist={__name__="hypershift_cluster_cores"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --whitelist={__name__="insightsclient_request_send_total"}

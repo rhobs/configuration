@@ -97,6 +97,7 @@ objects:
           - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="acm_console_page_count:sum", page=~"overview-classic|overview-fleet|search|search-details|clusters|application|governance"}
           - --whitelist={__name__="acm_managed_cluster_info"}
+          - --whitelist={__name__="acm_managed_cluster_worker_cores:max"}
           - --whitelist={__name__="apiserver_list_watch_request_success_total:rate:sum", verb=~"LIST|WATCH"}
           - --whitelist={__name__="appsvcs:cores_by_product:sum"}
           - --whitelist={__name__="cam_app_workload_migrations"}
@@ -374,6 +375,7 @@ objects:
           - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="acm_console_page_count:sum", page=~"overview-classic|overview-fleet|search|search-details|clusters|application|governance"}
           - --whitelist={__name__="acm_managed_cluster_info"}
+          - --whitelist={__name__="acm_managed_cluster_worker_cores:max"}
           - --whitelist={__name__="apiserver_list_watch_request_success_total:rate:sum", verb=~"LIST|WATCH"}
           - --whitelist={__name__="appsvcs:cores_by_product:sum"}
           - --whitelist={__name__="cam_app_workload_migrations"}

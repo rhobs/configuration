@@ -137,6 +137,11 @@ objects:
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
           - --whitelist={__name__="cluster:openshift_route_info:tls_termination:sum"}
+          - --whitelist={__name__="cluster:ovnkube_controller_admin_network_policies_db_objects:max",table_name=~"ACL|Address_Set"}
+          - --whitelist={__name__="cluster:ovnkube_controller_admin_network_policies_rules:max",direction=~"Ingress|Egress",action=~"Pass|Allow|Deny"}
+          - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_db_objects:max",table_name=~"ACL|Address_Set"}
+          - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_rules:max",direction=~"Ingress|Egress",action=~"Allow|Deny"}
+          - --whitelist={__name__="cluster:ovnkube_controller_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:avg"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:max"}
@@ -415,6 +420,11 @@ objects:
           - --whitelist={__name__="cluster:network_attachment_definition_instances:max"}
           - --whitelist={__name__="cluster:node_instance_type_count:sum"}
           - --whitelist={__name__="cluster:openshift_route_info:tls_termination:sum"}
+          - --whitelist={__name__="cluster:ovnkube_controller_admin_network_policies_db_objects:max",table_name=~"ACL|Address_Set"}
+          - --whitelist={__name__="cluster:ovnkube_controller_admin_network_policies_rules:max",direction=~"Ingress|Egress",action=~"Pass|Allow|Deny"}
+          - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_db_objects:max",table_name=~"ACL|Address_Set"}
+          - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_rules:max",direction=~"Ingress|Egress",action=~"Allow|Deny"}
+          - --whitelist={__name__="cluster:ovnkube_controller_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:avg"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:max"}

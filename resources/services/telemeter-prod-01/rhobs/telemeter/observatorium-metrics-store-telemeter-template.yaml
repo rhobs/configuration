@@ -83,7 +83,7 @@ objects:
     name: observatorium-thanos-store-bucket-cache-memcached-telemeter
     namespace: rhobs
   spec:
-    replicas: 1
+    replicas: 5
     selector:
       matchLabels:
         app.kubernetes.io/component: store-bucket-cache
@@ -135,10 +135,10 @@ objects:
             protocol: TCP
           resources:
             limits:
-              memory: 3Gi
+              memory: 12Gi
             requests:
-              cpu: 500m
-              memory: 2Gi
+              cpu: "6"
+              memory: 10Gi
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:0
@@ -240,7 +240,7 @@ objects:
     name: observatorium-thanos-store-index-cache-memcached-telemeter
     namespace: rhobs
   spec:
-    replicas: 1
+    replicas: 5
     selector:
       matchLabels:
         app.kubernetes.io/component: store-index-cache
@@ -292,10 +292,10 @@ objects:
             protocol: TCP
           resources:
             limits:
-              memory: 3Gi
+              memory: 12Gi
             requests:
-              cpu: 500m
-              memory: 2Gi
+              cpu: "6"
+              memory: 10Gi
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:0
@@ -517,7 +517,7 @@ objects:
               dns_provider_update_interval: 10s
           - --log.format=logfmt
           - --log.level=${STORE_LOG_LEVEL}
-          - --max-time=-22h0m0s
+          - --max-time=-336h0m0s
           - --objstore.config=$(OBJSTORE_CONFIG)
           - --selector.relabel-config-file=/etc/thanos/hashmod/hashmod-config.yaml
           - |
@@ -706,7 +706,7 @@ objects:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 5Gi
+            storage: 50Gi
         storageClassName: gp2
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
@@ -809,12 +809,12 @@ objects:
         observatorium/tenant: telemeter
 parameters:
 - name: STORE_CPU_REQUEST
-  value: "2"
+  value: "5"
 - name: STORE_LOG_LEVEL
   value: warn
 - name: STORE_MEMORY_LIMIT
-  value: 20Gi
+  value: 60Gi
 - name: STORE_MEMORY_REQUEST
-  value: 5Gi
+  value: 40Gi
 - name: STORE_REPLICAS
-  value: "1"
+  value: "5"

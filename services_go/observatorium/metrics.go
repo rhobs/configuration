@@ -88,6 +88,7 @@ type ObservatoriumMetricsInstance struct {
 	ObjStoreSecret                  string
 	Tenants                         []Tenants
 	StorePreManifestsHook           func(*store.StoreStatefulSet)
+	StoreOpts                       func(opts *store.StoreOptions)
 	IndexCachePreManifestsHook      func(*memcached.MemcachedDeployment)
 	BucketCachePreManifestsHook     func(*memcached.MemcachedDeployment)
 	CompactorPreManifestsHook       func(*compactor.CompactorStatefulSet)
@@ -939,6 +940,7 @@ func (o *ObservatoriumMetrics) makeStore(instanceCfg *ObservatoriumMetricsInstan
 		},
 	}
 	opts.AddExtraOpts("--store.enable-index-header-lazy-reader")
+	executeIfNotNil(instanceCfg.StoreOpts, opts)
 
 	indexCacheName := fmt.Sprintf("observatorium-thanos-store-index-cache-memcached-%s", instanceCfg.InstanceName)
 	bucketCacheName := fmt.Sprintf("observatorium-thanos-store-bucket-cache-memcached-%s", instanceCfg.InstanceName)

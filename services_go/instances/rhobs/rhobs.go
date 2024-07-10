@@ -6,6 +6,9 @@ import (
 	"sort"
 	"time"
 
+	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/memcached"
+	thanostime "github.com/observatorium/observatorium/configuration_go/schemas/thanos/time"
+
 	"github.com/google/go-jsonnet"
 	observatoriumapi "github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/observatorium/api"
 	"github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/thanos/receive"
@@ -331,7 +334,22 @@ func prodConfig() observatorium.Observatorium {
 						ingestor.VolumeSize = "5Gi"
 					},
 					StorePreManifestsHook: func(store *store.StoreStatefulSet) {
-						store.VolumeSize = "5Gi"
+						store.VolumeSize = "50Gi"
+						store.Replicas = 5
+						store.ContainerResources = kghelpers.NewResourcesRequirements("5", "", "40Gi", "60Gi")
+					},
+					StoreOpts: func(opts *store.StoreOptions) {
+						// Telemeter Lookback is -14 days (336 hours) during migration to account for an overlap with our hot telemeter instance
+						telemeterMaxLookBack := time.Duration(-336) * time.Hour
+						opts.MaxTime = &thanostime.TimeOrDurationValue{Dur: &telemeterMaxLookBack}
+					},
+					IndexCachePreManifestsHook: func(indexCache *memcached.MemcachedDeployment) {
+						indexCache.Replicas = 5
+						indexCache.ContainerResources = kghelpers.NewResourcesRequirements("6", "", "10Gi", "12Gi")
+					},
+					BucketCachePreManifestsHook: func(bucketCache *memcached.MemcachedDeployment) {
+						bucketCache.Replicas = 5
+						bucketCache.ContainerResources = kghelpers.NewResourcesRequirements("6", "", "10Gi", "12Gi")
 					},
 				},
 			},

@@ -1803,6 +1803,7 @@ objects:
           - --receive.grpc-compression=none
           - --receive.hashrings-algorithm=${THANOS_RECEIVE_HASHRINGS_ALGORITHM}
           - --receive.hashrings-file-refresh-interval=5s
+          - --receive.forward.async-workers=${THANOS_RECEIVE_FORWARD_ASYNC_WORKERS}
           - --store.limits.request-series=${THANOS_RECEIVE_REQUEST_SERIES_LIMIT}
           - --store.limits.request-samples=${THANOS_RECEIVE_REQUEST_SAMPLES_LIMIT}
           - --tsdb.too-far-in-future.time-window=${THANOS_RECEIVE_TOO_FAR_IN_FUTURE_TIME_WINDOW}
@@ -4407,7 +4408,7 @@ parameters:
 - name: THANOS_CONFIG_SECRET
   value: thanos-objectstorage
 - name: THANOS_IMAGE_TAG
-  value: v0.32.0
+  value: v0.36.0
 - name: THANOS_IMAGE
   value: quay.io/thanos/thanos
 - name: THANOS_QUERIER_CPU_LIMIT
@@ -4496,6 +4497,8 @@ parameters:
   value: "0"
 - name: THANOS_RECEIVE_REQUEST_SAMPLES_LIMIT
   value: "0"
+- name: THANOS_RECEIVE_FORWARD_ASYNC_WORKERS
+  value: "5"
 - name: THANOS_RULE_SYNCER_IMAGE
   value: quay.io/observatorium/thanos-rule-syncer
 - name: THANOS_RULE_SYNCER_IMAGE_TAG

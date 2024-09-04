@@ -148,7 +148,7 @@ objects:
           1b9b6e43-9128-4bbf-bfff-3c120bbe6f11:
             head_series_limit: 10000000
           0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1:
-            head_series_limit: 200000
+            head_series_limit: 400000
           72e6f641-b2e2-47eb-bbc2-fee3c8fbda26:
             request:
               series_limit: 10

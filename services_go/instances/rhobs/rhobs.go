@@ -277,7 +277,7 @@ func prodConfig() observatorium.Observatorium {
 		},
 		rhtapTenantName: {
 			ReceiveLimits: &receive.WriteLimitConfig{
-				HeadSeriesLimit: 200000, // 200k
+				HeadSeriesLimit: 400000, // 200k
 			},
 		},
 		rhelTenantName: {

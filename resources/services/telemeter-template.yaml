@@ -258,6 +258,8 @@ objects:
           - --whitelist={__name__="os_image_url_override:sum"}
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
+          - --whitelist={__name__="cluster_name:hypershift_nodepools_size:sum"}
+          - --whitelist={__name__="cluster_name:hypershift_nodepools_available_replicas:sum"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="profile:cluster_monitoring_operator_collection_profile:max"}
           - --whitelist={__name__="rhacs:telemetry:rox_central_info"}
@@ -541,6 +543,8 @@ objects:
           - --whitelist={__name__="os_image_url_override:sum"}
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
+          - --whitelist={__name__="cluster_name:hypershift_nodepools_size:sum"}
+          - --whitelist={__name__="cluster_name:hypershift_nodepools_available_replicas:sum"}
           - --whitelist={__name__="pod:eo_es_shards_total:max"}
           - --whitelist={__name__="profile:cluster_monitoring_operator_collection_profile:max"}
           - --whitelist={__name__="rhacs:telemetry:rox_central_info"}

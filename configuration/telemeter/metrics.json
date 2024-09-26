@@ -164,6 +164,8 @@
   "{__name__=\"os_image_url_override:sum\"}",
   "{__name__=\"platform:hypershift_hostedclusters:max\"}",
   "{__name__=\"platform:hypershift_nodepools:max\"}",
+  "{__name__=\"cluster_name:hypershift_nodepools_size:sum\"}",
+  "{__name__=\"cluster_name:hypershift_nodepools_available_replicas:sum\"}",
   "{__name__=\"pod:eo_es_shards_total:max\"}",
   "{__name__=\"profile:cluster_monitoring_operator_collection_profile:max\"}",
   "{__name__=\"rhacs:telemetry:rox_central_info\"}",

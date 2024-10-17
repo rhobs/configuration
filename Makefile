@@ -107,7 +107,9 @@ resources/observability/grafana/observatorium-logs: format observability/grafana
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" -m resources/observability/grafana/observatorium-logs observability/grafana-obs-logs.jsonnet | $(XARGS) -I{} sh -c 'cat {} | $(GOJSONTOYAML) > {}.yaml' -- {}
 
 .PHONY: whitelisted_metrics
-whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ)
+whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ) configuration/telemeter/metrics.json resources/services/telemeter-template.yaml
+
+configuration/telemeter/metrics.json:
 	@echo ">>>>> Running whitelisted_metrics"
 	# Download the latest metrics file to extract the new added metrics.
 	# NOTE: Because old clusters could still send metrics the whitelisting is append only

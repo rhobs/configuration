@@ -1,4 +1,9 @@
 [
+  "openshift_logging:log_forwarder_input_type:sum",
+  "openshift_logging:log_forwarder_output_type:sum",
+  "openshift_logging:log_forwarder_pipelines:sum",
+  "openshift_logging:log_forwarders:sum",
+  "openshift_logging:vector_component_received_bytes_total:rate5m",
   "{__name__=\":apiserver_v1_image_imports:sum\"}",
   "{__name__=\"ALERTS\",alertstate=\"firing\",severity=~\"critical|warning|info|none\"}",
   "{__name__=\"ALERTS\",alertstate=\"firing\"}",

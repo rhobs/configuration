@@ -116,18 +116,14 @@ data:
           {
            "expr": "count(ALERTS{service=~\"observatorium.*|telemeter.*\", alertstate=\"firing\", namespace!=\"\"}) by (namespace, alertname, severity)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{namespace}} - {{severity}} -  {{alertname}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "count(ALERTS{service=~\"observatorium.*|telemeter.*\", alertstate=\"firing\", namespace=\"\"}) by (alertname, severity)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "(unknown namespace) - {{severity}} -  {{alertname}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -137,8 +133,8 @@ data:
          "timeShift": null,
          "title": "Firing alerts by namespace and severity over time",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -259,8 +255,8 @@ data:
          "timeShift": null,
          "title": "Rate of requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -349,8 +345,8 @@ data:
          "timeShift": null,
          "title": "Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -480,8 +476,8 @@ data:
          "timeShift": null,
          "title": "Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -642,8 +638,8 @@ data:
          "timeShift": null,
          "title": "Replication request count",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -773,8 +769,8 @@ data:
          "timeShift": null,
          "title": "Replication request duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -863,8 +859,8 @@ data:
          "timeShift": null,
          "title": "Replication request errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -941,18 +937,14 @@ data:
           {
            "expr": "max by (pod) (http_inflight_requests{handler=\"receive\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "concurrency gate used {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "max by (pod) (thanos_receive_write_request_concurrency_write_request_limit{namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "concurrency gate limit {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -962,8 +954,8 @@ data:
          "timeShift": null,
          "title": "Concurrency gate utilization",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1041,10 +1033,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"thanos-receive\", pod=~\"observatorium-thanos-receive.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1054,8 +1044,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1132,10 +1122,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"thanos-receive\", pod=~\"observatorium-thanos-receive.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1145,8 +1133,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1223,10 +1211,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"thanos-receive\", pod=~\"observatorium-thanos-receive.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1236,8 +1222,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1314,18 +1300,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-thanos-receive.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-thanos-receive.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1335,8 +1317,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1457,8 +1439,8 @@ data:
          "timeShift": null,
          "title": "Rate of requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1547,8 +1529,8 @@ data:
          "timeShift": null,
          "title": "Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1678,8 +1660,8 @@ data:
          "timeShift": null,
          "title": "Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1757,10 +1739,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"thanos-query-frontend\", pod=~\"observatorium-thanos-query-frontend.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1770,8 +1750,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1848,10 +1828,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"thanos-query-frontend\", pod=~\"observatorium-thanos-query-frontend.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1861,8 +1839,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1939,10 +1917,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"thanos-query-frontend\", pod=~\"observatorium-thanos-query-frontend.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1952,8 +1928,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2030,18 +2006,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-thanos-query-frontend.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-thanos-query-frontend.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -2051,8 +2023,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2173,8 +2145,8 @@ data:
          "timeShift": null,
          "title": "Instant Query Rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2263,8 +2235,8 @@ data:
          "timeShift": null,
          "title": "Instant Query Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2394,8 +2366,8 @@ data:
          "timeShift": null,
          "title": "Instant Query Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2504,8 +2476,8 @@ data:
          "timeShift": null,
          "title": "Range Query Rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2594,8 +2566,8 @@ data:
          "timeShift": null,
          "title": "Range Query Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2725,8 +2697,8 @@ data:
          "timeShift": null,
          "title": "Range Query Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2798,10 +2770,8 @@ data:
           {
            "expr": "max_over_time(thanos_query_concurrent_gate_queries_max{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}} - {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -2811,8 +2781,8 @@ data:
          "timeShift": null,
          "title": "Concurrent Capacity",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2890,10 +2860,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"thanos-query\", pod=~\"observatorium-thanos-query.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -2903,8 +2871,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -2981,10 +2949,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"thanos-query\", pod=~\"observatorium-thanos-query.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -2994,8 +2960,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3072,10 +3038,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"thanos-query\", pod=~\"observatorium-thanos-query.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -3085,8 +3049,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3163,18 +3127,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-thanos-query.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-thanos-query.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -3184,8 +3144,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3306,8 +3266,8 @@ data:
          "timeShift": null,
          "title": "Instant Query Rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3396,8 +3356,8 @@ data:
          "timeShift": null,
          "title": "Instant Query Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3527,8 +3487,8 @@ data:
          "timeShift": null,
          "title": "Instant Query Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3637,8 +3597,8 @@ data:
          "timeShift": null,
          "title": "Range Query Rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3727,8 +3687,8 @@ data:
          "timeShift": null,
          "title": "Range Query Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3858,8 +3818,8 @@ data:
          "timeShift": null,
          "title": "Range Query Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -3931,10 +3891,8 @@ data:
           {
            "expr": "max_over_time(thanos_query_concurrent_gate_queries_max{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]) - avg_over_time(thanos_query_concurrent_gate_queries_in_flight{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}} - {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -3944,8 +3902,8 @@ data:
          "timeShift": null,
          "title": "Concurrent Capacity",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4023,10 +3981,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"thanos-query\", pod=~\"observatorium-ruler-query.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4036,8 +3992,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4114,10 +4070,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"thanos-query\", pod=~\"observatorium-ruler-query.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4127,8 +4081,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4205,10 +4159,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"thanos-query\", pod=~\"observatorium-ruler-query.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4218,8 +4170,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4296,18 +4248,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-ruler-query.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-ruler-query.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4317,8 +4265,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4408,10 +4356,8 @@ data:
           {
            "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluations_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4421,8 +4367,8 @@ data:
          "timeShift": null,
          "title": "Total evaluations",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4500,10 +4446,8 @@ data:
           {
            "expr": "sum by (job, rule_group) (rate(prometheus_rule_evaluation_failures_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4513,8 +4457,8 @@ data:
          "timeShift": null,
          "title": "Failed evaluations",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4591,10 +4535,8 @@ data:
           {
            "expr": "sum by (job, strategy) (rate(thanos_rule_evaluation_with_warnings_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4604,8 +4546,8 @@ data:
          "timeShift": null,
          "title": "Evaluations with warnings",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4683,10 +4625,8 @@ data:
           {
            "expr": "sum by(job, rule_group) (prometheus_rule_group_last_duration_seconds{namespace=\"$namespace\", job=~\"$job\"}) / sum by(job, rule_group) (prometheus_rule_group_interval_seconds{namespace=\"$namespace\", job=~\"$job\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{rule_group}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4696,8 +4636,8 @@ data:
          "timeShift": null,
          "title": "Too slow evaluations",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4775,10 +4715,8 @@ data:
           {
            "expr": "sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4788,8 +4726,8 @@ data:
          "timeShift": null,
          "title": "Rate of sent alerts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4867,10 +4805,8 @@ data:
           {
            "expr": "sum by (job) (rate(thanos_alert_sender_errors_total{namespace=\"$namespace\", job=~\"$job\"}[$interval])) / sum by (job) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4880,8 +4816,8 @@ data:
          "timeShift": null,
          "title": "Rate of send alerts errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -4959,26 +4895,20 @@ data:
           {
            "expr": "histogram_quantile(0.50, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval])))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "p50",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "histogram_quantile(0.90, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval])))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "p90",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "histogram_quantile(0.99, sum by (job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\", job=~\"$job\"}[$interval])))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "p99",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -4988,8 +4918,8 @@ data:
          "timeShift": null,
          "title": "Duration od send alerts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5067,10 +4997,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"thanos-rule\", pod=~\"observatorium-thanos-rule.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -5080,8 +5008,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5158,10 +5086,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"thanos-rule\", pod=~\"observatorium-thanos-rule.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -5171,8 +5097,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5249,18 +5175,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-thanos-rule.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-thanos-rule.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -5270,8 +5192,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5348,10 +5270,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"thanos-rule\", pod=~\"observatorium-thanos-rule.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -5361,8 +5281,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5535,8 +5455,8 @@ data:
          "timeShift": null,
          "title": "Unary gRPC Rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5625,8 +5545,8 @@ data:
          "timeShift": null,
          "title": "Unary gRPC Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5756,8 +5676,8 @@ data:
          "timeShift": null,
          "title": "Unary gRPC Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -5918,8 +5838,8 @@ data:
          "timeShift": null,
          "title": "Sreamed gRPC Rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6008,8 +5928,8 @@ data:
          "timeShift": null,
          "title": "Sreamed gRPC Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6139,8 +6059,8 @@ data:
          "timeShift": null,
          "title": "Sreamed gRPC Duration",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6212,26 +6132,20 @@ data:
           {
            "expr": "histogram_quantile(0.99, sum by (le) (rate(thanos_bucket_store_series_data_touched{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "P99: {{data_type}} / {{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (namespace, job, data_type) (rate(thanos_bucket_store_series_data_touched_sum{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])) / sum by (namespace, job, data_type) (rate(thanos_bucket_store_series_data_touched_count{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "mean: {{data_type}} / {{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "histogram_quantile(0.50, sum by (le) (rate(thanos_bucket_store_series_data_touched{namespace=\"$namespace\", job=~\"$job\"}[$__rate_interval])))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "P50: {{data_type}} / {{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -6241,8 +6155,8 @@ data:
          "timeShift": null,
          "title": "Data Touched",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6372,8 +6286,8 @@ data:
          "timeShift": null,
          "title": "Get All",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6503,8 +6417,8 @@ data:
          "timeShift": null,
          "title": "Merge",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6582,10 +6496,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"thanos-store\", pod=~\"observatorium-thanos-store.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -6595,8 +6507,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6673,10 +6585,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"thanos-store\", pod=~\"observatorium-thanos-store.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -6686,8 +6596,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6764,10 +6674,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"thanos-store\", pod=~\"observatorium-thanos-store.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -6777,8 +6685,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6855,18 +6763,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-thanos-store.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-thanos-store.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -6876,8 +6780,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -6967,10 +6871,8 @@ data:
           {
            "expr": "sum(rate(gubernator_grpc_request_counts{namespace=\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "gRPC requests {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -6980,8 +6882,8 @@ data:
          "timeShift": null,
          "title": "Rate of gRPC requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7059,10 +6961,8 @@ data:
           {
            "expr": "sum(rate(gubernator_grpc_request_counts{status=\"failed\",namespace=\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "gRPC request errors {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7072,8 +6972,8 @@ data:
          "timeShift": null,
          "title": "Rate of errors in gRPC requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7151,18 +7051,14 @@ data:
           {
            "expr": "gubernator_grpc_request_duration{quantile=\"0.99\", namespace=\"$namespace\",job=~\"$job\"}",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "P99: {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "gubernator_grpc_request_duration{quantile=\"0.5\", namespace=\"$namespace\",job=~\"$job\"}",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "P50: {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7172,8 +7068,8 @@ data:
          "timeShift": null,
          "title": "Duration of gRPC requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7251,10 +7147,8 @@ data:
           {
            "expr": "gubernator_pool_queue_length{namespace=\"$namespace\",job=~\"$job\"}",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "local queue size {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7264,8 +7158,8 @@ data:
          "timeShift": null,
          "title": "Local queue of rate checks",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7343,10 +7237,8 @@ data:
           {
            "expr": "gubernator_queue_length{namespace=\"$namespace\",job=~\"$job\"}",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "peer queue size {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7356,8 +7248,8 @@ data:
          "timeShift": null,
          "title": "Peer queue of rate checks",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7429,10 +7321,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7442,8 +7332,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7514,10 +7404,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7527,8 +7415,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7599,10 +7487,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7612,8 +7498,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7684,18 +7570,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7705,8 +7587,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7796,18 +7678,14 @@ data:
           {
            "expr": "sum(rate(alertmanager_alerts_received_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "alerts received {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum(rate(alertmanager_alerts_invalid_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "alerts invalid {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7817,8 +7695,8 @@ data:
          "timeShift": null,
          "title": "Alerts receive rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7896,10 +7774,8 @@ data:
           {
            "expr": "(container_memory_working_set_bytes{container=\"observatorium-alertmanager\", pod=~\"observatorium-alertmanager.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -7909,8 +7785,8 @@ data:
          "timeShift": null,
          "title": "Memory Used",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -7987,10 +7863,8 @@ data:
           {
            "expr": "rate(process_cpu_seconds_total{container=\"observatorium-alertmanager\", pod=~\"observatorium-alertmanager.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8000,8 +7874,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8078,10 +7952,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"observatorium-alertmanager\", pod=~\"observatorium-alertmanager.*\", namespace=\"$namespace\",})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8091,8 +7963,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8169,18 +8041,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-alertmanager.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-alertmanager.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8190,8 +8058,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8281,10 +8149,8 @@ data:
           {
            "expr": "sum(rate(obsctl_reloader_prom_rule_sets_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "reloads {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8294,8 +8160,8 @@ data:
          "timeShift": null,
          "title": "Rate of reloads",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8373,10 +8239,8 @@ data:
           {
            "expr": "100 * sum(rate(obsctl_reloader_prom_rule_set_failures_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job, reason) / ignoring (job, reason) group_left sum(rate(obsctl_reloader_prom_rule_sets_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace) > 0",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "reload error: {{reason}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8386,8 +8250,8 @@ data:
          "timeShift": null,
          "title": "Percentage of reload errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8465,10 +8329,8 @@ data:
           {
            "expr": "sum(rate(obsctl_reloader_prom_rules_store_ops_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod,status_code) > 0",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{status_code}} - pod {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8478,8 +8340,8 @@ data:
          "timeShift": null,
          "title": "Responses from Observatorium Rules API",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8557,10 +8419,8 @@ data:
           {
            "expr": "sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod)",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "fetches {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8570,8 +8430,8 @@ data:
          "timeShift": null,
          "title": "Rate of fetches",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8649,10 +8509,8 @@ data:
           {
            "expr": "100 * sum(rate(obsctl_reloader_prom_rule_fetch_failures_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace,job,pod) / ignoring (job, pod) group_left sum(rate(obsctl_reloader_prom_rule_fetches_total{namespace=~\"$namespace\",job=~\"$job\"}[$__rate_interval])) by (namespace) > 0",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "failed fetches {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -8662,8 +8520,8 @@ data:
          "timeShift": null,
          "title": "Percentage of failed fetches",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -8717,7 +8575,7 @@ data:
          "value": "default"
         },
         "hide": 0,
-        "label": null,
+        "label": "Data source",
         "name": "datasource",
         "options": [
 
@@ -8733,7 +8591,7 @@ data:
          "value": "default"
         },
         "hide": 0,
-        "label": null,
+        "label": "Data source",
         "name": "datasource",
         "options": [
 

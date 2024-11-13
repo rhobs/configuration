@@ -54,7 +54,7 @@ spec:
         (
           rate(alertmanager_notifications_failed_total{job="observatorium-alertmanager"}[5m])
         /
-          rate(alertmanager_notifications_total{job="observatorium-alertmanager"}[5m])
+          ignoring (reason) group_left rate(alertmanager_notifications_total{job="observatorium-alertmanager"}[5m])
         )
         > 0.01
       for: 5m
@@ -72,7 +72,7 @@ spec:
         min by (namespace,job, integration) (
           rate(alertmanager_notifications_failed_total{job="observatorium-alertmanager", integration=~`slack|pagerduty|email|webhook`}[5m])
         /
-          rate(alertmanager_notifications_total{job="observatorium-alertmanager", integration=~`slack|pagerduty|email|webhook`}[5m])
+          ignoring (reason) group_left rate(alertmanager_notifications_total{job="observatorium-alertmanager", integration=~`slack|pagerduty|email|webhook`}[5m])
         )
         > 0.01
       for: 5m
@@ -90,7 +90,7 @@ spec:
         min by (namespace,job, integration) (
           rate(alertmanager_notifications_failed_total{job="observatorium-alertmanager", integration!~`slack|pagerduty|email|webhook`}[5m])
         /
-          rate(alertmanager_notifications_total{job="observatorium-alertmanager", integration!~`slack|pagerduty|email|webhook`}[5m])
+          ignoring (reason) group_left rate(alertmanager_notifications_total{job="observatorium-alertmanager", integration!~`slack|pagerduty|email|webhook`}[5m])
         )
         > 0.01
       for: 5m

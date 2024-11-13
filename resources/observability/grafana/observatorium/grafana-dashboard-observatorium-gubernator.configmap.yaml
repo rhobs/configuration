@@ -62,10 +62,8 @@ data:
           {
            "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetRateLimits\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -75,8 +73,8 @@ data:
          "timeShift": null,
          "title": "Requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -150,10 +148,8 @@ data:
           {
            "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetRateLimits\", status=\"failed\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{status}} {{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -163,8 +159,8 @@ data:
          "timeShift": null,
          "title": "Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -238,10 +234,8 @@ data:
           {
            "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetRateLimits\"}) * 1000",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -251,8 +245,8 @@ data:
          "timeShift": null,
          "title": "Latencies",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -326,10 +320,8 @@ data:
           {
            "expr": "sum by(job) (rate(gubernator_over_limit_counter{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -339,8 +331,8 @@ data:
          "timeShift": null,
          "title": "Over Limit requests rate",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -426,10 +418,8 @@ data:
           {
            "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetPeerRateLimits\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -439,8 +429,8 @@ data:
          "timeShift": null,
          "title": "Requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -514,10 +504,8 @@ data:
           {
            "expr": "sum by (job, method) (rate(gubernator_grpc_request_counts{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetPeerRateLimits\", status=\"failed\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{status}} {{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -527,8 +515,8 @@ data:
          "timeShift": null,
          "title": "Errors",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -602,10 +590,8 @@ data:
           {
            "expr": "avg by(quantile, job) (gubernator_grpc_request_duration{namespace=\"$namespace\", job=\"observatorium-gubernator\", method=~\".*/GetPeerRateLimits\"}) * 1000",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -615,8 +601,8 @@ data:
          "timeShift": null,
          "title": "Latencies",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -702,10 +688,8 @@ data:
           {
            "expr": "sum by(job) (rate(gubernator_queue_length{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -715,8 +699,8 @@ data:
          "timeShift": null,
          "title": "getRateLimitsBatch queue length",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -790,10 +774,8 @@ data:
           {
            "expr": "sum by(job) (rate(gubernator_pool_queue_length{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -803,8 +785,8 @@ data:
          "timeShift": null,
          "title": "GetRateLimit queue length",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -890,10 +872,8 @@ data:
           {
            "expr": "sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -903,8 +883,8 @@ data:
          "timeShift": null,
          "title": "Requests",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -978,10 +958,8 @@ data:
           {
            "expr": "sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"observatorium-gubernator\", type=\"miss\"}[$interval])) / sum by(job) (rate(gubernator_cache_access_count{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -991,8 +969,8 @@ data:
          "timeShift": null,
          "title": "Misses",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1066,10 +1044,8 @@ data:
           {
            "expr": "sum by(job) (gubernator_cache_size{namespace=\"$namespace\", job=\"observatorium-gubernator\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1079,8 +1055,8 @@ data:
          "timeShift": null,
          "title": "Size",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1154,10 +1130,8 @@ data:
           {
            "expr": "sum by(job) (rate(gubernator_unexpired_evictions_count{namespace=\"$namespace\", job=\"observatorium-gubernator\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{job}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1167,8 +1141,8 @@ data:
          "timeShift": null,
          "title": "Unexpired evictions",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1254,10 +1228,8 @@ data:
           {
            "expr": "avg by(quantile, job) (gubernator_batch_send_duration{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1267,8 +1239,8 @@ data:
          "timeShift": null,
          "title": "Batch",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1342,10 +1314,8 @@ data:
           {
            "expr": "avg by(quantile, job) (gubernator_broadcast_durations{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1355,8 +1325,8 @@ data:
          "timeShift": null,
          "title": "Broadcast",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1430,10 +1400,8 @@ data:
           {
            "expr": "avg by(quantile, job) (gubernator_async_durations{namespace=\"$namespace\", job=\"observatorium-gubernator\"}) * 1000",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{quantile}}th percentile",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1443,8 +1411,8 @@ data:
          "timeShift": null,
          "title": "Async",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1530,10 +1498,8 @@ data:
           {
            "expr": "container_memory_working_set_bytes{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"} / 1024^2",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "memory usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1543,8 +1509,8 @@ data:
          "timeShift": null,
          "title": "Memory Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1618,10 +1584,8 @@ data:
           {
            "expr": "rate(container_cpu_usage_seconds_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]) * 100",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "cpu usage system {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1631,8 +1595,8 @@ data:
          "timeShift": null,
          "title": "CPU Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1706,10 +1670,8 @@ data:
           {
            "expr": "sum by (pod) (kube_pod_container_status_restarts_total{container=\"gubernator\", pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "pod restart count {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1719,8 +1681,8 @@ data:
          "timeShift": null,
          "title": "Pod/Container Restarts",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1794,18 +1756,14 @@ data:
           {
            "expr": "sum by (pod) (rate(container_network_receive_bytes_total{pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic in {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           },
           {
            "expr": "sum by (pod) (rate(container_network_transmit_bytes_total{pod=~\"observatorium-gubernator.*\", namespace=\"$namespace\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "network traffic out {{pod}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -1815,8 +1773,8 @@ data:
          "timeShift": null,
          "title": "Network Usage",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -1870,7 +1828,7 @@ data:
          "value": "default"
         },
         "hide": 0,
-        "label": null,
+        "label": "Data source",
         "name": "datasource",
         "options": [
 

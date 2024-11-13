@@ -60,10 +60,8 @@ data:
                 {
                   "expr": "sum by (namespace, job) (rate(thanos_receive_controller_reconcile_attempts_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "rate",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -74,7 +72,7 @@ data:
               "title": "Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -146,10 +144,8 @@ data:
                 {
                   "expr": "sum by (namespace, job, type) (rate(thanos_receive_controller_reconcile_errors_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{type}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -160,7 +156,7 @@ data:
               "title": "Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -244,10 +240,8 @@ data:
                 {
                   "expr": "sum by (namespace, job) (rate(thanos_receive_controller_configmap_change_attempts_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "rate",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -258,7 +252,7 @@ data:
               "title": "Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -330,10 +324,8 @@ data:
                 {
                   "expr": "sum by (namespace, job, type) (rate(thanos_receive_controller_configmap_change_errors_total{namespace=\"$namespace\", job=\"$job\"}[$interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{type}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -344,7 +336,7 @@ data:
               "title": "Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -428,10 +420,8 @@ data:
                 {
                   "expr": "sum by (namespace, job) (rate(thanos_receive_hashrings_file_changes_total{job=~\"observatorium-thanos-receive-default.*\"}[$interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "all",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -442,7 +432,7 @@ data:
               "title": "Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -528,7 +518,7 @@ data:
               "title": "Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -612,18 +602,14 @@ data:
                 {
                   "expr": "avg by (namespace, job, name) (thanos_receive_controller_hashring_nodes{namespace=\"$namespace\", job=\"$job\"})",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "receive controller {{name}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 },
                 {
                   "expr": "avg by (namespace, job, name) (thanos_receive_hashring_nodes{job=~\"observatorium-thanos-receive-default.*\"})",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "receive {{name}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -634,7 +620,7 @@ data:
               "title": "Nodes per Hashring",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -706,18 +692,14 @@ data:
                 {
                   "expr": "avg by (namespace, job, name) (thanos_receive_controller_hashring_tenants{namespace=\"$namespace\", job=\"$job\"})",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "receive controller {{name}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 },
                 {
                   "expr": "avg by (namespace, job, name) (thanos_receive_hashring_tenants{job=~\"observatorium-thanos-receive-default.*\"})",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "receive {{name}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -728,7 +710,7 @@ data:
               "title": "Tenants per Hashring",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -816,7 +798,6 @@ data:
                   "expr": "time() - max by (namespace, job) (thanos_receive_controller_configmap_last_reload_success_timestamp_seconds{namespace=\"$namespace\", job=\"$job\"})",
                   "format": "time_series",
                   "instant": true,
-                  "intervalFactor": 2,
                   "refId": "A"
                 }
               ],
@@ -826,7 +807,7 @@ data:
               "title": "Last Updated",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "singlestat",
@@ -902,7 +883,6 @@ data:
                   "expr": "time() - max by (namespace, job) (thanos_receive_config_last_reload_success_timestamp_seconds{namespace=\"$namespace\", job=\"$job\"})",
                   "format": "time_series",
                   "instant": true,
-                  "intervalFactor": 2,
                   "refId": "A"
                 }
               ],
@@ -912,7 +892,7 @@ data:
               "title": "Last Updated",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "singlestat",
@@ -967,7 +947,7 @@ data:
               "value": "default"
             },
             "hide": 0,
-            "label": null,
+            "label": "Data source",
             "name": "datasource",
             "options": [
 

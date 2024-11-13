@@ -214,6 +214,17 @@ objects:
             requests:
               cpu: ${THANOS_RULER_CPU_REQUEST}
               memory: ${THANOS_RULER_MEMORY_REQUEST}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsNonRoot: true
+            runAsUser: 65534
+            seccompProfile:
+              type: RuntimeDefault
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
           - mountPath: /var/thanos/rule

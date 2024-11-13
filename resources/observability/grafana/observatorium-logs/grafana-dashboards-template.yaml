@@ -2152,10 +2152,8 @@ objects:
                   {
                     "expr": "sum(loki_ingester_memory_chunks{job=\"observatorium-loki-ingester\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "series",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -2165,8 +2163,8 @@ objects:
                 "timeShift": null,
                 "title": "Series",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2238,10 +2236,8 @@ objects:
                   {
                     "expr": "sum(loki_ingester_memory_chunks{job=\"observatorium-loki-ingester\"}) / sum(loki_ingester_memory_streams{job=\"observatorium-loki-ingester\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "chunks",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -2251,8 +2247,8 @@ objects:
                 "timeShift": null,
                 "title": "Chunks per series",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2336,26 +2332,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_utilization_bucket{job=\"observatorium-loki-ingester\"}[$__rate_interval])) by (le)) * 1",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_utilization_bucket{job=\"observatorium-loki-ingester\"}[$__rate_interval])) by (le)) * 1",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_ingester_chunk_utilization_sum{job=\"observatorium-loki-ingester\"}[$__rate_interval])) * 1 / sum(rate(loki_ingester_chunk_utilization_count{job=\"observatorium-loki-ingester\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -2365,8 +2355,8 @@ objects:
                 "timeShift": null,
                 "title": "Utilization",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2438,26 +2428,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_age_seconds_bucket{job=\"observatorium-loki-ingester\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_age_seconds_bucket{job=\"observatorium-loki-ingester\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_ingester_chunk_age_seconds_sum{job=\"observatorium-loki-ingester\"}[$__rate_interval])) * 1e3 / sum(rate(loki_ingester_chunk_age_seconds_count{job=\"observatorium-loki-ingester\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -2467,8 +2451,8 @@ objects:
                 "timeShift": null,
                 "title": "Age",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2552,26 +2536,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_entries_bucket{job=\"observatorium-loki-ingester\"}[$__rate_interval])) by (le)) * 1",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_entries_bucket{job=\"observatorium-loki-ingester\"}[$__rate_interval])) by (le)) * 1",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_ingester_chunk_entries_sum{job=\"observatorium-loki-ingester\"}[$__rate_interval])) * 1 / sum(rate(loki_ingester_chunk_entries_count{job=\"observatorium-loki-ingester\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -2581,8 +2559,8 @@ objects:
                 "timeShift": null,
                 "title": "Log Entries Per Chunk",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2654,10 +2632,8 @@ objects:
                   {
                     "expr": "sum(rate(loki_chunk_store_index_entries_per_chunk_sum{job=\"observatorium-loki-ingester\"}[5m])) / sum(rate(loki_chunk_store_index_entries_per_chunk_count{job=\"observatorium-loki-ingester\"}[5m]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Index Entries",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -2667,8 +2643,8 @@ objects:
                 "timeShift": null,
                 "title": "Index Entries Per Chunk",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2752,10 +2728,8 @@ objects:
                   {
                     "expr": "cortex_ingester_flush_queue_length{job=\"observatorium-loki-ingester\"}",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{pod}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -2765,8 +2739,8 @@ objects:
                 "timeShift": null,
                 "title": "Queue Length",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2805,6 +2779,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -2842,12 +2818,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_ingester_chunk_age_seconds_count{job=\"observatorium-loki-ingester\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_ingester_chunk_age_seconds_count{job=\"observatorium-loki-ingester\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -2857,8 +2831,8 @@ objects:
                 "timeShift": null,
                 "title": "Flush Rate",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -2942,10 +2916,8 @@ objects:
                   {
                     "expr": "sum(rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{pod}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -2955,8 +2927,8 @@ objects:
                 "timeShift": null,
                 "title": "Chunks Flushed/Second",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -3028,10 +3000,8 @@ objects:
                   {
                     "expr": "sum by (reason) (rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester\"}[$__rate_interval])) / ignoring(reason) group_left sum(rate(loki_ingester_chunks_flushed_total{job=\"observatorium-loki-ingester\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{reason}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -3041,8 +3011,8 @@ objects:
                 "timeShift": null,
                 "title": "Chunk Flush Reason",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -3254,26 +3224,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_size_bytes_bucket{job=\"observatorium-loki-ingester\"}[1m])) by (le))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "p99",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "histogram_quantile(0.90, sum(rate(loki_ingester_chunk_size_bytes_bucket{job=\"observatorium-loki-ingester\"}[1m])) by (le))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "p90",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_ingester_chunk_size_bytes_bucket{job=\"observatorium-loki-ingester\"}[1m])) by (le))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "p50",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -3283,8 +3247,8 @@ objects:
                 "timeShift": null,
                 "title": "Chunk Size Quantiles",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -3368,26 +3332,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.5, sum(rate(loki_ingester_chunk_bounds_hours_bucket{job=\"observatorium-loki-ingester\"}[5m])) by (le))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "p50",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_ingester_chunk_bounds_hours_bucket{job=\"observatorium-loki-ingester\"}[5m])) by (le))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "p99",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "sum(rate(loki_ingester_chunk_bounds_hours_sum{job=\"observatorium-loki-ingester\"}[5m])) / sum(rate(loki_ingester_chunk_bounds_hours_count{job=\"observatorium-loki-ingester\"}[5m]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "avg",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -3397,8 +3355,8 @@ objects:
                 "timeShift": null,
                 "title": "Chunk Duration hours (end-start)",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -3455,7 +3413,7 @@ objects:
                 "value": "${OBSERVATORIUM_API_DATASOURCE}"
               },
               "hide": 0,
-              "label": null,
+              "label": "Data source",
               "name": "datasource",
               "options": [
 
@@ -8750,7 +8708,7 @@ objects:
                 "value": "${OBSERVATORIUM_API_DATASOURCE}"
               },
               "hide": 0,
-              "label": null,
+              "label": "Data source",
               "name": "datasource",
               "options": [
 
@@ -10891,6 +10849,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -10928,12 +10888,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-query-frontend\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-query-frontend\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -10943,8 +10901,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11016,26 +10974,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-query-frontend\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{ route }} 99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "legendFormat": "{{ route }} 99th percentile",
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-query-frontend\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{ route }} 50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "legendFormat": "{{ route }} 50th percentile",
+                    "refId": "B"
                   },
                   {
                     "expr": "1e3 * sum(job_route:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-query-frontend\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}) by (route)  / sum(job_route:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-query-frontend\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}) by (route) ",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{ route }} Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -11045,8 +10997,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11097,6 +11049,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -11134,12 +11088,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-querier\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-querier\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -11149,8 +11101,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11222,26 +11174,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{ route }} 99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "legendFormat": "{{ route }} 99th percentile",
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-querier\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{ route }} 50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "legendFormat": "{{ route }} 50th percentile",
+                    "refId": "B"
                   },
                   {
                     "expr": "1e3 * sum(job_route:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-querier\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}) by (route)  / sum(job_route:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-querier\", route=~\"loki_api_v1_series|api_prom_series|api_prom_query|api_prom_label|api_prom_label_name_values|loki_api_v1_query|loki_api_v1_query_range|loki_api_v1_labels|loki_api_v1_label_name_values\"}) by (route) ",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{ route }} Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -11251,8 +11197,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11303,6 +11249,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -11340,12 +11288,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-ingester\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-ingester\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -11355,8 +11301,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11428,26 +11374,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{ route }} 99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "legendFormat": "{{ route }} 99th percentile",
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum by (le,route) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "{{ route }} 50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "legendFormat": "{{ route }} 50th percentile",
+                    "refId": "B"
                   },
                   {
                     "expr": "1e3 * sum(job_route:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-ingester\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}) by (route)  / sum(job_route:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-ingester\", route=~\"/logproto.Querier/Query|/logproto.Querier/Label|/logproto.Querier/Series|/logproto.Querier/QuerySample|/logproto.Querier/GetChunkIDs\"}) by (route) ",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{ route }} Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -11457,8 +11397,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11509,6 +11449,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -11546,12 +11488,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_index_request_duration_seconds_count{job=\"observatorium-loki-querier\", operation!=\"index_chunk\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_index_request_duration_seconds_count{job=\"observatorium-loki-querier\", operation!=\"index_chunk\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -11561,8 +11501,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11634,26 +11574,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_index_request_duration_seconds_bucket{job=\"observatorium-loki-querier\", operation!=\"index_chunk\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_index_request_duration_seconds_bucket{job=\"observatorium-loki-querier\", operation!=\"index_chunk\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_index_request_duration_seconds_sum{job=\"observatorium-loki-querier\", operation!=\"index_chunk\"}[$__rate_interval])) * 1e3 / sum(rate(loki_index_request_duration_seconds_count{job=\"observatorium-loki-querier\", operation!=\"index_chunk\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -11663,8 +11597,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11715,6 +11649,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -11752,12 +11688,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_boltdb_shipper_request_duration_seconds_count{ operation=\"Shipper.Query\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_boltdb_shipper_request_duration_seconds_count{ operation=\"Shipper.Query\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -11767,8 +11701,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11840,26 +11774,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{ operation=\"Shipper.Query\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{ operation=\"Shipper.Query\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_boltdb_shipper_request_duration_seconds_sum{ operation=\"Shipper.Query\"}[$__rate_interval])) * 1e3 / sum(rate(loki_boltdb_shipper_request_duration_seconds_count{ operation=\"Shipper.Query\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -11869,8 +11797,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -11927,7 +11855,7 @@ objects:
                 "value": "${OBSERVATORIUM_API_DATASOURCE}"
               },
               "hide": 0,
-              "label": null,
+              "label": "Data source",
               "name": "datasource",
               "options": [
 
@@ -12097,26 +12025,20 @@ objects:
                   {
                     "expr": "sum by(pod) (rate(container_cpu_usage_seconds_total{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{pod}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "min(kube_pod_container_resource_requests{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\", resource=\"cpu\"} > 0)",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "request",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "min(container_spec_cpu_quota{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\"} / container_spec_cpu_period{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "limit",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12206,26 +12128,20 @@ objects:
                   {
                     "expr": "max by(pod) (container_memory_working_set_bytes{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{pod}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "min(kube_pod_container_resource_requests{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\", resource=\"memory\"} > 0)",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "request",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   },
                   {
                     "expr": "min(container_spec_memory_limit_bytes{ namespace=~\"$namespace\", container=\"observatorium-loki-compactor\"} > 0)",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "limit",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12306,10 +12222,8 @@ objects:
                   {
                     "expr": "sum by(pod) (go_memstats_heap_inuse_bytes{ job=\"observatorium-loki-compactor\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{pod}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12451,8 +12365,8 @@ objects:
                 "timeShift": null,
                 "title": "Last Compact and Mark Operation Success",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "stat",
@@ -12524,10 +12438,8 @@ objects:
                   {
                     "expr": "loki_boltdb_shipper_compact_tables_operation_duration_seconds{ namespace=~\"$namespace\"}",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "duration",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12537,8 +12449,8 @@ objects:
                 "timeShift": null,
                 "title": "Compact and Mark Operations Duration",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -12610,10 +12522,8 @@ objects:
                   {
                     "expr": "sum by (status)(rate(loki_boltdb_shipper_compact_tables_operation_total{ namespace=~\"$namespace\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{success}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12623,8 +12533,8 @@ objects:
                 "timeShift": null,
                 "title": "Compact and Mark Operations Per Status",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -12708,10 +12618,8 @@ objects:
                   {
                     "expr": "count by(action)(loki_boltdb_shipper_retention_marker_table_processed_total{ namespace=~\"$namespace\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{action}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12721,8 +12629,8 @@ objects:
                 "timeShift": null,
                 "title": "Processed Tables Per Action",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -12794,10 +12702,8 @@ objects:
                   {
                     "expr": "count by(table,action)(loki_boltdb_shipper_retention_marker_table_processed_total{ namespace=~\"$namespace\" , action=~\"modified|deleted\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{table}}-{{action}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12807,8 +12713,8 @@ objects:
                 "timeShift": null,
                 "title": "Modified Tables",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -12880,10 +12786,8 @@ objects:
                   {
                     "expr": "sum by (table)(rate(loki_boltdb_shipper_retention_marker_count_total{ namespace=~\"$namespace\"}[$__rate_interval])) >0",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{table}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -12893,8 +12797,8 @@ objects:
                 "timeShift": null,
                 "title": "Marks Creation Rate Per Table",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -12980,7 +12884,6 @@ objects:
                     "expr": "sum (increase(loki_boltdb_shipper_retention_marker_count_total{ namespace=~\"$namespace\"}[24h]))",
                     "format": "time_series",
                     "instant": true,
-                    "intervalFactor": 2,
                     "refId": "A"
                   }
                 ],
@@ -12989,8 +12892,8 @@ objects:
                 "timeShift": null,
                 "title": "Marked Chunks (24h)",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "singlestat",
@@ -13062,26 +12965,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_retention_marker_table_processed_duration_seconds_bucket{ namespace=~\"$namespace\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_boltdb_shipper_retention_marker_table_processed_duration_seconds_bucket{ namespace=~\"$namespace\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_boltdb_shipper_retention_marker_table_processed_duration_seconds_sum{ namespace=~\"$namespace\"}[$__rate_interval])) * 1e3 / sum(rate(loki_boltdb_shipper_retention_marker_table_processed_duration_seconds_count{ namespace=~\"$namespace\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -13091,8 +12988,8 @@ objects:
                 "timeShift": null,
                 "title": "Mark Table Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13178,7 +13075,6 @@ objects:
                     "expr": "sum (increase(loki_boltdb_shipper_retention_sweeper_chunk_deleted_duration_seconds_count{ namespace=~\"$namespace\"}[24h]))",
                     "format": "time_series",
                     "instant": true,
-                    "intervalFactor": 2,
                     "refId": "A"
                   }
                 ],
@@ -13187,8 +13083,8 @@ objects:
                 "timeShift": null,
                 "title": "Delete Chunks (24h)",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "singlestat",
@@ -13260,26 +13156,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_retention_sweeper_chunk_deleted_duration_seconds_bucket{ namespace=~\"$namespace\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_boltdb_shipper_retention_sweeper_chunk_deleted_duration_seconds_bucket{ namespace=~\"$namespace\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_boltdb_shipper_retention_sweeper_chunk_deleted_duration_seconds_sum{ namespace=~\"$namespace\"}[$__rate_interval])) * 1e3 / sum(rate(loki_boltdb_shipper_retention_sweeper_chunk_deleted_duration_seconds_count{ namespace=~\"$namespace\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -13289,8 +13179,8 @@ objects:
                 "timeShift": null,
                 "title": "Delete Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13374,10 +13264,8 @@ objects:
                   {
                     "expr": "time() - (loki_boltdb_shipper_retention_sweeper_marker_file_processing_current_time{ namespace=~\"$namespace\"} > 0)",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "lag",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -13387,8 +13275,8 @@ objects:
                 "timeShift": null,
                 "title": "Sweeper Lag",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13460,10 +13348,8 @@ objects:
                   {
                     "expr": "sum(loki_boltdb_shipper_retention_sweeper_marker_files_current{ namespace=~\"$namespace\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "count",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -13473,8 +13359,8 @@ objects:
                 "timeShift": null,
                 "title": "Marks Files to Process",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13546,10 +13432,8 @@ objects:
                   {
                     "expr": "sum by (status)(rate(loki_boltdb_shipper_retention_sweeper_chunk_deleted_duration_seconds_count{ namespace=~\"$namespace\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "legendLink": null,
-                    "step": 10
+                    "legendLink": null
                   }
                 ],
                 "thresholds": [
@@ -13559,8 +13443,8 @@ objects:
                 "timeShift": null,
                 "title": "Delete Rate Per Status",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13617,7 +13501,7 @@ objects:
                 "value": "${OBSERVATORIUM_API_DATASOURCE}"
               },
               "hide": 0,
-              "label": null,
+              "label": "Data source",
               "name": "datasource",
               "options": [
 
@@ -13757,6 +13641,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -13794,12 +13680,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-distributor\", route=~\"api_prom_push|loki_api_v1_push|/httpgrpc.HTTP/Handle\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-distributor\", route=~\"api_prom_push|loki_api_v1_push|/httpgrpc.HTTP/Handle\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -13809,8 +13693,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13882,26 +13766,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "legendFormat": "99th percentile",
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum by (le) (job:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-distributor\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "legendFormat": "50th percentile",
+                    "refId": "B"
                   },
                   {
                     "expr": "1e3 * sum(job:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-distributor\"}) / sum(job:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-distributor\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -13911,8 +13789,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -13963,6 +13841,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -14000,12 +13880,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-ingester\", route=\"/logproto.Pusher/Push\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_request_duration_seconds_count{job=\"observatorium-loki-ingester\", route=\"/logproto.Pusher/Push\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -14015,8 +13893,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -14088,26 +13966,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester\", route=\"/logproto.Pusher/Push\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "legendFormat": "99th percentile",
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum by (le) (job_route:loki_request_duration_seconds_bucket:sum_rate{job=\"observatorium-loki-ingester\", route=\"/logproto.Pusher/Push\"})) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
-                    "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "legendFormat": "50th percentile",
+                    "refId": "B"
                   },
                   {
                     "expr": "1e3 * sum(job_route:loki_request_duration_seconds_sum:sum_rate{job=\"observatorium-loki-ingester\", route=\"/logproto.Pusher/Push\"}) / sum(job_route:loki_request_duration_seconds_count:sum_rate{job=\"observatorium-loki-ingester\", route=\"/logproto.Pusher/Push\"})",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -14117,8 +13989,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -14169,6 +14041,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -14206,12 +14080,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_index_request_duration_seconds_count{job=\"observatorium-loki-ingester\", operation=\"index_chunk\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_index_request_duration_seconds_count{job=\"observatorium-loki-ingester\", operation=\"index_chunk\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -14221,8 +14093,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -14294,26 +14166,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_index_request_duration_seconds_bucket{job=\"observatorium-loki-ingester\", operation=\"index_chunk\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_index_request_duration_seconds_bucket{job=\"observatorium-loki-ingester\", operation=\"index_chunk\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_index_request_duration_seconds_sum{job=\"observatorium-loki-ingester\", operation=\"index_chunk\"}[$__rate_interval])) * 1e3 / sum(rate(loki_index_request_duration_seconds_count{job=\"observatorium-loki-ingester\", operation=\"index_chunk\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -14323,8 +14189,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -14375,6 +14241,8 @@ objects:
                   "3xx": "#6ED0E0",
                   "4xx": "#EF843C",
                   "5xx": "#E24D42",
+                  "OK": "#7EB26D",
+                  "cancel": "#A9A9A9",
                   "error": "#E24D42",
                   "success": "#7EB26D"
                 },
@@ -14412,12 +14280,10 @@ objects:
                 "steppedLine": false,
                 "targets": [
                   {
-                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_boltdb_shipper_request_duration_seconds_count{job=\"observatorium-loki-ingester\", operation=\"WRITE\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-z]+)\"))\n",
+                    "expr": "sum by (status) (\n  label_replace(label_replace(rate(loki_boltdb_shipper_request_duration_seconds_count{job=\"observatorium-loki-ingester\", operation=\"WRITE\"}[$__rate_interval]),\n  \"status\", \"${1}xx\", \"status_code\", \"([0-9])..\"),\n  \"status\", \"${1}\", \"status_code\", \"([a-zA-Z]+)\"))\n",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "{{status}}",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   }
                 ],
                 "thresholds": [
@@ -14427,8 +14293,8 @@ objects:
                 "timeShift": null,
                 "title": "QPS",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -14500,26 +14366,20 @@ objects:
                   {
                     "expr": "histogram_quantile(0.99, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{job=\"observatorium-loki-ingester\", operation=\"WRITE\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "99th Percentile",
-                    "refId": "A",
-                    "step": 10
+                    "refId": "A"
                   },
                   {
                     "expr": "histogram_quantile(0.50, sum(rate(loki_boltdb_shipper_request_duration_seconds_bucket{job=\"observatorium-loki-ingester\", operation=\"WRITE\"}[$__rate_interval])) by (le)) * 1e3",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "50th Percentile",
-                    "refId": "B",
-                    "step": 10
+                    "refId": "B"
                   },
                   {
                     "expr": "sum(rate(loki_boltdb_shipper_request_duration_seconds_sum{job=\"observatorium-loki-ingester\", operation=\"WRITE\"}[$__rate_interval])) * 1e3 / sum(rate(loki_boltdb_shipper_request_duration_seconds_count{job=\"observatorium-loki-ingester\", operation=\"WRITE\"}[$__rate_interval]))",
                     "format": "time_series",
-                    "intervalFactor": 2,
                     "legendFormat": "Average",
-                    "refId": "C",
-                    "step": 10
+                    "refId": "C"
                   }
                 ],
                 "thresholds": [
@@ -14529,8 +14389,8 @@ objects:
                 "timeShift": null,
                 "title": "Latency",
                 "tooltip": {
-                  "shared": false,
-                  "sort": 0,
+                  "shared": true,
+                  "sort": 2,
                   "value_type": "individual"
                 },
                 "type": "graph",
@@ -14587,7 +14447,7 @@ objects:
                 "value": "${OBSERVATORIUM_API_DATASOURCE}"
               },
               "hide": 0,
-              "label": null,
+              "label": "Data source",
               "name": "datasource",
               "options": [
 

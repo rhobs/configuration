@@ -60,10 +60,8 @@ data:
           {
            "expr": "sum by (tenant) (rate(rules_objstore_validations_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{tenant}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -73,8 +71,8 @@ data:
          "timeShift": null,
          "title": "Successful validations",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -146,10 +144,8 @@ data:
           {
            "expr": "sum by (tenant) (rate(rules_objstore_validations_failed_total{namespace=\"$namespace\", job=~\"$job\"}[$interval]))",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{tenant}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -159,8 +155,8 @@ data:
          "timeShift": null,
          "title": "Failed validations",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -244,10 +240,8 @@ data:
           {
            "expr": "sum by (tenant) (rules_objstore_rule_groups_configured{namespace=\"$namespace\", job=~\"$job\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{tenant}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -257,8 +251,8 @@ data:
          "timeShift": null,
          "title": "Rule groups configured",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -330,10 +324,8 @@ data:
           {
            "expr": "sum by (tenant) (rules_objstore_rules_configured{namespace=\"$namespace\", job=~\"$job\"})",
            "format": "time_series",
-           "intervalFactor": 2,
            "legendFormat": "{{tenant}}",
-           "legendLink": null,
-           "step": 10
+           "legendLink": null
           }
          ],
          "thresholds": [
@@ -343,8 +335,8 @@ data:
          "timeShift": null,
          "title": "Rules configured",
          "tooltip": {
-          "shared": false,
-          "sort": 0,
+          "shared": true,
+          "sort": 2,
           "value_type": "individual"
          },
          "type": "graph",
@@ -398,7 +390,7 @@ data:
          "value": "default"
         },
         "hide": 0,
-        "label": null,
+        "label": "Data source",
         "name": "datasource",
         "options": [
 
@@ -414,7 +406,7 @@ data:
          "value": "default"
         },
         "hide": 0,
-        "label": null,
+        "label": "Data source",
         "name": "datasource",
         "options": [
 

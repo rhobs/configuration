@@ -99,7 +99,7 @@ data:
               "title": "Requests Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -190,7 +190,7 @@ data:
               "title": "Requests Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -269,10 +269,8 @@ data:
                 {
                   "expr": "histogram_quantile(0.99, sum by (namespace,  job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", handler=\"query\"}[$interval])))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} P99",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -298,7 +296,7 @@ data:
               "title": "Latency 99th Percentile",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -421,7 +419,7 @@ data:
               "title": "Requests Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -512,7 +510,7 @@ data:
               "title": "Requests Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -591,10 +589,8 @@ data:
                 {
                   "expr": "histogram_quantile(0.99, sum by (namespace,  job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", handler=\"query_range\"}[$interval])))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} P99",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -620,7 +616,7 @@ data:
               "title": "Latency 99th Percentile",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -795,7 +791,7 @@ data:
               "title": "gRPC (Unary) Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -886,7 +882,7 @@ data:
               "title": "gRPC (Unary) Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -965,10 +961,8 @@ data:
                 {
                   "expr": "histogram_quantile(0.99, sum by (namespace,  job, le) (rate(grpc_server_handling_seconds_bucket{namespace=\"$namespace\", grpc_type=\"unary\"}[$interval])))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} P99",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -994,7 +988,7 @@ data:
               "title": "gRPC Latency 99th Percentile",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1117,7 +1111,7 @@ data:
               "title": "Incoming Requests Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1208,7 +1202,7 @@ data:
               "title": "Incoming Requests Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1287,10 +1281,8 @@ data:
                 {
                   "expr": "histogram_quantile(0.99, sum by (namespace,  job, le) (rate(http_request_duration_seconds_bucket{namespace=\"$namespace\", handler=\"receive\"}[$interval])))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} P99",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -1316,7 +1308,7 @@ data:
               "title": "Incoming Requests Latency 99th Percentile",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1407,10 +1399,8 @@ data:
                 {
                   "expr": "sum by (namespace, job, alertmanager) (rate(thanos_alert_sender_alerts_sent_total{namespace=\"$namespace\"}[$__rate_interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{alertmanager}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -1421,7 +1411,7 @@ data:
               "title": "Alert Sent Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1513,7 +1503,7 @@ data:
               "title": "Alert Sent Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1592,10 +1582,8 @@ data:
                 {
                   "expr": "histogram_quantile(0.99, sum by (namespace,  job, le) (rate(thanos_alert_sender_latency_seconds_bucket{namespace=\"$namespace\"}[$interval])))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "{{namespace}} {{job}} P99",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -1621,7 +1609,7 @@ data:
               "title": "Alert Sent Duration",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1712,10 +1700,8 @@ data:
                 {
                   "expr": "sum by (namespace, job) (rate(thanos_compact_group_compactions_total{namespace=\"$namespace\"}[$__rate_interval]))",
                   "format": "time_series",
-                  "intervalFactor": 2,
                   "legendFormat": "compaction {{job}}",
-                  "legendLink": null,
-                  "step": 10
+                  "legendLink": null
                 }
               ],
               "thresholds": [
@@ -1726,7 +1712,7 @@ data:
               "title": "Compaction Rate",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1818,7 +1804,7 @@ data:
               "title": "Compaction Errors",
               "tooltip": {
                 "shared": false,
-                "sort": 0,
+                "sort": 2,
                 "value_type": "individual"
               },
               "type": "graph",
@@ -1873,7 +1859,7 @@ data:
               "value": "default"
             },
             "hide": 0,
-            "label": null,
+            "label": "Data source",
             "name": "datasource",
             "options": [
 

@@ -2912,7 +2912,7 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
-          - --store.enable-index-header-lazy-reader=${THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER}
+          - --store.enable-index-header-lazy-reader
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3170,7 +3170,7 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
-          - --store.enable-index-header-lazy-reader=${THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER}
+          - --store.enable-index-header-lazy-reader
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3428,7 +3428,7 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
-          - --store.enable-index-header-lazy-reader=${THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER}
+          - --store.enable-index-header-lazy-reader
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3686,7 +3686,7 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
-          - --store.enable-index-header-lazy-reader=${THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER}
+          - --store.enable-index-header-lazy-reader
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -3944,7 +3944,7 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
-          - --store.enable-index-header-lazy-reader=${THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER}
+          - --store.enable-index-header-lazy-reader
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4202,7 +4202,7 @@ objects:
           - --store.grpc.touched-series-limit=${THANOS_STORE_SERIES_TOUCHED_LIMIT}
           - --store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}
           - --max-time=${THANOS_STORE_MAX_TIME}
-          - --store.enable-index-header-lazy-reader=${THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER}
+          - --store.enable-index-header-lazy-reader
           env:
           - name: OBJSTORE_CONFIG
             valueFrom:
@@ -4621,8 +4621,6 @@ parameters:
   value: "5"
 - name: THANOS_STORE_MAX_TIME
   value: "9999-12-31T23:59:59Z"
-- name: THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER
-  value: "false"
 - name: CONFIGMAP_RELOADER_IMAGE
   value: quay.io/openshift/origin-configmap-reloader
 - name: CONFIGMAP_RELOADER_IMAGE_TAG

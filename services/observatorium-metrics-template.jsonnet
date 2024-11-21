@@ -166,7 +166,6 @@ local obs = import 'observatorium.libsonnet';
     { name: 'THANOS_STORE_MEMORY_REQUEST', value: '1Gi' },
     { name: 'THANOS_STORE_REPLICAS', value: '5' },
     { name: 'THANOS_STORE_MAX_TIME', value: '9999-12-31T23:59:59Z' },
-    { name: 'THANOS_STORE_ENABLE_INDEX_HEADER_LAZY_READER', value: 'false' },
     { name: 'CONFIGMAP_RELOADER_IMAGE', value: 'quay.io/openshift/origin-configmap-reloader' },
     { name: 'CONFIGMAP_RELOADER_IMAGE_TAG', value: '4.5.0' },
   ],

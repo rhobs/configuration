@@ -172,6 +172,8 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
                         '--store.grpc.series-sample-limit=${THANOS_STORE_SERIES_SAMPLE_LIMIT}',
                         '--max-time=${THANOS_STORE_MAX_TIME}',
                         '--store.enable-index-header-lazy-reader',
+                        '--store.index-header-lazy-download-strategy=${THANOS_STORE_INDEX_HEADER_LAZY_DOWNLOAD_STRATEGY}',
+                        '--store.index-header-lazy-reader-idle-timeout=${THANOS_STORE_INDEX_HEADER_LAZY_READER_IDLE_TIMEOUT}',
                       ],
                     } else c
                     for c in super.containers

@@ -93,11 +93,6 @@ objects:
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-1.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-2.memcached.${NAMESPACE}.svc.cluster.local:11211
-          - --whitelist=openshift_logging:log_forwarder_input_type:sum
-          - --whitelist=openshift_logging:log_forwarder_output_type:sum
-          - --whitelist=openshift_logging:log_forwarder_pipelines:sum
-          - --whitelist=openshift_logging:log_forwarders:sum
-          - --whitelist=openshift_logging:vector_component_received_bytes_total:rate5m
           - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing",severity=~"critical|warning|info|none"}
           - --whitelist={__name__="alerts",alertstate="firing"}
@@ -264,6 +259,11 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="openshift_logging:log_forwarder_input_type:sum"}
+          - --whitelist={__name__="openshift_logging:log_forwarder_output_type:sum"}
+          - --whitelist={__name__="openshift_logging:log_forwarder_pipelines:sum"}
+          - --whitelist={__name__="openshift_logging:log_forwarders:sum"}
+          - --whitelist={__name__="openshift_logging:vector_component_received_bytes_total:rate5m"}
           - --whitelist={__name__="os_image_url_override:sum"}
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}
@@ -395,11 +395,6 @@ objects:
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-1.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-2.memcached.${NAMESPACE}.svc.cluster.local:11211
-          - --whitelist=openshift_logging:log_forwarder_input_type:sum
-          - --whitelist=openshift_logging:log_forwarder_output_type:sum
-          - --whitelist=openshift_logging:log_forwarder_pipelines:sum
-          - --whitelist=openshift_logging:log_forwarders:sum
-          - --whitelist=openshift_logging:vector_component_received_bytes_total:rate5m
           - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing",severity=~"critical|warning|info|none"}
           - --whitelist={__name__="alerts",alertstate="firing"}
@@ -566,6 +561,11 @@ objects:
           - --whitelist={__name__="openshift_csi_share_mount_failures_total"}
           - --whitelist={__name__="openshift_csi_share_mount_requests_total"}
           - --whitelist={__name__="openshift_csi_share_secret"}
+          - --whitelist={__name__="openshift_logging:log_forwarder_input_type:sum"}
+          - --whitelist={__name__="openshift_logging:log_forwarder_output_type:sum"}
+          - --whitelist={__name__="openshift_logging:log_forwarder_pipelines:sum"}
+          - --whitelist={__name__="openshift_logging:log_forwarders:sum"}
+          - --whitelist={__name__="openshift_logging:vector_component_received_bytes_total:rate5m"}
           - --whitelist={__name__="os_image_url_override:sum"}
           - --whitelist={__name__="platform:hypershift_hostedclusters:max"}
           - --whitelist={__name__="platform:hypershift_nodepools:max"}

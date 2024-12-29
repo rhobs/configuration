@@ -23,7 +23,7 @@ parameters:
   - name: DESTINATION_OBJ_STORE_K8S_SECRET_KEY
     value: 'config.yaml'
   - name: COMPACTION_MIN
-    value: '0'
+    value: '3'
   - name: COMPACTION_MAX
     value: '100'
   - name: MIN_TIME
@@ -91,7 +91,6 @@ objects:
                     - '--objstore.config-file=/var/lib/thanos/bucket-replicate-config/from/${SOURCE_OBJ_STORE_K8S_SECRET_KEY}'
                     - '--objstore-to.config-file=/var/lib/thanos/bucket-replicate-config/to/${DESTINATION_OBJ_STORE_K8S_SECRET_KEY}'
                     - '--single-run'
-                    - '--matcher=tenant_id="${TENANT_ID}"'
                     - '--min-time=${MIN_TIME}'
                     - '--max-time=${MAX_TIME}'
                     - '--compaction-min=${COMPACTION_MIN}'

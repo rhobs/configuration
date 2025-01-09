@@ -199,7 +199,7 @@
   "{__name__=\"type:tempo_operator_tempostack_multi_tenancy:sum\",type=~\"enabled|disabled\"}",
   "{__name__=\"type:tempo_operator_tempostack_storage_backend:sum\",type=~\"azure|gcs|s3\"}",
   "{__name__=\"up\"}",
-  "{__name__=\"vendor_model:node_accelerator_cards:sum\",vendor=~\"NVIDIA\",model=~\"A100|RTX_A6000|RTX_4090|A40|V100\"}",
+  "{__name__=\"vendor_model:node_accelerator_cards:sum\",vendor=~\"NVIDIA|AMD|GAUDI|INTEL|QUALCOMM\"}",
   "{__name__=\"visual_web_terminal_sessions_total\"}",
   "{__name__=\"workload:cpu_usage_cores:sum\"}",
   "{__name__=\"workload:memory_usage_bytes:sum\"}",

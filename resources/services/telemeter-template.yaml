@@ -293,7 +293,7 @@ objects:
           - --whitelist={__name__="type:tempo_operator_tempostack_multi_tenancy:sum",type=~"enabled|disabled"}
           - --whitelist={__name__="type:tempo_operator_tempostack_storage_backend:sum",type=~"azure|gcs|s3"}
           - --whitelist={__name__="up"}
-          - --whitelist={__name__="vendor_model:node_accelerator_cards:sum",vendor=~"NVIDIA",model=~"A100|RTX_A6000|RTX_4090|A40|V100"}
+          - --whitelist={__name__="vendor_model:node_accelerator_cards:sum",vendor=~"NVIDIA|AMD|GAUDI|INTEL|QUALCOMM"}
           - --whitelist={__name__="visual_web_terminal_sessions_total"}
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
@@ -595,7 +595,7 @@ objects:
           - --whitelist={__name__="type:tempo_operator_tempostack_multi_tenancy:sum",type=~"enabled|disabled"}
           - --whitelist={__name__="type:tempo_operator_tempostack_storage_backend:sum",type=~"azure|gcs|s3"}
           - --whitelist={__name__="up"}
-          - --whitelist={__name__="vendor_model:node_accelerator_cards:sum",vendor=~"NVIDIA",model=~"A100|RTX_A6000|RTX_4090|A40|V100"}
+          - --whitelist={__name__="vendor_model:node_accelerator_cards:sum",vendor=~"NVIDIA|AMD|GAUDI|INTEL|QUALCOMM"}
           - --whitelist={__name__="visual_web_terminal_sessions_total"}
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}

@@ -4,15 +4,19 @@ go 1.21
 
 require (
 	github.com/bwplotka/mimic v0.2.1-0.20230303101552-f705cca2f4a4
+	github.com/go-kit/log v0.2.1
 	github.com/google/go-jsonnet v0.20.0
+	github.com/magefile/mage v1.15.0
 	github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44
 	github.com/observatorium/observatorium v0.0.0-20240202123905-a8245e065e5c
 	github.com/observatorium/up v0.0.0-20240109115132-3a34c4c4fa24
 	github.com/openshift/api v3.9.0+incompatible
+	github.com/philipgough/mimic v0.0.0-20250112154247-23e51fe097ae
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.70.0
 	github.com/pyrra-dev/pyrra v0.7.2
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.29.0
+	k8s.io/apiextensions-apiserver v0.29.0
 	k8s.io/apimachinery v0.29.0
 )
 
@@ -27,7 +31,6 @@ require (
 	github.com/evanphx/json-patch/v5 v5.7.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/zapr v1.3.0 // indirect
@@ -73,7 +76,6 @@ require (
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apiextensions-apiserver v0.29.0 // indirect
 	k8s.io/client-go v0.29.0 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240105020646-a37d4de58910 // indirect

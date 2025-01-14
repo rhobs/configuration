@@ -131,7 +131,7 @@ migrate-vendor:
 .PHONY: manifests
 manifests: migrate-vendor format $(JSONNET_VENDOR_DIR)
 manifests: resources/services/telemeter-template.yaml resources/services/rhelemeter-template.yaml tests/deploy/manifests/minio-template.yaml tests/deploy/manifests/dex-template.yaml
-manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml resources/crds/observatorium-logs-crds-template.yaml
+manifests: resources/services/observatorium-template.yaml resources/services/observatorium-metrics-template.yaml resources/services/observatorium-logs-template.yaml resources/services/observatorium-traces-subscriptions-template.yaml resources/services/observatorium-traces-template.yaml
 manifests: resources/services/metric-federation-rule-template.yaml 
 	$(MAKE) clean
 
@@ -178,10 +178,6 @@ resources/services/observatorium-traces-subscriptions-template.yaml: $(wildcard 
 resources/services/metric-federation-rule-template.yaml: $(wildcard services/metric-federation-rule*) $(wildcard configuration/observatorium/metric-federation-rule*) $(JSONNET) $(GOJSONTOYAML) $(JSONNETFMT)
 	@echo ">>>>> Running metric-federation-rule templates"
 	$(JSONNET) -J "$(JSONNET_VENDOR_DIR)" services/metric-federation-rule-template.jsonnet | $(GOJSONTOYAML) > $@
-
-resources/crds/observatorium-logs-crds-template.yaml: $(wildcard crds/loki*) sync-crds $(JSONNET) $(GOJSONTOYAML)
-	@echo ">>>>> Running obsevatorium-logs-crds template"
-	$(JSONNET) crds/observatorium-logs-crds-template.jsonnet | $(GOJSONTOYAML) > $@
 
 .PHONY: clean
 clean:

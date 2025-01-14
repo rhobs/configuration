@@ -14,12 +14,10 @@ import (
 	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	yaml2 "k8s.io/apimachinery/pkg/util/yaml"
+	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
 const (
-	namespace = "rhobs"
-
 	templatePath         = "resources"
 	templateServicesPath = "services"
 )
@@ -58,7 +56,7 @@ func CRDS() error {
 		}
 
 		var obj v1.CustomResourceDefinition
-		decoder := yaml2.NewYAMLOrJSONDecoder(resp.Body, 100000)
+		decoder := yaml.NewYAMLOrJSONDecoder(resp.Body, 100000)
 		err = decoder.Decode(&obj)
 		if err != nil {
 			return fmt.Errorf("failed to decode %s: %w", manifest, err)

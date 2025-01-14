@@ -6,7 +6,6 @@ require (
 	github.com/bwplotka/mimic v0.2.1-0.20230303101552-f705cca2f4a4
 	github.com/go-kit/log v0.2.1
 	github.com/google/go-jsonnet v0.20.0
-	github.com/magefile/mage v1.15.0
 	github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44
 	github.com/observatorium/observatorium v0.0.0-20240202123905-a8245e065e5c
 	github.com/observatorium/up v0.0.0-20240109115132-3a34c4c4fa24

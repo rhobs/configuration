@@ -96,8 +96,3 @@ func (Stage) generator(component string) *mimic.Generator {
 func (Production) Build() {
 	// todo
 }
-
-func (Production) getTemplatePath() string {
-	// todo
-	return ""
-}

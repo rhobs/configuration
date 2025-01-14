@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/go-kit/log"
+	"github.com/magefile/mage/mg"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic"
@@ -17,7 +18,14 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
+type (
+	Stage      mg.Namespace
+	Production mg.Namespace
+)
+
 const (
+	namespace = "rhobs"
+
 	templatePath         = "resources"
 	templateServicesPath = "services"
 )
@@ -30,6 +38,9 @@ func CRDS() error {
 		templateDir = "crds"
 		base        = "https://raw.githubusercontent.com/thanos-community/thanos-operator/refs/heads/main/config/crd/bases/monitoring.thanos.io_"
 	)
+	gen := &mimic.Generator{}
+	gen = gen.With(templatePath, templateServicesPath, templateDir)
+	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 
 	const (
 		compact   = "thanoscompacts.yaml"
@@ -38,10 +49,6 @@ func CRDS() error {
 		rulers    = "thanosrulers.yaml"
 		stores    = "thanosstores.yaml"
 	)
-
-	gen := &mimic.Generator{}
-	gen = gen.With(templatePath, templateServicesPath, templateDir)
-	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 
 	var objs []runtime.Object
 	for _, component := range []string{compact, queries, receivers, rulers, stores} {
@@ -71,4 +78,26 @@ func CRDS() error {
 	gen.Add("thanos-operator.yaml", encoder)
 	gen.Generate()
 	return nil
+}
+
+// Build Builds the manifests for the stage environment.
+func (Stage) Build() {
+	mg.Deps(Stage.Alertmanager)
+}
+
+func (Stage) generator(component string) *mimic.Generator {
+	gen := &mimic.Generator{}
+	gen = gen.With(templatePath, templateServicesPath, component, "staging")
+	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+	return gen
+}
+
+// Build Builds the manifests for the production environment.
+func (Production) Build() {
+	// todo
+}
+
+func (Production) getTemplatePath() string {
+	// todo
+	return ""
 }

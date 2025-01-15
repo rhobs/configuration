@@ -89,6 +89,7 @@ func alertmanagerKubernetes(opts *alertmanager.AlertManagerOptions, options mani
 	alertmanSts.Image = options.image
 	alertmanSts.Replicas = defaultAlertmanagerReplicas
 	alertmanSts.Name = alertManagerName
+	alertmanSts.VolumeSize = "1Gi"
 	alertmanSts.VolumeType = "gp2"
 	alertmanSts.ContainerResources = kghelpers.NewResourcesRequirements(options.cpuRequest, options.cpuLimit, options.memoryRequest, options.memoryLimit)
 	alertmanSts.Sidecars = []workload.ContainerProvider{

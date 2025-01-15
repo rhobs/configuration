@@ -181,7 +181,6 @@ resources/services/metric-federation-rule-template.yaml: $(wildcard services/met
 
 .PHONY: clean
 clean:
-	find resources/crds -type f ! -name '*.yaml' -delete
 	find resources/services -type f ! -name '*.yaml' -delete
 	find resources/observability/prometheusrules -type f ! -name '*.yaml' -delete
 	find resources/observability/grafana/observatorium -type f ! -name '*.yaml' -delete

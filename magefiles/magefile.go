@@ -24,8 +24,6 @@ type (
 )
 
 const (
-	namespace = "rhobs"
-
 	templatePath         = "resources"
 	templateServicesPath = "services"
 )
@@ -90,6 +88,12 @@ func (Stage) generator(component string) *mimic.Generator {
 	gen = gen.With(templatePath, templateServicesPath, component, "staging")
 	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 	return gen
+}
+
+const stageNamespace = "rhobs-stage"
+
+func (Stage) namespace() string {
+	return stageNamespace
 }
 
 // Build Builds the manifests for the production environment.

@@ -25,8 +25,9 @@ type resourceRequirements struct {
 }
 
 type manifestOptions struct {
-	image    string
-	imageTag string
+	namespace string
+	image     string
+	imageTag  string
 	resourceRequirements
 }
 

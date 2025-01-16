@@ -14,7 +14,7 @@ objects:
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
     name: alertmanager-cluster
-    namespace: rhobs
+    namespace: rhobs-stage
   spec:
     clusterIP: None
     ports:
@@ -43,7 +43,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.26.0
     name: alertmanager
-    namespace: rhobs
+    namespace: rhobs-stage
   spec:
     host: ""
     port:
@@ -69,7 +69,7 @@ objects:
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
     name: alertmanager
-    namespace: rhobs
+    namespace: rhobs-stage
   spec:
     ports:
     - name: http
@@ -95,7 +95,7 @@ objects:
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
     name: alertmanager
-    namespace: rhobs
+    namespace: rhobs-stage
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -107,7 +107,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
     name: alertmanager
-    namespace: rhobs
+    namespace: rhobs-stage
   spec:
     endpoints:
     - port: http
@@ -120,7 +120,7 @@ objects:
         targetLabel: instance
     namespaceSelector:
       matchNames:
-      - rhobs
+      - rhobs-stage
     selector:
       matchLabels:
         app.kubernetes.io/component: alertmanager
@@ -138,7 +138,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: v0.26.0
     name: alertmanager
-    namespace: rhobs
+    namespace: rhobs-stage
   spec:
     replicas: ${{ALERTMANAGER_REPLICAS}}
     selector:
@@ -157,7 +157,7 @@ objects:
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.26.0
-        namespace: rhobs
+        namespace: rhobs-stage
       spec:
         affinity:
           podAntiAffinity:
@@ -179,8 +179,8 @@ objects:
         - args:
           - --config.file=/etc/alertmanager/config/alertmanager.yaml
           - --storage.path=/data
-          - --cluster.peer=alertmanager-0.alertmanager-cluster.rhobs.svc.cluster.local:9094
-          - --cluster.peer=alertmanager-1.alertmanager-cluster.rhobs.svc.cluster.local:9094
+          - --cluster.peer=alertmanager-0.alertmanager-cluster.rhobs-stage.svc.cluster.local:9094
+          - --cluster.peer=alertmanager-1.alertmanager-cluster.rhobs-stage.svc.cluster.local:9094
           - --cluster.reconnect-timeout=5m0s
           - --log.level=${ALERTMANAGER_LOG_LEVEL}
           - --log.format=logfmt
@@ -228,10 +228,10 @@ objects:
           - -email-domain=*
           - -upstream=http://localhost:9093
           - -openshift-service-account=alertmanager
-          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs",
-            "namespace": "rhobs"}'
+          - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs-stage",
+            "namespace": "rhobs-stage"}'
           - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-            "name": "rhobs", "namespace": "rhobs"}}'
+            "name": "rhobs-stage", "namespace": "rhobs-stage"}}'
           - -tls-cert=/etc/tls/private/tls.crt
           - -tls-key=/etc/tls/private/tls.key
           - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
@@ -275,7 +275,7 @@ objects:
           app.kubernetes.io/part-of: observatorium
           app.kubernetes.io/version: v0.26.0
         name: alertmanager-data
-        namespace: rhobs
+        namespace: rhobs-stage
       spec:
         accessModes:
         - ReadWriteOnce

@@ -55,8 +55,9 @@ func (s Stage) Alertmanager() {
 	)
 
 	k8s := alertmanagerKubernetes(alertManagerOptions(), manifestOptions{
-		image:    defaultAlertManagerImage,
-		imageTag: alertManagerImageTag,
+		namespace: s.namespace(),
+		image:     defaultAlertManagerImage,
+		imageTag:  alertManagerImageTag,
 		resourceRequirements: resourceRequirements{
 			cpuRequest:    cpuRequest,
 			cpuLimit:      cpuLimit,
@@ -65,7 +66,7 @@ func (s Stage) Alertmanager() {
 		},
 	})
 	manifests := k8s.Objects()
-	enc := alertmanagerPostProcess(manifests)
+	enc := alertmanagerPostProcess(manifests, s.namespace())
 	gen.Add(alertmanagerTemplate, enc)
 	gen.Generate()
 
@@ -85,6 +86,7 @@ func alertManagerOptions() *alertmanager.AlertManagerOptions {
 }
 
 func alertmanagerKubernetes(opts *alertmanager.AlertManagerOptions, options manifestOptions) *alertmanager.AlertManagerStatefulSet {
+	namespace := options.namespace
 	alertmanSts := alertmanager.NewAlertManager(opts, namespace, options.imageTag)
 	alertmanSts.Image = options.image
 	alertmanSts.Replicas = defaultAlertmanagerReplicas
@@ -106,7 +108,7 @@ func alertmanagerKubernetes(opts *alertmanager.AlertManagerOptions, options mani
 	return alertmanSts
 }
 
-func alertmanagerPostProcess(manifests []runtime.Object) encoding.Encoder {
+func alertmanagerPostProcess(manifests []runtime.Object, namespace string) encoding.Encoder {
 	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), namespace)
 	service := kghelpers.GetObject[*corev1.Service](manifests, alertManagerName)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = alertmanagerTLSSecret

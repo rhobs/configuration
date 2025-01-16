@@ -54,6 +54,26 @@
     {
       "source": {
         "git": {
+          "remote": "https://github.com/grafana/grafonnet.git",
+          "subdir": "gen/grafonnet-latest"
+        }
+      },
+      "version": "d20e609202733790caf5b554c9945d049f243ae3",
+      "sum": "V9vAj21qJOc2DlMPDgB1eEjSQU4A+sAA4AXuJ6bd4xc="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/grafana/grafonnet.git",
+          "subdir": "gen/grafonnet-v11.4.0"
+        }
+      },
+      "version": "d20e609202733790caf5b554c9945d049f243ae3",
+      "sum": "aVAX09paQYNOoCSKVpuk1exVIyBoMt/C50QJI+Q/3nA="
+    },
+    {
+      "source": {
+        "git": {
           "remote": "https://github.com/grafana/jsonnet-libs.git",
           "subdir": "consul"
         }
@@ -170,6 +190,16 @@
       },
       "version": "9e5b48eee32913938d3cac30f183b49ecd9fe13a",
       "sum": "7pl3HQqiKg4zJ0dWFqMo9yMGDEvlVdxgPGr1rMm0/LE="
+    },
+    {
+      "source": {
+        "git": {
+          "remote": "https://github.com/jsonnet-libs/xtd.git",
+          "subdir": ""
+        }
+      },
+      "version": "1199b50e9d2ff53d4bb5fb2304ad1fb69d38e609",
+      "sum": "LfbgcJbilu4uBdKYZSvmkoOTPwEAzg10L3/VqKAIWtA="
     },
     {
       "source": {
@@ -344,8 +374,8 @@
           "subdir": "doc/alertmanager-mixin"
         }
       },
-      "version": "f958b8be84b870e363f7dafcbeb807b463269a75",
-      "sum": "f3iZDUXQ/YWB5yDCY7VLD5bs442+3CdJgXJhJyWhNf8="
+      "version": "b4a2179d70ae0b95cd180e1cfb4e811b7b2de822",
+      "sum": "Mf4h1BYLle2nrgjf/HXrBbl0Zk8N+xaoEM017o0BC+k="
     },
     {
       "source": {

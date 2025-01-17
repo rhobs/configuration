@@ -28,9 +28,8 @@ const (
 
 	defaultAlertmanagerReplicas = 2
 
-	defaultAlertManagerImage    = "quay.io/prometheus/alertmanager"
-	defaultAlertManagerImageTag = "v0.26.0"
-
+	defaultAlertManagerImage     = "registry.redhat.io/openshift4/ose-prometheus-alertmanager"
+	defaultAlertManagerImageTag  = "v4.15"
 	alertmanagerConfigSecretName = "alertmanager-config"
 	alertmanagerConfigSecretKey  = "alertmanager.yaml"
 	alertmanagerTLSSecret        = "alertmanager-tls"

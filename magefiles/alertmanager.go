@@ -112,6 +112,11 @@ func alertmanagerPostProcess(manifests []runtime.Object, namespace string) encod
 	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), namespace)
 	service := kghelpers.GetObject[*corev1.Service](manifests, alertManagerName)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = alertmanagerTLSSecret
+	service.Spec.Ports = append(service.Spec.Ports, corev1.ServicePort{
+		Name:       "https",
+		Port:       8443,
+		TargetPort: intstr.FromInt32(8443),
+	})
 	// Add annotations for openshift oauth so that the route to access the query ui works
 	serviceAccount := kghelpers.GetObject[*corev1.ServiceAccount](manifests, "")
 	if serviceAccount.Annotations == nil {

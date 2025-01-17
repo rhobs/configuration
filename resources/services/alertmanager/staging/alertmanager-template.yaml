@@ -107,7 +107,7 @@ objects:
       app.kubernetes.io/part-of: observatorium
       prometheus: app-sre
     name: alertmanager
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - port: http

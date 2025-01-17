@@ -100,6 +100,7 @@ func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSe
 		openShiftClusterMonitoringLabelValue = "app-sre"
 	)
 
+	serviceMonitor.ObjectMeta.Namespace = "openshift-customer-monitoring"
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels[openshiftCustomerMonitoringLabel] = openShiftClusterMonitoringLabelValue
 }

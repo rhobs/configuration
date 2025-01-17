@@ -41,7 +41,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.26.0
+      app.kubernetes.io/version: v4.15
     name: alertmanager
     namespace: rhobs-stage
   spec:
@@ -139,7 +139,7 @@ objects:
       app.kubernetes.io/instance: observatorium
       app.kubernetes.io/name: alertmanager
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: v0.26.0
+      app.kubernetes.io/version: v4.15
     name: alertmanager
     namespace: rhobs-stage
   spec:
@@ -159,7 +159,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.26.0
+          app.kubernetes.io/version: v4.15
         namespace: rhobs-stage
       spec:
         affinity:
@@ -187,7 +187,7 @@ objects:
           - --cluster.reconnect-timeout=5m0s
           - --log.level=${ALERTMANAGER_LOG_LEVEL}
           - --log.format=logfmt
-          image: quay.io/prometheus/alertmanager:v0.26.0
+          image: registry.redhat.io/openshift4/ose-prometheus-alertmanager:v4.15
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 8
@@ -276,7 +276,7 @@ objects:
           app.kubernetes.io/instance: observatorium
           app.kubernetes.io/name: alertmanager
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: v0.26.0
+          app.kubernetes.io/version: v4.15
         name: alertmanager-data
         namespace: rhobs-stage
       spec:

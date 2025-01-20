@@ -184,16 +184,6 @@
     {
       "source": {
         "git": {
-          "remote": "https://github.com/jsonnet-libs/k8s-libsonnet.git",
-          "subdir": "1.26"
-        }
-      },
-      "version": "9e5b48eee32913938d3cac30f183b49ecd9fe13a",
-      "sum": "7pl3HQqiKg4zJ0dWFqMo9yMGDEvlVdxgPGr1rMm0/LE="
-    },
-    {
-      "source": {
-        "git": {
           "remote": "https://github.com/jsonnet-libs/xtd.git",
           "subdir": ""
         }

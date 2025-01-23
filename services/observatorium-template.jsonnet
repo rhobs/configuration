@@ -30,7 +30,7 @@ local obs = import 'observatorium.libsonnet';
     { name: 'GUBERNATOR_MEMORY_REQUEST', value: '100Mi' },
     { name: 'GUBERNATOR_REPLICAS', value: '2' },
     { name: 'GUBERNATOR_LOG_LEVEL', value: 'debug' },
-    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.29.0' },
+    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.57.0-10' },
     { name: 'JAEGER_AGENT_IMAGE', value: 'jaegertracing/jaeger-agent' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
     { name: 'TRACING_COLLECTOR_ENDPOINT', value: 'otel-trace-writer-collector-headless.observatorium-tools.svc:14250' },

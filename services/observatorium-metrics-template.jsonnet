@@ -33,8 +33,8 @@ local obs = import 'observatorium.libsonnet';
     // This variable is applied using ${{}} syntax, so make sure to provide valid YAML array.
     // See https://docs.openshift.com/container-platform/4.7/openshift_images/using-templates.html#templates-writing-parameters_using-templates
     { name: 'NAMESPACES', value: '["telemeter", "observatorium-metrics", "observatorium-mst-production"]' },
-    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.29.0' },
-    { name: 'JAEGER_AGENT_IMAGE', value: 'quay.io/app-sre/jaegertracing-jaeger-agent' },
+    { name: 'JAEGER_AGENT_IMAGE_TAG', value: '1.57.0-10' },
+    { name: 'JAEGER_AGENT_IMAGE', value: 'registry.redhat.io/rhosdt/jaeger-agent-rhel8' },
     { name: 'JAEGER_COLLECTOR_NAMESPACE', value: '$(NAMESPACE)' },
     { name: 'TRACING_COLLECTOR_ENDPOINT', value: 'otel-trace-writer-collector-headless.observatorium-tools.svc:14250' },
     { name: 'MEMCACHED_CPU_LIMIT', value: '3' },

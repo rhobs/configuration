@@ -90,13 +90,27 @@ func (Stage) generator(component string) *mimic.Generator {
 	return gen
 }
 
-const stageNamespace = "rhobs-stage"
+func (Production) generator(component string) *mimic.Generator {
+	gen := &mimic.Generator{}
+	gen = gen.With(templatePath, templateServicesPath, component, "production")
+	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+	return gen
+}
+
+const (
+	stageNamespace = "rhobs-stage"
+	prodNamespace  = "rhobs-production"
+)
 
 func (Stage) namespace() string {
 	return stageNamespace
 }
 
+func (Production) namespace() string {
+	return prodNamespace
+}
+
 // Build Builds the manifests for the production environment.
 func (Production) Build() {
-	// todo
+	mg.Deps(Production.Alertmanager)
 }

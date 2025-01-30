@@ -11,6 +11,7 @@ import (
 	"github.com/observatorium/observatorium/configuration_go/kubegen/workload"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
+	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"github.com/rhobs/configuration/services_go/observatorium"
@@ -64,20 +65,44 @@ func (s Stage) Alertmanager() {
 			memoryLimit:   memLimit,
 		},
 	})
-	manifests := k8s.Objects()
-	var sm *monv1.ServiceMonitor
-	sm, manifests = getAndRemoveObject[*monv1.ServiceMonitor](manifests, "")
-	smEnc := postProcessServiceMonitor(sm, s.namespace())
-	enc := alertmanagerPostProcess(manifests, s.namespace())
-	gen.Add(alertmanagerTemplate, enc)
-	gen.Add(serviceMonitorTemplate, smEnc)
-	gen.Generate()
-
+	buildAlertmanager(k8s.Objects(), s.namespace(), gen)
 }
 
 // Alertmanager Generates the Alertmanager configuration for the production environment.
-func (Production) Alertmanager() {
-	// todo
+func (p Production) Alertmanager() {
+	gen := p.generator(alertManagerName)
+
+	const (
+		alertManagerImageTag = defaultAlertManagerImageTag
+
+		cpuRequest = defaultAlertmanagerCPURequest
+		cpuLimit   = defaultAlertmanagerCPULimit
+		memRequest = defaultAlertmanagerMemoryRequest
+		memLimit   = defaultAlertmanagerMemoryLimit
+	)
+
+	k8s := alertmanagerKubernetes(alertManagerOptions(), manifestOptions{
+		namespace: p.namespace(),
+		image:     defaultAlertManagerImage,
+		imageTag:  alertManagerImageTag,
+		resourceRequirements: resourceRequirements{
+			cpuRequest:    cpuRequest,
+			cpuLimit:      cpuLimit,
+			memoryRequest: memRequest,
+			memoryLimit:   memLimit,
+		},
+	})
+	buildAlertmanager(k8s.Objects(), p.namespace(), gen)
+}
+
+func buildAlertmanager(manifests []runtime.Object, namespace string, generator *mimic.Generator) {
+	var sm *monv1.ServiceMonitor
+	sm, manifests = getAndRemoveObject[*monv1.ServiceMonitor](manifests, "")
+	smEnc := postProcessServiceMonitor(sm, namespace)
+	enc := alertmanagerPostProcess(manifests, namespace)
+	generator.Add(alertmanagerTemplate, enc)
+	generator.Add(serviceMonitorTemplate, smEnc)
+	generator.Generate()
 }
 
 func alertManagerOptions() *alertmanager.AlertManagerOptions {

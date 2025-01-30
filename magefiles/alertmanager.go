@@ -65,8 +65,12 @@ func (s Stage) Alertmanager() {
 		},
 	})
 	manifests := k8s.Objects()
+	var sm *monv1.ServiceMonitor
+	sm, manifests = getAndRemoveObject[*monv1.ServiceMonitor](manifests, "")
+	smEnc := postProcessServiceMonitor(sm, s.namespace())
 	enc := alertmanagerPostProcess(manifests, s.namespace())
 	gen.Add(alertmanagerTemplate, enc)
+	gen.Add(serviceMonitorTemplate, smEnc)
 	gen.Generate()
 
 }
@@ -108,7 +112,6 @@ func alertmanagerKubernetes(opts *alertmanager.AlertManagerOptions, options mani
 }
 
 func alertmanagerPostProcess(manifests []runtime.Object, namespace string) encoding.Encoder {
-	postProcessServiceMonitor(kghelpers.GetObject[*monv1.ServiceMonitor](manifests, ""), namespace)
 	service := kghelpers.GetObject[*corev1.Service](manifests, alertManagerName)
 	service.ObjectMeta.Annotations[servingCertSecretNameAnnotation] = alertmanagerTLSSecret
 	service.Spec.Ports = append(service.Spec.Ports, corev1.ServicePort{

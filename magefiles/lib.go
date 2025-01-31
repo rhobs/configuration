@@ -146,7 +146,7 @@ func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSe
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels[openshiftCustomerMonitoringLabel] = openShiftClusterMonitoringLabelValue
 
-	name := serviceMonitor.Name + "-service-monitor"
+	name := serviceMonitor.Name + "-service-monitor-" + namespaceSelector
 
 	template := openshift.WrapInTemplate([]runtime.Object{serviceMonitor}, metav1.ObjectMeta{
 		Name: name,

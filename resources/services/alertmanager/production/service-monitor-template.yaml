@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: alertmanager-service-monitor
+  name: alertmanager-service-monitor-rhobs-production
 objects:
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor

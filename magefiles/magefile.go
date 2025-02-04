@@ -31,14 +31,12 @@ const (
 // CRDS Generates the CRDs for the Thanos operator.
 // This is synced from the latest upstream main at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
-func CRDS() error {
+func (s Stage) CRDS() error {
 	const (
 		templateDir = "crds"
 		base        = "https://raw.githubusercontent.com/thanos-community/thanos-operator/refs/heads/main/config/crd/bases/monitoring.thanos.io_"
 	)
-	gen := &mimic.Generator{}
-	gen = gen.With(templatePath, templateServicesPath, templateDir)
-	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+	gen := s.generator(templateDir)
 
 	const (
 		compact   = "thanoscompacts.yaml"
@@ -71,9 +69,9 @@ func CRDS() error {
 		resp.Body.Close()
 	}
 
-	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator"}, []templatev1.Parameter{})
+	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-crds"}, []templatev1.Parameter{})
 	encoder := encoding.GhodssYAML(template)
-	gen.Add("thanos-operator.yaml", encoder)
+	gen.Add("thanos-operator-crds.yaml", encoder)
 	gen.Generate()
 	return nil
 }

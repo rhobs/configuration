@@ -12,26 +12,22 @@ import (
 type tenantID string
 
 const (
-	cnvqeTenant             tenantID = "cnvqe"
-	telemeterTenant         tenantID = "telemeter"
-	rhobsTenant             tenantID = "rhobs"
-	psiocpTenant            tenantID = "psiocp"
-	rhodsTenant             tenantID = "rhods"
-	rhacsTenant             tenantID = "rhacs"
-	odfmsTenant             tenantID = "odfms"
-	refAddonTenant          tenantID = "reference-addon"
-	hypershiftTenant        tenantID = "hypershift-platform"
-	hypershiftStagingTenant tenantID = "hypershift-platform-staging"
-	rhtapTenant             tenantID = "rhtap"
-	rhelTenant              tenantID = "rhel"
+	cnvqeTenant     tenantID = "cnvqe"
+	telemeterTenant tenantID = "telemeter"
+	rhobsTenant     tenantID = "rhobs"
+	psiocpTenant    tenantID = "psiocp"
+	rhodsTenant     tenantID = "rhods"
+	rhacsTenant     tenantID = "rhacs"
+	odfmsTenant     tenantID = "odfms"
+	refAddonTenant  tenantID = "reference-addon"
+	rhtapTenant     tenantID = "rhtap"
+	rhelTenant      tenantID = "rhel"
 )
 
 type signal string
 
 const (
 	metricsSignal signal = "metrics"
-	logsSignal    signal = "logs"
-	tracesSignal  signal = "traces"
 )
 
 type env string
@@ -207,67 +203,12 @@ func GenerateRBAC() *observatoriumRBAC {
 		envs:    []env{stagingEnv, productionEnv},
 	})
 
-	// hypershift
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-hypershift-platform",
-		tenant:  hypershiftTenant,
-		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Write, rbac.Read},
-		envs:    []env{productionEnv},
-	})
-
-	// hypershift
+	// analytics read only prod
 	// Special request of extra read account.
-	// Ref: https://issues.redhat.com/browse/OHSS-22439
+	// https://issues.redhat.com/browse/RHOBS-1116
 	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-hypershift-platform-read",
-		tenant:  hypershiftTenant,
-		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Read}, // Read only.
-		envs:    []env{productionEnv},
-	})
-
-	// hypershift
-	// Special request of extra read account
-	// Ref: https://issues.redhat.com/browse/OHSS-22439
-	attachBinding(&obsRBAC, bindingOpts{
-		name:    "observatorium-hypershift-platform-qe-read",
-		tenant:  hypershiftTenant,
-		signals: []signal{metricsSignal},
-		perms:   []rbac.Permission{rbac.Read}, // Read only.
-		envs:    []env{productionEnv},
-	})
-
-	// hypershift staging
-	// observatorium-hypershift-platform-staging is the only tenant that does not
-	// follow conventions, due to them being present in an unique environment alongside
-	// their production tenant on rhobsp02ue1.
-	attachBinding(&obsRBAC, bindingOpts{
-		name:                "observatorium-hypershift-platform-staging",
-		tenant:              hypershiftStagingTenant,
-		signals:             []signal{metricsSignal},
-		perms:               []rbac.Permission{rbac.Write, rbac.Read},
-		envs:                []env{productionEnv},
-		skipConventionCheck: true,
-	})
-
-	// hypershift staging
-	// Special request of extra read account.
-	// Ref: https://issues.redhat.com/browse/OHSS-22439
-	attachBinding(&obsRBAC, bindingOpts{
-		name:                "observatorium-hypershift-platform-staging-read",
-		tenant:              hypershiftStagingTenant,
-		signals:             []signal{metricsSignal},
-		perms:               []rbac.Permission{rbac.Read}, // Read only.
-		envs:                []env{productionEnv},
-		skipConventionCheck: true,
-	})
-
-	// hypershift staging
-	// Ref: https://issues.redhat.com/browse/OHSS-22439
-	attachBinding(&obsRBAC, bindingOpts{
-		name:                "observatorium-hypershift-platform-staging-qe-read",
-		tenant:              hypershiftStagingTenant,
+		name:                "7f7f912e-0429-4639-8e70-609ecf65b280",
+		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
 		perms:               []rbac.Permission{rbac.Read}, // Read only.
 		envs:                []env{productionEnv},

@@ -3601,14 +3601,14 @@ objects:
                       default: 1m
                       description: BlockViewerGlobalSyncInterval for syncing the blocks
                         between local and remote view for /global Block Viewer UI.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     blockViewerGlobalSyncTimeout:
                       default: 5m
                       description: |-
                         BlockViewerGlobalSyncTimeout is the maximum time for syncing the blocks
                         between local and remote view for /global Block Viewer UI.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                   type: object
                 compactConfig:
@@ -3620,7 +3620,7 @@ objects:
                       description: |-
                         ConsistencyDelay is the minimum age of fresh (non-compacted) blocks before they are being processed.
                         Malformed blocks older than the maximum of consistency-delay and 48h0m0s will be removed.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     blockFetchConcurrency:
                       default: 1
@@ -3635,7 +3635,7 @@ objects:
                         that are marked for deletion.
                         Cleaning happens at the end of an iteration.
                         Setting this to 0s disables the cleanup.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     compactConcurrency:
                       default: 1
@@ -3771,13 +3771,13 @@ objects:
                   description: |-
                     Maximum time range to serve. Any data after this upper time range will be ignored.
                     If not set, will be set as max value, so all blocks will be served.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 minTime:
                   description: |-
                     Minimum time range to serve. Any data earlier than this lower time range will be ignored.
                     If not set, will be set as zero value, so most recent blocks will be served.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 objectStorageConfig:
                   description: ObjectStorageConfig is the object storage configuration
@@ -3877,7 +3877,7 @@ objects:
                         FiveMinutes is the retention configuration for samples of resolution 1 (5 minutes).
                         This configures how long to retain samples of resolution 1 (5 minutes) in storage.
                         The default value is 0d, which means these samples are retained indefinitely.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     oneHour:
                       default: 0d
@@ -3885,7 +3885,7 @@ objects:
                         OneHour is the retention configuration for samples of resolution 2 (1 hour).
                         This configures how long to retain samples of resolution 2 (1 hour) in storage.
                         The default value is 0d, which means these samples are retained indefinitely.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     raw:
                       default: 0d
@@ -3893,7 +3893,7 @@ objects:
                         Raw is the retention configuration for the raw samples.
                         This configures how long to retain raw samples in the storage.
                         The default value is 0d, which means samples are retained indefinitely.
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                   required:
                   - fiveMinutes
@@ -11339,7 +11339,7 @@ objects:
                     labelsDefaultTimeRange:
                       description: LabelsDefaultTimeRange sets the default time range
                         for label queries
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     labelsMaxRetries:
                       default: 5
@@ -11350,7 +11350,7 @@ objects:
                     labelsSplitInterval:
                       description: LabelsSplitInterval sets the split interval for
                         labels
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     logFormat:
                       default: logfmt
@@ -11370,7 +11370,7 @@ objects:
                     logQueriesLongerThan:
                       description: LogQueriesLongerThan sets the duration threshold
                         for logging long queries
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     queryLabelSelector:
                       default:
@@ -11478,7 +11478,7 @@ objects:
                     queryRangeSplitInterval:
                       description: QueryRangeSplitInterval sets the split interval
                         for query range
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                     replicas:
                       default: 1
@@ -15662,7 +15662,7 @@ objects:
                             description: |-
                               TooFarInFutureTimeWindow is the allowed time window for ingesting samples too far in the future.
                               0s means disabled.
-                            pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                            pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                             type: string
                           tsdbConfig:
                             description: TSDB configuration for the ingestor.
@@ -15671,7 +15671,7 @@ objects:
                                 default: 2h
                                 description: Retention is the duration for which a
                                   particular TSDB will retain data.
-                                pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                                pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                                 type: string
                             required:
                             - retention
@@ -23083,7 +23083,7 @@ objects:
                   default: 1m
                   description: EvaluationInterval is the default interval at which
                     rules are evaluated.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 externalLabels:
                   additionalProperties:
@@ -23359,7 +23359,7 @@ objects:
                   default: 2h
                   description: Retention is the duration for which the Thanos Rule
                     StatefulSet will retain data.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 ruleConfigSelector:
                   description: |-
@@ -27178,7 +27178,7 @@ objects:
                     This ensures store can still serve blocks that are meant to be deleted but do not have a replacement yet.
                     If delete-delay duration is provided to compactor or bucket verify component, it will upload deletion-mark.json
                     file to mark after what duration the block should be deleted rather than deleting the block straight away.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 image:
                   description: Container image to use for the Thanos components.
@@ -27284,7 +27284,7 @@ objects:
                       description: If index-header lazy reader is enabled and this
                         idle timeout setting is > 0, memory map-ed index-headers will
                         be automatically released after 'idle timeout' inactivity
-                      pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                      pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                       type: string
                   type: object
                 labels:
@@ -27311,13 +27311,13 @@ objects:
                   description: |-
                     Maximum time range to serve. Any data after this upper time range will be ignored.
                     If not set, will be set as max value, so all blocks will be served.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 minTime:
                   description: |-
                     Minimum time range to serve. Any data earlier than this lower time range will be ignored.
                     If not set, will be set as zero value, so most recent blocks will be served.
-                  pattern: ^(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
+                  pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
                   type: string
                 objectStorageConfig:
                   description: ObjectStorageConfig is the secret that contains the

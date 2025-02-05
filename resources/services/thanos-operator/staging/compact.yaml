@@ -1,0 +1,66 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: thanos-compact
+objects:
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: rhobs
+    namespace: rhobs-stage
+  spec:
+    compactConfig:
+      compactConcurrency: 1
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: true
+      maxCompactionLevel: 3
+    downsamplingConfig:
+      downsamplingConcurrency: 1
+      downsamplingEnabled: false
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    objectStorageConfig:
+      key: thanos.yaml
+      name: default-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 365d
+      oneHour: 365d
+      raw: 365d
+    storageSize: 1GiB
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: telemeter
+    namespace: rhobs-stage
+  spec:
+    compactConfig:
+      compactConcurrency: 1
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: true
+      maxCompactionLevel: 3
+    downsamplingConfig:
+      downsamplingConcurrency: 1
+      downsamplingEnabled: false
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    objectStorageConfig:
+      key: thanos.yaml
+      name: telemeter-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 365d
+      oneHour: 365d
+      raw: 365d
+    storageSize: 2GiB
+  status: {}

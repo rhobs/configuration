@@ -1,0 +1,73 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: thanos-receive
+objects:
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosReceive
+  metadata:
+    creationTimestamp: null
+    name: rhobs
+    namespace: rhobs-stage
+  spec:
+    ingesterSpec:
+      defaultObjectStorageConfig:
+        key: thanos.yaml
+        name: telemeter-objectstorage
+        optional: false
+      hashrings:
+      - asyncForwardWorkerCount: 50
+        externalLabels:
+          replica: $(POD_NAME)
+        image: quay.io/thanos/thanos:v0.37.2
+        imagePullPolicy: IfNotPresent
+        logFormat: logfmt
+        logLevel: info
+        name: telemeter
+        replicas: 6
+        storageSize: 10GiB
+        storeLimitsOptions:
+          storeLimitsRequestSamples: 627040000
+          storeLimitsRequestSeries: 1000000
+        tenancyConfig:
+          defaultTenantID: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+          tenantHeader: THANOS-TENANT
+          tenantLabelName: tenant_id
+          tenantMatcherType: exact
+        tooFarInFutureTimeWindow: 5m
+        tsdbConfig:
+          retention: 4h
+      - asyncForwardWorkerCount: 5
+        externalLabels:
+          replica: $(POD_NAME)
+        image: quay.io/thanos/thanos:v0.37.2
+        imagePullPolicy: IfNotPresent
+        logFormat: logfmt
+        logLevel: info
+        name: default
+        objectStorageConfig:
+          key: thanos.yaml
+          name: default-objectstorage
+          optional: false
+        replicas: 3
+        storageSize: 15GiB
+        storeLimitsOptions: {}
+        tenancyConfig:
+          defaultTenantID: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+          tenantHeader: THANOS-TENANT
+          tenantLabelName: tenant_id
+          tenantMatcherType: exact
+        tooFarInFutureTimeWindow: 5m
+        tsdbConfig:
+          retention: 1d
+    routerSpec:
+      externalLabels:
+        receive: "true"
+      image: quay.io/thanos/thanos:v0.37.2
+      imagePullPolicy: IfNotPresent
+      logFormat: logfmt
+      logLevel: info
+      replicas: 3
+      replicationFactor: 3
+  status: {}

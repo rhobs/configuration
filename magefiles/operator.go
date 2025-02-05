@@ -14,25 +14,49 @@ import (
 )
 
 // Operator Generates the CRs for Thanos Operator.
-func (s Stage) OperatorCR() error {
+func (s Stage) OperatorCR() {
 	mg.SerialDeps(s.CRDS)
 	templateDir := "thanos-operator"
 
 	gen := s.generator(templateDir)
 
-	var objs []runtime.Object
-	objs = append(objs, storeCR(s.namespace())...)
-	objs = append(objs, receiveCR(s.namespace()))
-	objs = append(objs, queryCR(s.namespace()))
-	objs = append(objs, rulerCR(s.namespace()))
-	objs = append(objs, compactCR(s.namespace())...)
+	gen.Add("receive.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			[]runtime.Object{receiveCR(s.namespace())},
+			metav1.ObjectMeta{Name: "thanos-receive"},
+			[]templatev1.Parameter{},
+		),
+	))
+	gen.Add("query.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			[]runtime.Object{queryCR(s.namespace())},
+			metav1.ObjectMeta{Name: "thanos-query"},
+			[]templatev1.Parameter{},
+		),
+	))
+	gen.Add("ruler.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			[]runtime.Object{rulerCR(s.namespace())},
+			metav1.ObjectMeta{Name: "thanos-ruler"},
+			[]templatev1.Parameter{},
+		),
+	))
+	gen.Add("compact.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			compactCR(s.namespace()),
+			metav1.ObjectMeta{Name: "thanos-compact"},
+			[]templatev1.Parameter{},
+		),
+	))
+	gen.Add("store.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			storeCR(s.namespace()),
+			metav1.ObjectMeta{Name: "thanos-store"},
+			[]templatev1.Parameter{},
+		),
+	))
 
-	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator"}, []templatev1.Parameter{})
-	encoder := encoding.GhodssYAML(template)
-	gen.Add("thanos-operator.yaml", encoder)
 	gen.Generate()
-
-	return nil
 }
 
 func storeCR(namespace string) []runtime.Object {
@@ -47,22 +71,16 @@ func storeCR(namespace string) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+				Image:           ptr.To(stageTemplateFn("STORE02W", StageImages)),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "telemeter-objectstorage",
-				},
-				Optional: ptr.To(false),
-			},
+			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:          v1alpha1.Block,
-				Shards:        3,
-				ShardReplicas: 2,
+				Shards:        1,
+				ShardReplicas: 3,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
@@ -80,7 +98,7 @@ func storeCR(namespace string) []runtime.Object {
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
 			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
-			StorageSize:              "50GiB",
+			StorageSize:              stageTemplateFn("STORE02W", StageStorageSize),
 		},
 	}
 
@@ -95,22 +113,16 @@ func storeCR(namespace string) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+				Image:           ptr.To(stageTemplateFn("STORE2W90D", StageImages)),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "telemeter-objectstorage",
-				},
-				Optional: ptr.To(false),
-			},
+			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:          v1alpha1.Block,
-				Shards:        3,
-				ShardReplicas: 2,
+				Shards:        1,
+				ShardReplicas: 3,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
@@ -129,7 +141,7 @@ func storeCR(namespace string) []runtime.Object {
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
 			MinTime:                  ptr.To(v1alpha1.Duration("-2w")),
 			MaxTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			StorageSize:              "100GiB",
+			StorageSize:              stageTemplateFn("STORE2W90D", StageStorageSize),
 		},
 	}
 
@@ -144,22 +156,16 @@ func storeCR(namespace string) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+				Image:           ptr.To(stageTemplateFn("STORE90D+", StageImages)),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "telemeter-objectstorage",
-				},
-				Optional: ptr.To(false),
-			},
+			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:          v1alpha1.Block,
-				Shards:        3,
-				ShardReplicas: 2,
+				Shards:        1,
+				ShardReplicas: 3,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
@@ -177,7 +183,7 @@ func storeCR(namespace string) []runtime.Object {
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
 			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			StorageSize:              "100GiB",
+			StorageSize:              stageTemplateFn("STORE90D+", StageStorageSize),
 		},
 	}
 
@@ -192,22 +198,16 @@ func storeCR(namespace string) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+				Image:           ptr.To(stageTemplateFn("STORE_DEFAULT", StageImages)),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "default-objectstorage",
-				},
-				Optional: ptr.To(false),
-			},
+			ObjectStorageConfig: stageTemplateFn("DEFAULT", StageObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:          v1alpha1.Block,
-				Shards:        3,
-				ShardReplicas: 2,
+				Shards:        1,
+				ShardReplicas: 3,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
@@ -225,7 +225,7 @@ func storeCR(namespace string) []runtime.Object {
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
 			MaxTime:                  ptr.To(v1alpha1.Duration("-22h")),
-			StorageSize:              "50GiB",
+			StorageSize:              stageTemplateFn("STORE_DEFAULT", StageStorageSize),
 		},
 	}
 
@@ -245,30 +245,24 @@ func receiveCR(namespace string) runtime.Object {
 		Spec: v1alpha1.ThanosReceiveSpec{
 			Router: v1alpha1.RouterSpec{
 				CommonFields: v1alpha1.CommonFields{
-					Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+					Image:           ptr.To(stageTemplateFn("RECEIVE_ROUTER", StageImages)),
 					ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 					LogLevel:        ptr.To("info"),
 					LogFormat:       ptr.To("logfmt"),
 				},
-				Replicas:          6,
+				Replicas:          3,
 				ReplicationFactor: 3,
 				ExternalLabels: map[string]string{
 					"receive": "true",
 				},
 			},
 			Ingester: v1alpha1.IngesterSpec{
-				DefaultObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-					Key: "thanos.yaml",
-					LocalObjectReference: corev1.LocalObjectReference{
-						Name: "telemeter-objectstorage",
-					},
-					Optional: ptr.To(false),
-				},
+				DefaultObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
 				Hashrings: []v1alpha1.IngesterHashringSpec{
 					{
 						Name: "telemeter",
 						CommonFields: v1alpha1.CommonFields{
-							Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+							Image:           ptr.To(stageTemplateFn("RECEIVE_INGESTOR_TELEMETER", StageImages)),
 							ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 							LogLevel:        ptr.To("info"),
 							LogFormat:       ptr.To("logfmt"),
@@ -276,7 +270,7 @@ func receiveCR(namespace string) runtime.Object {
 						ExternalLabels: map[string]string{
 							"replica": "$(POD_NAME)",
 						},
-						Replicas: 15,
+						Replicas: 6,
 						TSDBConfig: v1alpha1.TSDBConfig{
 							Retention: v1alpha1.Duration("4h"),
 						},
@@ -292,12 +286,12 @@ func receiveCR(namespace string) runtime.Object {
 							TenantHeader:      "THANOS-TENANT",
 							TenantLabelName:   "tenant_id",
 						},
-						StorageSize: "100GiB",
+						StorageSize: stageTemplateFn("RECEIVE_TELEMETER", StageStorageSize),
 					},
 					{
 						Name: "default",
 						CommonFields: v1alpha1.CommonFields{
-							Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+							Image:           ptr.To(stageTemplateFn("RECEIVE_INGESTOR_DEFAULT", StageImages)),
 							ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 							LogLevel:        ptr.To("info"),
 							LogFormat:       ptr.To("logfmt"),
@@ -305,7 +299,7 @@ func receiveCR(namespace string) runtime.Object {
 						ExternalLabels: map[string]string{
 							"replica": "$(POD_NAME)",
 						},
-						Replicas: 6,
+						Replicas: 3,
 						TSDBConfig: v1alpha1.TSDBConfig{
 							Retention: v1alpha1.Duration("1d"),
 						},
@@ -321,14 +315,8 @@ func receiveCR(namespace string) runtime.Object {
 							TenantHeader:      "THANOS-TENANT",
 							TenantLabelName:   "tenant_id",
 						},
-						ObjectStorageConfig: &v1alpha1.ObjectStorageConfig{
-							Key: "thanos.yaml",
-							LocalObjectReference: corev1.LocalObjectReference{
-								Name: "default-objectstorage",
-							},
-							Optional: ptr.To(false),
-						},
-						StorageSize: "50GiB",
+						ObjectStorageConfig: ptr.To(stageTemplateFn("DEFAULT", StageObjectStorageBucket)),
+						StorageSize:         stageTemplateFn("RECEIVE_DEFAULT", StageStorageSize),
 					},
 				},
 			},
@@ -348,7 +336,7 @@ func queryCR(namespace string) runtime.Object {
 		},
 		Spec: v1alpha1.ThanosQuerySpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+				Image:           ptr.To(stageTemplateFn("QUERY", StageImages)),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
@@ -376,7 +364,7 @@ func queryCR(namespace string) runtime.Object {
 			},
 			QueryFrontend: &v1alpha1.QueryFrontendSpec{
 				CommonFields: v1alpha1.CommonFields{
-					Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+					Image:           ptr.To(stageTemplateFn("QUERY_FRONTEND", StageImages)),
 					ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 					LogLevel:        ptr.To("info"),
 					LogFormat:       ptr.To("logfmt"),
@@ -391,8 +379,8 @@ func queryCR(namespace string) runtime.Object {
 						"operator.thanos.io/query-api": "true",
 					},
 				},
-				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("24h")),
-				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("24h")),
+				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("2d")),
+				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("2d")),
 				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
 			},
 		},
@@ -411,7 +399,7 @@ func rulerCR(namespace string) runtime.Object {
 		},
 		Spec: v1alpha1.ThanosRulerSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To("quay.io/thanos/thanos:v0.37.2"),
+				Image:           ptr.To(stageTemplateFn("RULER", StageImages)),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
@@ -436,18 +424,12 @@ func rulerCR(namespace string) runtime.Object {
 			ExternalLabels: map[string]string{
 				"rule_replica": "$(NAME)",
 			},
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "default-objectstorage",
-				},
-				Optional: ptr.To(false),
-			},
-			AlertmanagerURL:    "dnssrv+http://alertmanager-cluster." + namespace + ".svc.cluster.local:9093",
-			AlertLabelDrop:     []string{"rule_replica"},
-			Retention:          v1alpha1.Duration("48h"),
-			EvaluationInterval: v1alpha1.Duration("1m"),
-			StorageSize:        "50GiB",
+			ObjectStorageConfig: stageTemplateFn("DEFAULT", StageObjectStorageBucket),
+			AlertmanagerURL:     "dnssrv+http://alertmanager-cluster." + namespace + ".svc.cluster.local:9093",
+			AlertLabelDrop:      []string{"rule_replica"},
+			Retention:           v1alpha1.Duration("48h"),
+			EvaluationInterval:  v1alpha1.Duration("1m"),
+			StorageSize:         string(stageTemplateFn("RULER", StageStorageSize)),
 		},
 	}
 }
@@ -463,13 +445,13 @@ func compactCR(namespace string) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "default-objectstorage",
-				},
-				Optional: ptr.To(false),
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(stageTemplateFn("COMPACT_DEFAULT", StageImages)),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
 			},
+			ObjectStorageConfig: stageTemplateFn("DEFAULT", StageObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("365d"),
 				FiveMinutes: v1alpha1.Duration("365d"),
@@ -487,6 +469,7 @@ func compactCR(namespace string) []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(3)),
 			},
+			StorageSize: stageTemplateFn("COMPACT_DEFAULT", StageStorageSize),
 		},
 	}
 
@@ -496,17 +479,17 @@ func compactCR(namespace string) []runtime.Object {
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "rhobs",
+			Name:      "telemeter",
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			ObjectStorageConfig: v1alpha1.ObjectStorageConfig{
-				Key: "thanos.yaml",
-				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "telemeter-objectstorage",
-				},
-				Optional: ptr.To(false),
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(stageTemplateFn("COMPACT_TELEMETER", StageImages)),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
 			},
+			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("365d"),
 				FiveMinutes: v1alpha1.Duration("365d"),
@@ -524,6 +507,7 @@ func compactCR(namespace string) []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(3)),
 			},
+			StorageSize: stageTemplateFn("COMPACT_TELEMETER", StageStorageSize),
 		},
 	}
 

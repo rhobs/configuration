@@ -1,0 +1,41 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: thanos-ruler
+objects:
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosRuler
+  metadata:
+    creationTimestamp: null
+    name: rhobs
+    namespace: rhobs-stage
+  spec:
+    alertLabelDrop:
+    - rule_replica
+    alertmanagerURL: dnssrv+http://alertmanager-cluster.rhobs-stage.svc.cluster.local:9093
+    defaultObjectStorageConfig:
+      key: thanos.yaml
+      name: default-objectstorage
+      optional: false
+    evaluationInterval: 1m
+    externalLabels:
+      rule_replica: $(NAME)
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    prometheusRuleSelector:
+      matchLabels:
+        operator.thanos.io/prometheus-rule: "true"
+    queryLabelSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: thanos
+        operator.thanos.io/query-api: "true"
+    replicas: 2
+    retention: 48h
+    ruleConfigSelector:
+      matchLabels:
+        operator.thanos.io/rule-file: "true"
+    storageSize: 5GiB
+  status: {}

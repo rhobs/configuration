@@ -1,0 +1,61 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: thanos-query
+objects:
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosQuery
+  metadata:
+    creationTimestamp: null
+    name: rhobs
+    namespace: rhobs-stage
+  spec:
+    customStoreLabelSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: thanos
+        operator.thanos.io/store-api: "true"
+    grpcProxyStrategy: lazy
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    queryFrontend:
+      compressResponses: true
+      image: quay.io/thanos/thanos:v0.37.2
+      imagePullPolicy: IfNotPresent
+      labelsDefaultTimeRange: 336h
+      labelsMaxRetries: 3
+      labelsSplitInterval: 2d
+      logFormat: logfmt
+      logLevel: info
+      logQueriesLongerThan: 10s
+      queryLabelSelector:
+        matchLabels:
+          operator.thanos.io/query-api: "true"
+      queryRangeMaxRetries: 3
+      queryRangeSplitInterval: 2d
+      replicas: 3
+    replicaLabels:
+    - prometheus_replica
+    - replica
+    - rule_replica
+    replicas: 6
+    telemetryQuantiles:
+      duration:
+      - "0.1"
+      - "0.25"
+      - "0.75"
+      - "1.25"
+      - "1.75"
+      - "2.5"
+      - "3"
+      - "5"
+      - "10"
+      - "15"
+      - "30"
+      - "60"
+      - "120"
+    webConfig:
+      prefixHeader: X-Forwarded-Prefix
+  status: {}

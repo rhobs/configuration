@@ -1,0 +1,141 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: thanos-store
+objects:
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: default
+    namespace: rhobs-stage
+  spec:
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    ignoreDeletionMarksDelay: 24h
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: info
+    maxTime: -22h
+    objectStorageConfig:
+      key: thanos.yaml
+      name: default-objectstorage
+      optional: false
+    shardingStrategy:
+      shardReplicas: 3
+      shards: 1
+      type: block
+    storageSize: 15GiB
+    storeLimitsOptions: {}
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-0to2w
+    namespace: rhobs-stage
+  spec:
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    ignoreDeletionMarksDelay: 24h
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: info
+    maxTime: -2w
+    objectStorageConfig:
+      key: thanos.yaml
+      name: telemeter-objectstorage
+      optional: false
+    shardingStrategy:
+      shardReplicas: 3
+      shards: 1
+      type: block
+    storageSize: 5GiB
+    storeLimitsOptions:
+      storeLimitsRequestSamples: 627040000
+      storeLimitsRequestSeries: 1000000
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-2wto90d
+    namespace: rhobs-stage
+  spec:
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    ignoreDeletionMarksDelay: 24h
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: info
+    maxTime: -90d
+    minTime: -2w
+    objectStorageConfig:
+      key: thanos.yaml
+      name: telemeter-objectstorage
+      optional: false
+    shardingStrategy:
+      shardReplicas: 3
+      shards: 1
+      type: block
+    storageSize: 5GiB
+    storeLimitsOptions:
+      storeLimitsRequestSamples: 627040000
+      storeLimitsRequestSeries: 1000000
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-90dplus
+    namespace: rhobs-stage
+  spec:
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    ignoreDeletionMarksDelay: 24h
+    image: quay.io/thanos/thanos:v0.37.2
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: info
+    minTime: -90d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: telemeter-objectstorage
+      optional: false
+    shardingStrategy:
+      shardReplicas: 3
+      shards: 1
+      type: block
+    storageSize: 5GiB
+    storeLimitsOptions:
+      storeLimitsRequestSamples: 627040000
+      storeLimitsRequestSeries: 1000000
+  status: {}

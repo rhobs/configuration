@@ -16,7 +16,6 @@ import (
 const (
 	globalSLOWindowDuration                   = "28d" // Window over which all RHOBS SLOs are calculated.
 	globalMetricsSLOAvailabilityTargetPercent = "99"  // The Availability Target percentage for RHOBS metrics availability SLOs.
-	globalLogsSLOAvailabilityTargetPercent    = "95"  // The Availability Target percentage for RHOBS logs availability SLOs.
 	globalSLOLatencyTargetPercent             = "90"  // The Latency Target percentage for RHOBS latency SLOs.
 	genericSLOLatencySeconds                  = "5"   // Latency request duration to measure percentile target (this is diff for query SLOs).
 )
@@ -131,7 +130,6 @@ type rhobsSLOs struct {
 	totalExpr           string
 	alertName           string
 	sloType             sloType
-	signal              signal
 }
 
 // rhobSLOList is a list of shorthand SLOs.
@@ -165,9 +163,6 @@ func (slos rhobSLOList) GetObjectives(envName rhobsInstanceEnv) []pyrrav1alpha1.
 		if s.sloType == sloTypeAvailability {
 			// Metrics availability target as the default.
 			objective.Spec.Target = globalMetricsSLOAvailabilityTargetPercent
-			if s.signal == logsSignal {
-				objective.Spec.Target = globalLogsSLOAvailabilityTargetPercent
-			}
 			objective.Spec.ServiceLevelIndicator = pyrrav1alpha1.ServiceLevelIndicator{
 				Ratio: &pyrrav1alpha1.RatioIndicator{
 					Errors: pyrrav1alpha1.Query{
@@ -506,91 +501,6 @@ func ObservatoriumSLOs(envName rhobsInstanceEnv, signal signal) []pyrrav1alpha1.
 				sloType:             sloTypeLatency,
 			},
 		}
-	case logsSignal:
-		slos = rhobSLOList{
-			// Observatorium Logs Availability SLOs.
-			{
-				name: "api-logs-write-availability-slo",
-				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
-				},
-				description:         "API logs /push handler is burning too much error budget to guarantee availability SLOs.",
-				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code=~\"^5..$\"}",
-				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\"}",
-				alertName:           "APILogsPushAvailabilityErrorBudgetBurning",
-				sloType:             sloTypeAvailability,
-				signal:              logsSignal,
-			},
-			{
-				name: "api-logs-query-availability-slo",
-				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
-				},
-				description:         "API logs /query, /labels, or /label_values handler is burning too much error budget to guarantee availability SLOs.",
-				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=~\"query|label|labels|label_values\", group=\"logsv1\", code=~\"^5..$\"}",
-				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=~\"query|label|labels|label_values\", group=\"logsv1\"}",
-				alertName:           "APILogsQueryAvailabilityErrorBudgetBurning",
-				sloType:             sloTypeAvailability,
-				signal:              logsSignal,
-			},
-			{
-				name: "api-logs-query-range-availability-slo",
-				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
-				},
-				description:         "API logs /query_range handler is burning too much error budget to guarantee availability SLOs.",
-				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"logsv1\", code=~\"^5..$\"}",
-				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"query_range\", group=\"logsv1\"}",
-				alertName:           "APILogsQueryRangeAvailabilityErrorBudgetBurning",
-				sloType:             sloTypeAvailability,
-				signal:              logsSignal,
-			},
-			{
-				name: "api-logs-tail-availability-slo",
-				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
-				},
-				description:         "API logs /tail is burning too much error budget to guarantee availability SLOs.",
-				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"tail\", group=\"logsv1\", code=~\"^5..$\"}",
-				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"tail\", group=\"logsv1\"}",
-				alertName:           "APILogsTailAvailabilityErrorBudgetBurning",
-				sloType:             sloTypeAvailability,
-				signal:              logsSignal,
-			},
-			{
-				name: "api-logs-prom-tail-availability-slo",
-				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
-				},
-				description:         "API logs /prom_tail is burning too much error budget to guarantee availability SLOs.",
-				successOrErrorsExpr: "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"prom_tail\", group=\"logsv1\", code=~\"^5..$\"}",
-				totalExpr:           "http_requests_total{job=\"" + apiJobSelector[envName] + "\", handler=\"prom_tail\", group=\"logsv1\"}",
-				alertName:           "APILogsPromTailAvailabilityErrorBudgetBurning",
-				sloType:             sloTypeAvailability,
-				signal:              logsSignal,
-			},
-
-			// Observatorium Logs Latency SLOs.
-			{
-				name: "api-logs-write-latency-slo",
-				labels: map[string]string{
-					"service":  "observatorium-api",
-					"instance": string(envName),
-				},
-				description:         "API /push handler is burning too much error budget to guarantee latency SLOs.",
-				successOrErrorsExpr: "http_request_duration_seconds_bucket{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code=~\"^2..$\", le=\"" + genericSLOLatencySeconds + "\"}",
-				totalExpr:           "http_request_duration_seconds_count{job=\"" + apiJobSelector[envName] + "\", handler=\"push\", group=\"logsv1\", code=~\"^2..$\"}",
-				alertName:           "APILogsPushLatencyErrorBudgetBurning",
-				sloType:             sloTypeLatency,
-			},
-		}
-	case tracesSignal:
-		panic("tracing signal is not yet supported")
 	default:
 		panic(signal + " is not an Observatorium signal")
 	}
@@ -657,14 +567,6 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 	)
 
 	envSLOs(
-		mstProduction,
-		ObservatoriumSLOs(mstProduction, logsSignal),
-		"rhobs-slos-logs-mst-production",
-		genPyrra,
-		genRules,
-	)
-
-	envSLOs(
 		mstStage,
 		ObservatoriumSLOs(mstStage, metricsSignal),
 		"rhobs-slos-mst-stage",
@@ -672,21 +574,6 @@ func GenSLO(genPyrra, genRules *mimic.Generator) {
 		genRules,
 	)
 
-	envSLOs(
-		mstStage,
-		ObservatoriumSLOs(mstStage, logsSignal),
-		"rhobs-slos-logs-mst-stage",
-		genPyrra,
-		genRules,
-	)
-
-	envSLOs(
-		rhobsp02ue1Production,
-		ObservatoriumSLOs(rhobsp02ue1Production, metricsSignal),
-		"rhobs-slos-rhobsp02ue1-prod",
-		genPyrra,
-		genRules,
-	)
 }
 
 // envSLOs generates the resultant config for a particular rhobsInstanceEnv.

@@ -1015,44 +1015,12 @@ objects:
                 name: service-account-observatorium-reference-addon-staging
               - kind: user
                 name: service-account-observatorium-reference-addon
-          - name: observatorium-hypershift-platform
+          - name: 7f7f912e-0429-4639-8e70-609ecf65b280
             roles:
-              - hypershift-platform-metrics-write
-              - hypershift-platform-metrics-read
+              - telemeter-metrics-read
             subjects:
               - kind: user
-                name: service-account-observatorium-hypershift-platform
-          - name: observatorium-hypershift-platform-read
-            roles:
-              - hypershift-platform-metrics-read
-            subjects:
-              - kind: user
-                name: service-account-observatorium-hypershift-platform-read
-          - name: observatorium-hypershift-platform-qe-read
-            roles:
-              - hypershift-platform-metrics-read
-            subjects:
-              - kind: user
-                name: service-account-observatorium-hypershift-platform-qe-read
-          - name: observatorium-hypershift-platform-staging
-            roles:
-              - hypershift-platform-staging-metrics-write
-              - hypershift-platform-staging-metrics-read
-            subjects:
-              - kind: user
-                name: service-account-observatorium-hypershift-platform-staging
-          - name: observatorium-hypershift-platform-staging-read
-            roles:
-              - hypershift-platform-staging-metrics-read
-            subjects:
-              - kind: user
-                name: service-account-observatorium-hypershift-platform-staging-read
-          - name: observatorium-hypershift-platform-staging-qe-read
-            roles:
-              - hypershift-platform-staging-metrics-read
-            subjects:
-              - kind: user
-                name: service-account-observatorium-hypershift-platform-staging-qe-read
+                name: service-account-7f7f912e-0429-4639-8e70-609ecf65b280
           - name: observatorium-rhtap
             roles:
               - rhtap-metrics-read
@@ -1191,34 +1159,6 @@ objects:
               - metrics
             tenants:
               - reference-addon
-          - name: hypershift-platform-metrics-write
-            permissions:
-              - write
-            resources:
-              - metrics
-            tenants:
-              - hypershift-platform
-          - name: hypershift-platform-metrics-read
-            permissions:
-              - read
-            resources:
-              - metrics
-            tenants:
-              - hypershift-platform
-          - name: hypershift-platform-staging-metrics-write
-            permissions:
-              - write
-            resources:
-              - metrics
-            tenants:
-              - hypershift-platform-staging
-          - name: hypershift-platform-staging-metrics-read
-            permissions:
-              - read
-            resources:
-              - metrics
-            tenants:
-              - hypershift-platform-staging
           - name: rhtap-metrics-read
             permissions:
               - read

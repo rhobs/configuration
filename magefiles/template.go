@@ -33,24 +33,24 @@ func TemplateFn[T any](param string, m ParamMap[T]) T {
 	return v
 }
 
-const currentThanosImage = "quay.io/thanos/thanos:v0.37.2"
+const CurrentThanosImageStage = "quay.io/thanos/thanos:v0.37.2"
 
 var logLevels = []string{"debug", "info", "warn", "error"}
 
 // Stage images.
 var StageImages = ParamMap[string]{
-	"STORE02W":                   currentThanosImage,
-	"STORE2W90D":                 currentThanosImage,
-	"STORE90D+":                  currentThanosImage,
-	"STORE_DEFAULT":              currentThanosImage,
-	"RECEIVE_ROUTER":             currentThanosImage,
-	"RECEIVE_INGESTOR_TELEMETER": currentThanosImage,
-	"RECEIVE_INGESTOR_DEFAULT":   currentThanosImage,
-	"RULER":                      currentThanosImage,
-	"COMPACT_DEFAULT":            currentThanosImage,
-	"COMPACT_TELEMETER":          currentThanosImage,
-	"QUERY":                      currentThanosImage,
-	"QUERY_FRONTEND":             currentThanosImage,
+	"STORE02W":                   CurrentThanosImageStage,
+	"STORE2W90D":                 CurrentThanosImageStage,
+	"STORE90D+":                  CurrentThanosImageStage,
+	"STORE_DEFAULT":              CurrentThanosImageStage,
+	"RECEIVE_ROUTER":             CurrentThanosImageStage,
+	"RECEIVE_INGESTOR_TELEMETER": CurrentThanosImageStage,
+	"RECEIVE_INGESTOR_DEFAULT":   CurrentThanosImageStage,
+	"RULER":                      CurrentThanosImageStage,
+	"COMPACT_DEFAULT":            CurrentThanosImageStage,
+	"COMPACT_TELEMETER":          CurrentThanosImageStage,
+	"QUERY":                      CurrentThanosImageStage,
+	"QUERY_FRONTEND":             CurrentThanosImageStage,
 }
 
 // Stage log levels.

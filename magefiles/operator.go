@@ -20,6 +20,12 @@ import (
 	"k8s.io/utils/ptr"
 )
 
+const (
+	CRDMain           = "refs/heads/main"
+	CRDRefStage       = "e676d81ea0bb8252dd8985e0fe03038a2a7e2c30"
+	ManagerImageStage = "quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d"
+)
+
 // CRDS Generates the CRDs for the Thanos operator.
 // This is synced from the latest upstream main at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
@@ -43,7 +49,7 @@ func (s Stage) CRDS() error {
 
 func crds() ([]runtime.Object, error) {
 	const (
-		base      = "https://raw.githubusercontent.com/thanos-community/thanos-operator/refs/heads/main/config/crd/bases/monitoring.thanos.io_"
+		base      = "https://raw.githubusercontent.com/thanos-community/thanos-operator/" + CRDRefStage + "/config/crd/bases/monitoring.thanos.io_"
 		compact   = "thanoscompacts.yaml"
 		queries   = "thanosqueries.yaml"
 		receivers = "thanosreceives.yaml"
@@ -402,7 +408,7 @@ func operatorDeployment(namespace string) *appsv1.Deployment {
 						},
 						{
 							Name:            "manager",
-							Image:           "quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d",
+							Image:           ManagerImageStage,
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Command:         []string{"/manager"},
 							Args: []string{

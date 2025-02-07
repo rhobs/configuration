@@ -128,7 +128,67 @@ func (l Local) Operator() {
 
 	objs := operatorResources(l.namespace(), LocalMaps)
 
-	gen.Add("operator.yaml", encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4], objs[5], objs[6], objs[7], objs[8], objs[9], objs[10], objs[11], objs[12], objs[13]))
+	// Create namespace object
+	namespace := &corev1.Namespace{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Namespace",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: l.namespace(),
+		},
+	}
+
+	// Create object storage secrets
+	defaultObjStore := &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Secret",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "default-objectstorage",
+			Namespace: l.namespace(),
+		},
+		StringData: map[string]string{
+			"thanos.yaml": `type: s3
+config:
+  bucket: thanos
+  endpoint: minio:9000
+  insecure: true
+  access_key: minio
+  secret_key: minio123`,
+		},
+	}
+
+	telemeterObjStore := &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Secret",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "telemeter-objectstorage",
+			Namespace: l.namespace(),
+		},
+		StringData: map[string]string{
+			"thanos.yaml": `type: s3
+config:
+  bucket: telemeter
+  endpoint: minio:9000
+  insecure: true
+  access_key: minio
+  secret_key: minio123`,
+		},
+	}
+
+	// Add all resources to the generator
+	gen.Add("operator.yaml", encoding.GhodssYAML(
+		namespace,
+		defaultObjStore,
+		telemeterObjStore,
+		objs[0], objs[1], objs[2], objs[3], objs[4], objs[5],
+		objs[6], objs[7], objs[8], objs[9], objs[10], objs[11],
+		objs[12], objs[13],
+	))
 
 	gen.Generate()
 }

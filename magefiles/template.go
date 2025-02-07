@@ -71,15 +71,15 @@ var StageLogLevels = ParamMap[string]{
 
 // Stage PV storage sizes.
 var StageStorageSize = ParamMap[v1alpha1.StorageSize]{
-	"STORE02W":          "5GiB",
-	"STORE2W90D":        "5GiB",
-	"STORE90D+":         "5GiB",
-	"STORE_DEFAULT":     "15GiB",
-	"RECEIVE_TELEMETER": "10GiB",
-	"RECEIVE_DEFAULT":   "15GiB",
-	"RULER":             "5GiB",
-	"COMPACT_DEFAULT":   "1GiB",
-	"COMPACT_TELEMETER": "2GiB",
+	"STORE02W":          "5Gi",
+	"STORE2W90D":        "5Gi",
+	"STORE90D+":         "5Gi",
+	"STORE_DEFAULT":     "15Gi",
+	"RECEIVE_TELEMETER": "10Gi",
+	"RECEIVE_DEFAULT":   "15Gi",
+	"RULER":             "5Gi",
+	"COMPACT_DEFAULT":   "1Gi",
+	"COMPACT_TELEMETER": "2Gi",
 }
 
 // Stage replicas.

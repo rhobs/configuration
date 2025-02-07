@@ -60,6 +60,39 @@ func (s Stage) OperatorCR() {
 	gen.Generate()
 }
 
+// OperatorCR Generates the RHOBS-specific CRs for Thanos Operator for a local environment.
+func (l Local) OperatorCR() {
+	templateDir := "thanos-operator"
+
+	gen := l.generator(templateDir)
+
+	gen.Add("receive.yaml", encoding.GhodssYAML(
+		receiveCR(l.namespace(), StageMaps),
+	))
+	gen.Add("query.yaml", encoding.GhodssYAML(
+		queryCR(l.namespace(), StageMaps),
+	))
+	gen.Add("ruler.yaml", encoding.GhodssYAML(
+		rulerCR(l.namespace(), StageMaps),
+	))
+
+	compactCRs := compactCR(l.namespace(), StageMaps)
+	gen.Add("compact.yaml", encoding.GhodssYAML(
+		compactCRs[0],
+		compactCRs[1],
+	))
+
+	storeCRs := storeCR(l.namespace(), StageMaps)
+	gen.Add("store.yaml", encoding.GhodssYAML(
+		storeCRs[0],
+		storeCRs[1],
+		storeCRs[2],
+		storeCRs[3],
+	))
+
+	gen.Generate()
+}
+
 // tracingSidecar is the jaeger-agent sidecar container for tracing.
 var tracingSidecar = corev1.Container{
 	Name:            "jaeger-agent",

@@ -323,6 +323,27 @@ objects:
     - update
     - watch
 - apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: rbac
+      app.kubernetes.io/created-by: thanos-operator
+      app.kubernetes.io/instance: manager-rolebinding
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: clusterrolebinding
+      app.kubernetes.io/part-of: thanos-operator
+    name: thanos-operator-manager-rolebinding
+    namespace: rhobs-stage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: thanos-operator-manager-role
+  subjects:
+  - kind: ServiceAccount
+    name: thanos-operator-controller-manager
+    namespace: rhobs-stage
+- apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
     creationTimestamp: null
@@ -337,5 +358,151 @@ objects:
   rules:
   - nonResourceURLs:
     - /metrics
+    verbs:
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: kube-rbac-proxy
+      app.kubernetes.io/created-by: thanos-operator
+      app.kubernetes.io/instance: proxy-role
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: clusterrole
+      app.kubernetes.io/part-of: thanos-operator
+    name: thanos-operator-proxy-role
+  rules:
+  - apiGroups:
+    - authentication.k8s.io
+    resources:
+    - tokenreviews
+    verbs:
+    - create
+  - apiGroups:
+    - authorization.k8s.io
+    resources:
+    - subjectaccessreviews
+    verbs:
+    - create
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: kube-rbac-proxy
+      app.kubernetes.io/created-by: thanos-operator
+      app.kubernetes.io/instance: proxy-rolebinding
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: clusterrolebinding
+      app.kubernetes.io/part-of: thanos-operator
+    name: thanos-operator-proxy-rolebinding
+    namespace: rhobs-stage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: thanos-operator-proxy-role
+  subjects:
+  - kind: ServiceAccount
+    name: thanos-operator-controller-manager
+    namespace: rhobs-stage
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: thanos-operator
+    name: thanos-operator-thanoscompact-editor-role
+  rules:
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanoscompacts
+    verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanoscompacts/status
+    verbs:
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: thanos-operator
+    name: thanos-operator-thanoscompact-viewer-role
+  rules:
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanoscompacts
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanoscompacts/status
+    verbs:
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: thanos-operator
+    name: thanos-operator-thanosreceive-editor-role
+  rules:
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanosreceives
+    verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanosreceives/status
+    verbs:
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/managed-by: rhobs
+      app.kubernetes.io/name: thanos-operator
+    name: thanos-operator-thanosreceive-viewer-role
+  rules:
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanosreceives
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - monitoring.thanos.io
+    resources:
+    - thanosreceives/status
     verbs:
     - get

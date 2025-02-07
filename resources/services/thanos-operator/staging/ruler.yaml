@@ -98,5 +98,5 @@ objects:
     ruleConfigSelector:
       matchLabels:
         operator.thanos.io/rule-file: "true"
-    storageSize: 5GiB
+    storageSize: 5Gi
   status: {}

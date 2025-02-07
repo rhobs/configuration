@@ -129,7 +129,7 @@ objects:
       fiveMinutes: 365d
       oneHour: 365d
       raw: 365d
-    storageSize: 1GiB
+    storageSize: 1Gi
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosCompact
@@ -256,5 +256,5 @@ objects:
       fiveMinutes: 365d
       oneHour: 365d
       raw: 365d
-    storageSize: 2GiB
+    storageSize: 2Gi
   status: {}

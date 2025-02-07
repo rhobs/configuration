@@ -87,7 +87,7 @@ objects:
           requests:
             cpu: 700m
             memory: 10Gi
-        storageSize: 10GiB
+        storageSize: 10Gi
         storeLimitsOptions:
           storeLimitsRequestSamples: 627040000
           storeLimitsRequestSeries: 1000000
@@ -119,7 +119,7 @@ objects:
           requests:
             cpu: 700m
             memory: 10Gi
-        storageSize: 15GiB
+        storageSize: 15Gi
         storeLimitsOptions: {}
         tenancyConfig:
           defaultTenantID: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43

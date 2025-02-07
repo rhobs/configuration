@@ -11,6 +11,7 @@ import (
 type (
 	Stage      mg.Namespace
 	Production mg.Namespace
+	Local      mg.Namespace
 )
 
 const (
@@ -21,6 +22,11 @@ const (
 // Build Builds the manifests for the stage environment.
 func (Stage) Build() {
 	mg.SerialDeps(Stage.Alertmanager, Stage.CRDS, Stage.Operator, Stage.OperatorCR)
+}
+
+// Build Builds the manifests for a local environment.
+func (Local) Build() {
+	mg.SerialDeps(Local.CRDS, Local.Operator, Local.OperatorCR)
 }
 
 func (Stage) generator(component string) *mimic.Generator {
@@ -37,9 +43,17 @@ func (Production) generator(component string) *mimic.Generator {
 	return gen
 }
 
+func (Local) generator(component string) *mimic.Generator {
+	gen := &mimic.Generator{}
+	gen = gen.With(templatePath, templateServicesPath, component, "local")
+	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+	return gen
+}
+
 const (
 	stageNamespace = "rhobs-stage"
 	prodNamespace  = "rhobs-production"
+	localNamespace = "rhobs-local"
 )
 
 func (Stage) namespace() string {
@@ -48,6 +62,10 @@ func (Stage) namespace() string {
 
 func (Production) namespace() string {
 	return prodNamespace
+}
+
+func (Local) namespace() string {
+	return localNamespace
 }
 
 // Build Builds the manifests for the production environment.

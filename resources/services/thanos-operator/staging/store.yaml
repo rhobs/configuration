@@ -94,7 +94,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 15GiB
+    storageSize: 15Gi
     storeLimitsOptions: {}
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -187,7 +187,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 5GiB
+    storageSize: 5Gi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
@@ -283,7 +283,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 5GiB
+    storageSize: 5Gi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
@@ -378,7 +378,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 5GiB
+    storageSize: 5Gi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000

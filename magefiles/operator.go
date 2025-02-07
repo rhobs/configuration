@@ -47,6 +47,26 @@ func (s Stage) CRDS() error {
 	return nil
 }
 
+// CRDS Generates the CRDs for the Thanos operator for a local environment.
+// This is synced from the latest upstream main at:
+// https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
+func (l Local) CRDS() error {
+	const (
+		templateDir = "crds"
+	)
+	gen := l.generator(templateDir)
+
+	objs, err := crds()
+	if err != nil {
+		return err
+	}
+
+	encoder := encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4])
+	gen.Add("thanos-operator-crds.yaml", encoder)
+	gen.Generate()
+	return nil
+}
+
 func crds() ([]runtime.Object, error) {
 	const (
 		base      = "https://raw.githubusercontent.com/thanos-community/thanos-operator/" + CRDRefStage + "/config/crd/bases/monitoring.thanos.io_"
@@ -96,6 +116,19 @@ func (s Stage) Operator() {
 			[]templatev1.Parameter{},
 		),
 	))
+
+	gen.Generate()
+}
+
+// Operator Generates the Thanos Operator Manager resources for a local environment.
+func (l Local) Operator() {
+	templateDir := "thanos-operator-manager"
+
+	gen := l.generator(templateDir)
+
+	objs := operatorResources(l.namespace())
+
+	gen.Add("operator.yaml", encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4], objs[5], objs[6], objs[7], objs[8], objs[9], objs[10], objs[11], objs[12], objs[13]))
 
 	gen.Generate()
 }
@@ -253,6 +286,145 @@ func operatorResources(namespace string) []runtime.Object {
 			},
 		},
 
+		// Proxy ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-proxy-role",
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "kube-rbac-proxy",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "proxy-role",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "clusterrole",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{"authentication.k8s.io"},
+					Resources: []string{"tokenreviews"},
+					Verbs:     []string{"create"},
+				},
+				{
+					APIGroups: []string{"authorization.k8s.io"},
+					Resources: []string{"subjectaccessreviews"},
+					Verbs:     []string{"create"},
+				},
+			},
+		},
+
+		// Thanos Compact Editor ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-thanoscompact-editor-role",
+				Labels: map[string]string{
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanoscompacts"},
+					Verbs:     []string{"create", "delete", "get", "list", "patch", "update", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanoscompacts/status"},
+					Verbs:     []string{"get"},
+				},
+			},
+		},
+
+		// Thanos Compact Viewer ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-thanoscompact-viewer-role",
+				Labels: map[string]string{
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanoscompacts"},
+					Verbs:     []string{"get", "list", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanoscompacts/status"},
+					Verbs:     []string{"get"},
+				},
+			},
+		},
+
+		// Thanos Receive Editor ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-thanosreceive-editor-role",
+				Labels: map[string]string{
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanosreceives"},
+					Verbs:     []string{"create", "delete", "get", "list", "patch", "update", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanosreceives/status"},
+					Verbs:     []string{"get"},
+				},
+			},
+		},
+
+		// Thanos Receive Viewer ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-thanosreceive-viewer-role",
+				Labels: map[string]string{
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanosreceives"},
+					Verbs:     []string{"get", "list", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanosreceives/status"},
+					Verbs:     []string{"get"},
+				},
+			},
+		},
+
 		// Leader Election RoleBinding
 		&rbacv1.RoleBinding{
 			TypeMeta: metav1.TypeMeta{
@@ -315,6 +487,70 @@ func operatorResources(namespace string) []runtime.Object {
 				},
 				Selector: map[string]string{
 					"control-plane": "controller-manager",
+				},
+			},
+		},
+
+		// Manager RoleBinding
+		&rbacv1.ClusterRoleBinding{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRoleBinding",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-operator-manager-rolebinding",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "rbac",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "manager-rolebinding",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "clusterrolebinding",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+				},
+			},
+			RoleRef: rbacv1.RoleRef{
+				APIGroup: "rbac.authorization.k8s.io",
+				Kind:     "ClusterRole",
+				Name:     "thanos-operator-manager-role",
+			},
+			Subjects: []rbacv1.Subject{
+				{
+					Kind:      "ServiceAccount",
+					Name:      "thanos-operator-controller-manager",
+					Namespace: namespace,
+				},
+			},
+		},
+
+		// Proxy RoleBinding
+		&rbacv1.ClusterRoleBinding{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRoleBinding",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-operator-proxy-rolebinding",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "kube-rbac-proxy",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "proxy-rolebinding",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "clusterrolebinding",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+				},
+			},
+			RoleRef: rbacv1.RoleRef{
+				APIGroup: "rbac.authorization.k8s.io",
+				Kind:     "ClusterRole",
+				Name:     "thanos-operator-proxy-role",
+			},
+			Subjects: []rbacv1.Subject{
+				{
+					Kind:      "ServiceAccount",
+					Name:      "thanos-operator-controller-manager",
+					Namespace: namespace,
 				},
 			},
 		},

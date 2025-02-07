@@ -30,7 +30,7 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      image: quay.io/jaegertracing/jaeger-agent:1.57.0
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 5
@@ -68,7 +68,7 @@ spec:
     - asyncForwardWorkerCount: 50
       externalLabels:
         replica: $(POD_NAME)
-      image: quay.io/thanos/thanos:v0.37.2
+      image: quay.io/thanos/thanos
       imagePullPolicy: IfNotPresent
       logFormat: logfmt
       logLevel: info
@@ -93,10 +93,11 @@ spec:
       tooFarInFutureTimeWindow: 5m
       tsdbConfig:
         retention: 4h
+      version: v0.37.2
     - asyncForwardWorkerCount: 5
       externalLabels:
         replica: $(POD_NAME)
-      image: quay.io/thanos/thanos:v0.37.2
+      image: quay.io/thanos/thanos
       imagePullPolicy: IfNotPresent
       logFormat: logfmt
       logLevel: info
@@ -123,6 +124,7 @@ spec:
       tooFarInFutureTimeWindow: 5m
       tsdbConfig:
         retention: 1d
+      version: v0.37.2
   routerSpec:
     additionalArgs:
     - |-
@@ -145,7 +147,7 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      image: quay.io/jaegertracing/jaeger-agent:1.57.0
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 5
@@ -177,7 +179,7 @@ spec:
           memory: 64Mi
     externalLabels:
       receive: "true"
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/thanos/thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
@@ -190,4 +192,5 @@ spec:
       requests:
         cpu: 700m
         memory: 10Gi
+    version: v0.37.2
 status: {}

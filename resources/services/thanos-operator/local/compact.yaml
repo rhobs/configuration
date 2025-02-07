@@ -26,7 +26,7 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: metadata.name
-    image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+    image: quay.io/jaegertracing/jaeger-agent:1.57.0
     imagePullPolicy: IfNotPresent
     livenessProbe:
       failureThreshold: 5
@@ -56,42 +56,6 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
-  - args:
-    - -provider=openshift
-    - -https-address=:8443
-    - -http-address=
-    - -email-domain=*
-    - -upstream=http://localhost:10902
-    - -openshift-service-account=thanos-compact-rhobs
-    - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs-local",
-      "namespace": "rhobs-local"}'
-    - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name":
-      "rhobs-local", "namespace": "rhobs-local"}}'
-    - -tls-cert=/etc/tls/private/tls.crt
-    - -tls-key=/etc/tls/private/tls.key
-    - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-    - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
-    - -openshift-ca=/etc/pki/tls/cert.pem
-    - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-    image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.14
-    name: oauth-proxy
-    ports:
-    - containerPort: 8443
-      name: https
-      protocol: TCP
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-    terminationMessagePolicy: FallbackToLogsOnError
-    volumeMounts:
-    - mountPath: /etc/tls/private
-      name: tls
-      readOnly: true
-  additionalVolumes:
-  - name: tls
-    secret:
-      secretName: compact-tls
   compactConfig:
     compactConcurrency: 1
   debugConfig:
@@ -104,7 +68,7 @@ spec:
   featureGates:
     serviceMonitor:
       enable: false
-  image: quay.io/thanos/thanos:v0.37.2
+  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -124,6 +88,7 @@ spec:
     oneHour: 365d
     raw: 365d
   storageSize: 1Gi
+  version: v0.37.2
 status: {}
 ---
 apiVersion: monitoring.thanos.io/v1alpha1
@@ -154,7 +119,7 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: metadata.name
-    image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+    image: quay.io/jaegertracing/jaeger-agent:1.57.0
     imagePullPolicy: IfNotPresent
     livenessProbe:
       failureThreshold: 5
@@ -184,42 +149,6 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
-  - args:
-    - -provider=openshift
-    - -https-address=:8443
-    - -http-address=
-    - -email-domain=*
-    - -upstream=http://localhost:10902
-    - -openshift-service-account=thanos-compact-telemeter
-    - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs-local",
-      "namespace": "rhobs-local"}'
-    - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name":
-      "rhobs-local", "namespace": "rhobs-local"}}'
-    - -tls-cert=/etc/tls/private/tls.crt
-    - -tls-key=/etc/tls/private/tls.key
-    - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-    - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
-    - -openshift-ca=/etc/pki/tls/cert.pem
-    - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-    image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.14
-    name: oauth-proxy
-    ports:
-    - containerPort: 8443
-      name: https
-      protocol: TCP
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-    terminationMessagePolicy: FallbackToLogsOnError
-    volumeMounts:
-    - mountPath: /etc/tls/private
-      name: tls
-      readOnly: true
-  additionalVolumes:
-  - name: tls
-    secret:
-      secretName: compact-tls
   compactConfig:
     compactConcurrency: 1
   debugConfig:
@@ -232,7 +161,7 @@ spec:
   featureGates:
     serviceMonitor:
       enable: false
-  image: quay.io/thanos/thanos:v0.37.2
+  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -252,4 +181,5 @@ spec:
     oneHour: 365d
     raw: 365d
   storageSize: 2Gi
+  version: v0.37.2
 status: {}

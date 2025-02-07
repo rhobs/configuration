@@ -70,7 +70,7 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -96,6 +96,7 @@ objects:
       type: block
     storageSize: 15Gi
     storeLimitsOptions: {}
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosStore
@@ -163,7 +164,7 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -191,6 +192,7 @@ objects:
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosStore
@@ -258,7 +260,7 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -287,6 +289,7 @@ objects:
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosStore
@@ -354,7 +357,7 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -382,4 +385,5 @@ objects:
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}

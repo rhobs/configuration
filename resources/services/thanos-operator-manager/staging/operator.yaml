@@ -67,7 +67,7 @@ objects:
           - --upstream=http://127.0.0.1:8080/
           - --logtostderr=true
           - --v=0
-          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0
+          image: registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0
           imagePullPolicy: IfNotPresent
           name: kube-rbac-proxy
           ports:
@@ -94,7 +94,7 @@ objects:
           - --zap-log-level=debug
           command:
           - /manager
-          image: quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d
+          image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:5a1bceb17409f8b047a973e69aa23e24b08bb49e
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3

@@ -26,7 +26,7 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: metadata.name
-    image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+    image: quay.io/jaegertracing/jaeger-agent:1.57.0
     imagePullPolicy: IfNotPresent
     livenessProbe:
       failureThreshold: 5
@@ -69,7 +69,7 @@ spec:
   featureGates:
     serviceMonitor:
       enable: false
-  image: quay.io/thanos/thanos:v0.37.2
+  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -93,4 +93,5 @@ spec:
     matchLabels:
       operator.thanos.io/rule-file: "true"
   storageSize: 5Gi
+  version: v0.37.2
 status: {}

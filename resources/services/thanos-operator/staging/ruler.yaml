@@ -75,7 +75,7 @@ objects:
     featureGates:
       serviceMonitor:
         enable: false
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
@@ -99,4 +99,5 @@ objects:
       matchLabels:
         operator.thanos.io/rule-file: "true"
     storageSize: 5Gi
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}

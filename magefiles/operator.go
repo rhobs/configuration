@@ -21,9 +21,8 @@ import (
 )
 
 const (
-	CRDMain           = "refs/heads/main"
-	CRDRefStage       = "e676d81ea0bb8252dd8985e0fe03038a2a7e2c30"
-	ManagerImageStage = "quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d"
+	CRDMain     = "refs/heads/main"
+	CRDRefStage = "e676d81ea0bb8252dd8985e0fe03038a2a7e2c30"
 )
 
 // CRDS Generates the CRDs for the Thanos operator.
@@ -35,7 +34,7 @@ func (s Stage) CRDS() error {
 	)
 	gen := s.generator(templateDir)
 
-	objs, err := crds()
+	objs, err := crds(CRDRefStage)
 	if err != nil {
 		return err
 	}
@@ -56,7 +55,7 @@ func (l Local) CRDS() error {
 	)
 	gen := l.generator(templateDir)
 
-	objs, err := crds()
+	objs, err := crds(CRDRefStage)
 	if err != nil {
 		return err
 	}
@@ -67,15 +66,16 @@ func (l Local) CRDS() error {
 	return nil
 }
 
-func crds() ([]runtime.Object, error) {
+func crds(ref string) ([]runtime.Object, error) {
 	const (
-		base      = "https://raw.githubusercontent.com/thanos-community/thanos-operator/" + CRDRefStage + "/config/crd/bases/monitoring.thanos.io_"
 		compact   = "thanoscompacts.yaml"
 		queries   = "thanosqueries.yaml"
 		receivers = "thanosreceives.yaml"
 		rulers    = "thanosrulers.yaml"
 		stores    = "thanosstores.yaml"
 	)
+
+	base := "https://raw.githubusercontent.com/thanos-community/thanos-operator/" + ref + "/config/crd/bases/monitoring.thanos.io_"
 
 	var objs []runtime.Object
 	for _, component := range []string{compact, queries, receivers, rulers, stores} {
@@ -111,7 +111,7 @@ func (s Stage) Operator() {
 
 	gen.Add("operator.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			operatorResources(s.namespace()),
+			operatorResources(s.namespace(), StageMaps),
 			metav1.ObjectMeta{Name: "thanos-operator-manager"},
 			[]templatev1.Parameter{},
 		),
@@ -126,14 +126,14 @@ func (l Local) Operator() {
 
 	gen := l.generator(templateDir)
 
-	objs := operatorResources(l.namespace())
+	objs := operatorResources(l.namespace(), LocalMaps)
 
 	gen.Add("operator.yaml", encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4], objs[5], objs[6], objs[7], objs[8], objs[9], objs[10], objs[11], objs[12], objs[13]))
 
 	gen.Generate()
 }
 
-func operatorResources(namespace string) []runtime.Object {
+func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 	return []runtime.Object{
 		&corev1.ServiceAccount{
 			TypeMeta: metav1.TypeMeta{
@@ -556,11 +556,11 @@ func operatorResources(namespace string) []runtime.Object {
 		},
 
 		// Deployment
-		operatorDeployment(namespace),
+		operatorDeployment(namespace, m),
 	}
 }
 
-func operatorDeployment(namespace string) *appsv1.Deployment {
+func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "apps/v1",
@@ -610,7 +610,7 @@ func operatorDeployment(namespace string) *appsv1.Deployment {
 					Containers: []corev1.Container{
 						{
 							Name:            "kube-rbac-proxy",
-							Image:           "gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0",
+							Image:           TemplateFn("KUBE_RBAC_PROXY", m.Images),
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Args: []string{
 								"--secure-listen-address=0.0.0.0:8443",
@@ -644,7 +644,7 @@ func operatorDeployment(namespace string) *appsv1.Deployment {
 						},
 						{
 							Name:            "manager",
-							Image:           ManagerImageStage,
+							Image:           TemplateFn("THANOS_OPERATOR", m.Images),
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Command:         []string{"/manager"},
 							Args: []string{

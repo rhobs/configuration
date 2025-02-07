@@ -26,7 +26,7 @@ spec:
       valueFrom:
         fieldRef:
           fieldPath: metadata.name
-    image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+    image: quay.io/jaegertracing/jaeger-agent:1.57.0
     imagePullPolicy: IfNotPresent
     livenessProbe:
       failureThreshold: 5
@@ -56,42 +56,6 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
-  - args:
-    - -provider=openshift
-    - -https-address=:8443
-    - -http-address=
-    - -email-domain=*
-    - -upstream=http://localhost:9090
-    - -openshift-service-account=thanos-query-rhobs
-    - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs-local",
-      "namespace": "rhobs-local"}'
-    - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get", "name":
-      "rhobs-local", "namespace": "rhobs-local"}}'
-    - -tls-cert=/etc/tls/private/tls.crt
-    - -tls-key=/etc/tls/private/tls.key
-    - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-    - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
-    - -openshift-ca=/etc/pki/tls/cert.pem
-    - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-    image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.14
-    name: oauth-proxy
-    ports:
-    - containerPort: 8443
-      name: https
-      protocol: TCP
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-    terminationMessagePolicy: FallbackToLogsOnError
-    volumeMounts:
-    - mountPath: /etc/tls/private
-      name: tls
-      readOnly: true
-  additionalVolumes:
-  - name: tls
-    secret:
-      secretName: query-tls
   customStoreLabelSelector:
     matchLabels:
       app.kubernetes.io/part-of: thanos
@@ -100,7 +64,7 @@ spec:
     serviceMonitor:
       enable: false
   grpcProxyStrategy: lazy
-  image: quay.io/thanos/thanos:v0.37.2
+  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -126,7 +90,7 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: metadata.name
-      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      image: quay.io/jaegertracing/jaeger-agent:1.57.0
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 5
@@ -156,44 +120,8 @@ spec:
         requests:
           cpu: 32m
           memory: 64Mi
-    - args:
-      - -provider=openshift
-      - -https-address=:8443
-      - -http-address=
-      - -email-domain=*
-      - -upstream=http://localhost:9090
-      - -openshift-service-account=thanos-query-frontend-rhobs
-      - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs-local",
-        "namespace": "rhobs-local"}'
-      - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-        "name": "rhobs-local", "namespace": "rhobs-local"}}'
-      - -tls-cert=/etc/tls/private/tls.crt
-      - -tls-key=/etc/tls/private/tls.key
-      - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-      - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
-      - -openshift-ca=/etc/pki/tls/cert.pem
-      - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.14
-      name: oauth-proxy
-      ports:
-      - containerPort: 8443
-        name: https
-        protocol: TCP
-      resources:
-        requests:
-          cpu: 100m
-          memory: 100Mi
-      terminationMessagePolicy: FallbackToLogsOnError
-      volumeMounts:
-      - mountPath: /etc/tls/private
-        name: tls
-        readOnly: true
-    additionalVolumes:
-    - name: tls
-      secret:
-        secretName: query-frontend-tls
     compressResponses: true
-    image: quay.io/thanos/thanos:v0.37.2
+    image: quay.io/thanos/thanos
     imagePullPolicy: IfNotPresent
     labelsDefaultTimeRange: 336h
     labelsMaxRetries: 3
@@ -214,6 +142,7 @@ spec:
       requests:
         cpu: 100m
         memory: 1Gi
+    version: v0.37.2
   replicaLabels:
   - prometheus_replica
   - replica
@@ -241,6 +170,7 @@ spec:
     - "30"
     - "60"
     - "120"
+  version: v0.37.2
   webConfig:
     prefixHeader: X-Forwarded-Prefix
 status: {}

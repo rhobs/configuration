@@ -30,7 +30,7 @@ func (s Stage) OperatorCR() {
 	))
 	gen.Add("query.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			[]runtime.Object{queryCR(s.namespace(), StageMaps)},
+			[]runtime.Object{queryCR(s.namespace(), StageMaps, true)},
 			metav1.ObjectMeta{Name: "thanos-query"},
 			[]templatev1.Parameter{},
 		),
@@ -44,7 +44,7 @@ func (s Stage) OperatorCR() {
 	))
 	gen.Add("compact.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			compactCR(s.namespace(), StageMaps),
+			compactCR(s.namespace(), StageMaps, true),
 			metav1.ObjectMeta{Name: "thanos-compact"},
 			[]templatev1.Parameter{},
 		),
@@ -67,22 +67,22 @@ func (l Local) OperatorCR() {
 	gen := l.generator(templateDir)
 
 	gen.Add("receive.yaml", encoding.GhodssYAML(
-		receiveCR(l.namespace(), StageMaps),
+		receiveCR(l.namespace(), LocalMaps),
 	))
 	gen.Add("query.yaml", encoding.GhodssYAML(
-		queryCR(l.namespace(), StageMaps),
+		queryCR(l.namespace(), LocalMaps, false),
 	))
 	gen.Add("ruler.yaml", encoding.GhodssYAML(
-		rulerCR(l.namespace(), StageMaps),
+		rulerCR(l.namespace(), LocalMaps),
 	))
 
-	compactCRs := compactCR(l.namespace(), StageMaps)
+	compactCRs := compactCR(l.namespace(), LocalMaps, false)
 	gen.Add("compact.yaml", encoding.GhodssYAML(
 		compactCRs[0],
 		compactCRs[1],
 	))
 
-	storeCRs := storeCR(l.namespace(), StageMaps)
+	storeCRs := storeCR(l.namespace(), LocalMaps)
 	gen.Add("store.yaml", encoding.GhodssYAML(
 		storeCRs[0],
 		storeCRs[1],
@@ -94,78 +94,80 @@ func (l Local) OperatorCR() {
 }
 
 // tracingSidecar is the jaeger-agent sidecar container for tracing.
-var tracingSidecar = corev1.Container{
-	Name:            "jaeger-agent",
-	Image:           "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
-	ImagePullPolicy: corev1.PullIfNotPresent,
-	Args: []string{
-		"--reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250",
-		"--reporter.type=grpc",
-		"--agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)",
-	},
-	Env: []corev1.EnvVar{
-		{
-			Name: "NAMESPACE",
-			ValueFrom: &corev1.EnvVarSource{
-				FieldRef: &corev1.ObjectFieldSelector{
-					FieldPath: "metadata.namespace",
+func tracingSidecar(m TemplateMaps) corev1.Container {
+	return corev1.Container{
+		Name:            "jaeger-agent",
+		Image:           TemplateFn("JAEGER_AGENT", m.Images),
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		Args: []string{
+			"--reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250",
+			"--reporter.type=grpc",
+			"--agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)",
+		},
+		Env: []corev1.EnvVar{
+			{
+				Name: "NAMESPACE",
+				ValueFrom: &corev1.EnvVarSource{
+					FieldRef: &corev1.ObjectFieldSelector{
+						FieldPath: "metadata.namespace",
+					},
+				},
+			},
+			{
+				Name: "POD",
+				ValueFrom: &corev1.EnvVarSource{
+					FieldRef: &corev1.ObjectFieldSelector{
+						FieldPath: "metadata.name",
+					},
 				},
 			},
 		},
-		{
-			Name: "POD",
-			ValueFrom: &corev1.EnvVarSource{
-				FieldRef: &corev1.ObjectFieldSelector{
-					FieldPath: "metadata.name",
+		Ports: []corev1.ContainerPort{
+			{
+				ContainerPort: 5778,
+				Name:          "configs",
+			},
+			{
+				ContainerPort: 6831,
+				Name:          "jaeger-thrift",
+			},
+			{
+				ContainerPort: 14271,
+				Name:          "metrics",
+			},
+		},
+		ReadinessProbe: &corev1.Probe{
+			ProbeHandler: corev1.ProbeHandler{
+				HTTPGet: &corev1.HTTPGetAction{
+					Path:   "/",
+					Port:   intstr.FromInt(14271),
+					Scheme: corev1.URISchemeHTTP,
 				},
 			},
+			InitialDelaySeconds: 1,
 		},
-	},
-	Ports: []corev1.ContainerPort{
-		{
-			ContainerPort: 5778,
-			Name:          "configs",
+		LivenessProbe: &corev1.Probe{
+			ProbeHandler: corev1.ProbeHandler{
+				HTTPGet: &corev1.HTTPGetAction{
+					Path:   "/",
+					Port:   intstr.FromInt(14271),
+					Scheme: corev1.URISchemeHTTP,
+				},
+			},
+			FailureThreshold:    5,
+			InitialDelaySeconds: 1,
 		},
-		{
-			ContainerPort: 6831,
-			Name:          "jaeger-thrift",
-		},
-		{
-			ContainerPort: 14271,
-			Name:          "metrics",
-		},
-	},
-	ReadinessProbe: &corev1.Probe{
-		ProbeHandler: corev1.ProbeHandler{
-			HTTPGet: &corev1.HTTPGetAction{
-				Path:   "/",
-				Port:   intstr.FromInt(14271),
-				Scheme: corev1.URISchemeHTTP,
+		Resources: corev1.ResourceRequirements{
+			Requests: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("32m"),
+				corev1.ResourceMemory: resource.MustParse("64Mi"),
+			},
+			Limits: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("128m"),
+				corev1.ResourceMemory: resource.MustParse("128Mi"),
 			},
 		},
-		InitialDelaySeconds: 1,
-	},
-	LivenessProbe: &corev1.Probe{
-		ProbeHandler: corev1.ProbeHandler{
-			HTTPGet: &corev1.HTTPGetAction{
-				Path:   "/",
-				Port:   intstr.FromInt(14271),
-				Scheme: corev1.URISchemeHTTP,
-			},
-		},
-		FailureThreshold:    5,
-		InitialDelaySeconds: 1,
-	},
-	Resources: corev1.ResourceRequirements{
-		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("32m"),
-			corev1.ResourceMemory: resource.MustParse("64Mi"),
-		},
-		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("128m"),
-			corev1.ResourceMemory: resource.MustParse("128Mi"),
-		},
-	},
+	}
 }
 
 func storeCR(namespace string, m TemplateMaps) []runtime.Object {
@@ -181,6 +183,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("STORE02W", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE02W", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("STORE02W", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -211,7 +214,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -241,6 +244,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("STORE2W90D", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE2W90D", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("STORE2W90D", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -272,7 +276,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			StorageSize:              TemplateFn("STORE2W90D", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -302,6 +306,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("STORE90D+", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE90D+", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("STORE90D+", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -332,7 +337,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			StorageSize:              TemplateFn("STORE90D+", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -362,6 +367,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("STORE_DEFAULT", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE_DEFAULT", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("STORE_DEFAULT", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -392,7 +398,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			StorageSize:              TemplateFn("STORE_DEFAULT", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -427,6 +433,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 			Router: v1alpha1.RouterSpec{
 				CommonFields: v1alpha1.CommonFields{
 					Image:                ptr.To(TemplateFn("RECEIVE_ROUTER", m.Images)),
+					Version:              ptr.To(TemplateFn("RECEIVE_ROUTER", m.Versions)),
 					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 					LogLevel:             ptr.To(TemplateFn("RECEIVE_ROUTER", m.LogLevels)),
 					LogFormat:            ptr.To("logfmt"),
@@ -439,7 +446,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 				},
 				Additional: v1alpha1.Additional{
 					Containers: []corev1.Container{
-						tracingSidecar,
+						tracingSidecar(m),
 					},
 					Args: []string{
 						`--tracing.config="config":
@@ -454,7 +461,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 				DefaultObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
 				Additional: v1alpha1.Additional{
 					Containers: []corev1.Container{
-						tracingSidecar,
+						tracingSidecar(m),
 					},
 					Args: []string{
 						`--tracing.config="config":
@@ -469,6 +476,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 						Name: "telemeter",
 						CommonFields: v1alpha1.CommonFields{
 							Image:                ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.Images)),
+							Version:              ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.Versions)),
 							ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 							LogLevel:             ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.LogLevels)),
 							LogFormat:            ptr.To("logfmt"),
@@ -499,6 +507,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 						Name: "default",
 						CommonFields: v1alpha1.CommonFields{
 							Image:                ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Images)),
+							Version:              ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Versions)),
 							ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 							LogLevel:             ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.LogLevels)),
 							LogFormat:            ptr.To("logfmt"),
@@ -537,8 +546,8 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 	}
 }
 
-func queryCR(namespace string, m TemplateMaps) runtime.Object {
-	return &v1alpha1.ThanosQuery{
+func queryCR(namespace string, m TemplateMaps, oauth bool) runtime.Object {
+	query := &v1alpha1.ThanosQuery{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
 			Kind:       "ThanosQuery",
@@ -550,6 +559,7 @@ func queryCR(namespace string, m TemplateMaps) runtime.Object {
 		Spec: v1alpha1.ThanosQuerySpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("QUERY", m.Images)),
+				Version:              ptr.To(TemplateFn("QUERY", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("QUERY", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -578,8 +588,7 @@ func queryCR(namespace string, m TemplateMaps) runtime.Object {
 			},
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
-					makeOauthProxy(9090, namespace, "thanos-query-rhobs", "query-tls").GetContainer(),
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -588,13 +597,11 @@ func queryCR(namespace string, m TemplateMaps) runtime.Object {
   "service_name": "thanos-query"
 "type": "JAEGER"`,
 				},
-				Volumes: []corev1.Volume{
-					kghelpers.NewPodVolumeFromSecret("tls", "query-tls"),
-				},
 			},
 			QueryFrontend: &v1alpha1.QueryFrontendSpec{
 				CommonFields: v1alpha1.CommonFields{
 					Image:                ptr.To(TemplateFn("QUERY_FRONTEND", m.Images)),
+					Version:              ptr.To(TemplateFn("QUERY_FRONTEND", m.Versions)),
 					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 					LogLevel:             ptr.To(TemplateFn("QUERY_FRONTEND", m.LogLevels)),
 					LogFormat:            ptr.To("logfmt"),
@@ -615,8 +622,7 @@ func queryCR(namespace string, m TemplateMaps) runtime.Object {
 				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
 				Additional: v1alpha1.Additional{
 					Containers: []corev1.Container{
-						tracingSidecar,
-						makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer(),
+						tracingSidecar(m),
 					},
 					Args: []string{
 						`--tracing.config="config":
@@ -624,9 +630,6 @@ func queryCR(namespace string, m TemplateMaps) runtime.Object {
   "sampler_type": "ratelimiting"
   "service_name": "thanos-query-frontend"
 "type": "JAEGER"`,
-					},
-					Volumes: []corev1.Volume{
-						kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"),
 					},
 				},
 			},
@@ -637,6 +640,15 @@ func queryCR(namespace string, m TemplateMaps) runtime.Object {
 			},
 		},
 	}
+
+	if oauth {
+		query.Spec.Additional.Containers = append(query.Spec.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-rhobs", "query-tls").GetContainer())
+		query.Spec.Additional.Volumes = append(query.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-tls"))
+		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())
+		query.Spec.QueryFrontend.Additional.Volumes = append(query.Spec.QueryFrontend.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"))
+	}
+
+	return query
 }
 
 func rulerCR(namespace string, m TemplateMaps) runtime.Object {
@@ -652,6 +664,7 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 		Spec: v1alpha1.ThanosRulerSpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("RULER", m.Images)),
+				Version:              ptr.To(TemplateFn("RULER", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("RULER", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -685,7 +698,7 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 			StorageSize:         string(TemplateFn("RULER", m.StorageSize)),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -704,7 +717,7 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 	}
 }
 
-func compactCR(namespace string, m TemplateMaps) []runtime.Object {
+func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 	defaultCompact := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -717,6 +730,7 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("COMPACT_DEFAULT", m.Images)),
+				Version:              ptr.To(TemplateFn("COMPACT_DEFAULT", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("COMPACT_DEFAULT", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
@@ -743,8 +757,7 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
 			StorageSize: TemplateFn("COMPACT_DEFAULT", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
-					makeOauthProxy(10902, namespace, "thanos-compact-rhobs", "compact-tls").GetContainer(),
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -753,9 +766,6 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
   "service_name": "thanos-compact"
 "type": "JAEGER"`,
 				},
-				Volumes: []corev1.Volume{
-					kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"),
-				},
 			},
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
@@ -763,6 +773,11 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
 				},
 			},
 		},
+	}
+
+	if oauth {
+		defaultCompact.Spec.Additional.Containers = append(defaultCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-rhobs", "compact-tls").GetContainer())
+		defaultCompact.Spec.Additional.Volumes = append(defaultCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
 	}
 
 	telemeterCompact := &v1alpha1.ThanosCompact{
@@ -776,6 +791,7 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
+				Version:              ptr.To(TemplateFn("COMPACT_TELEMETER", m.Versions)),
 				Image:                ptr.To(TemplateFn("COMPACT_TELEMETER", m.Images)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
 				LogLevel:             ptr.To(TemplateFn("COMPACT_TELEMETER", m.LogLevels)),
@@ -803,8 +819,7 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
 			StorageSize: TemplateFn("COMPACT_TELEMETER", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar,
-					makeOauthProxy(10902, namespace, "thanos-compact-telemeter", "compact-tls").GetContainer(),
+					tracingSidecar(m),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -813,9 +828,6 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
   "service_name": "thanos-compact"
 "type": "JAEGER"`,
 				},
-				Volumes: []corev1.Volume{
-					kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"),
-				},
 			},
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
@@ -823,6 +835,11 @@ func compactCR(namespace string, m TemplateMaps) []runtime.Object {
 				},
 			},
 		},
+	}
+
+	if oauth {
+		telemeterCompact.Spec.Additional.Containers = append(telemeterCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-telemeter", "compact-tls").GetContainer())
+		telemeterCompact.Spec.Additional.Volumes = append(telemeterCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
 	}
 
 	return []runtime.Object{defaultCompact, telemeterCompact}

@@ -80,15 +80,15 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 250m
-      memory: 2Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
       cpu: 50m
-      memory: 512Mi
+      memory: 40Mi
   shardingStrategy:
     shards: 1
     type: block
-  storageSize: 5Gi
+  storageSize: 1Gi
   storeLimitsOptions:
     storeLimitsRequestSamples: 627040000
     storeLimitsRequestSeries: 1000000
@@ -178,15 +178,15 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 250m
-      memory: 2Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
       cpu: 50m
-      memory: 512Mi
+      memory: 40Mi
   shardingStrategy:
     shards: 1
     type: block
-  storageSize: 5Gi
+  storageSize: 1Gi
   storeLimitsOptions:
     storeLimitsRequestSamples: 627040000
     storeLimitsRequestSeries: 1000000
@@ -275,15 +275,15 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 250m
-      memory: 2Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
       cpu: 50m
-      memory: 512Mi
+      memory: 40Mi
   shardingStrategy:
     shards: 1
     type: block
-  storageSize: 5Gi
+  storageSize: 1Gi
   storeLimitsOptions:
     storeLimitsRequestSamples: 627040000
     storeLimitsRequestSeries: 1000000
@@ -372,15 +372,15 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 250m
-      memory: 2Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
       cpu: 50m
-      memory: 512Mi
+      memory: 40Mi
   shardingStrategy:
     shards: 1
     type: block
-  storageSize: 15Gi
+  storageSize: 1Gi
   storeLimitsOptions: {}
   version: v0.37.2
 status: {}

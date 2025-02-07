@@ -279,7 +279,7 @@ var LocalImages = ParamMap[string]{
 	"QUERY":                      CurrentThanosImageStage,
 	"QUERY_FRONTEND":             CurrentThanosImageStage,
 	"JAEGER_AGENT":               "quay.io/jaegertracing/jaeger-agent:1.57.0",
-	"THANOS_OPERATOR":            "quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d",
+	"THANOS_OPERATOR":            "quay.io/thanos/thanos-operator:main-2025-02-07-1114aea",
 	"KUBE_RBAC_PROXY":            "gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0",
 }
 
@@ -299,6 +299,143 @@ var LocalVersions = ParamMap[string]{
 	"QUERY_FRONTEND":             CurrentThanosVersionStage,
 }
 
+// Local PV storage sizes.
+var LocalStorageSize = ParamMap[v1alpha1.StorageSize]{
+	"STORE02W":          "1Gi",
+	"STORE2W90D":        "1Gi",
+	"STORE90D+":         "1Gi",
+	"STORE_DEFAULT":     "1Gi",
+	"RECEIVE_TELEMETER": "1Gi",
+	"RECEIVE_DEFAULT":   "1Gi",
+	"RULER":             "1Gi",
+	"COMPACT_DEFAULT":   "1Gi",
+	"COMPACT_TELEMETER": "1Gi",
+}
+
+// Local resource requirements.
+var LocalResourceRequirements = ParamMap[corev1.ResourceRequirements]{
+	"STORE02W": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"STORE2W90D": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"STORE90D+": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"STORE_DEFAULT": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"RECEIVE_ROUTER": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"RECEIVE_INGESTOR_TELEMETER": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"RECEIVE_INGESTOR_DEFAULT": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"RULER": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"COMPACT_DEFAULT": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"COMPACT_TELEMETER": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"QUERY": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	"QUERY_FRONTEND": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("40Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+}
+
 var StageMaps = TemplateMaps{
 	Images:               StageImages,
 	Versions:             StageVersions,
@@ -313,8 +450,8 @@ var LocalMaps = TemplateMaps{
 	Images:               LocalImages,
 	Versions:             LocalVersions,
 	LogLevels:            StageLogLevels,
-	StorageSize:          StageStorageSize,
+	StorageSize:          LocalStorageSize,
 	Replicas:             StageReplicas,
-	ResourceRequirements: StageResourceRequirements,
+	ResourceRequirements: LocalResourceRequirements,
 	ObjectStorageBucket:  StageObjectStorageBucket,
 }

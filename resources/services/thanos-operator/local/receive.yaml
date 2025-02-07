@@ -76,12 +76,12 @@ spec:
       replicas: 6
       resourceRequirements:
         limits:
-          cpu: "3"
-          memory: 12Gi
+          cpu: 50m
+          memory: 100Mi
         requests:
-          cpu: 700m
-          memory: 10Gi
-      storageSize: 10Gi
+          cpu: 50m
+          memory: 40Mi
+      storageSize: 1Gi
       storeLimitsOptions:
         storeLimitsRequestSamples: 627040000
         storeLimitsRequestSeries: 1000000
@@ -109,12 +109,12 @@ spec:
       replicas: 3
       resourceRequirements:
         limits:
-          cpu: "3"
-          memory: 12Gi
+          cpu: 50m
+          memory: 100Mi
         requests:
-          cpu: 700m
-          memory: 10Gi
-      storageSize: 15Gi
+          cpu: 50m
+          memory: 40Mi
+      storageSize: 1Gi
       storeLimitsOptions: {}
       tenancyConfig:
         defaultTenantID: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
@@ -187,10 +187,10 @@ spec:
     replicationFactor: 3
     resourceRequirements:
       limits:
-        cpu: "3"
-        memory: 12Gi
+        cpu: 50m
+        memory: 100Mi
       requests:
-        cpu: 700m
-        memory: 10Gi
+        cpu: 50m
+        memory: 40Mi
     version: v0.37.2
 status: {}

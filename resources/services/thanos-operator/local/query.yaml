@@ -125,7 +125,7 @@ spec:
     imagePullPolicy: IfNotPresent
     labelsDefaultTimeRange: 336h
     labelsMaxRetries: 3
-    labelsSplitInterval: 2d
+    labelsSplitInterval: 48h
     logFormat: logfmt
     logLevel: info
     logQueriesLongerThan: 10s
@@ -133,15 +133,15 @@ spec:
       matchLabels:
         operator.thanos.io/query-api: "true"
     queryRangeMaxRetries: 3
-    queryRangeSplitInterval: 2d
+    queryRangeSplitInterval: 48h
     replicas: 3
     resourceRequirements:
       limits:
-        cpu: "1"
-        memory: 3Gi
+        cpu: 50m
+        memory: 100Mi
       requests:
-        cpu: 100m
-        memory: 1Gi
+        cpu: 50m
+        memory: 40Mi
     version: v0.37.2
   replicaLabels:
   - prometheus_replica
@@ -150,11 +150,11 @@ spec:
   replicas: 6
   resourceRequirements:
     limits:
-      cpu: "2"
-      memory: 8Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
-      cpu: 500m
-      memory: 2Gi
+      cpu: 50m
+      memory: 40Mi
   telemetryQuantiles:
     duration:
     - "0.1"

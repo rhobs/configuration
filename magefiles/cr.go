@@ -617,8 +617,8 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) runtime.Object {
 						"operator.thanos.io/query-api": "true",
 					},
 				},
-				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("2d")),
-				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("2d")),
+				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("48h")),
+				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("48h")),
 				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
 				Additional: v1alpha1.Additional{
 					Containers: []corev1.Container{

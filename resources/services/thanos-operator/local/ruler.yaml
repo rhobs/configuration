@@ -83,15 +83,15 @@ spec:
   replicas: 2
   resourceRequirements:
     limits:
-      cpu: "4"
-      memory: 8Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
-      cpu: "1"
-      memory: 8Gi
+      cpu: 50m
+      memory: 40Mi
   retention: 48h
   ruleConfigSelector:
     matchLabels:
       operator.thanos.io/rule-file: "true"
-  storageSize: 5Gi
+  storageSize: 1Gi
   version: v0.37.2
 status: {}

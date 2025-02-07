@@ -78,11 +78,11 @@ spec:
     optional: false
   resourceRequirements:
     limits:
-      cpu: "1"
-      memory: 5Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
-      cpu: 100m
-      memory: 1Gi
+      cpu: 50m
+      memory: 40Mi
   retentionConfig:
     fiveMinutes: 365d
     oneHour: 365d
@@ -171,15 +171,15 @@ spec:
     optional: false
   resourceRequirements:
     limits:
-      cpu: "1"
-      memory: 5Gi
+      cpu: 50m
+      memory: 100Mi
     requests:
-      cpu: 100m
-      memory: 1Gi
+      cpu: 50m
+      memory: 40Mi
   retentionConfig:
     fiveMinutes: 365d
     oneHour: 365d
     raw: 365d
-  storageSize: 2Gi
+  storageSize: 1Gi
   version: v0.37.2
 status: {}

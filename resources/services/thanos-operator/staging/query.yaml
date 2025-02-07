@@ -203,7 +203,7 @@ objects:
       imagePullPolicy: IfNotPresent
       labelsDefaultTimeRange: 336h
       labelsMaxRetries: 3
-      labelsSplitInterval: 2d
+      labelsSplitInterval: 48h
       logFormat: logfmt
       logLevel: info
       logQueriesLongerThan: 10s
@@ -211,7 +211,7 @@ objects:
         matchLabels:
           operator.thanos.io/query-api: "true"
       queryRangeMaxRetries: 3
-      queryRangeSplitInterval: 2d
+      queryRangeSplitInterval: 48h
       replicas: 3
       resourceRequirements:
         limits:

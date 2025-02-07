@@ -513,7 +513,7 @@ spec:
         - --zap-log-level=debug
         command:
         - /manager
-        image: quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d
+        image: quay.io/thanos/thanos-operator:main-2025-02-07-1114aea
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3

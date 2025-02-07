@@ -11,10 +11,64 @@ objects:
     name: default
     namespace: rhobs-stage
   spec:
+    additionalArgs:
+    - |-
+      --tracing.config="config":
+        "sampler_param": 2
+        "sampler_type": "ratelimiting"
+        "service_name": "thanos-store"
+      "type": "JAEGER"
+    additionalContainers:
+    - args:
+      - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+      - --reporter.type=grpc
+      - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+      env:
+      - name: NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: POD
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      name: jaeger-agent
+      ports:
+      - containerPort: 5778
+        name: configs
+      - containerPort: 6831
+        name: jaeger-thrift
+      - containerPort: 14271
+        name: metrics
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      resources:
+        limits:
+          cpu: 128m
+          memory: 128Mi
+        requests:
+          cpu: 32m
+          memory: 64Mi
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
     ignoreDeletionMarksDelay: 24h
     image: quay.io/thanos/thanos:v0.37.2
     imagePullPolicy: IfNotPresent
@@ -29,8 +83,15 @@ objects:
       key: thanos.yaml
       name: default-objectstorage
       optional: false
+    replicas: 3
+    resourceRequirements:
+      limits:
+        cpu: 250m
+        memory: 2Gi
+      requests:
+        cpu: 50m
+        memory: 512Mi
     shardingStrategy:
-      shardReplicas: 3
       shards: 1
       type: block
     storageSize: 15GiB
@@ -43,10 +104,64 @@ objects:
     name: telemeter-0to2w
     namespace: rhobs-stage
   spec:
+    additionalArgs:
+    - |-
+      --tracing.config="config":
+        "sampler_param": 2
+        "sampler_type": "ratelimiting"
+        "service_name": "thanos-store"
+      "type": "JAEGER"
+    additionalContainers:
+    - args:
+      - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+      - --reporter.type=grpc
+      - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+      env:
+      - name: NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: POD
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      name: jaeger-agent
+      ports:
+      - containerPort: 5778
+        name: configs
+      - containerPort: 6831
+        name: jaeger-thrift
+      - containerPort: 14271
+        name: metrics
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      resources:
+        limits:
+          cpu: 128m
+          memory: 128Mi
+        requests:
+          cpu: 32m
+          memory: 64Mi
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
     ignoreDeletionMarksDelay: 24h
     image: quay.io/thanos/thanos:v0.37.2
     imagePullPolicy: IfNotPresent
@@ -61,8 +176,15 @@ objects:
       key: thanos.yaml
       name: telemeter-objectstorage
       optional: false
+    replicas: 3
+    resourceRequirements:
+      limits:
+        cpu: 250m
+        memory: 2Gi
+      requests:
+        cpu: 50m
+        memory: 512Mi
     shardingStrategy:
-      shardReplicas: 3
       shards: 1
       type: block
     storageSize: 5GiB
@@ -77,10 +199,64 @@ objects:
     name: telemeter-2wto90d
     namespace: rhobs-stage
   spec:
+    additionalArgs:
+    - |-
+      --tracing.config="config":
+        "sampler_param": 2
+        "sampler_type": "ratelimiting"
+        "service_name": "thanos-store"
+      "type": "JAEGER"
+    additionalContainers:
+    - args:
+      - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+      - --reporter.type=grpc
+      - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+      env:
+      - name: NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: POD
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      name: jaeger-agent
+      ports:
+      - containerPort: 5778
+        name: configs
+      - containerPort: 6831
+        name: jaeger-thrift
+      - containerPort: 14271
+        name: metrics
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      resources:
+        limits:
+          cpu: 128m
+          memory: 128Mi
+        requests:
+          cpu: 32m
+          memory: 64Mi
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
     ignoreDeletionMarksDelay: 24h
     image: quay.io/thanos/thanos:v0.37.2
     imagePullPolicy: IfNotPresent
@@ -96,8 +272,15 @@ objects:
       key: thanos.yaml
       name: telemeter-objectstorage
       optional: false
+    replicas: 3
+    resourceRequirements:
+      limits:
+        cpu: 250m
+        memory: 2Gi
+      requests:
+        cpu: 50m
+        memory: 512Mi
     shardingStrategy:
-      shardReplicas: 3
       shards: 1
       type: block
     storageSize: 5GiB
@@ -112,10 +295,64 @@ objects:
     name: telemeter-90dplus
     namespace: rhobs-stage
   spec:
+    additionalArgs:
+    - |-
+      --tracing.config="config":
+        "sampler_param": 2
+        "sampler_type": "ratelimiting"
+        "service_name": "thanos-store"
+      "type": "JAEGER"
+    additionalContainers:
+    - args:
+      - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+      - --reporter.type=grpc
+      - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+      env:
+      - name: NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: POD
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 5
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      name: jaeger-agent
+      ports:
+      - containerPort: 5778
+        name: configs
+      - containerPort: 6831
+        name: jaeger-thrift
+      - containerPort: 14271
+        name: metrics
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 14271
+          scheme: HTTP
+        initialDelaySeconds: 1
+      resources:
+        limits:
+          cpu: 128m
+          memory: 128Mi
+        requests:
+          cpu: 32m
+          memory: 64Mi
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
     ignoreDeletionMarksDelay: 24h
     image: quay.io/thanos/thanos:v0.37.2
     imagePullPolicy: IfNotPresent
@@ -130,8 +367,15 @@ objects:
       key: thanos.yaml
       name: telemeter-objectstorage
       optional: false
+    replicas: 3
+    resourceRequirements:
+      limits:
+        cpu: 250m
+        memory: 2Gi
+      requests:
+        cpu: 50m
+        memory: 512Mi
     shardingStrategy:
-      shardReplicas: 3
       shards: 1
       type: block
     storageSize: 5GiB

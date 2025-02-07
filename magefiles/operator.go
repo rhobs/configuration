@@ -1,57 +1,92 @@
 package main
 
 import (
-	"github.com/magefile/mage/mg"
+	"fmt"
+	"net/http"
+
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic/encoding"
-	"github.com/thanos-community/thanos-operator/api/v1alpha1"
 
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/utils/ptr"
 )
 
-// Operator Generates the CRs for Thanos Operator.
-func (s Stage) OperatorCR() {
-	mg.SerialDeps(s.CRDS)
-	templateDir := "thanos-operator"
+// CRDS Generates the CRDs for the Thanos operator.
+// This is synced from the latest upstream main at:
+// https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
+func (s Stage) CRDS() error {
+	const (
+		templateDir = "crds"
+	)
+	gen := s.generator(templateDir)
+
+	objs, err := crds()
+	if err != nil {
+		return err
+	}
+
+	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-crds"}, []templatev1.Parameter{})
+	encoder := encoding.GhodssYAML(template)
+	gen.Add("thanos-operator-crds.yaml", encoder)
+	gen.Generate()
+	return nil
+}
+
+func crds() ([]runtime.Object, error) {
+	const (
+		base      = "https://raw.githubusercontent.com/thanos-community/thanos-operator/refs/heads/main/config/crd/bases/monitoring.thanos.io_"
+		compact   = "thanoscompacts.yaml"
+		queries   = "thanosqueries.yaml"
+		receivers = "thanosreceives.yaml"
+		rulers    = "thanosrulers.yaml"
+		stores    = "thanosstores.yaml"
+	)
+
+	var objs []runtime.Object
+	for _, component := range []string{compact, queries, receivers, rulers, stores} {
+		manifest := base + component
+		resp, err := http.Get(manifest)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch %s: %w", manifest, err)
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("failed to fetch %s: %s", manifest, resp.Status)
+		}
+
+		var obj v1.CustomResourceDefinition
+		decoder := yaml.NewYAMLOrJSONDecoder(resp.Body, 100000)
+		err = decoder.Decode(&obj)
+		if err != nil {
+			return nil, fmt.Errorf("failed to decode %s: %w", manifest, err)
+		}
+
+		objs = append(objs, &obj)
+		resp.Body.Close()
+	}
+
+	return objs, nil
+}
+
+// Operator Generates the Thanos Operator Manager resources.
+func (s Stage) Operator() {
+	templateDir := "thanos-operator-manager"
 
 	gen := s.generator(templateDir)
 
-	gen.Add("receive.yaml", encoding.GhodssYAML(
+	gen.Add("operator.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			[]runtime.Object{receiveCR(s.namespace())},
-			metav1.ObjectMeta{Name: "thanos-receive"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("query.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			[]runtime.Object{queryCR(s.namespace())},
-			metav1.ObjectMeta{Name: "thanos-query"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("ruler.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			[]runtime.Object{rulerCR(s.namespace())},
-			metav1.ObjectMeta{Name: "thanos-ruler"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("compact.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			compactCR(s.namespace()),
-			metav1.ObjectMeta{Name: "thanos-compact"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("store.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			storeCR(s.namespace()),
-			metav1.ObjectMeta{Name: "thanos-store"},
+			operatorResources(s.namespace()),
+			metav1.ObjectMeta{Name: "thanos-operator-manager"},
 			[]templatev1.Parameter{},
 		),
 	))
@@ -59,457 +94,374 @@ func (s Stage) OperatorCR() {
 	gen.Generate()
 }
 
-func storeCR(namespace string) []runtime.Object {
-	store0to2w := &v1alpha1.ThanosStore{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosStore",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "telemeter-0to2w",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosStoreSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("STORE02W", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
+func operatorResources(namespace string) []runtime.Object {
+	return []runtime.Object{
+		&corev1.ServiceAccount{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "v1",
+				Kind:       "ServiceAccount",
 			},
-			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
-			ShardingStrategy: v1alpha1.ShardingStrategy{
-				Type:          v1alpha1.Block,
-				Shards:        1,
-				ShardReplicas: 3,
-			},
-			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
-				EnableLazyReader:      ptr.To(true),
-				LazyDownloadStrategy:  ptr.To("lazy"),
-				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
-			},
-			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
-				StoreLimitsRequestSamples: 627040000,
-				StoreLimitsRequestSeries:  1000000,
-			},
-			BlockConfig: &v1alpha1.BlockConfig{
-				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
-				BlockFilesConcurrency:     ptr.To(int32(1)),
-				BlockMetaFetchConcurrency: ptr.To(int32(32)),
-			},
-			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
-			StorageSize:              stageTemplateFn("STORE02W", StageStorageSize),
-		},
-	}
-
-	store2wto90d := &v1alpha1.ThanosStore{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosStore",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "telemeter-2wto90d",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosStoreSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("STORE2W90D", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
-			ShardingStrategy: v1alpha1.ShardingStrategy{
-				Type:          v1alpha1.Block,
-				Shards:        1,
-				ShardReplicas: 3,
-			},
-			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
-				EnableLazyReader:      ptr.To(true),
-				LazyDownloadStrategy:  ptr.To("lazy"),
-				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
-			},
-			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
-				StoreLimitsRequestSamples: 627040000,
-				StoreLimitsRequestSeries:  1000000,
-			},
-			BlockConfig: &v1alpha1.BlockConfig{
-				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
-				BlockFilesConcurrency:     ptr.To(int32(1)),
-				BlockMetaFetchConcurrency: ptr.To(int32(32)),
-			},
-			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-2w")),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			StorageSize:              stageTemplateFn("STORE2W90D", StageStorageSize),
-		},
-	}
-
-	store90dplus := &v1alpha1.ThanosStore{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosStore",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "telemeter-90dplus",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosStoreSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("STORE90D+", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
-			ShardingStrategy: v1alpha1.ShardingStrategy{
-				Type:          v1alpha1.Block,
-				Shards:        1,
-				ShardReplicas: 3,
-			},
-			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
-				EnableLazyReader:      ptr.To(true),
-				LazyDownloadStrategy:  ptr.To("lazy"),
-				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
-			},
-			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
-				StoreLimitsRequestSamples: 627040000,
-				StoreLimitsRequestSeries:  1000000,
-			},
-			BlockConfig: &v1alpha1.BlockConfig{
-				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
-				BlockFilesConcurrency:     ptr.To(int32(1)),
-				BlockMetaFetchConcurrency: ptr.To(int32(32)),
-			},
-			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			StorageSize:              stageTemplateFn("STORE90D+", StageStorageSize),
-		},
-	}
-
-	storeDefault := &v1alpha1.ThanosStore{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosStore",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "default",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosStoreSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("STORE_DEFAULT", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: stageTemplateFn("DEFAULT", StageObjectStorageBucket),
-			ShardingStrategy: v1alpha1.ShardingStrategy{
-				Type:          v1alpha1.Block,
-				Shards:        1,
-				ShardReplicas: 3,
-			},
-			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
-				EnableLazyReader:      ptr.To(true),
-				LazyDownloadStrategy:  ptr.To("lazy"),
-				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
-			},
-			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
-				StoreLimitsRequestSamples: 0,
-				StoreLimitsRequestSeries:  0,
-			},
-			BlockConfig: &v1alpha1.BlockConfig{
-				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
-				BlockFilesConcurrency:     ptr.To(int32(1)),
-				BlockMetaFetchConcurrency: ptr.To(int32(32)),
-			},
-			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-22h")),
-			StorageSize:              stageTemplateFn("STORE_DEFAULT", StageStorageSize),
-		},
-	}
-
-	return []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
-}
-
-func receiveCR(namespace string) runtime.Object {
-	return &v1alpha1.ThanosReceive{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosReceive",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "rhobs",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosReceiveSpec{
-			Router: v1alpha1.RouterSpec{
-				CommonFields: v1alpha1.CommonFields{
-					Image:           ptr.To(stageTemplateFn("RECEIVE_ROUTER", StageImages)),
-					ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-					LogLevel:        ptr.To("info"),
-					LogFormat:       ptr.To("logfmt"),
-				},
-				Replicas:          3,
-				ReplicationFactor: 3,
-				ExternalLabels: map[string]string{
-					"receive": "true",
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-operator-controller-manager",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "rbac",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "controller-manager-sa",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "serviceaccount",
+					"app.kubernetes.io/part-of":    "thanos-operator",
 				},
 			},
-			Ingester: v1alpha1.IngesterSpec{
-				DefaultObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
-				Hashrings: []v1alpha1.IngesterHashringSpec{
+		},
+
+		// Leader Election Role
+		&rbacv1.Role{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "Role",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-operator-leader-election-role",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "rbac",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "leader-election-role",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "role",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{""},
+					Resources: []string{"configmaps"},
+					Verbs:     []string{"get", "list", "watch", "create", "update", "patch", "delete"},
+				},
+				{
+					APIGroups: []string{"coordination.k8s.io"},
+					Resources: []string{"leases"},
+					Verbs:     []string{"get", "list", "watch", "create", "update", "patch", "delete"},
+				},
+				{
+					APIGroups: []string{""},
+					Resources: []string{"events"},
+					Verbs:     []string{"create", "patch"},
+				},
+			},
+		},
+
+		// Manager ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-manager-role",
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					APIGroups: []string{""},
+					Resources: []string{"configmaps", "serviceaccounts", "services"},
+					Verbs:     []string{"create", "delete", "get", "list", "patch", "update", "watch"},
+				},
+				{
+					APIGroups: []string{"apps"},
+					Resources: []string{"deployments", "statefulsets"},
+					Verbs:     []string{"create", "delete", "get", "list", "patch", "update", "watch"},
+				},
+				{
+					APIGroups: []string{"discovery.k8s.io"},
+					Resources: []string{"endpointslices"},
+					Verbs:     []string{"get", "list", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.coreos.com"},
+					Resources: []string{"prometheusrules"},
+					Verbs:     []string{"get", "list", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.coreos.com"},
+					Resources: []string{"servicemonitors"},
+					Verbs:     []string{"create", "delete", "get", "list", "patch", "update", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{"thanoscompacts", "thanosqueries", "thanosreceives", "thanosrulers", "thanosstores"},
+					Verbs:     []string{"create", "delete", "get", "list", "patch", "update", "watch"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{
+						"thanoscompacts/finalizers",
+						"thanosqueries/finalizers",
+						"thanosreceives/finalizers",
+						"thanosrulers/finalizers",
+						"thanosstores/finalizers",
+					},
+					Verbs: []string{"update"},
+				},
+				{
+					APIGroups: []string{"monitoring.thanos.io"},
+					Resources: []string{
+						"thanoscompacts/status",
+						"thanosqueries/status",
+						"thanosreceives/status",
+						"thanosrulers/status",
+						"thanosstores/status",
+					},
+					Verbs: []string{"get", "patch", "update"},
+				},
+				{
+					APIGroups: []string{"policy"},
+					Resources: []string{"poddisruptionbudgets"},
+					Verbs:     []string{"create", "get", "list", "update", "watch"},
+				},
+			},
+		},
+
+		// Metrics Reader ClusterRole
+		&rbacv1.ClusterRole{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "thanos-operator-metrics-reader",
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "kube-rbac-proxy",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "metrics-reader",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "clusterrole",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+				},
+			},
+			Rules: []rbacv1.PolicyRule{
+				{
+					NonResourceURLs: []string{"/metrics"},
+					Verbs:           []string{"get"},
+				},
+			},
+		},
+
+		// Leader Election RoleBinding
+		&rbacv1.RoleBinding{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "RoleBinding",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-operator-leader-election-rolebinding",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "rbac",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "leader-election-rolebinding",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "rolebinding",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+				},
+			},
+			RoleRef: rbacv1.RoleRef{
+				APIGroup: "rbac.authorization.k8s.io",
+				Kind:     "Role",
+				Name:     "thanos-operator-leader-election-role",
+			},
+			Subjects: []rbacv1.Subject{
+				{
+					Kind:      "ServiceAccount",
+					Name:      "thanos-operator-controller-manager",
+					Namespace: namespace,
+				},
+			},
+		},
+
+		// Metrics Service
+		&corev1.Service{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "v1",
+				Kind:       "Service",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-operator-controller-manager-metrics-service",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "kube-rbac-proxy",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "controller-manager-metrics-service",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "service",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+					"control-plane":                "controller-manager",
+				},
+			},
+			Spec: corev1.ServiceSpec{
+				Ports: []corev1.ServicePort{
 					{
-						Name: "telemeter",
-						CommonFields: v1alpha1.CommonFields{
-							Image:           ptr.To(stageTemplateFn("RECEIVE_INGESTOR_TELEMETER", StageImages)),
-							ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-							LogLevel:        ptr.To("info"),
-							LogFormat:       ptr.To("logfmt"),
-						},
-						ExternalLabels: map[string]string{
-							"replica": "$(POD_NAME)",
-						},
-						Replicas: 6,
-						TSDBConfig: v1alpha1.TSDBConfig{
-							Retention: v1alpha1.Duration("4h"),
-						},
-						AsyncForwardWorkerCount:  ptr.To(uint64(50)),
-						TooFarInFutureTimeWindow: ptr.To(v1alpha1.Duration("5m")),
-						StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
-							StoreLimitsRequestSamples: 627040000,
-							StoreLimitsRequestSeries:  1000000,
-						},
-						TenancyConfig: &v1alpha1.TenancyConfig{
-							TenantMatcherType: "exact",
-							DefaultTenantID:   "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-							TenantHeader:      "THANOS-TENANT",
-							TenantLabelName:   "tenant_id",
-						},
-						StorageSize: stageTemplateFn("RECEIVE_TELEMETER", StageStorageSize),
+						Name:       "https",
+						Port:       8443,
+						Protocol:   corev1.ProtocolTCP,
+						TargetPort: intstr.FromString("https"),
 					},
-					{
-						Name: "default",
-						CommonFields: v1alpha1.CommonFields{
-							Image:           ptr.To(stageTemplateFn("RECEIVE_INGESTOR_DEFAULT", StageImages)),
-							ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-							LogLevel:        ptr.To("info"),
-							LogFormat:       ptr.To("logfmt"),
-						},
-						ExternalLabels: map[string]string{
-							"replica": "$(POD_NAME)",
-						},
-						Replicas: 3,
-						TSDBConfig: v1alpha1.TSDBConfig{
-							Retention: v1alpha1.Duration("1d"),
-						},
-						AsyncForwardWorkerCount:  ptr.To(uint64(5)),
-						TooFarInFutureTimeWindow: ptr.To(v1alpha1.Duration("5m")),
-						StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
-							StoreLimitsRequestSamples: 0,
-							StoreLimitsRequestSeries:  0,
-						},
-						TenancyConfig: &v1alpha1.TenancyConfig{
-							TenantMatcherType: "exact",
-							DefaultTenantID:   "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-							TenantHeader:      "THANOS-TENANT",
-							TenantLabelName:   "tenant_id",
-						},
-						ObjectStorageConfig: ptr.To(stageTemplateFn("DEFAULT", StageObjectStorageBucket)),
-						StorageSize:         stageTemplateFn("RECEIVE_DEFAULT", StageStorageSize),
-					},
+				},
+				Selector: map[string]string{
+					"control-plane": "controller-manager",
 				},
 			},
 		},
+
+		// Deployment
+		operatorDeployment(namespace),
 	}
 }
 
-func queryCR(namespace string) runtime.Object {
-	return &v1alpha1.ThanosQuery{
+func operatorDeployment(namespace string) *appsv1.Deployment {
+	return &appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosQuery",
+			APIVersion: "apps/v1",
+			Kind:       "Deployment",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "rhobs",
+			Name:      "thanos-operator-controller-manager",
 			Namespace: namespace,
+			Labels: map[string]string{
+				"app.kubernetes.io/component":  "manager",
+				"app.kubernetes.io/created-by": "thanos-operator",
+				"app.kubernetes.io/instance":   "controller-manager",
+				"app.kubernetes.io/managed-by": "rhobs",
+				"app.kubernetes.io/name":       "deployment",
+				"app.kubernetes.io/part-of":    "thanos-operator",
+				"control-plane":                "controller-manager",
+			},
 		},
-		Spec: v1alpha1.ThanosQuerySpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("QUERY", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			StoreLabelSelector: &metav1.LabelSelector{
+		Spec: appsv1.DeploymentSpec{
+			Replicas:             ptr.To(int32(1)),
+			RevisionHistoryLimit: ptr.To(int32(10)),
+			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
-					"operator.thanos.io/store-api": "true",
-					"app.kubernetes.io/part-of":    "thanos",
+					"control-plane": "controller-manager",
 				},
 			},
-			Replicas: 6,
-			ReplicaLabels: []string{
-				"prometheus_replica",
-				"replica",
-				"rule_replica",
-			},
-			WebConfig: &v1alpha1.WebConfig{
-				PrefixHeader: ptr.To("X-Forwarded-Prefix"),
-			},
-			GRPCProxyStrategy: "lazy",
-			TelemetryQuantiles: &v1alpha1.TelemetryQuantiles{
-				Duration: []string{
-					"0.1", "0.25", "0.75", "1.25", "1.75", "2.5", "3", "5", "10", "15", "30", "60", "120",
+			Strategy: appsv1.DeploymentStrategy{
+				Type: appsv1.RollingUpdateDeploymentStrategyType,
+				RollingUpdate: &appsv1.RollingUpdateDeployment{
+					MaxSurge:       &intstr.IntOrString{Type: intstr.String, StrVal: "25%"},
+					MaxUnavailable: &intstr.IntOrString{Type: intstr.String, StrVal: "25%"},
 				},
 			},
-			QueryFrontend: &v1alpha1.QueryFrontendSpec{
-				CommonFields: v1alpha1.CommonFields{
-					Image:           ptr.To(stageTemplateFn("QUERY_FRONTEND", StageImages)),
-					ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-					LogLevel:        ptr.To("info"),
-					LogFormat:       ptr.To("logfmt"),
-				},
-				Replicas:             3,
-				CompressResponses:    true,
-				LogQueriesLongerThan: ptr.To(v1alpha1.Duration("10s")),
-				LabelsMaxRetries:     3,
-				QueryRangeMaxRetries: 3,
-				QueryLabelSelector: &metav1.LabelSelector{
-					MatchLabels: map[string]string{
-						"operator.thanos.io/query-api": "true",
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						"control-plane": "controller-manager",
+					},
+					Annotations: map[string]string{
+						"kubectl.kubernetes.io/default-container": "manager",
 					},
 				},
-				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("2d")),
-				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("2d")),
-				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
-			},
-		},
-	}
-}
-
-func rulerCR(namespace string) runtime.Object {
-	return &v1alpha1.ThanosRuler{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosRuler",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "rhobs",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosRulerSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("RULER", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			Replicas: 2,
-			RuleConfigSelector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"operator.thanos.io/rule-file": "true",
+				Spec: corev1.PodSpec{
+					SecurityContext: &corev1.PodSecurityContext{
+						RunAsNonRoot: ptr.To(true),
+					},
+					Containers: []corev1.Container{
+						{
+							Name:            "kube-rbac-proxy",
+							Image:           "gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0",
+							ImagePullPolicy: corev1.PullIfNotPresent,
+							Args: []string{
+								"--secure-listen-address=0.0.0.0:8443",
+								"--upstream=http://127.0.0.1:8080/",
+								"--logtostderr=true",
+								"--v=0",
+							},
+							Ports: []corev1.ContainerPort{
+								{
+									ContainerPort: 8443,
+									Name:          "https",
+									Protocol:      corev1.ProtocolTCP,
+								},
+							},
+							Resources: corev1.ResourceRequirements{
+								Limits: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("500m"),
+									corev1.ResourceMemory: resource.MustParse("128Mi"),
+								},
+								Requests: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("5m"),
+									corev1.ResourceMemory: resource.MustParse("64Mi"),
+								},
+							},
+							SecurityContext: &corev1.SecurityContext{
+								AllowPrivilegeEscalation: ptr.To(false),
+								Capabilities: &corev1.Capabilities{
+									Drop: []corev1.Capability{"ALL"},
+								},
+							},
+						},
+						{
+							Name:            "manager",
+							Image:           "quay.io/thanos/thanos-operator:main-2025-01-30-fc8c62d",
+							ImagePullPolicy: corev1.PullIfNotPresent,
+							Command:         []string{"/manager"},
+							Args: []string{
+								"--health-probe-bind-address=:8081",
+								"--metrics-bind-address=127.0.0.1:8080",
+								"--leader-elect",
+								"--zap-encoder=console",
+								"--zap-log-level=debug",
+							},
+							LivenessProbe: &corev1.Probe{
+								ProbeHandler: corev1.ProbeHandler{
+									HTTPGet: &corev1.HTTPGetAction{
+										Path:   "/healthz",
+										Port:   intstr.FromInt(8081),
+										Scheme: corev1.URISchemeHTTP,
+									},
+								},
+								InitialDelaySeconds: 15,
+								PeriodSeconds:       20,
+								TimeoutSeconds:      1,
+								FailureThreshold:    3,
+								SuccessThreshold:    1,
+							},
+							ReadinessProbe: &corev1.Probe{
+								ProbeHandler: corev1.ProbeHandler{
+									HTTPGet: &corev1.HTTPGetAction{
+										Path:   "/readyz",
+										Port:   intstr.FromInt(8081),
+										Scheme: corev1.URISchemeHTTP,
+									},
+								},
+								InitialDelaySeconds: 5,
+								PeriodSeconds:       10,
+								TimeoutSeconds:      1,
+								FailureThreshold:    3,
+								SuccessThreshold:    1,
+							},
+							Resources: corev1.ResourceRequirements{
+								Limits: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("500m"),
+									corev1.ResourceMemory: resource.MustParse("128Mi"),
+								},
+								Requests: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("10m"),
+									corev1.ResourceMemory: resource.MustParse("64Mi"),
+								},
+							},
+							SecurityContext: &corev1.SecurityContext{
+								AllowPrivilegeEscalation: ptr.To(false),
+								Capabilities: &corev1.Capabilities{
+									Drop: []corev1.Capability{"ALL"},
+								},
+							},
+						},
+					},
+					ServiceAccountName:            "thanos-operator-controller-manager",
+					TerminationGracePeriodSeconds: ptr.To(int64(10)),
 				},
 			},
-			PrometheusRuleSelector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"operator.thanos.io/prometheus-rule": "true",
-				},
-			},
-			QueryLabelSelector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"operator.thanos.io/query-api": "true",
-					"app.kubernetes.io/part-of":    "thanos",
-				},
-			},
-			ExternalLabels: map[string]string{
-				"rule_replica": "$(NAME)",
-			},
-			ObjectStorageConfig: stageTemplateFn("DEFAULT", StageObjectStorageBucket),
-			AlertmanagerURL:     "dnssrv+http://alertmanager-cluster." + namespace + ".svc.cluster.local:9093",
-			AlertLabelDrop:      []string{"rule_replica"},
-			Retention:           v1alpha1.Duration("48h"),
-			EvaluationInterval:  v1alpha1.Duration("1m"),
-			StorageSize:         string(stageTemplateFn("RULER", StageStorageSize)),
 		},
 	}
-}
-
-func compactCR(namespace string) []runtime.Object {
-	defaultCompact := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "rhobs",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("COMPACT_DEFAULT", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: stageTemplateFn("DEFAULT", StageObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("365d"),
-				FiveMinutes: v1alpha1.Duration("365d"),
-				OneHour:     v1alpha1.Duration("365d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(1)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				CompactConcurrency: ptr.To(int32(1)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(3)),
-			},
-			StorageSize: stageTemplateFn("COMPACT_DEFAULT", StageStorageSize),
-		},
-	}
-
-	telemeterCompact := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "telemeter",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(stageTemplateFn("COMPACT_TELEMETER", StageImages)),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: stageTemplateFn("TELEMETER", StageObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("365d"),
-				FiveMinutes: v1alpha1.Duration("365d"),
-				OneHour:     v1alpha1.Duration("365d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(1)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				CompactConcurrency: ptr.To(int32(1)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(3)),
-			},
-			StorageSize: stageTemplateFn("COMPACT_TELEMETER", StageStorageSize),
-		},
-	}
-
-	return []runtime.Object{defaultCompact, telemeterCompact}
 }

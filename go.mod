@@ -16,7 +16,7 @@ require (
 	github.com/philipgough/mimic v0.0.0-20250112154247-23e51fe097ae
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.79.2
 	github.com/pyrra-dev/pyrra v0.7.2
-	github.com/thanos-community/thanos-operator v0.0.0-20250130113752-fc8c62d1d638
+	github.com/thanos-community/thanos-operator v0.0.0-20250205110519-e676d81ea0bb
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.32.1
 	k8s.io/apiextensions-apiserver v0.32.0

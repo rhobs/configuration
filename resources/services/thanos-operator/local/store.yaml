@@ -80,11 +80,11 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 50m
-      memory: 100Mi
+      cpu: 20m
+      memory: 50Mi
     requests:
-      cpu: 50m
-      memory: 40Mi
+      cpu: 10m
+      memory: 20Mi
   shardingStrategy:
     shards: 1
     type: block
@@ -178,11 +178,11 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 50m
-      memory: 100Mi
+      cpu: 20m
+      memory: 50Mi
     requests:
-      cpu: 50m
-      memory: 40Mi
+      cpu: 10m
+      memory: 20Mi
   shardingStrategy:
     shards: 1
     type: block
@@ -275,11 +275,11 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 50m
-      memory: 100Mi
+      cpu: 20m
+      memory: 50Mi
     requests:
-      cpu: 50m
-      memory: 40Mi
+      cpu: 10m
+      memory: 20Mi
   shardingStrategy:
     shards: 1
     type: block
@@ -372,11 +372,11 @@ spec:
   replicas: 3
   resourceRequirements:
     limits:
-      cpu: 50m
-      memory: 100Mi
+      cpu: 20m
+      memory: 50Mi
     requests:
-      cpu: 50m
-      memory: 40Mi
+      cpu: 10m
+      memory: 20Mi
   shardingStrategy:
     shards: 1
     type: block

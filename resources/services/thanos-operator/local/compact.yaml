@@ -78,11 +78,11 @@ spec:
     optional: false
   resourceRequirements:
     limits:
-      cpu: 50m
-      memory: 100Mi
+      cpu: 20m
+      memory: 50Mi
     requests:
-      cpu: 50m
-      memory: 40Mi
+      cpu: 10m
+      memory: 20Mi
   retentionConfig:
     fiveMinutes: 365d
     oneHour: 365d
@@ -171,11 +171,11 @@ spec:
     optional: false
   resourceRequirements:
     limits:
-      cpu: 50m
-      memory: 100Mi
+      cpu: 20m
+      memory: 50Mi
     requests:
-      cpu: 50m
-      memory: 40Mi
+      cpu: 10m
+      memory: 20Mi
   retentionConfig:
     fiveMinutes: 365d
     oneHour: 365d

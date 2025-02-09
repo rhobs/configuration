@@ -495,11 +495,11 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 500m
-            memory: 128Mi
+            cpu: 20m
+            memory: 50Mi
           requests:
-            cpu: 5m
-            memory: 64Mi
+            cpu: 10m
+            memory: 20Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -513,7 +513,7 @@ spec:
         - --zap-log-level=debug
         command:
         - /manager
-        image: quay.io/thanos/thanos-operator:main-2025-02-07-1114aea
+        image: quay.io/thanos/thanos-operator:main-2025-02-07-f1e3fa9
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3

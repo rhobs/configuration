@@ -10,7 +10,7 @@ require (
 	github.com/google/go-jsonnet v0.20.0
 	github.com/magefile/mage v1.15.0
 	github.com/observatorium/api v0.1.3-0.20230711132510-96e8799ade44
-	github.com/observatorium/observatorium v0.0.0-20240202123905-a8245e065e5c
+	github.com/observatorium/observatorium v0.0.0-20250205114057-5a240b5d0bec
 	github.com/observatorium/up v0.0.0-20240109115132-3a34c4c4fa24
 	github.com/openshift/api v3.9.0+incompatible
 	github.com/philipgough/mimic v0.0.0-20250112154247-23e51fe097ae
@@ -89,4 +89,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/observatorium/observatorium => ../observatorium
+replace sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.19.1

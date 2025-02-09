@@ -17,7 +17,7 @@ import (
 
 // OperatorCR Generates the RHOBS-specific CRs for Thanos Operator.
 func (s Stage) OperatorCR() {
-	templateDir := "thanos-operator"
+	templateDir := "rhobs-thanos-operator"
 
 	gen := s.generator(templateDir)
 
@@ -62,7 +62,7 @@ func (s Stage) OperatorCR() {
 
 // OperatorCR Generates the RHOBS-specific CRs for Thanos Operator for a local environment.
 func (l Local) OperatorCR() {
-	templateDir := "thanos-operator"
+	templateDir := "rhobs-thanos-operator"
 
 	gen := l.generator(templateDir)
 

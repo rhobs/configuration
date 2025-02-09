@@ -1267,8 +1267,8 @@ github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG
 github.com/syndtr/gocapability v0.0.0-20180916011248-d98352740cb2/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
-github.com/thanos-community/thanos-operator v0.0.0-20250205110519-e676d81ea0bb h1:kb3c7+kyZ6C1dLI4PfLB8R5tOKA/C/Xb9mmAbTKcfzY=
-github.com/thanos-community/thanos-operator v0.0.0-20250205110519-e676d81ea0bb/go.mod h1:WUEGjrCwXyEBo2/ig9oVdOs7cT6ezE9rXhutVr/Rg6g=
+github.com/thanos-community/thanos-operator v0.0.0-20250207153215-f1e3fa959dc8 h1:PuTFsPk9J19gQoAY6pJFzZTUFOVZ52kkEV/TFDw7FN0=
+github.com/thanos-community/thanos-operator v0.0.0-20250207153215-f1e3fa959dc8/go.mod h1:WUEGjrCwXyEBo2/ig9oVdOs7cT6ezE9rXhutVr/Rg6g=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tinylib/msgp v1.0.2/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=
 github.com/tinylib/msgp v1.1.0/go.mod h1:+d+yLhGm8mzTaHzB+wgMYrodPfmZrzkirds8fDWklFE=

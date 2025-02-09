@@ -29,7 +29,7 @@ const (
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (s Stage) CRDS() error {
 	const (
-		templateDir = "crds"
+		templateDir = "bundle"
 	)
 	gen := s.generator(templateDir)
 
@@ -50,7 +50,7 @@ func (s Stage) CRDS() error {
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (l Local) CRDS() error {
 	const (
-		templateDir = "crds"
+		templateDir = "bundle"
 	)
 	gen := l.generator(templateDir)
 
@@ -104,7 +104,7 @@ func crds(ref string) ([]runtime.Object, error) {
 
 // Operator Generates the Thanos Operator Manager resources.
 func (s Stage) Operator() {
-	templateDir := "thanos-operator-manager"
+	templateDir := "bundle"
 
 	gen := s.generator(templateDir)
 
@@ -121,7 +121,7 @@ func (s Stage) Operator() {
 
 // Operator Generates the Thanos Operator Manager resources for a local environment.
 func (l Local) Operator() {
-	templateDir := "thanos-operator-manager"
+	templateDir := "bundle"
 
 	gen := l.generator(templateDir)
 

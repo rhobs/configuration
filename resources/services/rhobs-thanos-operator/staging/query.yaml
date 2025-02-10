@@ -219,7 +219,7 @@ objects:
           memory: 3Gi
         requests:
           cpu: 100m
-          memory: 1Gi
+          memory: 500Mi
       version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
     replicaLabels:
     - prometheus_replica
@@ -229,10 +229,10 @@ objects:
     resourceRequirements:
       limits:
         cpu: "2"
-        memory: 8Gi
+        memory: 5Gi
       requests:
-        cpu: 500m
-        memory: 2Gi
+        cpu: 300m
+        memory: 1Gi
     telemetryQuantiles:
       duration:
       - "0.1"

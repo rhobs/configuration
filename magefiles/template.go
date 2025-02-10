@@ -97,15 +97,15 @@ var StageLogLevels = ParamMap[string]{
 
 // Stage PV storage sizes.
 var StageStorageSize = ParamMap[v1alpha1.StorageSize]{
-	"STORE02W":          "5Gi",
-	"STORE2W90D":        "5Gi",
-	"STORE90D+":         "5Gi",
-	"STORE_DEFAULT":     "15Gi",
-	"RECEIVE_TELEMETER": "10Gi",
-	"RECEIVE_DEFAULT":   "15Gi",
-	"RULER":             "5Gi",
-	"COMPACT_DEFAULT":   "1Gi",
-	"COMPACT_TELEMETER": "2Gi",
+	"STORE02W":          "512Mi",
+	"STORE2W90D":        "512Mi",
+	"STORE90D+":         "512Mi",
+	"STORE_DEFAULT":     "512Mi",
+	"RECEIVE_TELEMETER": "3Gi",
+	"RECEIVE_DEFAULT":   "3Gi",
+	"RULER":             "512Mi",
+	"COMPACT_DEFAULT":   "512Mi",
+	"COMPACT_TELEMETER": "512Mi",
 }
 
 // Stage replicas.
@@ -167,41 +167,41 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 	"RECEIVE_ROUTER": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("700m"),
-			corev1.ResourceMemory: resource.MustParse("10Gi"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
 		},
 		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("3"),
-			corev1.ResourceMemory: resource.MustParse("12Gi"),
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
 		},
 	},
 	"RECEIVE_INGESTOR_TELEMETER": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("700m"),
-			corev1.ResourceMemory: resource.MustParse("10Gi"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
 		},
 		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("3"),
-			corev1.ResourceMemory: resource.MustParse("12Gi"),
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
 		},
 	},
 	"RECEIVE_INGESTOR_DEFAULT": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("700m"),
-			corev1.ResourceMemory: resource.MustParse("10Gi"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
 		},
 		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("3"),
-			corev1.ResourceMemory: resource.MustParse("12Gi"),
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
 		},
 	},
 	"RULER": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("1"),
-			corev1.ResourceMemory: resource.MustParse("8Gi"),
+			corev1.ResourceCPU:    resource.MustParse("700m"),
+			corev1.ResourceMemory: resource.MustParse("1Gi"),
 		},
 		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("4"),
-			corev1.ResourceMemory: resource.MustParse("8Gi"),
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("3Gi"),
 		},
 	},
 	"COMPACT_DEFAULT": corev1.ResourceRequirements{
@@ -226,18 +226,18 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 	},
 	"QUERY": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("500m"),
-			corev1.ResourceMemory: resource.MustParse("2Gi"),
+			corev1.ResourceCPU:    resource.MustParse("300m"),
+			corev1.ResourceMemory: resource.MustParse("1Gi"),
 		},
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("2"),
-			corev1.ResourceMemory: resource.MustParse("8Gi"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
 		},
 	},
 	"QUERY_FRONTEND": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("100m"),
-			corev1.ResourceMemory: resource.MustParse("1Gi"),
+			corev1.ResourceMemory: resource.MustParse("500Mi"),
 		},
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("1"),

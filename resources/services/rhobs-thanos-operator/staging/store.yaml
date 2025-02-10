@@ -94,7 +94,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 15Gi
+    storageSize: 512Mi
     storeLimitsOptions: {}
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
@@ -188,7 +188,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 5Gi
+    storageSize: 512Mi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
@@ -285,7 +285,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 5Gi
+    storageSize: 512Mi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000
@@ -381,7 +381,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 5Gi
+    storageSize: 512Mi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000

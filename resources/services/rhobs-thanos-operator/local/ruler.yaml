@@ -1,0 +1,97 @@
+apiVersion: monitoring.thanos.io/v1alpha1
+kind: ThanosRuler
+metadata:
+  creationTimestamp: null
+  name: rhobs
+  namespace: rhobs-local
+spec:
+  additionalArgs:
+  - |-
+    --tracing.config="config":
+      "sampler_param": 2
+      "sampler_type": "ratelimiting"
+      "service_name": "thanos-ruler"
+    "type": "JAEGER"
+  additionalContainers:
+  - args:
+    - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+    - --reporter.type=grpc
+    - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+    env:
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: POD
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    image: quay.io/jaegertracing/jaeger-agent:1.57.0
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      failureThreshold: 5
+      httpGet:
+        path: /
+        port: 14271
+        scheme: HTTP
+      initialDelaySeconds: 1
+    name: jaeger-agent
+    ports:
+    - containerPort: 5778
+      name: configs
+    - containerPort: 6831
+      name: jaeger-thrift
+    - containerPort: 14271
+      name: metrics
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 14271
+        scheme: HTTP
+      initialDelaySeconds: 1
+    resources:
+      limits:
+        cpu: 128m
+        memory: 128Mi
+      requests:
+        cpu: 32m
+        memory: 64Mi
+  alertLabelDrop:
+  - rule_replica
+  alertmanagerURL: dnssrv+http://alertmanager-cluster.rhobs-local.svc.cluster.local:9093
+  defaultObjectStorageConfig:
+    key: thanos.yaml
+    name: default-objectstorage
+    optional: false
+  evaluationInterval: 1m
+  externalLabels:
+    rule_replica: $(NAME)
+  featureGates:
+    serviceMonitor:
+      enable: false
+  image: quay.io/thanos/thanos
+  imagePullPolicy: IfNotPresent
+  logFormat: logfmt
+  logLevel: info
+  prometheusRuleSelector:
+    matchLabels:
+      operator.thanos.io/prometheus-rule: "true"
+  queryLabelSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: thanos
+      operator.thanos.io/query-api: "true"
+  replicas: 2
+  resourceRequirements:
+    limits:
+      cpu: 20m
+      memory: 50Mi
+    requests:
+      cpu: 10m
+      memory: 20Mi
+  retention: 48h
+  ruleConfigSelector:
+    matchLabels:
+      operator.thanos.io/rule-file: "true"
+  storageSize: 1Gi
+  version: v0.37.2
+status: {}

@@ -21,12 +21,12 @@ const (
 
 // Build Builds the manifests for the stage environment.
 func (Stage) Build() {
-	mg.SerialDeps(Stage.Alertmanager, Stage.CRDS, Stage.Operator, Stage.OperatorCR, Stage.TelemeterRules)
+	mg.SerialDeps(Stage.Alertmanager, Stage.CRDS, Stage.Operator, Stage.OperatorCR, Stage.TelemeterRules, Stage.ServiceMonitors)
 }
 
 // Build Builds the manifests for a local environment.
 func (Local) Build() {
-	mg.SerialDeps(Local.CRDS, Local.Operator, Local.OperatorCR, Local.TelemeterRules)
+	mg.SerialDeps(Local.CRDS, Local.Operator, Local.OperatorCR, Local.TelemeterRules, Local.ServiceMonitors)
 }
 
 func (Stage) generator(component string) *mimic.Generator {

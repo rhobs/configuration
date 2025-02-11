@@ -482,7 +482,7 @@ metadata:
     app.kubernetes.io/managed-by: rhobs
     app.kubernetes.io/name: clusterrole
     app.kubernetes.io/part-of: thanos-operator
-  name: thanos-operator-thanosstore-viewer-role
+  name: thanos-operator-thanosruler-viewer-role
 rules:
 - apiGroups:
   - monitoring.thanos.io

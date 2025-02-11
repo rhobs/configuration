@@ -609,7 +609,7 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 				Kind:       "ClusterRole",
 			},
 			ObjectMeta: metav1.ObjectMeta{
-				Name: "thanos-operator-thanosstore-viewer-role",
+				Name: "thanos-operator-thanosruler-viewer-role",
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "rbac",
 					"app.kubernetes.io/created-by": "thanos-operator",

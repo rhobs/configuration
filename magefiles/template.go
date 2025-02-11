@@ -59,7 +59,7 @@ var StageImages = ParamMap[string]{
 	"QUERY":                      CurrentThanosKonfluxImageStage,
 	"QUERY_FRONTEND":             CurrentThanosKonfluxImageStage,
 	"JAEGER_AGENT":               "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
-	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:5a1bceb17409f8b047a973e69aa23e24b08bb49e",
+	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:973154e2da8f1825fb66d8f2df50a3b9be18b343",
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 }
 

@@ -160,3 +160,17 @@ func sortTemplateParams(params []templatev1.Parameter) []templatev1.Parameter {
 	})
 	return params
 }
+
+func createServiceAccount(name, namespace string, labels map[string]string) *corev1.ServiceAccount {
+	return &corev1.ServiceAccount{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceAccount",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+			Labels:    labels,
+		},
+	}
+}

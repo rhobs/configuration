@@ -7,6 +7,8 @@ import (
 	"github.com/philipgough/mimic/encoding"
 	"github.com/thanos-community/thanos-operator/api/v1alpha1"
 
+	"sort"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -21,38 +23,31 @@ func (s Stage) OperatorCR() {
 
 	gen := s.generator(templateDir)
 
-	gen.Add("receive.yaml", encoding.GhodssYAML(
+	var objs []runtime.Object
+
+	objs = append(objs, receiveCR(s.namespace(), StageMaps))
+	objs = append(objs, queryCR(s.namespace(), StageMaps, true))
+	objs = append(objs, rulerCR(s.namespace(), StageMaps))
+	objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
+	objs = append(objs, storeCR(s.namespace(), StageMaps)...)
+
+	// Sort objects by Kind then Name
+	sort.Slice(objs, func(i, j int) bool {
+		iMeta := objs[i].(metav1.Object)
+		jMeta := objs[j].(metav1.Object)
+		iType := objs[i].GetObjectKind().GroupVersionKind().Kind
+		jType := objs[j].GetObjectKind().GroupVersionKind().Kind
+
+		if iType != jType {
+			return iType < jType
+		}
+		return iMeta.GetName() < jMeta.GetName()
+	})
+
+	gen.Add("rhobs.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			[]runtime.Object{receiveCR(s.namespace(), StageMaps)},
-			metav1.ObjectMeta{Name: "thanos-receive"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("query.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			[]runtime.Object{queryCR(s.namespace(), StageMaps, true)},
-			metav1.ObjectMeta{Name: "thanos-query"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("ruler.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			[]runtime.Object{rulerCR(s.namespace(), StageMaps)},
-			metav1.ObjectMeta{Name: "thanos-ruler"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("compact.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			compactCR(s.namespace(), StageMaps, true),
-			metav1.ObjectMeta{Name: "thanos-compact"},
-			[]templatev1.Parameter{},
-		),
-	))
-	gen.Add("store.yaml", encoding.GhodssYAML(
-		openshift.WrapInTemplate(
-			storeCR(s.namespace(), StageMaps),
-			metav1.ObjectMeta{Name: "thanos-store"},
+			objs,
+			metav1.ObjectMeta{Name: "thanos-rhobs"},
 			[]templatev1.Parameter{},
 		),
 	))
@@ -66,28 +61,37 @@ func (l Local) OperatorCR() {
 
 	gen := l.generator(templateDir)
 
-	gen.Add("receive.yaml", encoding.GhodssYAML(
-		receiveCR(l.namespace(), LocalMaps),
-	))
-	gen.Add("query.yaml", encoding.GhodssYAML(
-		queryCR(l.namespace(), LocalMaps, false),
-	))
-	gen.Add("ruler.yaml", encoding.GhodssYAML(
-		rulerCR(l.namespace(), LocalMaps),
-	))
+	var objs []runtime.Object
 
-	compactCRs := compactCR(l.namespace(), LocalMaps, false)
-	gen.Add("compact.yaml", encoding.GhodssYAML(
-		compactCRs[0],
-		compactCRs[1],
-	))
+	objs = append(objs, receiveCR(l.namespace(), LocalMaps))
+	objs = append(objs, queryCR(l.namespace(), LocalMaps, false))
+	objs = append(objs, rulerCR(l.namespace(), LocalMaps))
+	objs = append(objs, compactCR(l.namespace(), LocalMaps, false)...)
+	objs = append(objs, storeCR(l.namespace(), LocalMaps)...)
 
-	storeCRs := storeCR(l.namespace(), LocalMaps)
-	gen.Add("store.yaml", encoding.GhodssYAML(
-		storeCRs[0],
-		storeCRs[1],
-		storeCRs[2],
-		storeCRs[3],
+	// Sort objects by Kind then Name
+	sort.Slice(objs, func(i, j int) bool {
+		iMeta := objs[i].(metav1.Object)
+		jMeta := objs[j].(metav1.Object)
+		iType := objs[i].GetObjectKind().GroupVersionKind().Kind
+		jType := objs[j].GetObjectKind().GroupVersionKind().Kind
+
+		if iType != jType {
+			return iType < jType
+		}
+		return iMeta.GetName() < jMeta.GetName()
+	})
+
+	gen.Add("rhobs.yaml", encoding.GhodssYAML(
+		objs[0],
+		objs[1],
+		objs[2],
+		objs[3],
+		objs[4],
+		objs[5],
+		objs[6],
+		objs[7],
+		objs[8],
 	))
 
 	gen.Generate()

@@ -9,7 +9,6 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -20,12 +19,6 @@ const (
 	cacheName                   = "memcached"
 	gatewayCacheName            = "api-memcached"
 	defaultGatewayCacheReplicas = 1
-
-	defaultCacheImage    = "registry.redhat.io/rhel8/memcached"
-	defaultCacheImageTag = "1.5-316"
-
-	defaultExporterImage = "quay.io/prometheus/memcached-exporter"
-	defaultExporterTag   = "v0.15.0"
 )
 
 // memcachedConfig holds the configuration for Memcached deployment
@@ -37,12 +30,6 @@ type memcachedConfig struct {
 	Replicas       int32
 	MemcachedImage string
 	ExporterImage  string
-	MemoryLimit    string
-	CPULimit       string
-	MemoryRequest  string
-	CPURequest     string
-	ExporterCPU    string
-	ExporterMemory string
 	ServiceAccount string
 }
 
@@ -93,12 +80,12 @@ func (f *memcachedFlags) ToArgs() []string {
 
 func (s Stage) Cache() {
 	gen := s.generator(cacheName)
-	gwConf := s.gatewayCache(defaultCacheImageTag)
+	gwConf := s.gatewayCache(StageMaps)
 
 	var sms []runtime.Object
 
 	objs := []runtime.Object{
-		memcachedStatefulSet(gwConf),
+		memcachedStatefulSet(gwConf, StageMaps),
 		createServiceAccount(gwConf.ServiceAccount, gwConf.Namespace, gwConf.Labels),
 		createCacheHeadlessService(gwConf),
 	}
@@ -121,7 +108,7 @@ func (s Stage) Cache() {
 
 }
 
-func (s Stage) gatewayCache(imageTag string) *memcachedConfig {
+func (s Stage) gatewayCache(m TemplateMaps) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
 			Memory:         2048,
@@ -131,27 +118,21 @@ func (s Stage) gatewayCache(imageTag string) *memcachedConfig {
 		},
 		Name:           gatewayCacheName,
 		Namespace:      s.namespace(),
-		MemcachedImage: defaultCacheImage + ":" + imageTag,
-		ExporterImage:  defaultExporterImage + ":" + defaultExporterTag,
+		MemcachedImage: m.Images[apiCache],
+		ExporterImage:  m.Images[memcachedExporter],
 		Labels: map[string]string{
 			"app.kubernetes.io/component": gatewayCacheName,
 			"app.kubernetes.io/instance":  "rhobs",
 			"app.kubernetes.io/name":      "memcached",
 			"app.kubernetes.io/part-of":   "observatorium",
-			"app.kubernetes.io/version":   imageTag,
+			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
 		Replicas:       defaultGatewayCacheReplicas,
-		MemoryLimit:    "1844Mi",
-		CPULimit:       "3",
-		MemoryRequest:  "1329Mi",
-		CPURequest:     "500m",
-		ExporterCPU:    "200m",
-		ExporterMemory: "200Mi",
 		ServiceAccount: gatewayCacheName,
 	}
 }
 
-func memcachedStatefulSet(config *memcachedConfig) *appsv1.StatefulSet {
+func memcachedStatefulSet(config *memcachedConfig, m TemplateMaps) *appsv1.StatefulSet {
 	labels := config.Labels
 
 	memcachedContainer := corev1.Container{
@@ -165,16 +146,7 @@ func memcachedStatefulSet(config *memcachedConfig) *appsv1.StatefulSet {
 				Protocol:      corev1.ProtocolTCP,
 			},
 		},
-		Resources: corev1.ResourceRequirements{
-			Limits: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse(config.CPULimit),
-				corev1.ResourceMemory: resource.MustParse(config.MemoryLimit),
-			},
-			Requests: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse(config.CPURequest),
-				corev1.ResourceMemory: resource.MustParse(config.MemoryRequest),
-			},
-		},
+		Resources:                m.ResourceRequirements[apiCache],
 		TerminationMessagePolicy: corev1.TerminationMessageFallbackToLogsOnError,
 		ImagePullPolicy:          corev1.PullIfNotPresent,
 	}
@@ -193,16 +165,7 @@ func memcachedStatefulSet(config *memcachedConfig) *appsv1.StatefulSet {
 				Protocol:      corev1.ProtocolTCP,
 			},
 		},
-		Resources: corev1.ResourceRequirements{
-			Limits: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse(config.ExporterCPU),
-				corev1.ResourceMemory: resource.MustParse(config.ExporterMemory),
-			},
-			Requests: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse("50m"),
-				corev1.ResourceMemory: resource.MustParse("50Mi"),
-			},
-		},
+		Resources:       m.ResourceRequirements[memcachedExporter],
 		ImagePullPolicy: corev1.PullIfNotPresent,
 	}
 

@@ -99,7 +99,7 @@ objects:
               memory: 1844Mi
             requests:
               cpu: 500m
-              memory: 1329Mi
+              memory: 100Mi
           terminationMessagePolicy: FallbackToLogsOnError
         - args:
           - --memcached.address=localhost:11211
@@ -116,8 +116,8 @@ objects:
               cpu: 200m
               memory: 200Mi
             requests:
-              cpu: 50m
-              memory: 50Mi
+              cpu: 100m
+              memory: 100Mi
         securityContext: {}
         serviceAccountName: api-memcached
     updateStrategy: {}

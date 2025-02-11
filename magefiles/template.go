@@ -40,6 +40,15 @@ const (
 
 	CurrentThanosKonfluxImageStage   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
 	CurrentThanosKonfluxVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
+
+	memcachedTag           = "1.5-316"
+	memcachedImage         = "registry.redhat.io/rhel8/memcached" + ":" + memcachedTag
+	memcachedExporterImage = "quay.io/prometheus/memcached-exporter:v0.15.0"
+)
+
+const (
+	apiCache          = "API_CACHE"
+	memcachedExporter = "MEMCACHED_EXPORTER"
 )
 
 var logLevels = []string{"debug", "info", "warn", "error"}
@@ -61,6 +70,8 @@ var StageImages = ParamMap[string]{
 	"JAEGER_AGENT":               "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:5a1bceb17409f8b047a973e69aa23e24b08bb49e",
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
+	apiCache:                     memcachedImage,
+	memcachedExporter:            memcachedExporterImage,
 }
 
 // Stage images.
@@ -77,6 +88,7 @@ var StageVersions = ParamMap[string]{
 	"COMPACT_TELEMETER":          CurrentThanosKonfluxVersionStage,
 	"QUERY":                      CurrentThanosKonfluxVersionStage,
 	"QUERY_FRONTEND":             CurrentThanosKonfluxVersionStage,
+	apiCache:                     memcachedTag,
 }
 
 // Stage log levels.
@@ -120,6 +132,7 @@ var StageReplicas = ParamMap[int32]{
 	"RULER":                      2,
 	"QUERY":                      6,
 	"QUERY_FRONTEND":             3,
+	apiCache:                     1,
 }
 
 // Stage resource requirements.
@@ -262,6 +275,26 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("5m"),
 			corev1.ResourceMemory: resource.MustParse("64Mi"),
+		},
+	},
+	apiCache: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("3"),
+			corev1.ResourceMemory: resource.MustParse("1844Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("500m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	memcachedExporter: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("200m"),
+			corev1.ResourceMemory: resource.MustParse("200Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
 }

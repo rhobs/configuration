@@ -247,11 +247,11 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 	"MANAGER": corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("500m"),
-			corev1.ResourceMemory: resource.MustParse("128Mi"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
 		},
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("10m"),
-			corev1.ResourceMemory: resource.MustParse("64Mi"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
 		},
 	},
 	"KUBE_RBAC_PROXY": corev1.ResourceRequirements{

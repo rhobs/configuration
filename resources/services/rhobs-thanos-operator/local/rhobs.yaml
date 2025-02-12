@@ -56,6 +56,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   compactConfig:
     compactConcurrency: 1
   debugConfig:
@@ -68,7 +69,6 @@ spec:
   featureGates:
     serviceMonitor:
       enable: false
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -149,6 +149,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   compactConfig:
     compactConcurrency: 1
   debugConfig:
@@ -161,7 +162,6 @@ spec:
   featureGates:
     serviceMonitor:
       enable: false
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -242,6 +242,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   customStoreLabelSelector:
     matchLabels:
       app.kubernetes.io/part-of: thanos
@@ -250,7 +251,6 @@ spec:
     serviceMonitor:
       enable: false
   grpcProxyStrategy: lazy
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -306,8 +306,8 @@ spec:
         requests:
           cpu: 32m
           memory: 64Mi
+    baseImage: quay.io/thanos/thanos
     compressResponses: true
-    image: quay.io/thanos/thanos
     imagePullPolicy: IfNotPresent
     labelsDefaultTimeRange: 336h
     labelsMaxRetries: 3
@@ -429,9 +429,9 @@ spec:
       optional: false
     hashrings:
     - asyncForwardWorkerCount: 50
+      baseImage: quay.io/thanos/thanos
       externalLabels:
         replica: $(POD_NAME)
-      image: quay.io/thanos/thanos
       imagePullPolicy: IfNotPresent
       logFormat: logfmt
       logLevel: info
@@ -458,9 +458,9 @@ spec:
         retention: 4h
       version: v0.37.2
     - asyncForwardWorkerCount: 5
+      baseImage: quay.io/thanos/thanos
       externalLabels:
         replica: $(POD_NAME)
-      image: quay.io/thanos/thanos
       imagePullPolicy: IfNotPresent
       logFormat: logfmt
       logLevel: info
@@ -540,9 +540,9 @@ spec:
         requests:
           cpu: 32m
           memory: 64Mi
+    baseImage: quay.io/thanos/thanos
     externalLabels:
       receive: "true"
-    image: quay.io/thanos/thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
@@ -619,6 +619,7 @@ spec:
   alertLabelDrop:
   - rule_replica
   alertmanagerURL: dnssrv+http://alertmanager-cluster.rhobs-local.svc.cluster.local:9093
+  baseImage: quay.io/thanos/thanos
   defaultObjectStorageConfig:
     key: thanos.yaml
     name: default-objectstorage
@@ -629,7 +630,6 @@ spec:
   featureGates:
     serviceMonitor:
       enable: false
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
@@ -714,6 +714,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   blockConfig:
     blockDiscoveryStrategy: concurrent
     blockFilesConcurrency: 1
@@ -722,7 +723,6 @@ spec:
     serviceMonitor:
       enable: false
   ignoreDeletionMarksDelay: 24h
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   indexHeaderConfig:
     enableLazyReader: true
@@ -809,6 +809,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   blockConfig:
     blockDiscoveryStrategy: concurrent
     blockFilesConcurrency: 1
@@ -817,7 +818,6 @@ spec:
     serviceMonitor:
       enable: false
   ignoreDeletionMarksDelay: 24h
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   indexHeaderConfig:
     enableLazyReader: true
@@ -906,6 +906,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   blockConfig:
     blockDiscoveryStrategy: concurrent
     blockFilesConcurrency: 1
@@ -914,7 +915,6 @@ spec:
     serviceMonitor:
       enable: false
   ignoreDeletionMarksDelay: 24h
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   indexHeaderConfig:
     enableLazyReader: true
@@ -1004,6 +1004,7 @@ spec:
       requests:
         cpu: 32m
         memory: 64Mi
+  baseImage: quay.io/thanos/thanos
   blockConfig:
     blockDiscoveryStrategy: concurrent
     blockFilesConcurrency: 1
@@ -1012,7 +1013,6 @@ spec:
     serviceMonitor:
       enable: false
   ignoreDeletionMarksDelay: 24h
-  image: quay.io/thanos/thanos
   imagePullPolicy: IfNotPresent
   indexHeaderConfig:
     enableLazyReader: true

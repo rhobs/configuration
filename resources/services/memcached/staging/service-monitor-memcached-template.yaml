@@ -23,7 +23,9 @@ objects:
       interval: 30s
       path: /metrics
       port: metrics
-    namespaceSelector: {}
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
     selector:
       matchLabels:
         app.kubernetes.io/component: api-memcached

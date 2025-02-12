@@ -262,6 +262,9 @@ func createCacheServiceMonitor(config *memcachedConfig) *monitoringv1.ServiceMon
 			Selector: metav1.LabelSelector{
 				MatchLabels: config.Labels,
 			},
+			NamespaceSelector: monitoringv1.NamespaceSelector{
+				MatchNames: []string{config.Namespace},
+			},
 		},
 	}
 }

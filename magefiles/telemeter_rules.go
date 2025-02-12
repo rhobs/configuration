@@ -98,7 +98,7 @@ func rules() []monitoringv1.RuleGroup {
 				},
 				{
 					Record: "id_version:cluster_available",
-					Expr:   intstr.FromString("bottomk by (_id) (1, max by (_id, version) (0 * cluster_version{type=\"failure\"}) or max by (_id, version) (1 + 0 * cluster_version{type=\"current\"})"),
+					Expr:   intstr.FromString("bottomk by (_id) (1, max by (_id, version) (0 * cluster_version{type=\"failure\"}) or max by (_id, version) (1 + 0 * cluster_version{type=\"current\"}))"),
 					Labels: tenantLbls,
 				},
 				{

@@ -62,6 +62,7 @@ objects:
         requests:
           cpu: 32m
           memory: 64Mi
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
@@ -70,7 +71,6 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -192,6 +192,7 @@ objects:
     - name: tls
       secret:
         secretName: compact-tls
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
       compactConcurrency: 1
     debugConfig:
@@ -204,7 +205,6 @@ objects:
     featureGates:
       serviceMonitor:
         enable: false
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
@@ -320,6 +320,7 @@ objects:
     - name: tls
       secret:
         secretName: query-tls
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     customStoreLabelSelector:
       matchLabels:
         app.kubernetes.io/part-of: thanos
@@ -328,7 +329,6 @@ objects:
       serviceMonitor:
         enable: false
     grpcProxyStrategy: lazy
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
@@ -420,8 +420,8 @@ objects:
       - name: tls
         secret:
           secretName: query-frontend-tls
+      baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
       compressResponses: true
-      image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
       imagePullPolicy: IfNotPresent
       labelsDefaultTimeRange: 336h
       labelsMaxRetries: 3
@@ -542,9 +542,9 @@ objects:
         optional: false
       hashrings:
       - asyncForwardWorkerCount: 50
+        baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
         externalLabels:
           replica: $(POD_NAME)
-        image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
         imagePullPolicy: IfNotPresent
         logFormat: logfmt
         logLevel: info
@@ -571,9 +571,9 @@ objects:
           retention: 4h
         version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
       - asyncForwardWorkerCount: 5
+        baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
         externalLabels:
           replica: $(POD_NAME)
-        image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
         imagePullPolicy: IfNotPresent
         logFormat: logfmt
         logLevel: info
@@ -653,9 +653,9 @@ objects:
           requests:
             cpu: 32m
             memory: 64Mi
+      baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
       externalLabels:
         receive: "true"
-      image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
       imagePullPolicy: IfNotPresent
       logFormat: logfmt
       logLevel: info
@@ -731,6 +731,7 @@ objects:
     alertLabelDrop:
     - rule_replica
     alertmanagerURL: dnssrv+http://alertmanager-cluster.rhobs-stage.svc.cluster.local:9093
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     defaultObjectStorageConfig:
       key: thanos.yaml
       name: default-objectstorage
@@ -741,7 +742,6 @@ objects:
     featureGates:
       serviceMonitor:
         enable: false
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
@@ -825,6 +825,7 @@ objects:
         requests:
           cpu: 32m
           memory: 64Mi
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
@@ -833,7 +834,6 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -921,6 +921,7 @@ objects:
         requests:
           cpu: 32m
           memory: 64Mi
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
@@ -929,7 +930,6 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -1018,6 +1018,7 @@ objects:
         requests:
           cpu: 32m
           memory: 64Mi
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     blockConfig:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
@@ -1026,7 +1027,6 @@ objects:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true
@@ -1150,6 +1150,7 @@ objects:
     - name: tls
       secret:
         secretName: compact-tls
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
       compactConcurrency: 1
     debugConfig:
@@ -1162,7 +1163,6 @@ objects:
     featureGates:
       serviceMonitor:
         enable: false
-    image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info

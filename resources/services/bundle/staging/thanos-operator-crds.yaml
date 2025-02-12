@@ -3567,6 +3567,10 @@ objects:
                     - name
                     type: object
                   type: array
+                baseImage:
+                  description: Base container image (without tags) to use for the
+                    Thanos components deployed via operator.
+                  type: string
                 blockConfig:
                   description: BlockConfig defines settings for block handling.
                   properties:
@@ -3583,6 +3587,7 @@ objects:
                       description: |-
                         BlockFilesConcurrency is the number of goroutines to use when to use when
                         fetching/uploading block files from object storage.
+                        Only used for Compactor, no-op for store gateway
                       format: int32
                       type: integer
                     blockMetaFetchConcurrency:
@@ -3711,9 +3716,6 @@ objects:
                           type: object
                       type: object
                   type: object
-                image:
-                  description: Container image to use for the Thanos components.
-                  type: string
                 imagePullPolicy:
                   default: IfNotPresent
                   description: |-
@@ -3958,7 +3960,7 @@ objects:
                   type: string
                 version:
                   description: |-
-                    Version of Thanos to be deployed.
+                    Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                     If not specified, the operator assumes the latest upstream version of
                     Thanos available at the time when the version of the operator was released.
                   type: string
@@ -7604,6 +7606,10 @@ objects:
                     - name
                     type: object
                   type: array
+                baseImage:
+                  description: Base container image (without tags) to use for the
+                    Thanos components deployed via operator.
+                  type: string
                 customStoreLabelSelector:
                   description: |-
                     StoreLabelSelector enables adding additional labels to build a custom label selector
@@ -7691,9 +7697,6 @@ objects:
                   enum:
                   - eager
                   - lazy
-                  type: string
-                image:
-                  description: Container image to use for the Thanos components.
                   type: string
                 imagePullPolicy:
                   default: IfNotPresent
@@ -11297,13 +11300,14 @@ objects:
                         - name
                         type: object
                       type: array
+                    baseImage:
+                      description: Base container image (without tags) to use for
+                        the Thanos components deployed via operator.
+                      type: string
                     compressResponses:
                       default: true
                       description: CompressResponses enables response compression
                       type: boolean
-                    image:
-                      description: Container image to use for the Thanos components.
-                      type: string
                     imagePullPolicy:
                       default: IfNotPresent
                       description: |-
@@ -11546,7 +11550,7 @@ objects:
                       type: object
                     version:
                       description: |-
-                        Version of Thanos to be deployed.
+                        Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                         If not specified, the operator assumes the latest upstream version of
                         Thanos available at the time when the version of the operator was released.
                       type: string
@@ -11652,7 +11656,7 @@ objects:
                   type: object
                 version:
                   description: |-
-                    Version of Thanos to be deployed.
+                    Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                     If not specified, the operator assumes the latest upstream version of
                     Thanos available at the time when the version of the operator was released.
                   type: string
@@ -15417,6 +15421,10 @@ objects:
                               requests.
                             format: int64
                             type: integer
+                          baseImage:
+                            description: Base container image (without tags) to use
+                              for the Thanos components deployed via operator.
+                            type: string
                           externalLabels:
                             additionalProperties:
                               type: string
@@ -15426,9 +15434,6 @@ objects:
                               blocks.
                             minProperties: 1
                             type: object
-                          image:
-                            description: Container image to use for the Thanos components.
-                            type: string
                           imagePullPolicy:
                             default: IfNotPresent
                             description: |-
@@ -15678,7 +15683,7 @@ objects:
                             type: object
                           version:
                             description: |-
-                              Version of Thanos to be deployed.
+                              Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                               If not specified, the operator assumes the latest upstream version of
                               Thanos available at the time when the version of the operator was released.
                             type: string
@@ -19245,6 +19250,10 @@ objects:
                         - name
                         type: object
                       type: array
+                    baseImage:
+                      description: Base container image (without tags) to use for
+                        the Thanos components deployed via operator.
+                      type: string
                     externalLabels:
                       additionalProperties:
                         type: string
@@ -19254,9 +19263,6 @@ objects:
                         to the ingesters.
                       minProperties: 1
                       type: object
-                    image:
-                      description: Container image to use for the Thanos components.
-                      type: string
                     imagePullPolicy:
                       default: IfNotPresent
                       description: |-
@@ -19388,7 +19394,7 @@ objects:
                       type: object
                     version:
                       description: |-
-                        Version of Thanos to be deployed.
+                        Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                         If not specified, the operator assumes the latest upstream version of
                         Thanos available at the time when the version of the operator was released.
                       type: string
@@ -23055,6 +23061,10 @@ objects:
                     'dns+' or 'dnssrv+' to detect Alertmanager IPs through respective DNS lookups.
                   pattern: ^((dns\+)?(dnssrv\+)?(http|https):\/\/)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(:[0-9]{1,5})?$
                   type: string
+                baseImage:
+                  description: Base container image (without tags) to use for the
+                    Thanos components deployed via operator.
+                  type: string
                 defaultObjectStorageConfig:
                   description: ObjectStorageConfig is the secret that contains the
                     object storage configuration for Ruler to upload blocks.
@@ -23125,9 +23135,6 @@ objects:
                           type: object
                       type: object
                   type: object
-                image:
-                  description: Container image to use for the Thanos components.
-                  type: string
                 imagePullPolicy:
                   default: IfNotPresent
                   description: |-
@@ -23418,7 +23425,7 @@ objects:
                   type: string
                 version:
                   description: |-
-                    Version of Thanos to be deployed.
+                    Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                     If not specified, the operator assumes the latest upstream version of
                     Thanos available at the time when the version of the operator was released.
                   type: string
@@ -27068,6 +27075,10 @@ objects:
                     - name
                     type: object
                   type: array
+                baseImage:
+                  description: Base container image (without tags) to use for the
+                    Thanos components deployed via operator.
+                  type: string
                 blockConfig:
                   description: BlockConfig defines settings for block handling.
                   properties:
@@ -27084,6 +27095,7 @@ objects:
                       description: |-
                         BlockFilesConcurrency is the number of goroutines to use when to use when
                         fetching/uploading block files from object storage.
+                        Only used for Compactor, no-op for store gateway
                       format: int32
                       type: integer
                     blockMetaFetchConcurrency:
@@ -27179,9 +27191,6 @@ objects:
                     If delete-delay duration is provided to compactor or bucket verify component, it will upload deletion-mark.json
                     file to mark after what duration the block should be deleted rather than deleting the block straight away.
                   pattern: ^-?(0|(([0-9]+)y)?(([0-9]+)w)?(([0-9]+)d)?(([0-9]+)h)?(([0-9]+)m)?(([0-9]+)s)?(([0-9]+)ms)?)$
-                  type: string
-                image:
-                  description: Container image to use for the Thanos components.
                   type: string
                 imagePullPolicy:
                   default: IfNotPresent
@@ -27459,7 +27468,7 @@ objects:
                   type: object
                 version:
                   description: |-
-                    Version of Thanos to be deployed.
+                    Version of Thanos to be deployed. Could also be image tag in case of custom downstream image.
                     If not specified, the operator assumes the latest upstream version of
                     Thanos available at the time when the version of the operator was released.
                   type: string

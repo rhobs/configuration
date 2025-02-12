@@ -14,8 +14,9 @@ objects:
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
       app.kubernetes.io/version: 1.5-316
+      prometheus: app-sre
     name: api-memcached
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - honorLabels: true

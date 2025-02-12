@@ -237,6 +237,9 @@ func createCacheHeadlessService(config *memcachedConfig) *corev1.Service {
 }
 
 func createCacheServiceMonitor(config *memcachedConfig) *monitoringv1.ServiceMonitor {
+	labels := deepCopyMap(config.Labels)
+	labels[openshiftCustomerMonitoringLabel] = openShiftClusterMonitoringLabelValue
+
 	return &monitoringv1.ServiceMonitor{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ServiceMonitor",
@@ -244,8 +247,8 @@ func createCacheServiceMonitor(config *memcachedConfig) *monitoringv1.ServiceMon
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      config.Name,
-			Namespace: config.Namespace,
-			Labels:    config.Labels,
+			Namespace: openshiftCustomerMonitoringNamespace,
+			Labels:    labels,
 		},
 		Spec: monitoringv1.ServiceMonitorSpec{
 			Endpoints: []monitoringv1.Endpoint{

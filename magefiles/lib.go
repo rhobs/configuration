@@ -21,6 +21,10 @@ const (
 	serviceRedirectAnnotation       = "serviceaccounts.openshift.io/oauth-redirectreference.application"
 
 	serviceMonitorTemplate = "service-monitor-template.yaml"
+
+	openshiftCustomerMonitoringLabel     = "prometheus"
+	openShiftClusterMonitoringLabelValue = "app-sre"
+	openshiftCustomerMonitoringNamespace = "openshift-customer-monitoring"
 )
 
 type resourceRequirements struct {
@@ -137,12 +141,7 @@ func getAndRemoveObject[T metav1.Object](objects []runtime.Object, name string) 
 
 // postProcessServiceMonitor updates the service monitor to work with the app-sre prometheus.
 func postProcessServiceMonitor(serviceMonitor *monv1.ServiceMonitor, namespaceSelector string) encoding.Encoder {
-	const (
-		openshiftCustomerMonitoringLabel     = "prometheus"
-		openShiftClusterMonitoringLabelValue = "app-sre"
-	)
-
-	serviceMonitor.ObjectMeta.Namespace = "openshift-customer-monitoring"
+	serviceMonitor.ObjectMeta.Namespace = openshiftCustomerMonitoringNamespace
 	serviceMonitor.Spec.NamespaceSelector.MatchNames = []string{namespaceSelector}
 	serviceMonitor.ObjectMeta.Labels[openshiftCustomerMonitoringLabel] = openShiftClusterMonitoringLabelValue
 
@@ -173,4 +172,16 @@ func createServiceAccount(name, namespace string, labels map[string]string) *cor
 			Labels:    labels,
 		},
 	}
+}
+
+func deepCopyMap(m map[string]string) map[string]string {
+	if m == nil {
+		return nil
+	}
+
+	result := make(map[string]string, len(m))
+	for k, v := range m {
+		result[k] = v
+	}
+	return result
 }

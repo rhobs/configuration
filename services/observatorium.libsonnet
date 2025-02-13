@@ -478,11 +478,6 @@ local obsctlReloader = (import 'github.com/rhobs/obsctl-reloader/jsonnet/lib/obs
         memory: '${OBSERVATORIUM_API_MEMORY_LIMIT}',
       },
     },
-    internal: {
-      tracing: {
-        endpoint: 'localhost:6831',
-      },
-    },
   }) + {
     // TODO: Enable in a separate MR.
     // local oauth = (import 'sidecars/oauth-proxy.libsonnet')({

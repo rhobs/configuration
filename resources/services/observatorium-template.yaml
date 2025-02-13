@@ -1116,7 +1116,6 @@ objects:
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
           - --middleware.rate-limiter.grpc-address=observatorium-gubernator.${NAMESPACE}.svc.cluster.local:8081
-          - --internal.tracing.endpoint=localhost:6831
           image: ${OBSERVATORIUM_API_IMAGE}:${OBSERVATORIUM_API_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           livenessProbe:

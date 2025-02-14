@@ -46,7 +46,7 @@ func (s Stage) OperatorCR() {
 
 	gen.Add("rhobs.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			objs,
+			[]runtime.Object{},
 			metav1.ObjectMeta{Name: "thanos-rhobs"},
 			[]templatev1.Parameter{},
 		),

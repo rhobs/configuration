@@ -4,7 +4,9 @@ metadata:
   creationTimestamp: null
   name: observatorium-api-service-monitor
 objects:
-- metadata:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: api

@@ -87,6 +87,10 @@ func gatewayDeployment(m TemplateMaps, namespace, amsURL string) *appsv1.Deploym
 	metaLabels, selectorLabels := gatewayLabels(m)
 	replicas := m.Replicas[observatoriumAPI]
 	return &appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Deployment",
+			APIVersion: "apps/v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      gatewayName,
 			Namespace: namespace,
@@ -379,6 +383,10 @@ func createJaegerAgentContainer(m TemplateMaps) corev1.Container {
 func createGatewayService(m TemplateMaps, namespace string) *corev1.Service {
 	labels, selectorLabels := gatewayLabels(m)
 	return &corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Service",
+			APIVersion: "v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      gatewayName,
 			Namespace: namespace,
@@ -443,6 +451,10 @@ func gatewayRBAC(m TemplateMaps, namespace, contents string) *corev1.ConfigMap {
 			Namespace: namespace,
 			Labels:    labels,
 		},
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ConfigMap",
+			APIVersion: "v1",
+		},
 		Data: map[string]string{
 			"rbac.yaml": contents,
 		},
@@ -452,6 +464,10 @@ func gatewayRBAC(m TemplateMaps, namespace, contents string) *corev1.ConfigMap {
 func stageGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
 	labels, _ := gatewayLabels(m)
 	return &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      gatewayName,
 			Namespace: namespace,
@@ -613,6 +629,10 @@ func gatewayServiceMonitor(m TemplateMaps, matchNS string) *monitoringv1.Service
 			Name:      gatewayName,
 			Namespace: openshiftCustomerMonitoringNamespace,
 			Labels:    labels,
+		},
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceMonitor",
+			APIVersion: "monitoring.coreos.com/v1",
 		},
 		Spec: monitoringv1.ServiceMonitorSpec{
 			Endpoints: []monitoringv1.Endpoint{

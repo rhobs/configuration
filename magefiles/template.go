@@ -49,6 +49,11 @@ const (
 const (
 	apiCache          = "API_CACHE"
 	memcachedExporter = "MEMCACHED_EXPORTER"
+
+	jaeger = "JAEGER_AGENT"
+
+	observatoriumAPI = "OBSERVATORIUM_API"
+	opaAMS           = "OPA_AMS"
 )
 
 var logLevels = []string{"debug", "info", "warn", "error"}
@@ -67,11 +72,13 @@ var StageImages = ParamMap[string]{
 	"COMPACT_TELEMETER":          CurrentThanosKonfluxImageStage,
 	"QUERY":                      CurrentThanosKonfluxImageStage,
 	"QUERY_FRONTEND":             CurrentThanosKonfluxImageStage,
-	"JAEGER_AGENT":               "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+	jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:f039163062660bb1b207c9707e89c006a098c841",
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 	apiCache:                     memcachedImage,
 	memcachedExporter:            memcachedExporterImage,
+	observatoriumAPI:             "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	opaAMS:                       "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-opa-ams:69db2e0545d9e04fd18f2230c1d59ad2766cf65c",
 }
 
 // Stage images.
@@ -89,6 +96,7 @@ var StageVersions = ParamMap[string]{
 	"QUERY":                      CurrentThanosKonfluxVersionStage,
 	"QUERY_FRONTEND":             CurrentThanosKonfluxVersionStage,
 	apiCache:                     memcachedTag,
+	observatoriumAPI:             "9aada65247a07782465beb500323a0e18d7e3d05",
 }
 
 // Stage log levels.
@@ -133,6 +141,7 @@ var StageReplicas = ParamMap[int32]{
 	"QUERY":                      6,
 	"QUERY_FRONTEND":             3,
 	apiCache:                     1,
+	observatoriumAPI:             2,
 }
 
 // Stage resource requirements.
@@ -297,6 +306,16 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
+	observatoriumAPI: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
 }
 
 // Stage object storage bucket.
@@ -331,7 +350,7 @@ var LocalImages = ParamMap[string]{
 	"COMPACT_TELEMETER":          CurrentThanosImageStage,
 	"QUERY":                      CurrentThanosImageStage,
 	"QUERY_FRONTEND":             CurrentThanosImageStage,
-	"JAEGER_AGENT":               "quay.io/jaegertracing/jaeger-agent:1.57.0",
+	jaeger:                       "quay.io/jaegertracing/jaeger-agent:1.57.0",
 	"THANOS_OPERATOR":            "quay.io/thanos/thanos-operator:main-2025-02-07-f1e3fa9",
 	"KUBE_RBAC_PROXY":            "gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0",
 }

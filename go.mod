@@ -6,6 +6,7 @@ toolchain go1.23.1
 
 require (
 	github.com/bwplotka/mimic v0.2.1-0.20230303101552-f705cca2f4a4
+	github.com/ghodss/yaml v1.0.0
 	github.com/go-kit/log v0.2.1
 	github.com/google/go-jsonnet v0.20.0
 	github.com/magefile/mage v1.15.0
@@ -34,7 +35,6 @@ require (
 	github.com/emicklei/go-restful/v3 v3.12.1 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
-	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect

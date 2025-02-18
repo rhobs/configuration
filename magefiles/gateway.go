@@ -477,6 +477,9 @@ func stageGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
 			},
 		},
 		StringData: map[string]string{
+			"client-id":     "${CLIENT_ID}",
+			"client-secret": "${CLIENT_SECRET}",
+			"issuer-url":    "https://sso.redhat.com/auth/realms/redhat-external",
 			"tenants.yaml": `tenants:
       - id: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
         name: rhobs

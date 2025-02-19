@@ -675,6 +675,7 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 				LogFormat:            ptr.To("logfmt"),
 				ResourceRequirements: ptr.To(TemplateFn("RULER", m.ResourceRequirements)),
 			},
+			Paused:   ptr.To(true),
 			Replicas: TemplateFn("RULER", m.Replicas),
 			RuleConfigSelector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{

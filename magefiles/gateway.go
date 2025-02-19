@@ -629,7 +629,7 @@ func gatewayServiceMonitor(m TemplateMaps, matchNS string) *monitoringv1.Service
 	labels[openshiftCustomerMonitoringLabel] = openShiftClusterMonitoringLabelValue
 	return &monitoringv1.ServiceMonitor{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      gatewayName,
+			Name:      "rhobs-gateway",
 			Namespace: openshiftCustomerMonitoringNamespace,
 			Labels:    labels,
 		},

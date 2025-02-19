@@ -15,7 +15,7 @@ objects:
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
       prometheus: app-sre
-    name: observatorium-api
+    name: rhobs-gateway
     namespace: openshift-customer-monitoring
   spec:
     endpoints:

@@ -323,14 +323,14 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 	"DEFAULT": v1alpha1.ObjectStorageConfig{
 		Key: "thanos.yaml",
 		LocalObjectReference: corev1.LocalObjectReference{
-			Name: "default-objectstorage",
+			Name: "observatorium-mst-thanos-objectstorage",
 		},
 		Optional: ptr.To(false),
 	},
 	"TELEMETER": v1alpha1.ObjectStorageConfig{
 		Key: "thanos.yaml",
 		LocalObjectReference: corev1.LocalObjectReference{
-			Name: "telemeter-objectstorage",
+			Name: "thanos-objectstorage",
 		},
 		Optional: ptr.To(false),
 	},

@@ -28,7 +28,8 @@ func (s Stage) OperatorCR() {
 	objs = append(objs, receiveCR(s.namespace(), StageMaps))
 	objs = append(objs, queryCR(s.namespace(), StageMaps, true))
 	objs = append(objs, rulerCR(s.namespace(), StageMaps))
-	objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
+	// TODO: Add compact CRs for stage once we shut down previous
+	// objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
 	objs = append(objs, storeCR(s.namespace(), StageMaps)...)
 
 	// Sort objects by Kind then Name

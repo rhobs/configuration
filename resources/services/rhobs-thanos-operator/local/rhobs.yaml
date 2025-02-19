@@ -633,6 +633,7 @@ spec:
   imagePullPolicy: IfNotPresent
   logFormat: logfmt
   logLevel: info
+  paused: true
   prometheusRuleSelector:
     matchLabels:
       operator.thanos.io/prometheus-rule: "true"

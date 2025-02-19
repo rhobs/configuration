@@ -74,7 +74,7 @@ spec:
   logLevel: info
   objectStorageConfig:
     key: thanos.yaml
-    name: default-objectstorage
+    name: observatorium-mst-thanos-objectstorage
     optional: false
   resourceRequirements:
     limits:
@@ -167,7 +167,7 @@ spec:
   logLevel: info
   objectStorageConfig:
     key: thanos.yaml
-    name: telemeter-objectstorage
+    name: thanos-objectstorage
     optional: false
   resourceRequirements:
     limits:
@@ -425,7 +425,7 @@ spec:
           memory: 64Mi
     defaultObjectStorageConfig:
       key: thanos.yaml
-      name: telemeter-objectstorage
+      name: thanos-objectstorage
       optional: false
     hashrings:
     - asyncForwardWorkerCount: 50
@@ -467,7 +467,7 @@ spec:
       name: default
       objectStorageConfig:
         key: thanos.yaml
-        name: default-objectstorage
+        name: observatorium-mst-thanos-objectstorage
         optional: false
       replicas: 3
       resourceRequirements:
@@ -622,7 +622,7 @@ spec:
   baseImage: quay.io/thanos/thanos
   defaultObjectStorageConfig:
     key: thanos.yaml
-    name: default-objectstorage
+    name: observatorium-mst-thanos-objectstorage
     optional: false
   evaluationInterval: 1m
   externalLabels:
@@ -733,7 +733,7 @@ spec:
   maxTime: -22h
   objectStorageConfig:
     key: thanos.yaml
-    name: default-objectstorage
+    name: observatorium-mst-thanos-objectstorage
     optional: false
   replicas: 3
   resourceRequirements:
@@ -828,7 +828,7 @@ spec:
   maxTime: -2w
   objectStorageConfig:
     key: thanos.yaml
-    name: telemeter-objectstorage
+    name: thanos-objectstorage
     optional: false
   replicas: 3
   resourceRequirements:
@@ -926,7 +926,7 @@ spec:
   minTime: -2w
   objectStorageConfig:
     key: thanos.yaml
-    name: telemeter-objectstorage
+    name: thanos-objectstorage
     optional: false
   replicas: 3
   resourceRequirements:
@@ -1023,7 +1023,7 @@ spec:
   minTime: -90d
   objectStorageConfig:
     key: thanos.yaml
-    name: telemeter-objectstorage
+    name: thanos-objectstorage
     optional: false
   replicas: 3
   resourceRequirements:

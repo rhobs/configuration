@@ -429,6 +429,7 @@ objects:
           - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
           - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}
           - --whitelist={__name__="cluster:eo_es_documents_deleted_total:sum"}
+          - --whitelist={__name__="cluster:health:group_severity:count"}
           - --whitelist={__name__="cluster:ingress_controller_aws_nlb_active:sum"}
           - --whitelist={__name__="cluster:kata_monitor_running_shim_count:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}

@@ -1,6 +1,8 @@
 apiVersion: monitoring.thanos.io/v1alpha1
 kind: ThanosCompact
 metadata:
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: compact-tls
   creationTimestamp: null
   name: rhobs
   namespace: rhobs-local
@@ -94,6 +96,8 @@ status: {}
 apiVersion: monitoring.thanos.io/v1alpha1
 kind: ThanosCompact
 metadata:
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: compact-telemeter-tls
   creationTimestamp: null
   name: telemeter
   namespace: rhobs-local
@@ -187,6 +191,8 @@ status: {}
 apiVersion: monitoring.thanos.io/v1alpha1
 kind: ThanosQuery
 metadata:
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: query-tls
   creationTimestamp: null
   name: rhobs
   namespace: rhobs-local

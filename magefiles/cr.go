@@ -27,8 +27,8 @@ func (s Stage) OperatorCR() {
 
 	objs = append(objs, receiveCR(s.namespace(), StageMaps))
 	objs = append(objs, queryCR(s.namespace(), StageMaps, true))
-	objs = append(objs, rulerCR(s.namespace(), StageMaps))
-	// TODO: Add compact CRs for stage once we shut down previous
+	// TODO: Add compact and ruler CRs for stage once we shut down previous
+	// objs = append(objs, rulerCR(s.namespace(), StageMaps))
 	// objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
 	objs = append(objs, storeCR(s.namespace(), StageMaps)...)
 
@@ -560,6 +560,9 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) runtime.Object {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "rhobs",
 			Namespace: namespace,
+			Annotations: map[string]string{
+				"service.alpha.openshift.io/serving-cert-secret-name": "query-tls",
+			},
 		},
 		Spec: v1alpha1.ThanosQuerySpec{
 			CommonFields: v1alpha1.CommonFields{
@@ -732,6 +735,9 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "rhobs",
 			Namespace: namespace,
+			Annotations: map[string]string{
+				"service.alpha.openshift.io/serving-cert-secret-name": "compact-tls",
+			},
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
@@ -794,6 +800,9 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "telemeter",
 			Namespace: namespace,
+			Annotations: map[string]string{
+				"service.alpha.openshift.io/serving-cert-secret-name": "compact-telemeter-tls",
+			},
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
@@ -844,8 +853,8 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 	}
 
 	if oauth {
-		telemeterCompact.Spec.Additional.Containers = append(telemeterCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-telemeter", "compact-tls").GetContainer())
-		telemeterCompact.Spec.Additional.Volumes = append(telemeterCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
+		telemeterCompact.Spec.Additional.Containers = append(telemeterCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-telemeter", "compact-telemeter-tls").GetContainer())
+		telemeterCompact.Spec.Additional.Volumes = append(telemeterCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-telemeter-tls"))
 	}
 
 	return []runtime.Object{defaultCompact, telemeterCompact}

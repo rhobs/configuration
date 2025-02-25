@@ -198,6 +198,8 @@ objects:
         app.kubernetes.io/part-of: thanos
         operator.thanos.io/store-api: "true"
     featureGates:
+      podDisruptionBudget:
+        enable: false
       serviceMonitor:
         enable: false
     grpcProxyStrategy: lazy

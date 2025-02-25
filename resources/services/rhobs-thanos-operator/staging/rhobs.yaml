@@ -802,6 +802,8 @@ objects:
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
     featureGates:
+      podDisruptionBudget:
+        enable: false
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h

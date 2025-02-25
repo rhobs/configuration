@@ -295,6 +295,9 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
 				},
+				PodDisruptionBudgetConfig: &v1alpha1.PodDisruptionBudgetConfig{
+					Enable: ptr.To(false),
+				},
 			},
 		},
 	}

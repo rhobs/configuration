@@ -281,7 +281,7 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 				{
 					APIGroups: []string{"policy"},
 					Resources: []string{"poddisruptionbudgets"},
-					Verbs:     []string{"create", "get", "list", "update", "watch"},
+					Verbs:     []string{"create", "get", "list", "update", "watch", "delete"},
 				},
 			},
 		},

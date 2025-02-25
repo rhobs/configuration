@@ -642,6 +642,9 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) runtime.Object {
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
 				},
+				PodDisruptionBudgetConfig: &v1alpha1.PodDisruptionBudgetConfig{
+					Enable: ptr.To(false),
+				},
 			},
 		},
 	}

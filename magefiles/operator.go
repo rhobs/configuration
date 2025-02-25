@@ -21,7 +21,7 @@ import (
 
 const (
 	CRDMain     = "refs/heads/main"
-	CRDRefStage = "df1d07ee5f3f81c7124b6cc4bad7f4627167425e"
+	CRDRefStage = "b58f3ec98a62b904950148bd5aea906a2c6a519e"
 )
 
 // CRDS Generates the CRDs for the Thanos operator.

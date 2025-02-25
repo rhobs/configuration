@@ -41,6 +41,8 @@ const (
 	CurrentThanosKonfluxImageStage   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
 	CurrentThanosKonfluxVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
 
+	thanosOperatorStage = "9a9d855a9b292274114239ca9859b19fc5c83322"
+
 	memcachedTag           = "1.5-316"
 	memcachedImage         = "registry.redhat.io/rhel8/memcached" + ":" + memcachedTag
 	memcachedExporterImage = "quay.io/prometheus/memcached-exporter:v0.15.0"
@@ -73,7 +75,7 @@ var StageImages = ParamMap[string]{
 	"QUERY":                      CurrentThanosKonfluxImageStage,
 	"QUERY_FRONTEND":             CurrentThanosKonfluxImageStage,
 	jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
-	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:f039163062660bb1b207c9707e89c006a098c841",
+	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 	apiCache:                     memcachedImage,
 	memcachedExporter:            memcachedExporterImage,

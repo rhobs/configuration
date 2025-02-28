@@ -656,6 +656,10 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 	}
 	if oauth {
 		route := &routev1.Route{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "route.openshift.io/v1",
+				Kind:       "Route",
+			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-query-frontend-rhobs",
 				Namespace: namespace,

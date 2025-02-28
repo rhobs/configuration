@@ -103,6 +103,7 @@ objects:
   metadata:
     annotations:
       service.beta.openshift.io/serving-cert-secret-name: query-frontend-tls
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-query-frontend-rhobs"}}'
     creationTimestamp: null
     name: rhobs
     namespace: rhobs-stage
@@ -899,3 +900,24 @@ objects:
       storeLimitsRequestSeries: 1000000
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/part-of: thanos
+    name: thanos-query-frontend-rhobs
+    namespace: rhobs-stage
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: thanos-query-frontend-rhobs
+      weight: 100
+  status:
+    ingress: null

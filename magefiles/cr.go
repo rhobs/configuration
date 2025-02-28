@@ -1,13 +1,13 @@
 package main
 
 import (
+	"sort"
+
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic/encoding"
 	"github.com/thanos-community/thanos-operator/api/v1alpha1"
-
-	"sort"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -26,7 +26,7 @@ func (s Stage) OperatorCR() {
 	var objs []runtime.Object
 
 	objs = append(objs, receiveCR(s.namespace(), StageMaps))
-	objs = append(objs, queryCR(s.namespace(), StageMaps, true))
+	objs = append(objs, queryCR(s.namespace(), StageMaps, true)...)
 	objs = append(objs, rulerCR(s.namespace(), StageMaps))
 	// TODO: Add compact CRs for stage once we shut down previous
 	// objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
@@ -65,7 +65,7 @@ func (l Local) OperatorCR() {
 	var objs []runtime.Object
 
 	objs = append(objs, receiveCR(l.namespace(), LocalMaps))
-	objs = append(objs, queryCR(l.namespace(), LocalMaps, false))
+	objs = append(objs, queryCR(l.namespace(), LocalMaps, false)...)
 	objs = append(objs, rulerCR(l.namespace(), LocalMaps))
 	objs = append(objs, compactCR(l.namespace(), LocalMaps, false)...)
 	objs = append(objs, storeCR(l.namespace(), LocalMaps)...)
@@ -554,7 +554,9 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 	}
 }
 
-func queryCR(namespace string, m TemplateMaps, oauth bool) runtime.Object {
+func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
+	var objs []runtime.Object
+
 	query := &v1alpha1.ThanosQuery{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -651,15 +653,16 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) runtime.Object {
 			},
 		},
 	}
-
 	if oauth {
-		query.Spec.Additional.Containers = append(query.Spec.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-rhobs", "query-tls").GetContainer())
-		query.Spec.Additional.Volumes = append(query.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-tls"))
+		query.Annotations = map[string]string{
+			"service.beta.openshift.io/serving-cert-secret-name": "query-frontend-tls",
+		}
 		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())
 		query.Spec.QueryFrontend.Additional.Volumes = append(query.Spec.QueryFrontend.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"))
 	}
 
-	return query
+	objs = append(objs, query)
+	return objs
 }
 
 func rulerCR(namespace string, m TemplateMaps) runtime.Object {

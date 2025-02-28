@@ -276,8 +276,8 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-2w")),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-90d")),
+			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
+			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
 			StorageSize:              TemplateFn("STORE2W90D", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{

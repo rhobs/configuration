@@ -101,6 +101,8 @@ objects:
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosQuery
   metadata:
+    annotations:
+      service.beta.openshift.io/serving-cert-secret-name: query-frontend-tls
     creationTimestamp: null
     name: rhobs
     namespace: rhobs-stage
@@ -156,42 +158,6 @@ objects:
         requests:
           cpu: 32m
           memory: 64Mi
-    - args:
-      - -provider=openshift
-      - -https-address=:8443
-      - -http-address=
-      - -email-domain=*
-      - -upstream=http://localhost:9090
-      - -openshift-service-account=thanos-query-rhobs
-      - '-openshift-sar={"resource": "namespaces", "verb": "get", "name": "rhobs-stage",
-        "namespace": "rhobs-stage"}'
-      - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get",
-        "name": "rhobs-stage", "namespace": "rhobs-stage"}}'
-      - -tls-cert=/etc/tls/private/tls.crt
-      - -tls-key=/etc/tls/private/tls.key
-      - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-      - -cookie-secret=${OAUTH_PROXY_COOKIE_SECRET}
-      - -openshift-ca=/etc/pki/tls/cert.pem
-      - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      image: registry.redhat.io/openshift4/ose-oauth-proxy:v4.14
-      name: oauth-proxy
-      ports:
-      - containerPort: 8443
-        name: https
-        protocol: TCP
-      resources:
-        requests:
-          cpu: 100m
-          memory: 100Mi
-      terminationMessagePolicy: FallbackToLogsOnError
-      volumeMounts:
-      - mountPath: /etc/tls/private
-        name: tls
-        readOnly: true
-    additionalVolumes:
-    - name: tls
-      secret:
-        secretName: query-tls
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     customStoreLabelSelector:
       matchLabels:

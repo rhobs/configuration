@@ -687,6 +687,14 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 			"service.beta.openshift.io/serving-cert-secret-name":               "query-frontend-tls",
 			"serviceaccounts.openshift.io/oauth-redirectreference.application": `{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-query-frontend-rhobs"}}`,
 		}
+		query.Spec.QueryFrontend.Additional.ServicePorts = append(query.Spec.QueryFrontend.Additional.ServicePorts, corev1.ServicePort{
+			Name: "https",
+			Port: 9090,
+			TargetPort: intstr.IntOrString{
+				Type:   intstr.Int,
+				IntVal: 9090,
+			},
+		})
 		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())
 		query.Spec.QueryFrontend.Additional.Volumes = append(query.Spec.QueryFrontend.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"))
 	}

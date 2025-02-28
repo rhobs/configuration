@@ -257,6 +257,10 @@ objects:
         - mountPath: /etc/tls/private
           name: tls
           readOnly: true
+      additionalServicePorts:
+      - name: https
+        port: 9090
+        targetPort: 9090
       additionalVolumes:
       - name: tls
         secret:

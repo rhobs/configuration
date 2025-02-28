@@ -50,7 +50,13 @@ func (s Stage) OperatorCR() {
 		openshift.WrapInTemplate(
 			objs,
 			metav1.ObjectMeta{Name: "thanos-rhobs"},
-			[]templatev1.Parameter{},
+			[]templatev1.Parameter{
+				{
+					Name:     "OAUTH_PROXY_COOKIE_SECRET",
+					Generate: "expression",
+					From:     `[a-zA-Z0-9]{40}`,
+				},
+			},
 		),
 	))
 

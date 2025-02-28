@@ -925,3 +925,7 @@ objects:
       weight: 100
   status:
     ingress: null
+parameters:
+- from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: OAUTH_PROXY_COOKIE_SECRET

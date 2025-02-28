@@ -5,6 +5,7 @@ import (
 
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
+	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic/encoding"
 	"github.com/thanos-community/thanos-operator/api/v1alpha1"
@@ -654,8 +655,33 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 		},
 	}
 	if oauth {
+		route := &routev1.Route{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-query-frontend-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/part-of": "thanos",
+				},
+			},
+			Spec: routev1.RouteSpec{
+				To: routev1.RouteTargetReference{
+					Kind:   "Service",
+					Name:   "thanos-query-frontend-rhobs",
+					Weight: ptr.To(int32(100)),
+				},
+				Port: &routev1.RoutePort{
+					TargetPort: intstr.FromString("https"), // Assuming the oauth-proxy is exposing on https port
+				},
+				TLS: &routev1.TLSConfig{
+					Termination:                   routev1.TLSTerminationReencrypt,
+					InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+				},
+			},
+		}
+		objs = append(objs, route)
 		query.Annotations = map[string]string{
-			"service.beta.openshift.io/serving-cert-secret-name": "query-frontend-tls",
+			"service.beta.openshift.io/serving-cert-secret-name":               "query-frontend-tls",
+			"serviceaccounts.openshift.io/oauth-redirectreference.application": `{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-query-frontend-rhobs"}}`,
 		}
 		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())
 		query.Spec.QueryFrontend.Additional.Volumes = append(query.Spec.QueryFrontend.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"))

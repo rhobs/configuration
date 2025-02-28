@@ -259,8 +259,8 @@ objects:
           readOnly: true
       additionalServicePorts:
       - name: https
-        port: 9090
-        targetPort: 9090
+        port: 8443
+        targetPort: 8443
       additionalVolumes:
       - name: tls
         secret:

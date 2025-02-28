@@ -689,10 +689,10 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 		}
 		query.Spec.QueryFrontend.Additional.ServicePorts = append(query.Spec.QueryFrontend.Additional.ServicePorts, corev1.ServicePort{
 			Name: "https",
-			Port: 9090,
+			Port: 8443,
 			TargetPort: intstr.IntOrString{
 				Type:   intstr.Int,
-				IntVal: 9090,
+				IntVal: 8443,
 			},
 		})
 		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())

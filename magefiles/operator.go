@@ -217,12 +217,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-manager-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "manager-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                  "rbac",
+					"app.kubernetes.io/created-by":                 "thanos-operator",
+					"app.kubernetes.io/instance":                   "manager-role",
+					"app.kubernetes.io/managed-by":                 "rhobs",
+					"app.kubernetes.io/name":                       "clusterrole",
+					"app.kubernetes.io/part-of":                    "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-admin": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -295,12 +296,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-metrics-reader",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "kube-rbac-proxy",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "metrics-reader",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "kube-rbac-proxy",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "metrics-reader",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-view": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -351,12 +353,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosquery-editor-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosquery-editor-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosquery-editor-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-edit": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -382,12 +385,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosquery-viewer-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosquery-viewer-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosquery-viewer-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-view": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -413,12 +417,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanoscompact-editor-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanoscompact-editor-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanoscompact-editor-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-edit": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -444,12 +449,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanoscompact-viewer-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanoscompact-viewer-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanoscompact-viewer-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-view": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -475,12 +481,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosreceive-editor-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosreceive-editor-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosreceive-editor-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-edit": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -506,12 +513,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosreceive-viewer-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosreceive-viewer-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosreceive-viewer-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-view": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -537,12 +545,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosruler-editor-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosruler-editor-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosruler-editor-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-edit": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -568,12 +577,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosruler-viewer-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosruler-viewer-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosruler-viewer-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-view": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -599,12 +609,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosstore-editor-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosstore-editor-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosstore-editor-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-edit": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{
@@ -630,12 +641,13 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "thanos-operator-thanosstore-viewer-role",
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "rbac",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "thanosstore-viewer-role",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "clusterrole",
-					"app.kubernetes.io/part-of":    "thanos-operator",
+					"app.kubernetes.io/component":                 "rbac",
+					"app.kubernetes.io/created-by":                "thanos-operator",
+					"app.kubernetes.io/instance":                  "thanosstore-viewer-role",
+					"app.kubernetes.io/managed-by":                "rhobs",
+					"app.kubernetes.io/name":                      "clusterrole",
+					"app.kubernetes.io/part-of":                   "thanos-operator",
+					"rbac.authorization.k8s.io/aggregate-to-view": "true",
 				},
 			},
 			Rules: []rbacv1.PolicyRule{

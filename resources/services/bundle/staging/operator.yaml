@@ -224,6 +224,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-admin: "true"
     name: thanos-operator-manager-role
   rules:
   - apiGroups:
@@ -362,6 +363,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: thanos-operator-metrics-reader
   rules:
   - nonResourceURLs:
@@ -425,6 +427,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: thanos-operator-thanoscompact-editor-role
   rules:
   - apiGroups:
@@ -456,6 +459,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: thanos-operator-thanoscompact-viewer-role
   rules:
   - apiGroups:
@@ -483,6 +487,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: thanos-operator-thanosquery-editor-role
   rules:
   - apiGroups:
@@ -514,6 +519,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: thanos-operator-thanosquery-viewer-role
   rules:
   - apiGroups:
@@ -541,6 +547,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: thanos-operator-thanosreceive-editor-role
   rules:
   - apiGroups:
@@ -572,6 +579,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: thanos-operator-thanosreceive-viewer-role
   rules:
   - apiGroups:
@@ -599,6 +607,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: thanos-operator-thanosruler-editor-role
   rules:
   - apiGroups:
@@ -630,6 +639,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: thanos-operator-thanosruler-viewer-role
   rules:
   - apiGroups:
@@ -657,6 +667,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: thanos-operator-thanosstore-editor-role
   rules:
   - apiGroups:
@@ -688,6 +699,7 @@ objects:
       app.kubernetes.io/managed-by: rhobs
       app.kubernetes.io/name: clusterrole
       app.kubernetes.io/part-of: thanos-operator
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: thanos-operator-thanosstore-viewer-role
   rules:
   - apiGroups:

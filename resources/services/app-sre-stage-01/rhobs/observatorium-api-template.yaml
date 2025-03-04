@@ -1023,6 +1023,12 @@ objects:
             subjects:
               - kind: user
                 name: service-account-7f7f912e-0429-4639-8e70-609ecf65b280
+          - name: 8f7aa5e1-aa08-493d-82eb-cf24834fc08f
+            roles:
+              - telemeter-metrics-read
+            subjects:
+              - kind: user
+                name: service-account-8f7aa5e1-aa08-493d-82eb-cf24834fc08f
           - name: observatorium-rhtap
             roles:
               - rhtap-metrics-read

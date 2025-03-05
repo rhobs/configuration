@@ -89,6 +89,10 @@ objects:
             capabilities:
               drop:
               - ALL
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: tls
+            readOnly: true
         - args:
           - --health-probe-bind-address=:8081
           - --metrics-bind-address=127.0.0.1:8080
@@ -132,17 +136,14 @@ objects:
             capabilities:
               drop:
               - ALL
-          volumeMounts:
-          - mountPath: /etc/tls/private
-            name: kube-rbac-proxy-tls
-            readOnly: true
         securityContext:
           runAsNonRoot: true
         serviceAccountName: thanos-operator-controller-manager
         terminationGracePeriodSeconds: 10
         volumes:
-        - name: kube-rbac-proxy-tls
+        - name: tls
           secret:
+            defaultMode: 420
             optional: false
             secretName: kube-rbac-proxy-tls
   status: {}

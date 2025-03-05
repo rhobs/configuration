@@ -861,6 +861,13 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								"--tls-cert-file=/etc/tls/private/tls.crt",
 								"--tls-private-key-file=/etc/tls/private/tls.key",
 							},
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "tls",
+									MountPath: "/etc/tls/private",
+									ReadOnly:  true,
+								},
+							},
 							Ports: []corev1.ContainerPort{
 								{
 									ContainerPort: 8443,
@@ -923,22 +930,16 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 									Drop: []corev1.Capability{"ALL"},
 								},
 							},
-							VolumeMounts: []corev1.VolumeMount{
-								{
-									Name:      "kube-rbac-proxy-tls",
-									MountPath: "/etc/tls/private",
-									ReadOnly:  true,
-								},
-							},
 						},
 					},
 					Volumes: []corev1.Volume{
 						{
-							Name: "kube-rbac-proxy-tls",
+							Name: "tls",
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
-									SecretName: "kube-rbac-proxy-tls",
-									Optional:   ptr.To(false),
+									SecretName:  "kube-rbac-proxy-tls",
+									DefaultMode: ptr.To(int32(420)),
+									Optional:    ptr.To(false),
 								},
 							},
 						},

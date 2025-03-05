@@ -93,7 +93,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-compact-rhobs",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "thanos-compactor",
 					"app.kubernetes.io/instance":   "thanos-compact-rhobs",
@@ -133,7 +133,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-compact-telemeter",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "thanos-compactor",
 					"app.kubernetes.io/instance":   "thanos-compact-telemeter",
@@ -173,7 +173,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-query-rhobs",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "query-layer",
 					"app.kubernetes.io/instance":   "thanos-query-rhobs",
@@ -215,7 +215,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-receive-ingester-rhobs-default",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "thanos-receive-ingester",
 					"app.kubernetes.io/instance":   "thanos-receive-ingester-rhobs-default",
@@ -257,7 +257,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-receive-ingester-rhobs-telemeter",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "thanos-receive-ingester",
 					"app.kubernetes.io/instance":   "thanos-receive-ingester-rhobs-telemeter",
@@ -299,7 +299,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-receive-router-rhobs",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":  "thanos-receive-router",
 					"app.kubernetes.io/instance":   "thanos-receive-router-rhobs",
@@ -339,7 +339,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-store-default",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":       "object-storage-gateway",
 					"app.kubernetes.io/instance":        "thanos-store-default",
@@ -382,7 +382,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-store-telemeter-0to2w",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":       "object-storage-gateway",
 					"app.kubernetes.io/instance":        "thanos-store-telemeter-0to2w",
@@ -425,7 +425,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-store-telemeter-2wto90d",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":       "object-storage-gateway",
 					"app.kubernetes.io/instance":        "thanos-store-telemeter-2wto90d",
@@ -468,7 +468,7 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-store-telemeter-90dplus",
-				Namespace: namespace,
+				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{
 					"app.kubernetes.io/component":       "object-storage-gateway",
 					"app.kubernetes.io/instance":        "thanos-store-telemeter-90dplus",

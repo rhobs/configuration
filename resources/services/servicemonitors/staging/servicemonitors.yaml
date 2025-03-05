@@ -16,7 +16,7 @@ objects:
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
     name: thanos-compact-rhobs
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -45,7 +45,7 @@ objects:
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: telemeter
     name: thanos-compact-telemeter
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -105,7 +105,7 @@ objects:
       operator.thanos.io/owner: rhobs
       operator.thanos.io/query-api: "true"
     name: thanos-query-rhobs
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -136,7 +136,7 @@ objects:
       operator.thanos.io/owner: rhobs
       operator.thanos.io/store-api: "true"
     name: thanos-receive-ingester-rhobs-default
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -167,7 +167,7 @@ objects:
       operator.thanos.io/owner: rhobs
       operator.thanos.io/store-api: "true"
     name: thanos-receive-ingester-rhobs-telemeter
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -197,7 +197,7 @@ objects:
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
     name: thanos-receive-router-rhobs
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -228,7 +228,7 @@ objects:
       operator.thanos.io/owner: default
       operator.thanos.io/store-api: "true"
     name: thanos-store-default
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -260,7 +260,7 @@ objects:
       operator.thanos.io/owner: telemeter-0to2w
       operator.thanos.io/store-api: "true"
     name: thanos-store-telemeter-0to2w
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -292,7 +292,7 @@ objects:
       operator.thanos.io/owner: telemeter-2wto90d
       operator.thanos.io/store-api: "true"
     name: thanos-store-telemeter-2wto90d
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s
@@ -324,7 +324,7 @@ objects:
       operator.thanos.io/owner: telemeter-90dplus
       operator.thanos.io/store-api: "true"
     name: thanos-store-telemeter-90dplus
-    namespace: rhobs-stage
+    namespace: openshift-customer-monitoring
   spec:
     endpoints:
     - interval: 30s

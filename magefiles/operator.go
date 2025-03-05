@@ -706,13 +706,14 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 				Name:      "thanos-operator-controller-manager-metrics-service",
 				Namespace: namespace,
 				Labels: map[string]string{
-					"app.kubernetes.io/component":  "kube-rbac-proxy",
-					"app.kubernetes.io/created-by": "thanos-operator",
-					"app.kubernetes.io/instance":   "controller-manager-metrics-service",
-					"app.kubernetes.io/managed-by": "rhobs",
-					"app.kubernetes.io/name":       "service",
-					"app.kubernetes.io/part-of":    "thanos-operator",
-					"control-plane":                "controller-manager",
+					"app.kubernetes.io/component":                        "kube-rbac-proxy",
+					"app.kubernetes.io/created-by":                       "thanos-operator",
+					"app.kubernetes.io/instance":                         "controller-manager-metrics-service",
+					"app.kubernetes.io/managed-by":                       "rhobs",
+					"app.kubernetes.io/name":                             "service",
+					"app.kubernetes.io/part-of":                          "thanos-operator",
+					"control-plane":                                      "controller-manager",
+					"service.beta.openshift.io/serving-cert-secret-name": "kube-rbac-proxy-tls",
 				},
 			},
 			Spec: corev1.ServiceSpec{
@@ -854,8 +855,9 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 							Args: []string{
 								"--secure-listen-address=0.0.0.0:8443",
 								"--upstream=http://127.0.0.1:8080/",
-								"--logtostderr=true",
-								"--v=0",
+								"--v=4",
+								"--tls-cert-file=/etc/tls/private/tls.crt",
+								"--tls-private-key-file=/etc/tls/private/tls.key",
 							},
 							Ports: []corev1.ContainerPort{
 								{
@@ -917,6 +919,24 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								AllowPrivilegeEscalation: ptr.To(false),
 								Capabilities: &corev1.Capabilities{
 									Drop: []corev1.Capability{"ALL"},
+								},
+							},
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "kube-rbac-proxy-tls",
+									MountPath: "/etc/tls/private",
+									ReadOnly:  true,
+								},
+							},
+						},
+					},
+					Volumes: []corev1.Volume{
+						{
+							Name: "kube-rbac-proxy-tls",
+							VolumeSource: corev1.VolumeSource{
+								Secret: &corev1.SecretVolumeSource{
+									SecretName: "kube-rbac-proxy-tls",
+									Optional:   ptr.To(false),
 								},
 							},
 						},

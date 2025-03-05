@@ -16,6 +16,7 @@ objects:
       app.kubernetes.io/name: service
       app.kubernetes.io/part-of: thanos-operator
       control-plane: controller-manager
+      service.beta.openshift.io/serving-cert-secret-name: kube-rbac-proxy-tls
     name: thanos-operator-controller-manager-metrics-service
     namespace: rhobs-stage
   spec:
@@ -65,8 +66,9 @@ objects:
         - args:
           - --secure-listen-address=0.0.0.0:8443
           - --upstream=http://127.0.0.1:8080/
-          - --logtostderr=true
-          - --v=0
+          - --v=4
+          - --tls-cert-file=/etc/tls/private/tls.crt
+          - --tls-private-key-file=/etc/tls/private/tls.key
           image: registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0
           imagePullPolicy: IfNotPresent
           name: kube-rbac-proxy
@@ -129,10 +131,19 @@ objects:
             capabilities:
               drop:
               - ALL
+          volumeMounts:
+          - mountPath: /etc/tls/private
+            name: kube-rbac-proxy-tls
+            readOnly: true
         securityContext:
           runAsNonRoot: true
         serviceAccountName: thanos-operator-controller-manager
         terminationGracePeriodSeconds: 10
+        volumes:
+        - name: kube-rbac-proxy-tls
+          secret:
+            optional: false
+            secretName: kube-rbac-proxy-tls
   status: {}
 - apiVersion: v1
   kind: ServiceAccount

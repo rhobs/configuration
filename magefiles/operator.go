@@ -705,15 +705,17 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-operator-controller-manager-metrics-service",
 				Namespace: namespace,
-				Labels: map[string]string{
-					"app.kubernetes.io/component":                        "kube-rbac-proxy",
-					"app.kubernetes.io/created-by":                       "thanos-operator",
-					"app.kubernetes.io/instance":                         "controller-manager-metrics-service",
-					"app.kubernetes.io/managed-by":                       "rhobs",
-					"app.kubernetes.io/name":                             "service",
-					"app.kubernetes.io/part-of":                          "thanos-operator",
-					"control-plane":                                      "controller-manager",
+				Annotations: map[string]string{
 					"service.beta.openshift.io/serving-cert-secret-name": "kube-rbac-proxy-tls",
+				},
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "kube-rbac-proxy",
+					"app.kubernetes.io/created-by": "thanos-operator",
+					"app.kubernetes.io/instance":   "controller-manager-metrics-service",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "service",
+					"app.kubernetes.io/part-of":    "thanos-operator",
+					"control-plane":                "controller-manager",
 				},
 			},
 			Spec: corev1.ServiceSpec{

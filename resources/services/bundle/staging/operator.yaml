@@ -20,10 +20,10 @@ objects:
     namespace: rhobs-stage
   spec:
     ports:
-    - name: https
-      port: 8443
+    - name: http
+      port: 8080
       protocol: TCP
-      targetPort: https
+      targetPort: http
     selector:
       control-plane: controller-manager
   status:
@@ -63,32 +63,8 @@ objects:
       spec:
         containers:
         - args:
-          - --secure-listen-address=0.0.0.0:8443
-          - --upstream=http://127.0.0.1:8080/
-          - --logtostderr=true
-          - --v=0
-          image: registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0
-          imagePullPolicy: IfNotPresent
-          name: kube-rbac-proxy
-          ports:
-          - containerPort: 8443
-            name: https
-            protocol: TCP
-          resources:
-            limits:
-              cpu: 500m
-              memory: 128Mi
-            requests:
-              cpu: 5m
-              memory: 64Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-        - args:
           - --health-probe-bind-address=:8081
-          - --metrics-bind-address=127.0.0.1:8080
+          - --metrics-bind-address=:8080
           - --leader-elect
           - --zap-encoder=console
           - --zap-log-level=debug
@@ -107,6 +83,10 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           name: manager
+          ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
           readinessProbe:
             failureThreshold: 3
             httpGet:

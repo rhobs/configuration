@@ -7,7 +7,6 @@ import (
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/utils/ptr"
 )
 
 func (s Stage) ServiceMonitors() {
@@ -54,15 +53,9 @@ func serviceMonitor(namespace string) []runtime.Object {
 			Spec: monitoringv1.ServiceMonitorSpec{
 				Endpoints: []monitoringv1.Endpoint{
 					{
-						BearerTokenFile: "/var/run/secrets/kubernetes.io/serviceaccount/token",
-						Path:            "/metrics",
-						Port:            "https",
-						Scheme:          "https",
-						TLSConfig: &monitoringv1.TLSConfig{
-							SafeTLSConfig: monitoringv1.SafeTLSConfig{
-								InsecureSkipVerify: ptr.To(true),
-							},
-						},
+						Path:   "/metrics",
+						Port:   "http",
+						Scheme: "http",
 					},
 				},
 				Selector: metav1.LabelSelector{

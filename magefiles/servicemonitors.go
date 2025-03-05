@@ -83,9 +83,7 @@ func serviceMonitor(namespace string) []runtime.Object {
 func createServiceMonitors(namespace string) []runtime.Object {
 	interval30s := monitoringv1.Duration("30s")
 	metricsPath := "/metrics"
-
-	// Create ServiceMonitors
-	return []runtime.Object{
+	objs := []runtime.Object{
 		&monitoringv1.ServiceMonitor{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: "monitoring.coreos.com/v1",
@@ -505,4 +503,8 @@ func createServiceMonitors(namespace string) []runtime.Object {
 			},
 		},
 	}
+	for _, obj := range objs {
+		obj.(*monitoringv1.ServiceMonitor).ObjectMeta.Labels["prometheus"] = "app-sre"
+	}
+	return objs
 }

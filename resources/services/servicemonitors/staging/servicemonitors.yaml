@@ -15,6 +15,7 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
+      prometheus: app-sre
     name: thanos-compact-rhobs
     namespace: openshift-customer-monitoring
   spec:
@@ -44,6 +45,7 @@ objects:
       app.kubernetes.io/name: thanos-compact
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: telemeter
+      prometheus: app-sre
     name: thanos-compact-telemeter
     namespace: openshift-customer-monitoring
   spec:
@@ -104,6 +106,7 @@ objects:
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
       operator.thanos.io/query-api: "true"
+      prometheus: app-sre
     name: thanos-query-rhobs
     namespace: openshift-customer-monitoring
   spec:
@@ -135,6 +138,7 @@ objects:
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
       operator.thanos.io/store-api: "true"
+      prometheus: app-sre
     name: thanos-receive-ingester-rhobs-default
     namespace: openshift-customer-monitoring
   spec:
@@ -166,6 +170,7 @@ objects:
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
       operator.thanos.io/store-api: "true"
+      prometheus: app-sre
     name: thanos-receive-ingester-rhobs-telemeter
     namespace: openshift-customer-monitoring
   spec:
@@ -196,6 +201,7 @@ objects:
       app.kubernetes.io/name: thanos-receive
       app.kubernetes.io/part-of: thanos
       operator.thanos.io/owner: rhobs
+      prometheus: app-sre
     name: thanos-receive-router-rhobs
     namespace: openshift-customer-monitoring
   spec:
@@ -227,6 +233,7 @@ objects:
       operator.thanos.io/endpoint-group: "true"
       operator.thanos.io/owner: default
       operator.thanos.io/store-api: "true"
+      prometheus: app-sre
     name: thanos-store-default
     namespace: openshift-customer-monitoring
   spec:
@@ -259,6 +266,7 @@ objects:
       operator.thanos.io/endpoint-group: "true"
       operator.thanos.io/owner: telemeter-0to2w
       operator.thanos.io/store-api: "true"
+      prometheus: app-sre
     name: thanos-store-telemeter-0to2w
     namespace: openshift-customer-monitoring
   spec:
@@ -291,6 +299,7 @@ objects:
       operator.thanos.io/endpoint-group: "true"
       operator.thanos.io/owner: telemeter-2wto90d
       operator.thanos.io/store-api: "true"
+      prometheus: app-sre
     name: thanos-store-telemeter-2wto90d
     namespace: openshift-customer-monitoring
   spec:
@@ -323,6 +332,7 @@ objects:
       operator.thanos.io/endpoint-group: "true"
       operator.thanos.io/owner: telemeter-90dplus
       operator.thanos.io/store-api: "true"
+      prometheus: app-sre
     name: thanos-store-telemeter-90dplus
     namespace: openshift-customer-monitoring
   spec:

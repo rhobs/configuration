@@ -12,8 +12,8 @@ import (
 
 func (s Stage) ServiceMonitors() {
 	gen := s.generator("servicemonitors")
-
-	objs := serviceMonitor(s.namespace())
+	objs := createServiceMonitors(s.namespace())
+	objs = append(objs, serviceMonitor(s.namespace())...)
 
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-servicemonitors"}, []templatev1.Parameter{})
 	encoder := encoding.GhodssYAML(template)
@@ -73,6 +73,433 @@ func serviceMonitor(namespace string) []runtime.Object {
 				NamespaceSelector: monitoringv1.NamespaceSelector{
 					MatchNames: []string{
 						namespace,
+					},
+				},
+			},
+		},
+	}
+}
+
+func createServiceMonitors(namespace string) []runtime.Object {
+	interval30s := monitoringv1.Duration("30s")
+	metricsPath := "/metrics"
+
+	// Create ServiceMonitors
+	return []runtime.Object{
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-compact-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "thanos-compactor",
+					"app.kubernetes.io/instance":   "thanos-compact-rhobs",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-compact",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "rhobs",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "thanos-compactor",
+						"app.kubernetes.io/instance":   "thanos-compact-rhobs",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-compact",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "rhobs",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-compact-telemeter",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "thanos-compactor",
+					"app.kubernetes.io/instance":   "thanos-compact-telemeter",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-compact",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "telemeter",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "thanos-compactor",
+						"app.kubernetes.io/instance":   "thanos-compact-telemeter",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-compact",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "telemeter",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-query-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "query-layer",
+					"app.kubernetes.io/instance":   "thanos-query-rhobs",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-query",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "rhobs",
+					"operator.thanos.io/query-api": "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "query-layer",
+						"app.kubernetes.io/instance":   "thanos-query-rhobs",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-query",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "rhobs",
+						"operator.thanos.io/query-api": "true",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-receive-ingester-rhobs-default",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "thanos-receive-ingester",
+					"app.kubernetes.io/instance":   "thanos-receive-ingester-rhobs-default",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-receive",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "rhobs",
+					"operator.thanos.io/store-api": "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "thanos-receive-ingester",
+						"app.kubernetes.io/instance":   "thanos-receive-ingester-rhobs-default",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-receive",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "rhobs",
+						"operator.thanos.io/store-api": "true",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-receive-ingester-rhobs-telemeter",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "thanos-receive-ingester",
+					"app.kubernetes.io/instance":   "thanos-receive-ingester-rhobs-telemeter",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-receive",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "rhobs",
+					"operator.thanos.io/store-api": "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "thanos-receive-ingester",
+						"app.kubernetes.io/instance":   "thanos-receive-ingester-rhobs-telemeter",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-receive",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "rhobs",
+						"operator.thanos.io/store-api": "true",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-receive-router-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "thanos-receive-router",
+					"app.kubernetes.io/instance":   "thanos-receive-router-rhobs",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-receive",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "rhobs",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "thanos-receive-router",
+						"app.kubernetes.io/instance":   "thanos-receive-router-rhobs",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-receive",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "rhobs",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-store-default",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":       "object-storage-gateway",
+					"app.kubernetes.io/instance":        "thanos-store-default",
+					"app.kubernetes.io/managed-by":      "thanos-operator",
+					"app.kubernetes.io/name":            "thanos-store",
+					"app.kubernetes.io/part-of":         "thanos",
+					"operator.thanos.io/endpoint-group": "true",
+					"operator.thanos.io/owner":          "default",
+					"operator.thanos.io/store-api":      "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "object-storage-gateway",
+						"app.kubernetes.io/instance":   "thanos-store-default",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-store",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "default",
+						"operator.thanos.io/store-api": "true",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-store-telemeter-0to2w",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":       "object-storage-gateway",
+					"app.kubernetes.io/instance":        "thanos-store-telemeter-0to2w",
+					"app.kubernetes.io/managed-by":      "thanos-operator",
+					"app.kubernetes.io/name":            "thanos-store",
+					"app.kubernetes.io/part-of":         "thanos",
+					"operator.thanos.io/endpoint-group": "true",
+					"operator.thanos.io/owner":          "telemeter-0to2w",
+					"operator.thanos.io/store-api":      "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "object-storage-gateway",
+						"app.kubernetes.io/instance":   "thanos-store-telemeter-0to2w",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-store",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "telemeter-0to2w",
+						"operator.thanos.io/store-api": "true",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-store-telemeter-2wto90d",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":       "object-storage-gateway",
+					"app.kubernetes.io/instance":        "thanos-store-telemeter-2wto90d",
+					"app.kubernetes.io/managed-by":      "thanos-operator",
+					"app.kubernetes.io/name":            "thanos-store",
+					"app.kubernetes.io/part-of":         "thanos",
+					"operator.thanos.io/endpoint-group": "true",
+					"operator.thanos.io/owner":          "telemeter-2wto90d",
+					"operator.thanos.io/store-api":      "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "object-storage-gateway",
+						"app.kubernetes.io/instance":   "thanos-store-telemeter-2wto90d",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-store",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "telemeter-2wto90d",
+						"operator.thanos.io/store-api": "true",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-store-telemeter-90dplus",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":       "object-storage-gateway",
+					"app.kubernetes.io/instance":        "thanos-store-telemeter-90dplus",
+					"app.kubernetes.io/managed-by":      "thanos-operator",
+					"app.kubernetes.io/name":            "thanos-store",
+					"app.kubernetes.io/part-of":         "thanos",
+					"operator.thanos.io/endpoint-group": "true",
+					"operator.thanos.io/owner":          "telemeter-90dplus",
+					"operator.thanos.io/store-api":      "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "object-storage-gateway",
+						"app.kubernetes.io/instance":   "thanos-store-telemeter-90dplus",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-store",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "telemeter-90dplus",
+						"operator.thanos.io/store-api": "true",
 					},
 				},
 			},

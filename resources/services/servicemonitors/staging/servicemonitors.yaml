@@ -80,14 +80,9 @@ objects:
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
-    - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      path: /metrics
-      port: https
-      scheme: https
-      tlsConfig:
-        ca: {}
-        cert: {}
-        insecureSkipVerify: true
+    - path: /metrics
+      port: http
+      scheme: http
     namespaceSelector:
       matchNames:
       - rhobs-stage

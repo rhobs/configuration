@@ -718,10 +718,10 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			Spec: corev1.ServiceSpec{
 				Ports: []corev1.ServicePort{
 					{
-						Name:       "https",
-						Port:       8443,
+						Name:       "http",
+						Port:       8080,
 						Protocol:   corev1.ProtocolTCP,
-						TargetPort: intstr.FromString("https"),
+						TargetPort: intstr.FromString("http"),
 					},
 				},
 				Selector: map[string]string{
@@ -848,41 +848,23 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 					},
 					Containers: []corev1.Container{
 						{
-							Name:            "kube-rbac-proxy",
-							Image:           TemplateFn("KUBE_RBAC_PROXY", m.Images),
-							ImagePullPolicy: corev1.PullIfNotPresent,
-							Args: []string{
-								"--secure-listen-address=0.0.0.0:8443",
-								"--upstream=http://127.0.0.1:8080/",
-								"--logtostderr=true",
-								"--v=0",
-							},
-							Ports: []corev1.ContainerPort{
-								{
-									ContainerPort: 8443,
-									Name:          "https",
-									Protocol:      corev1.ProtocolTCP,
-								},
-							},
-							Resources: TemplateFn("KUBE_RBAC_PROXY", m.ResourceRequirements),
-							SecurityContext: &corev1.SecurityContext{
-								AllowPrivilegeEscalation: ptr.To(false),
-								Capabilities: &corev1.Capabilities{
-									Drop: []corev1.Capability{"ALL"},
-								},
-							},
-						},
-						{
 							Name:            "manager",
 							Image:           TemplateFn("THANOS_OPERATOR", m.Images),
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Command:         []string{"/manager"},
 							Args: []string{
 								"--health-probe-bind-address=:8081",
-								"--metrics-bind-address=127.0.0.1:8080",
+								"--metrics-bind-address=:8080",
 								"--leader-elect",
 								"--zap-encoder=console",
 								"--zap-log-level=debug",
+							},
+							Ports: []corev1.ContainerPort{
+								{
+									ContainerPort: 8080,
+									Name:          "http",
+									Protocol:      corev1.ProtocolTCP,
+								},
 							},
 							LivenessProbe: &corev1.Probe{
 								ProbeHandler: corev1.ProbeHandler{

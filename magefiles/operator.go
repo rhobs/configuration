@@ -151,7 +151,7 @@ func (l Local) Operator() {
 }
 
 func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
-	return []runtime.Object{
+	objs := []runtime.Object{
 		&corev1.ServiceAccount{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: "v1",
@@ -797,12 +797,24 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 			},
 		},
 		operatorDeployment(namespace, m),
-		operatorServingCertConfigMap(namespace),
 	}
+	for _, cm := range operatorServingCertConfigMaps(namespace) {
+		objs = append(objs, cm)
+	}
+	return objs
 }
 
-func operatorServingCertConfigMap(namespace string) *corev1.ConfigMap {
-	return &corev1.ConfigMap{
+func operatorServingCertConfigMaps(namespace string) []*corev1.ConfigMap {
+	labels := map[string]string{
+		"app.kubernetes.io/component":  "manager",
+		"app.kubernetes.io/created-by": "thanos-operator",
+		"app.kubernetes.io/instance":   "controller-manager",
+		"app.kubernetes.io/managed-by": "rhobs",
+		"app.kubernetes.io/name":       "configmap",
+		"app.kubernetes.io/part-of":    "thanos-operator",
+	}
+
+	serviceCert := &corev1.ConfigMap{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "v1",
 			Kind:       "ConfigMap",
@@ -810,17 +822,23 @@ func operatorServingCertConfigMap(namespace string) *corev1.ConfigMap {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "thanos-operator-serving-cert",
 			Namespace: namespace,
-			Labels: map[string]string{
-				"app.kubernetes.io/component":  "manager",
-				"app.kubernetes.io/created-by": "thanos-operator",
-				"app.kubernetes.io/instance":   "controller-manager",
-				"app.kubernetes.io/managed-by": "rhobs",
-				"app.kubernetes.io/name":       "configmap",
-				"app.kubernetes.io/part-of":    "thanos-operator",
-			},
+			Labels:    labels,
 			Annotations: map[string]string{
 				"service.beta.openshift.io/inject-cabundle": "true",
 			},
+		},
+		Data: map[string]string{},
+	}
+
+	rbacConfig := &corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "ConfigMap",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "thanos-operator-rbac-config",
+			Namespace: namespace,
+			Labels:    labels,
 		},
 		Data: map[string]string{
 			"config.yaml": `"authorization":
@@ -832,6 +850,7 @@ func operatorServingCertConfigMap(namespace string) *corev1.ConfigMap {
     "verb": "get"`,
 		},
 	}
+	return []*corev1.ConfigMap{serviceCert, rbacConfig}
 }
 
 func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
@@ -893,7 +912,7 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								"--tls-cert-file=/etc/tls/private/tls.crt",
 								"--tls-private-key-file=/etc/tls/private/tls.key",
 								"--client-ca-file=/etc/service-ca/service-ca.crt",
-								"--config-file=/etc/service-ca/config.yaml",
+								"--config-file=/etc/config/config.yaml",
 							},
 							VolumeMounts: []corev1.VolumeMount{
 								{
@@ -904,6 +923,11 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								{
 									Name:      "service-ca",
 									MountPath: "/etc/service-ca",
+									ReadOnly:  true,
+								},
+								{
+									Name:      "config",
+									MountPath: "/etc/config",
 									ReadOnly:  true,
 								},
 							},
@@ -988,6 +1012,18 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								ConfigMap: &corev1.ConfigMapVolumeSource{
 									LocalObjectReference: corev1.LocalObjectReference{
 										Name: "openshift-service-ca.crt",
+									},
+									DefaultMode: ptr.To(int32(420)),
+									Optional:    ptr.To(false),
+								},
+							},
+						},
+						{
+							Name: "config",
+							VolumeSource: corev1.VolumeSource{
+								ConfigMap: &corev1.ConfigMapVolumeSource{
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: "thanos-operator-rbac-config",
 									},
 									DefaultMode: ptr.To(int32(420)),
 									Optional:    ptr.To(false),

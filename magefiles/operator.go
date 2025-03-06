@@ -796,9 +796,41 @@ func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
 				},
 			},
 		},
-
-		// Deployment
 		operatorDeployment(namespace, m),
+		operatorServingCertConfigMap(namespace),
+	}
+}
+
+func operatorServingCertConfigMap(namespace string) *corev1.ConfigMap {
+	return &corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "ConfigMap",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "thanos-operator-serving-cert",
+			Namespace: namespace,
+			Labels: map[string]string{
+				"app.kubernetes.io/component":  "manager",
+				"app.kubernetes.io/created-by": "thanos-operator",
+				"app.kubernetes.io/instance":   "controller-manager",
+				"app.kubernetes.io/managed-by": "rhobs",
+				"app.kubernetes.io/name":       "configmap",
+				"app.kubernetes.io/part-of":    "thanos-operator",
+			},
+			Annotations: map[string]string{
+				"service.beta.openshift.io/inject-cabundle": "true",
+			},
+		},
+		Data: map[string]string{
+			"config.yaml": `"authorization":
+  "static":
+  - "path": "/metrics"
+    "resourceRequest": false
+    "user":
+      "name": "system:serviceaccount:openshift-customer-monitoring:prometheus-k8s"
+    "verb": "get"`,
+		},
 	}
 }
 
@@ -860,11 +892,18 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								"--v=4",
 								"--tls-cert-file=/etc/tls/private/tls.crt",
 								"--tls-private-key-file=/etc/tls/private/tls.key",
+								"--client-ca-file=/etc/service-ca/service-ca.crt",
+								"--config-file=/etc/service-ca/config.yaml",
 							},
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      "tls",
 									MountPath: "/etc/tls/private",
+									ReadOnly:  true,
+								},
+								{
+									Name:      "service-ca",
+									MountPath: "/etc/service-ca",
 									ReadOnly:  true,
 								},
 							},
@@ -938,6 +977,18 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
 									SecretName:  "kube-rbac-proxy-tls",
+									DefaultMode: ptr.To(int32(420)),
+									Optional:    ptr.To(false),
+								},
+							},
+						},
+						{
+							Name: "service-ca",
+							VolumeSource: corev1.VolumeSource{
+								ConfigMap: &corev1.ConfigMapVolumeSource{
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: "openshift-service-ca.crt",
+									},
 									DefaultMode: ptr.To(int32(420)),
 									Optional:    ptr.To(false),
 								},

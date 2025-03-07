@@ -6,6 +6,7 @@ import (
 
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
+	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -20,52 +21,35 @@ import (
 )
 
 const (
+	crdTemplateDir = "bundle"
+
 	CRDMain     = "refs/heads/main"
+	CRDRefProd  = "b58f3ec98a62b904950148bd5aea906a2c6a519e"
 	CRDRefStage = "b58f3ec98a62b904950148bd5aea906a2c6a519e"
 )
 
 // CRDS Generates the CRDs for the Thanos operator.
 // This is synced from the latest upstream main at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
+func (p Production) CRDS() error {
+	return crds(p.generator(crdTemplateDir), CRDRefProd)
+}
+
+// CRDS Generates the CRDs for the Thanos operator.
+// This is synced from the latest upstream main at:
+// https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (s Stage) CRDS() error {
-	const (
-		templateDir = "bundle"
-	)
-	gen := s.generator(templateDir)
-
-	objs, err := crds(CRDRefStage)
-	if err != nil {
-		return err
-	}
-
-	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-crds"}, []templatev1.Parameter{})
-	encoder := encoding.GhodssYAML(template)
-	gen.Add("thanos-operator-crds.yaml", encoder)
-	gen.Generate()
-	return nil
+	return crds(s.generator(crdTemplateDir), CRDRefStage)
 }
 
 // CRDS Generates the CRDs for the Thanos operator for a local environment.
 // This is synced from the latest upstream main at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (l Local) CRDS() error {
-	const (
-		templateDir = "bundle"
-	)
-	gen := l.generator(templateDir)
-
-	objs, err := crds(CRDRefStage)
-	if err != nil {
-		return err
-	}
-
-	encoder := encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4])
-	gen.Add("thanos-operator-crds.yaml", encoder)
-	gen.Generate()
-	return nil
+	return crds(l.generator(crdTemplateDir), CRDRefStage)
 }
 
-func crds(ref string) ([]runtime.Object, error) {
+func crds(gen *mimic.Generator, ref string) error {
 	const (
 		compact   = "thanoscompacts.yaml"
 		queries   = "thanosqueries.yaml"
@@ -81,25 +65,28 @@ func crds(ref string) ([]runtime.Object, error) {
 		manifest := base + component
 		resp, err := http.Get(manifest)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch %s: %w", manifest, err)
+			return fmt.Errorf("failed to fetch %s: %w", manifest, err)
 		}
 
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("failed to fetch %s: %s", manifest, resp.Status)
+			return fmt.Errorf("failed to fetch %s: %s", manifest, resp.Status)
 		}
 
 		var obj v1.CustomResourceDefinition
 		decoder := yaml.NewYAMLOrJSONDecoder(resp.Body, 100000)
 		err = decoder.Decode(&obj)
 		if err != nil {
-			return nil, fmt.Errorf("failed to decode %s: %w", manifest, err)
+			return fmt.Errorf("failed to decode %s: %w", manifest, err)
 		}
 
 		objs = append(objs, &obj)
 		resp.Body.Close()
 	}
 
-	return objs, nil
+	encoder := encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4])
+	gen.Add("thanos-operator-crds.yaml", encoder)
+	gen.Generate()
+	return nil
 }
 
 // Operator Generates the Thanos Operator Manager resources.

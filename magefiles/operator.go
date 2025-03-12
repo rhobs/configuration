@@ -83,9 +83,15 @@ func crds(gen *mimic.Generator, ref string) error {
 		resp.Body.Close()
 	}
 
-	encoder := encoding.GhodssYAML(objs[0], objs[1], objs[2], objs[3], objs[4])
-	gen.Add("thanos-operator-crds.yaml", encoder)
+	gen.Add("thanos-operator-crds.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			objs,
+			metav1.ObjectMeta{Name: "thanos-operator-crds"},
+			[]templatev1.Parameter{},
+		),
+	))
 	gen.Generate()
+
 	return nil
 }
 

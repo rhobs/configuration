@@ -29,7 +29,7 @@ type TemplateMaps struct {
 func TemplateFn[T any](param string, m ParamMap[T]) T {
 	v, ok := m[param]
 	if !ok {
-		panic(fmt.Sprintf("param %s not found in stage", param))
+		panic(fmt.Sprintf("param %s not found", param))
 	}
 	return v
 }
@@ -338,6 +338,51 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 	},
 }
 
+// ProductionImages is a map of production images.
+var ProductionImages = ParamMap[string]{
+	"THANOS_OPERATOR": "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
+	"KUBE_RBAC_PROXY": "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
+}
+
+// ProductionVersions is a map of production versions.
+var ProductionVersions = ParamMap[string]{}
+
+// ProductionLogLevels is a map of production log levels.
+var ProductionLogLevels = ParamMap[string]{}
+
+// ProductionStorageSize is a map of production PV storage sizes.
+var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{}
+
+// ProductionReplicas is a map of production replicas.
+var ProductionReplicas = ParamMap[int32]{}
+
+// ProductionResourceRequirements is a map of production resource requirements.
+var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
+	"MANAGER": corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+	},
+	"KUBE_RBAC_PROXY": corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("500m"),
+			corev1.ResourceMemory: resource.MustParse("128Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("5m"),
+			corev1.ResourceMemory: resource.MustParse("64Mi"),
+		},
+	},
+}
+
+// ProductionObjectStorageBucket is a map of production object storage buckets.
+var ProductionObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{}
+
 // Local images.
 var LocalImages = ParamMap[string]{
 	"STORE02W":                   CurrentThanosImageStage,
@@ -435,6 +480,16 @@ var StageMaps = TemplateMaps{
 	Replicas:             StageReplicas,
 	ResourceRequirements: StageResourceRequirements,
 	ObjectStorageBucket:  StageObjectStorageBucket,
+}
+
+var ProductionMaps = TemplateMaps{
+	Images:               ProductionImages,
+	Versions:             ProductionVersions,
+	LogLevels:            ProductionLogLevels,
+	StorageSize:          ProductionStorageSize,
+	Replicas:             ProductionReplicas,
+	ResourceRequirements: ProductionResourceRequirements,
+	ObjectStorageBucket:  ProductionObjectStorageBucket,
 }
 
 var LocalMaps = TemplateMaps{

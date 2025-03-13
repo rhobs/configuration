@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
+	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,10 +12,17 @@ import (
 )
 
 func (s Stage) ServiceMonitors() {
-	gen := s.generator("servicemonitors")
 	objs := createServiceMonitors(s.namespace())
-	objs = append(objs, serviceMonitor(s.namespace())...)
+	objs = append(objs, operatorServiceMonitor(s.namespace())...)
+	serviceMonitorTemplateGen(s.generator("servicemonitors"), objs)
+}
 
+func (p Production) ServiceMonitors() {
+	objs := operatorServiceMonitor(p.namespace())
+	serviceMonitorTemplateGen(p.generator("servicemonitors"), objs)
+}
+
+func serviceMonitorTemplateGen(gen *mimic.Generator, objs []runtime.Object) {
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-servicemonitors"}, []templatev1.Parameter{})
 	encoder := encoding.GhodssYAML(template)
 	gen.Add("servicemonitors.yaml", encoder)
@@ -24,14 +32,14 @@ func (s Stage) ServiceMonitors() {
 func (l Local) ServiceMonitors() {
 	gen := l.generator("servicemonitors")
 
-	objs := serviceMonitor(l.namespace())
+	objs := operatorServiceMonitor(l.namespace())
 
 	encoder := encoding.GhodssYAML(objs[0])
 	gen.Add("servicemonitors.yaml", encoder)
 	gen.Generate()
 }
 
-func serviceMonitor(namespace string) []runtime.Object {
+func operatorServiceMonitor(namespace string) []runtime.Object {
 	return []runtime.Object{
 		&monitoringv1.ServiceMonitor{
 			TypeMeta: metav1.TypeMeta{

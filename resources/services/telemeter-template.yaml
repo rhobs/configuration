@@ -93,9 +93,7 @@ objects:
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-1.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-2.memcached.${NAMESPACE}.svc.cluster.local:11211
-          - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing",severity=~"critical|warning|info|none"}
-          - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="acm_console_page_count:sum", page=~"overview-classic|overview-fleet|search|search-details|clusters|application|governance"}
           - --whitelist={__name__="acm_managed_cluster_info"}
           - --whitelist={__name__="acm_managed_cluster_worker_cores:max"}
@@ -126,7 +124,7 @@ objects:
           - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
           - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}
           - --whitelist={__name__="cluster:eo_es_documents_deleted_total:sum"}
-          - --whitelist={__name__="cluster:health:group_severity:count"}
+          - --whitelist={__name__="cluster:health:group_severity:count", severity=~"critical|warning|info|none"}
           - --whitelist={__name__="cluster:ingress_controller_aws_nlb_active:sum"}
           - --whitelist={__name__="cluster:kata_monitor_running_shim_count:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
@@ -144,21 +142,17 @@ objects:
           - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_db_objects:max",table_name=~"ACL|Address_Set"}
           - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_rules:max",direction=~"Ingress|Egress",action=~"Allow|Deny"}
           - --whitelist={__name__="cluster:ovnkube_controller_egress_routing_via_host:max"}
-          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:avg"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:max"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:median"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:min"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
-          - --whitelist={__name__="cluster:velero_backup_total:max"}
-          - --whitelist={__name__="cluster:velero_restore_total:max"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
           - --whitelist={__name__="cluster:volume_manager_selinux_pod_context_mismatch_total"}
           - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_errors_total"}
           - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_warnings_total"}
           - --whitelist={__name__="cluster:volume_manager_selinux_volumes_admitted_total"}
-          - --whitelist={__name__="cluster:vsphere_csi_migration:max"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_infrastructure_failure_domains:max"}
           - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
@@ -179,21 +173,18 @@ objects:
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
           - --whitelist={__name__="cnv_abnormal", reason=~"memory_working_set_delta_from_request|memory_rss_delta_from_request"}
-          - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
           - --whitelist={__name__="code:apiserver_request_total:rate:sum"}
           - --whitelist={__name__="console_url"}
           - --whitelist={__name__="count:up0"}
           - --whitelist={__name__="count:up1"}
           - --whitelist={__name__="csv_abnormal"}
           - --whitelist={__name__="csv_succeeded"}
-          - --whitelist={__name__="enabled:tempo_operator_tempostack_jaeger_ui:sum",enabled="true|false"}
+          - --whitelist={__name__="enabled:tempo_operator_tempostack_jaeger_ui:sum",enabled=~"true|false"}
           - --whitelist={__name__="eo_es_cluster_management_state_info"}
           - --whitelist={__name__="eo_es_defined_delete_namespaces_total"}
           - --whitelist={__name__="eo_es_misconfigured_memory_resources_info"}
           - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="eo_es_storage_info"}
-          - --whitelist={__name__="hostedcluster:hypershift_cluster_vcpus:max"}
-          - --whitelist={__name__="hypershift_cluster_cores"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --whitelist={__name__="insightsclient_request_send_total"}
@@ -235,7 +226,6 @@ objects:
           - --whitelist={__name__="namespace_job:scrape_series_added:topk3_sum1h"}
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_cores:sum"}
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_sockets:sum"}
-          - --whitelist={__name__="node_uname_info"}
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
@@ -285,17 +275,15 @@ objects:
           - --whitelist={__name__="state:tempo_operator_tempostack_managed:sum",state=~"Managed|Unmanaged"}
           - --whitelist={__name__="status:upgrading:version:rhoam_state:max"}
           - --whitelist={__name__="subscription_sync_total"}
-          - --whitelist={__name__="type:opentelemetry_collector_connectors:sum",type="spanmetricsconnector|forwardconnector"}
-          - --whitelist={__name__="type:opentelemetry_collector_exporters:sum",type="debugexporter|loggingexporter|otlpexporter|otlphttpexporter|prometheusexporter|lokiexporter|kafkaexporter|awscloudwatchlogsexporter|loadbalancingexporter"}
-          - --whitelist={__name__="type:opentelemetry_collector_extensions:sum",type="zpagesextension|ballastextension|memorylimiterextension|jaegerremotesampling|healthcheckextension|pprofextension|oauth2clientauthextension|oidcauthextension|bearertokenauthextension|filestorage"}
-          - --whitelist={__name__="type:opentelemetry_collector_info:sum",type="deployment|daemonset|sidecar|statefulset"}
-          - --whitelist={__name__="type:opentelemetry_collector_processors:sum",type="batchprocessor|memorylimiterprocessor|attributesprocessor|resourceprocessor|spanprocessor|k8sattributesprocessor|resourcedetectionprocessor|filterprocessor|routingprocessor|cumulativetodeltaprocessor|groupbyattrsprocessor"}
-          - --whitelist={__name__="type:opentelemetry_collector_receivers:sum",type="jaegerreceiver|hostmetricsreceiver|opencensusreceiver|prometheusreceiver|zipkinreceiver|kafkareceiver|filelogreceiver|journaldreceiver|k8seventsreceiver|kubeletstatsreceiver|k8sclusterreceiver|k8sobjectsreceiver"}
+          - --whitelist={__name__="type:opentelemetry_collector_connectors:sum",type=~"spanmetricsconnector|forwardconnector"}
+          - --whitelist={__name__="type:opentelemetry_collector_exporters:sum",type=~"debugexporter|loggingexporter|otlpexporter|otlphttpexporter|prometheusexporter|lokiexporter|kafkaexporter|awscloudwatchlogsexporter|loadbalancingexporter"}
+          - --whitelist={__name__="type:opentelemetry_collector_extensions:sum",type=~"zpagesextension|ballastextension|memorylimiterextension|jaegerremotesampling|healthcheckextension|pprofextension|oauth2clientauthextension|oidcauthextension|bearertokenauthextension|filestorage"}
+          - --whitelist={__name__="type:opentelemetry_collector_info:sum",type=~"deployment|daemonset|sidecar|statefulset"}
+          - --whitelist={__name__="type:opentelemetry_collector_processors:sum",type=~"batchprocessor|memorylimiterprocessor|attributesprocessor|resourceprocessor|spanprocessor|k8sattributesprocessor|resourcedetectionprocessor|filterprocessor|routingprocessor|cumulativetodeltaprocessor|groupbyattrsprocessor"}
+          - --whitelist={__name__="type:opentelemetry_collector_receivers:sum",type=~"jaegerreceiver|hostmetricsreceiver|opencensusreceiver|prometheusreceiver|zipkinreceiver|kafkareceiver|filelogreceiver|journaldreceiver|k8seventsreceiver|kubeletstatsreceiver|k8sclusterreceiver|k8sobjectsreceiver"}
           - --whitelist={__name__="type:tempo_operator_tempostack_multi_tenancy:sum",type=~"enabled|disabled"}
           - --whitelist={__name__="type:tempo_operator_tempostack_storage_backend:sum",type=~"azure|gcs|s3"}
-          - --whitelist={__name__="up"}
           - --whitelist={__name__="vendor_model:node_accelerator_cards:sum",vendor=~"NVIDIA|AMD|GAUDI|INTEL|QUALCOMM"}
-          - --whitelist={__name__="visual_web_terminal_sessions_total"}
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
@@ -396,9 +384,7 @@ objects:
           - --memcached=memcached-0.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-1.memcached.${NAMESPACE}.svc.cluster.local:11211
           - --memcached=memcached-2.memcached.${NAMESPACE}.svc.cluster.local:11211
-          - --whitelist={__name__=":apiserver_v1_image_imports:sum"}
           - --whitelist={__name__="alerts",alertstate="firing",severity=~"critical|warning|info|none"}
-          - --whitelist={__name__="alerts",alertstate="firing"}
           - --whitelist={__name__="acm_console_page_count:sum", page=~"overview-classic|overview-fleet|search|search-details|clusters|application|governance"}
           - --whitelist={__name__="acm_managed_cluster_info"}
           - --whitelist={__name__="acm_managed_cluster_worker_cores:max"}
@@ -429,7 +415,7 @@ objects:
           - --whitelist={__name__="cluster:eo_es_data_nodes_total:max"}
           - --whitelist={__name__="cluster:eo_es_documents_created_total:sum"}
           - --whitelist={__name__="cluster:eo_es_documents_deleted_total:sum"}
-          - --whitelist={__name__="cluster:health:group_severity:count"}
+          - --whitelist={__name__="cluster:health:group_severity:count", severity=~"critical|warning|info|none"}
           - --whitelist={__name__="cluster:ingress_controller_aws_nlb_active:sum"}
           - --whitelist={__name__="cluster:kata_monitor_running_shim_count:sum"}
           - --whitelist={__name__="cluster:kube_persistentvolume_plugin_type_counts:sum"}
@@ -447,21 +433,17 @@ objects:
           - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_db_objects:max",table_name=~"ACL|Address_Set"}
           - --whitelist={__name__="cluster:ovnkube_controller_baseline_admin_network_policies_rules:max",direction=~"Ingress|Egress",action=~"Allow|Deny"}
           - --whitelist={__name__="cluster:ovnkube_controller_egress_routing_via_host:max"}
-          - --whitelist={__name__="cluster:ovnkube_master_egress_routing_via_host:max"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:avg"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:max"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:median"}
           - --whitelist={__name__="cluster:route_metrics_controller_routes_per_shard:min"}
           - --whitelist={__name__="cluster:telemetry_selected_series:count"}
-          - --whitelist={__name__="cluster:velero_backup_total:max"}
-          - --whitelist={__name__="cluster:velero_restore_total:max"}
           - --whitelist={__name__="cluster:virt_platform_nodes:sum"}
           - --whitelist={__name__="cluster:vmi_request_cpu_cores:sum"}
           - --whitelist={__name__="cluster:volume_manager_selinux_pod_context_mismatch_total"}
           - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_errors_total"}
           - --whitelist={__name__="cluster:volume_manager_selinux_volume_context_mismatch_warnings_total"}
           - --whitelist={__name__="cluster:volume_manager_selinux_volumes_admitted_total"}
-          - --whitelist={__name__="cluster:vsphere_csi_migration:max"}
           - --whitelist={__name__="cluster:vsphere_esxi_version_total:sum"}
           - --whitelist={__name__="cluster:vsphere_infrastructure_failure_domains:max"}
           - --whitelist={__name__="cluster:vsphere_node_hw_version_total:sum"}
@@ -482,21 +464,18 @@ objects:
           - --whitelist={__name__="cluster_version_payload"}
           - --whitelist={__name__="cnv:vmi_status_running:count"}
           - --whitelist={__name__="cnv_abnormal", reason=~"memory_working_set_delta_from_request|memory_rss_delta_from_request"}
-          - --whitelist={__name__="code:apiserver_request_count:rate:sum"}
           - --whitelist={__name__="code:apiserver_request_total:rate:sum"}
           - --whitelist={__name__="console_url"}
           - --whitelist={__name__="count:up0"}
           - --whitelist={__name__="count:up1"}
           - --whitelist={__name__="csv_abnormal"}
           - --whitelist={__name__="csv_succeeded"}
-          - --whitelist={__name__="enabled:tempo_operator_tempostack_jaeger_ui:sum",enabled="true|false"}
+          - --whitelist={__name__="enabled:tempo_operator_tempostack_jaeger_ui:sum",enabled=~"true|false"}
           - --whitelist={__name__="eo_es_cluster_management_state_info"}
           - --whitelist={__name__="eo_es_defined_delete_namespaces_total"}
           - --whitelist={__name__="eo_es_misconfigured_memory_resources_info"}
           - --whitelist={__name__="eo_es_redundancy_policy_info"}
           - --whitelist={__name__="eo_es_storage_info"}
-          - --whitelist={__name__="hostedcluster:hypershift_cluster_vcpus:max"}
-          - --whitelist={__name__="hypershift_cluster_cores"}
           - --whitelist={__name__="imageregistry:imagestreamtags_count:sum"}
           - --whitelist={__name__="imageregistry:operations_count:sum"}
           - --whitelist={__name__="insightsclient_request_send_total"}
@@ -538,7 +517,6 @@ objects:
           - --whitelist={__name__="namespace_job:scrape_series_added:topk3_sum1h"}
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_cores:sum"}
           - --whitelist={__name__="node_role_os_version_machine:cpu_capacity_sockets:sum"}
-          - --whitelist={__name__="node_uname_info"}
           - --whitelist={__name__="noobaa_accounts_num"}
           - --whitelist={__name__="noobaa_total_usage"}
           - --whitelist={__name__="nto_custom_profiles:count"}
@@ -588,17 +566,15 @@ objects:
           - --whitelist={__name__="state:tempo_operator_tempostack_managed:sum",state=~"Managed|Unmanaged"}
           - --whitelist={__name__="status:upgrading:version:rhoam_state:max"}
           - --whitelist={__name__="subscription_sync_total"}
-          - --whitelist={__name__="type:opentelemetry_collector_connectors:sum",type="spanmetricsconnector|forwardconnector"}
-          - --whitelist={__name__="type:opentelemetry_collector_exporters:sum",type="debugexporter|loggingexporter|otlpexporter|otlphttpexporter|prometheusexporter|lokiexporter|kafkaexporter|awscloudwatchlogsexporter|loadbalancingexporter"}
-          - --whitelist={__name__="type:opentelemetry_collector_extensions:sum",type="zpagesextension|ballastextension|memorylimiterextension|jaegerremotesampling|healthcheckextension|pprofextension|oauth2clientauthextension|oidcauthextension|bearertokenauthextension|filestorage"}
-          - --whitelist={__name__="type:opentelemetry_collector_info:sum",type="deployment|daemonset|sidecar|statefulset"}
-          - --whitelist={__name__="type:opentelemetry_collector_processors:sum",type="batchprocessor|memorylimiterprocessor|attributesprocessor|resourceprocessor|spanprocessor|k8sattributesprocessor|resourcedetectionprocessor|filterprocessor|routingprocessor|cumulativetodeltaprocessor|groupbyattrsprocessor"}
-          - --whitelist={__name__="type:opentelemetry_collector_receivers:sum",type="jaegerreceiver|hostmetricsreceiver|opencensusreceiver|prometheusreceiver|zipkinreceiver|kafkareceiver|filelogreceiver|journaldreceiver|k8seventsreceiver|kubeletstatsreceiver|k8sclusterreceiver|k8sobjectsreceiver"}
+          - --whitelist={__name__="type:opentelemetry_collector_connectors:sum",type=~"spanmetricsconnector|forwardconnector"}
+          - --whitelist={__name__="type:opentelemetry_collector_exporters:sum",type=~"debugexporter|loggingexporter|otlpexporter|otlphttpexporter|prometheusexporter|lokiexporter|kafkaexporter|awscloudwatchlogsexporter|loadbalancingexporter"}
+          - --whitelist={__name__="type:opentelemetry_collector_extensions:sum",type=~"zpagesextension|ballastextension|memorylimiterextension|jaegerremotesampling|healthcheckextension|pprofextension|oauth2clientauthextension|oidcauthextension|bearertokenauthextension|filestorage"}
+          - --whitelist={__name__="type:opentelemetry_collector_info:sum",type=~"deployment|daemonset|sidecar|statefulset"}
+          - --whitelist={__name__="type:opentelemetry_collector_processors:sum",type=~"batchprocessor|memorylimiterprocessor|attributesprocessor|resourceprocessor|spanprocessor|k8sattributesprocessor|resourcedetectionprocessor|filterprocessor|routingprocessor|cumulativetodeltaprocessor|groupbyattrsprocessor"}
+          - --whitelist={__name__="type:opentelemetry_collector_receivers:sum",type=~"jaegerreceiver|hostmetricsreceiver|opencensusreceiver|prometheusreceiver|zipkinreceiver|kafkareceiver|filelogreceiver|journaldreceiver|k8seventsreceiver|kubeletstatsreceiver|k8sclusterreceiver|k8sobjectsreceiver"}
           - --whitelist={__name__="type:tempo_operator_tempostack_multi_tenancy:sum",type=~"enabled|disabled"}
           - --whitelist={__name__="type:tempo_operator_tempostack_storage_backend:sum",type=~"azure|gcs|s3"}
-          - --whitelist={__name__="up"}
           - --whitelist={__name__="vendor_model:node_accelerator_cards:sum",vendor=~"NVIDIA|AMD|GAUDI|INTEL|QUALCOMM"}
-          - --whitelist={__name__="visual_web_terminal_sessions_total"}
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}

@@ -563,7 +563,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
     name: observatorium-api
     namespace: rhobs-production
   stringData:

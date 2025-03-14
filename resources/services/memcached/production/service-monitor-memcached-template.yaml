@@ -13,7 +13,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: 1.5-316
       prometheus: app-sre
     name: api-memcached
     namespace: openshift-customer-monitoring
@@ -32,4 +32,4 @@ objects:
         app.kubernetes.io/instance: rhobs
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
-        app.kubernetes.io/version: ""
+        app.kubernetes.io/version: 1.5-316

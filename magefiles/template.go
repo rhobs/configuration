@@ -342,10 +342,16 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 var ProductionImages = ParamMap[string]{
 	"THANOS_OPERATOR": "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
 	"KUBE_RBAC_PROXY": "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
+	apiCache:          memcachedImage,
+	memcachedExporter: memcachedExporterImage,
+	observatoriumAPI:  "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
 }
 
 // ProductionVersions is a map of production versions.
-var ProductionVersions = ParamMap[string]{}
+var ProductionVersions = ParamMap[string]{
+	apiCache:         memcachedTag,
+	observatoriumAPI: "9aada65247a07782465beb500323a0e18d7e3d05",
+}
 
 // ProductionLogLevels is a map of production log levels.
 var ProductionLogLevels = ParamMap[string]{}

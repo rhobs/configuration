@@ -13,7 +13,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: 1.5-316
     name: api-memcached
     namespace: rhobs-production
   spec:
@@ -32,7 +32,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: 1.5-316
   status:
     loadBalancer: {}
 - apiVersion: v1
@@ -44,7 +44,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: 1.5-316
     name: api-memcached
     namespace: rhobs-production
 - apiVersion: apps/v1
@@ -56,7 +56,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: memcached
       app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: ""
+      app.kubernetes.io/version: 1.5-316
     name: api-memcached
     namespace: rhobs-production
   spec:
@@ -68,7 +68,7 @@ objects:
         app.kubernetes.io/instance: rhobs
         app.kubernetes.io/name: memcached
         app.kubernetes.io/part-of: observatorium
-        app.kubernetes.io/version: ""
+        app.kubernetes.io/version: 1.5-316
     serviceName: api-memcached
     template:
       metadata:
@@ -78,7 +78,7 @@ objects:
           app.kubernetes.io/instance: rhobs
           app.kubernetes.io/name: memcached
           app.kubernetes.io/part-of: observatorium
-          app.kubernetes.io/version: ""
+          app.kubernetes.io/version: 1.5-316
       spec:
         containers:
         - args:
@@ -86,6 +86,7 @@ objects:
           - -c 3072
           - -I 5m
           - -v
+          image: registry.redhat.io/rhel8/memcached:1.5-316
           imagePullPolicy: IfNotPresent
           name: memcached
           ports:
@@ -97,6 +98,7 @@ objects:
         - args:
           - --memcached.address=localhost:11211
           - --web.listen-address=0.0.0.0:9150
+          image: quay.io/prometheus/memcached-exporter:v0.15.0
           imagePullPolicy: IfNotPresent
           name: exporter
           ports:

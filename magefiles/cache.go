@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
+	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 
@@ -79,13 +80,25 @@ func (f *memcachedFlags) ToArgs() []string {
 }
 
 func (s Stage) Cache() {
-	gen := s.generator(cacheName)
-	gwConf := s.gatewayCache(StageMaps)
+	gen := func() *mimic.Generator {
+		return s.generator(cacheName)
+	}
+	cache(gen, StageMaps, s.namespace())
+}
 
+func (p Production) Cache() {
+	gen := func() *mimic.Generator {
+		return p.generator(cacheName)
+	}
+	cache(gen, ProductionMaps, p.namespace())
+}
+
+func cache(g func() *mimic.Generator, m TemplateMaps, namespace string) {
+	gwConf := gatewayCache(m, namespace)
 	var sms []runtime.Object
 
 	objs := []runtime.Object{
-		memcachedStatefulSet(gwConf, StageMaps),
+		memcachedStatefulSet(gwConf, m),
 		createServiceAccount(gwConf.ServiceAccount, gwConf.Namespace, gwConf.Labels),
 		createCacheHeadlessService(gwConf),
 	}
@@ -96,19 +109,19 @@ func (s Stage) Cache() {
 		Name: cacheName,
 	}, nil)
 	enc := encoding.GhodssYAML(template)
+	gen := g()
 	gen.Add(cacheTemplate, enc)
 	gen.Generate()
 
-	gen = s.generator(cacheName)
 	template = openshift.WrapInTemplate(sms, metav1.ObjectMeta{
 		Name: cacheName + "-service-monitor",
 	}, nil)
+	gen = g()
 	gen.Add("service-monitor-"+cacheTemplate, encoding.GhodssYAML(template))
 	gen.Generate()
-
 }
 
-func (s Stage) gatewayCache(m TemplateMaps) *memcachedConfig {
+func gatewayCache(m TemplateMaps, namespace string) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
 			Memory:         2048,
@@ -117,7 +130,7 @@ func (s Stage) gatewayCache(m TemplateMaps) *memcachedConfig {
 			Verbose:        true,
 		},
 		Name:           gatewayCacheName,
-		Namespace:      s.namespace(),
+		Namespace:      namespace,
 		MemcachedImage: m.Images[apiCache],
 		ExporterImage:  m.Images[memcachedExporter],
 		Labels: map[string]string{

@@ -1,0 +1,35 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: memcached-service-monitor
+objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: memcached
+      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/version: ""
+      prometheus: app-sre
+    name: api-memcached
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - honorLabels: true
+      interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-production
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api-memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: memcached
+        app.kubernetes.io/part-of: observatorium
+        app.kubernetes.io/version: ""

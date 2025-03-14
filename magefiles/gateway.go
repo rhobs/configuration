@@ -7,6 +7,7 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
+	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
@@ -29,11 +30,40 @@ const (
 	routerService = "thanos-receive-router-rhobs"
 )
 
+type gatewayConfig struct {
+	namespace string
+	generator func(component string) *mimic.Generator
+	tenants   *corev1.Secret
+	amsURL    string
+	m         TemplateMaps
+}
+
 // Gateway Generates the Observatorium API Gateway configuration for the stage environment.
 func (s Stage) Gateway() error {
-	gen := s.generator(gatewayName)
-	amsURL := "https://api.stage.openshift.com"
+	conf := gatewayConfig{
+		namespace: s.namespace(),
+		generator: s.generator,
+		amsURL:    "https://api.stage.openshift.com",
+		m:         StageMaps,
+		tenants:   stageGatewayTenants(StageMaps, s.namespace()),
+	}
+	return gateway(conf)
+}
 
+// Gateway Generates the Observatorium API Gateway configuration for the production environment.
+func (p Production) Gateway() error {
+	conf := gatewayConfig{
+		namespace: p.namespace(),
+		generator: p.generator,
+		amsURL:    "https://api.openshift.com",
+		m:         ProductionMaps,
+		tenants:   prodGatewayTenants(ProductionMaps, p.namespace()),
+	}
+	return gateway(conf)
+}
+
+func gateway(c gatewayConfig) error {
+	ns := c.namespace
 	b, err := json.Marshal(cfgobservatorium.GenerateRBAC())
 	if err != nil {
 		return fmt.Errorf("failed to marshal RBAC configuration: %w", err)
@@ -44,12 +74,12 @@ func (s Stage) Gateway() error {
 	}
 
 	objs := []runtime.Object{
-		gatewayRBAC(StageMaps, s.namespace(), string(rbacYAML)),
-		stageGatewayTenants(StageMaps, s.namespace()),
-		gatewayDeployment(StageMaps, s.namespace(), amsURL),
-		createGatewayService(StageMaps, s.namespace()),
+		gatewayRBAC(StageMaps, ns, string(rbacYAML)),
+		gatewayDeployment(StageMaps, ns, c.amsURL),
+		createGatewayService(StageMaps, ns),
+		c.tenants,
 	}
-
+	gen := c.generator(gatewayName)
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{
 		Name: gatewayName,
 	}, gatewayTemplateParams)
@@ -58,9 +88,9 @@ func (s Stage) Gateway() error {
 	gen.Generate()
 
 	sms := []runtime.Object{
-		gatewayServiceMonitor(StageMaps, s.namespace()),
+		gatewayServiceMonitor(StageMaps, ns),
 	}
-	gen = s.generator(gatewayName)
+	gen = c.generator(gatewayName)
 	template = openshift.WrapInTemplate(sms, metav1.ObjectMeta{
 		Name: gatewayName + "-service-monitor",
 	}, nil)
@@ -595,6 +625,146 @@ func stageGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
           clientSecret: ${CLIENT_SECRET}
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium.api.stage.openshift.com/oidc/telemeter/callback
+          usernameClaim: preferred_username
+`,
+		},
+	}
+}
+
+func prodGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
+	labels, _ := gatewayLabels(m)
+	return &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      gatewayName,
+			Namespace: namespace,
+			Labels:    labels,
+			Annotations: map[string]string{
+				"qontract.recycle": "true",
+			},
+		},
+		StringData: map[string]string{
+			"client-id":     "${CLIENT_ID}",
+			"client-secret": "${CLIENT_SECRET}",
+			"issuer-url":    "https://sso.redhat.com/auth/realms/redhat-external",
+			"tenants.yaml": `tenants:
+      - id: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+        name: rhobs
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium.api.openshift.com/oidc/rhobs/callback
+          usernameClaim: preferred_username
+          groupClaim: email
+      - id: 770c1124-6ae8-4324-a9d4-9ce08590094b
+        name: osd
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/osd/callback
+          usernameClaim: preferred_username
+        opa:
+          url: http://127.0.0.1:8082/v1/data/observatorium/allow
+        rateLimits:
+        - endpoint: /api/metrics/v1/.+/api/v1/receive
+          limit: 10000
+          window: 30s
+      - id: 1b9b6e43-9128-4bbf-bfff-3c120bbe6f11
+        name: rhacs
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhacs/callback
+          usernameClaim: preferred_username
+      - id: 9ca26972-4328-4fe3-92db-31302013d03f
+        name: cnvqe
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/cnvqe/callback
+          usernameClaim: preferred_username
+      - id: 37b8fd3f-56ff-4b64-8272-917c9b0d1623
+        name: psiocp
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/psiocp/callback
+          usernameClaim: preferred_username
+      - id: 8ace13a2-1c72-4559-b43d-ab43e32a255a
+        name: rhods
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhods/callback
+          usernameClaim: preferred_username
+      - id: 99c885bc-2d64-4c4d-b55e-8bf30d98c657
+        name: odfms
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/odfms/callback
+          usernameClaim: preferred_username
+      - id: d17ea8ce-d4c6-42ef-b259-7d10c9227e93
+        name: reference-addon
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/reference-addon/callback
+          usernameClaim: preferred_username
+      - id: AC879303-C60F-4D0D-A6D5-A485CFD638B8
+        name: dptp
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/dptp/callback
+          usernameClaim: preferred_username
+      - id: 3833951d-bede-4a53-85e5-f73f4913973f
+        name: appsre
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/appsre/callback
+          usernameClaim: preferred_username
+      - id: 0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1
+        name: rhtap
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhtap/callback
+          usernameClaim: preferred_username
+      - id: 72e6f641-b2e2-47eb-bbc2-fee3c8fbda26
+        name: rhel
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhel/callback
+          usernameClaim: preferred_username
+        rateLimits:
+        - endpoint: '/api/metrics/v1/rhel/api/v1/receive'
+          limit: 10000
+          window: 30s
+      - id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+        name: telemeter
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium.api.openshift.com/oidc/telemeter/callback
           usernameClaim: preferred_username
 `,
 		},

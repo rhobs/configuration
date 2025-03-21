@@ -35,13 +35,14 @@ func TemplateFn[T any](param string, m ParamMap[T]) T {
 }
 
 const (
-	CurrentThanosImageStage   = "quay.io/thanos/thanos"
-	CurrentThanosVersionStage = "v0.37.2"
+	currentThanosImageStage   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
+	currentThanosVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
 
-	CurrentThanosKonfluxImageStage   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
-	CurrentThanosKonfluxVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
+	currentThanosImageProd   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
+	currentThanosVersionProd = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
 
 	thanosOperatorStage = "9a9d855a9b292274114239ca9859b19fc5c83322"
+	thanosOperatorProd  = "9a9d855a9b292274114239ca9859b19fc5c83322"
 
 	memcachedTag           = "1.5-316"
 	memcachedImage         = "registry.redhat.io/rhel8/memcached" + ":" + memcachedTag
@@ -62,18 +63,18 @@ var logLevels = []string{"debug", "info", "warn", "error"}
 
 // Stage images.
 var StageImages = ParamMap[string]{
-	"STORE02W":                   CurrentThanosKonfluxImageStage,
-	"STORE2W90D":                 CurrentThanosKonfluxImageStage,
-	"STORE90D+":                  CurrentThanosKonfluxImageStage,
-	"STORE_DEFAULT":              CurrentThanosKonfluxImageStage,
-	"RECEIVE_ROUTER":             CurrentThanosKonfluxImageStage,
-	"RECEIVE_INGESTOR_TELEMETER": CurrentThanosKonfluxImageStage,
-	"RECEIVE_INGESTOR_DEFAULT":   CurrentThanosKonfluxImageStage,
-	"RULER":                      CurrentThanosKonfluxImageStage,
-	"COMPACT_DEFAULT":            CurrentThanosKonfluxImageStage,
-	"COMPACT_TELEMETER":          CurrentThanosKonfluxImageStage,
-	"QUERY":                      CurrentThanosKonfluxImageStage,
-	"QUERY_FRONTEND":             CurrentThanosKonfluxImageStage,
+	"STORE02W":                   currentThanosImageStage,
+	"STORE2W90D":                 currentThanosImageStage,
+	"STORE90D+":                  currentThanosImageStage,
+	"STORE_DEFAULT":              currentThanosImageStage,
+	"RECEIVE_ROUTER":             currentThanosImageStage,
+	"RECEIVE_INGESTOR_TELEMETER": currentThanosImageStage,
+	"RECEIVE_INGESTOR_DEFAULT":   currentThanosImageStage,
+	"RULER":                      currentThanosImageStage,
+	"COMPACT_DEFAULT":            currentThanosImageStage,
+	"COMPACT_TELEMETER":          currentThanosImageStage,
+	"QUERY":                      currentThanosImageStage,
+	"QUERY_FRONTEND":             currentThanosImageStage,
 	jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
@@ -85,18 +86,18 @@ var StageImages = ParamMap[string]{
 
 // Stage images.
 var StageVersions = ParamMap[string]{
-	"STORE02W":                   CurrentThanosKonfluxVersionStage,
-	"STORE2W90D":                 CurrentThanosKonfluxVersionStage,
-	"STORE90D+":                  CurrentThanosKonfluxVersionStage,
-	"STORE_DEFAULT":              CurrentThanosKonfluxVersionStage,
-	"RECEIVE_ROUTER":             CurrentThanosKonfluxVersionStage,
-	"RECEIVE_INGESTOR_TELEMETER": CurrentThanosKonfluxVersionStage,
-	"RECEIVE_INGESTOR_DEFAULT":   CurrentThanosKonfluxVersionStage,
-	"RULER":                      CurrentThanosKonfluxVersionStage,
-	"COMPACT_DEFAULT":            CurrentThanosKonfluxVersionStage,
-	"COMPACT_TELEMETER":          CurrentThanosKonfluxVersionStage,
-	"QUERY":                      CurrentThanosKonfluxVersionStage,
-	"QUERY_FRONTEND":             CurrentThanosKonfluxVersionStage,
+	"STORE02W":                   currentThanosVersionStage,
+	"STORE2W90D":                 currentThanosVersionStage,
+	"STORE90D+":                  currentThanosVersionStage,
+	"STORE_DEFAULT":              currentThanosVersionStage,
+	"RECEIVE_ROUTER":             currentThanosVersionStage,
+	"RECEIVE_INGESTOR_TELEMETER": currentThanosVersionStage,
+	"RECEIVE_INGESTOR_DEFAULT":   currentThanosVersionStage,
+	"RULER":                      currentThanosVersionStage,
+	"COMPACT_DEFAULT":            currentThanosVersionStage,
+	"COMPACT_TELEMETER":          currentThanosVersionStage,
+	"QUERY":                      currentThanosVersionStage,
+	"QUERY_FRONTEND":             currentThanosVersionStage,
 	apiCache:                     memcachedTag,
 	observatoriumAPI:             "9aada65247a07782465beb500323a0e18d7e3d05",
 }
@@ -340,30 +341,100 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 
 // ProductionImages is a map of production images.
 var ProductionImages = ParamMap[string]{
+	"STORE02W":        currentThanosImageProd,
+	"STORE2W90D":      currentThanosImageProd,
+	"STORE90D+":       currentThanosImageProd,
+	"STORE_DEFAULT":   currentThanosImageProd,
+	"QUERY":           currentThanosImageProd,
+	"QUERY_FRONTEND":  currentThanosImageProd,
 	"THANOS_OPERATOR": "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
 	"KUBE_RBAC_PROXY": "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 	apiCache:          memcachedImage,
 	memcachedExporter: memcachedExporterImage,
 	observatoriumAPI:  "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	jaeger:            "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 }
 
 // ProductionVersions is a map of production versions.
 var ProductionVersions = ParamMap[string]{
+	"STORE02W":       currentThanosVersionProd,
+	"STORE2W90D":     currentThanosVersionProd,
+	"STORE90D+":      currentThanosVersionProd,
+	"STORE_DEFAULT":  currentThanosVersionProd,
+	"QUERY":          currentThanosVersionProd,
+	"QUERY_FRONTEND": currentThanosVersionProd,
 	apiCache:         memcachedTag,
 	observatoriumAPI: "9aada65247a07782465beb500323a0e18d7e3d05",
 }
 
 // ProductionLogLevels is a map of production log levels.
-var ProductionLogLevels = ParamMap[string]{}
+var ProductionLogLevels = ParamMap[string]{
+	"STORE02W":       logLevels[1],
+	"STORE2W90D":     logLevels[1],
+	"STORE90D+":      logLevels[1],
+	"STORE_DEFAULT":  logLevels[1],
+	"QUERY":          logLevels[1],
+	"QUERY_FRONTEND": logLevels[1],
+}
 
 // ProductionStorageSize is a map of production PV storage sizes.
-var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{}
+var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
+	"STORE02W":      "8Gi",
+	"STORE2W90D":    "8Gi",
+	"STORE90D+":     "8Gi",
+	"STORE_DEFAULT": "8Gi",
+}
 
 // ProductionReplicas is a map of production replicas.
-var ProductionReplicas = ParamMap[int32]{}
+var ProductionReplicas = ParamMap[int32]{
+	"STORE02W":       3,
+	"STORE2W90D":     3,
+	"STORE90D+":      3,
+	"STORE_DEFAULT":  3,
+	"QUERY":          6,
+	"QUERY_FRONTEND": 3,
+	apiCache:         1,
+	observatoriumAPI: 2,
+}
 
 // ProductionResourceRequirements is a map of production resource requirements.
 var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
+	"STORE02W": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+	},
+	"STORE2W90D": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+	},
+	"STORE90D+": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+	},
+	"STORE_DEFAULT": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+	},
+	"QUERY": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("300m"),
+			corev1.ResourceMemory: resource.MustParse("1Gi"),
+		},
+	},
+	"QUERY_FRONTEND": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("500Mi"),
+		},
+	},
 	"MANAGER": corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("1"),
@@ -384,25 +455,119 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("64Mi"),
 		},
 	},
+	apiCache: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("3"),
+			corev1.ResourceMemory: resource.MustParse("1844Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("500m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	memcachedExporter: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("200m"),
+			corev1.ResourceMemory: resource.MustParse("200Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	observatoriumAPI: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
 }
 
 // ProductionObjectStorageBucket is a map of production object storage buckets.
-var ProductionObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{}
+var ProductionObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
+	"DEFAULT": v1alpha1.ObjectStorageConfig{
+		Key: "thanos.yaml",
+		LocalObjectReference: corev1.LocalObjectReference{
+			Name: "observatorium-mst-thanos-objectstorage",
+		},
+		Optional: ptr.To(false),
+	},
+	"TELEMETER": v1alpha1.ObjectStorageConfig{
+		Key: "thanos.yaml",
+		LocalObjectReference: corev1.LocalObjectReference{
+			Name: "thanos-objectstorage",
+		},
+		Optional: ptr.To(false),
+	},
+}
+
+var StageMaps = TemplateMaps{
+	Images:               StageImages,
+	Versions:             StageVersions,
+	LogLevels:            StageLogLevels,
+	StorageSize:          StageStorageSize,
+	Replicas:             StageReplicas,
+	ResourceRequirements: StageResourceRequirements,
+	ObjectStorageBucket:  StageObjectStorageBucket,
+}
+
+var ProductionMaps = TemplateMaps{
+	Images:               ProductionImages,
+	Versions:             ProductionVersions,
+	LogLevels:            ProductionLogLevels,
+	StorageSize:          ProductionStorageSize,
+	Replicas:             ProductionReplicas,
+	ResourceRequirements: ProductionResourceRequirements,
+	ObjectStorageBucket:  ProductionObjectStorageBucket,
+}
+
+const (
+	localThanosImage   = "quay.io/thanos/thanos"
+	localThanosVersion = "v0.37.2"
+)
+
+var LocalMaps = TemplateMaps{
+	Images:               LocalImages,
+	Versions:             LocalVersions,
+	LogLevels:            StageLogLevels,
+	StorageSize:          LocalStorageSize,
+	Replicas:             StageReplicas,
+	ResourceRequirements: LocalResourceRequirements,
+	ObjectStorageBucket:  StageObjectStorageBucket,
+}
+
+// getLocalResources returns the resource requirements for local development
+func getLocalResources() corev1.ResourceRequirements {
+	return corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("10m"),
+			corev1.ResourceMemory: resource.MustParse("20Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("20m"),
+			corev1.ResourceMemory: resource.MustParse("50Mi"),
+		},
+	}
+}
 
 // Local images.
 var LocalImages = ParamMap[string]{
-	"STORE02W":                   CurrentThanosImageStage,
-	"STORE2W90D":                 CurrentThanosImageStage,
-	"STORE90D+":                  CurrentThanosImageStage,
-	"STORE_DEFAULT":              CurrentThanosImageStage,
-	"RECEIVE_ROUTER":             CurrentThanosImageStage,
-	"RECEIVE_INGESTOR_TELEMETER": CurrentThanosImageStage,
-	"RECEIVE_INGESTOR_DEFAULT":   CurrentThanosImageStage,
-	"RULER":                      CurrentThanosImageStage,
-	"COMPACT_DEFAULT":            CurrentThanosImageStage,
-	"COMPACT_TELEMETER":          CurrentThanosImageStage,
-	"QUERY":                      CurrentThanosImageStage,
-	"QUERY_FRONTEND":             CurrentThanosImageStage,
+	"STORE02W":                   localThanosImage,
+	"STORE2W90D":                 localThanosImage,
+	"STORE90D+":                  localThanosImage,
+	"STORE_DEFAULT":              localThanosImage,
+	"RECEIVE_ROUTER":             localThanosImage,
+	"RECEIVE_INGESTOR_TELEMETER": localThanosImage,
+	"RECEIVE_INGESTOR_DEFAULT":   localThanosImage,
+	"RULER":                      localThanosImage,
+	"COMPACT_DEFAULT":            localThanosImage,
+	"COMPACT_TELEMETER":          localThanosImage,
+	"QUERY":                      localThanosImage,
+	"QUERY_FRONTEND":             localThanosImage,
 	jaeger:                       "quay.io/jaegertracing/jaeger-agent:1.57.0",
 	"THANOS_OPERATOR":            "quay.io/thanos/thanos-operator:main-2025-02-07-f1e3fa9",
 	"KUBE_RBAC_PROXY":            "gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0",
@@ -410,18 +575,18 @@ var LocalImages = ParamMap[string]{
 
 // Local images.
 var LocalVersions = ParamMap[string]{
-	"STORE02W":                   CurrentThanosVersionStage,
-	"STORE2W90D":                 CurrentThanosVersionStage,
-	"STORE90D+":                  CurrentThanosVersionStage,
-	"STORE_DEFAULT":              CurrentThanosVersionStage,
-	"RECEIVE_ROUTER":             CurrentThanosVersionStage,
-	"RECEIVE_INGESTOR_TELEMETER": CurrentThanosVersionStage,
-	"RECEIVE_INGESTOR_DEFAULT":   CurrentThanosVersionStage,
-	"RULER":                      CurrentThanosVersionStage,
-	"COMPACT_DEFAULT":            CurrentThanosVersionStage,
-	"COMPACT_TELEMETER":          CurrentThanosVersionStage,
-	"QUERY":                      CurrentThanosVersionStage,
-	"QUERY_FRONTEND":             CurrentThanosVersionStage,
+	"STORE02W":                   localThanosVersion,
+	"STORE2W90D":                 localThanosVersion,
+	"STORE90D+":                  localThanosVersion,
+	"STORE_DEFAULT":              localThanosVersion,
+	"RECEIVE_ROUTER":             localThanosVersion,
+	"RECEIVE_INGESTOR_TELEMETER": localThanosVersion,
+	"RECEIVE_INGESTOR_DEFAULT":   localThanosVersion,
+	"RULER":                      localThanosVersion,
+	"COMPACT_DEFAULT":            localThanosVersion,
+	"COMPACT_TELEMETER":          localThanosVersion,
+	"QUERY":                      localThanosVersion,
+	"QUERY_FRONTEND":             localThanosVersion,
 }
 
 // Local PV storage sizes.
@@ -462,48 +627,4 @@ var LocalResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		},
 	},
 	"KUBE_RBAC_PROXY": getLocalResources(),
-}
-
-// getLocalResources returns the resource requirements for local development
-func getLocalResources() corev1.ResourceRequirements {
-	return corev1.ResourceRequirements{
-		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("10m"),
-			corev1.ResourceMemory: resource.MustParse("20Mi"),
-		},
-		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse("20m"),
-			corev1.ResourceMemory: resource.MustParse("50Mi"),
-		},
-	}
-}
-
-var StageMaps = TemplateMaps{
-	Images:               StageImages,
-	Versions:             StageVersions,
-	LogLevels:            StageLogLevels,
-	StorageSize:          StageStorageSize,
-	Replicas:             StageReplicas,
-	ResourceRequirements: StageResourceRequirements,
-	ObjectStorageBucket:  StageObjectStorageBucket,
-}
-
-var ProductionMaps = TemplateMaps{
-	Images:               ProductionImages,
-	Versions:             ProductionVersions,
-	LogLevels:            ProductionLogLevels,
-	StorageSize:          ProductionStorageSize,
-	Replicas:             ProductionReplicas,
-	ResourceRequirements: ProductionResourceRequirements,
-	ObjectStorageBucket:  ProductionObjectStorageBucket,
-}
-
-var LocalMaps = TemplateMaps{
-	Images:               LocalImages,
-	Versions:             LocalVersions,
-	LogLevels:            StageLogLevels,
-	StorageSize:          LocalStorageSize,
-	Replicas:             StageReplicas,
-	ResourceRequirements: LocalResourceRequirements,
-	ObjectStorageBucket:  StageObjectStorageBucket,
 }

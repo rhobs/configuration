@@ -11,14 +11,18 @@ import (
 	"k8s.io/utils/ptr"
 )
 
+// ServiceMonitors generates ServiceMonitor resources for the Stage environment.
 func (s Stage) ServiceMonitors() {
 	objs := createServiceMonitors(s.namespace())
 	objs = append(objs, operatorServiceMonitor(s.namespace())...)
 	serviceMonitorTemplateGen(s.generator("servicemonitors"), objs)
 }
 
+// ServiceMonitors generates ServiceMonitor resources for the Production environment.
 func (p Production) ServiceMonitors() {
-	objs := operatorServiceMonitor(p.namespace())
+	ns := p.namespace()
+	objs := createServiceMonitors(ns)
+	objs = append(objs, operatorServiceMonitor(ns)...)
 	serviceMonitorTemplateGen(p.generator("servicemonitors"), objs)
 }
 

@@ -19,6 +19,47 @@ import (
 )
 
 // OperatorCR Generates the RHOBS-specific CRs for Thanos Operator.
+func (p Production) OperatorCR() {
+	templateDir := "rhobs-thanos-operator"
+
+	gen := p.generator(templateDir)
+	ns := p.namespace()
+	var objs []runtime.Object
+
+	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
+	objs = append(objs, storeCR(ns, ProductionMaps)...)
+
+	// Sort objects by Kind then Name
+	sort.Slice(objs, func(i, j int) bool {
+		iMeta := objs[i].(metav1.Object)
+		jMeta := objs[j].(metav1.Object)
+		iType := objs[i].GetObjectKind().GroupVersionKind().Kind
+		jType := objs[j].GetObjectKind().GroupVersionKind().Kind
+
+		if iType != jType {
+			return iType < jType
+		}
+		return iMeta.GetName() < jMeta.GetName()
+	})
+
+	gen.Add("rhobs.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			objs,
+			metav1.ObjectMeta{Name: "thanos-rhobs"},
+			[]templatev1.Parameter{
+				{
+					Name:     "OAUTH_PROXY_COOKIE_SECRET",
+					Generate: "expression",
+					From:     `[a-zA-Z0-9]{40}`,
+				},
+			},
+		),
+	))
+
+	gen.Generate()
+}
+
+// OperatorCR Generates the RHOBS-specific CRs for Thanos Operator.
 func (s Stage) OperatorCR() {
 	templateDir := "rhobs-thanos-operator"
 

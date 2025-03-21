@@ -3,20 +3,31 @@ package main
 import (
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
+	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// Secrets generates the secrets for both Stage and Local environments
-func (s Stage) Secrets() {
-	templateDir := "objstore"
-	gen := s.generator(templateDir)
+const (
+	secretsTemplateDir = "objstore"
+)
 
+// Secrets generates the secrets for the Production environment
+func (p Production) Secrets() {
+	secrets(p.generator(secretsTemplateDir), p.namespace())
+}
+
+// Secrets generates the secrets for the Stage environment
+func (s Stage) Secrets() {
+	secrets(s.generator(secretsTemplateDir), s.namespace())
+}
+
+func secrets(gen *mimic.Generator, ns string) {
 	gen.Add("thanos-telemeter-secret.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			[]runtime.Object{thanosObjectStoreSecret("thanos-objectstorage", s.namespace())},
+			[]runtime.Object{thanosObjectStoreSecret("thanos-objectstorage", ns)},
 			metav1.ObjectMeta{Name: "thanos-telemeter-secret"},
 			[]templatev1.Parameter{
 				{Name: "S3_BUCKET_NAME"},
@@ -31,7 +42,7 @@ func (s Stage) Secrets() {
 	// Generate MST Thanos objectstorage secret
 	gen.Add("thanos-default-secret.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
-			[]runtime.Object{thanosObjectStoreSecret("observatorium-mst-thanos-objectstorage", s.namespace())},
+			[]runtime.Object{thanosObjectStoreSecret("observatorium-mst-thanos-objectstorage", ns)},
 			metav1.ObjectMeta{Name: "thanos-default-secret"},
 			[]templatev1.Parameter{
 				{Name: "S3_BUCKET_NAME"},
@@ -46,6 +57,7 @@ func (s Stage) Secrets() {
 	gen.Generate()
 }
 
+// Secrets generates the secrets for the Local environment
 func (l Local) Secrets() {
 	templateDir := "objstore"
 	gen := l.generator(templateDir)

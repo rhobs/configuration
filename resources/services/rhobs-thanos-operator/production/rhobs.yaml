@@ -128,7 +128,7 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
-    storageSize: 500GB
+    storageSize: 500Gi
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -163,7 +163,7 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
-    storageSize: 50GB
+    storageSize: 50Gi
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1

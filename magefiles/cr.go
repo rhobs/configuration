@@ -1,14 +1,13 @@
 package main
 
 import (
-	"sort"
-
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic/encoding"
 	"github.com/thanos-community/thanos-operator/api/v1alpha1"
+	"sort"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -28,6 +27,7 @@ func (p Production) OperatorCR() {
 
 	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
 	objs = append(objs, storeCR(ns, ProductionMaps)...)
+	objs = append(objs, compactTempProduction()...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {
@@ -815,6 +815,108 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 			},
 		},
 	}
+}
+
+func compactTempProduction() []runtime.Object {
+	ns := "rhobs-production"
+	image := currentThanosImageProd
+	version := currentThanosVersionProd
+	storageBucket := "TELEMETER"
+
+	m := ProductionMaps
+
+	recentCompact := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "recent",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(1)),
+				Disable:     ptr.To(true),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				CompactConcurrency: ptr.To(int32(1)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(3)),
+			},
+			StorageSize: v1alpha1.StorageSize("50GB"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+			MaxTime: ptr.To(v1alpha1.Duration("-2w")),
+		},
+	}
+
+	historic := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "historic",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(1)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				CompactConcurrency: ptr.To(int32(1)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(5)),
+			},
+			StorageSize: v1alpha1.StorageSize("500GB"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
+			MaxTime: ptr.To(v1alpha1.Duration("-2w")),
+		},
+	}
+
+	return []runtime.Object{recentCompact, historic}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

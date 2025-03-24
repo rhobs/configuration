@@ -1,0 +1,55 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: redis-cache-secret
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/name: thanos-bucket-cache
+    name: thanos-bucket-cache
+    namespace: rhobs-stage
+  stringData:
+    bucket-cache.yaml: |-
+      type: REDIS
+      config:
+        addr: ${BUCKET_CACHE_ADDR}:${BUCKET_CACHE_PORT}
+        password: ${BUCKET_CACHE_AUTH_TOKEN}
+        db: 0
+        max_item_size: 12428800 # 10 MiB
+        ttl: 24h
+        max_ascent_ttl: 24h
+        max_size: 0 # Unlimited
+        tls_enabled: true
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/name: thanos-index-cache
+    name: thanos-index-cache
+    namespace: rhobs-stage
+  stringData:
+    index-cache.yaml: |-
+      type: REDIS
+      config:
+        addr: ${INDEX_CACHE_ADDR}:${INDEX_CACHE_PORT}
+        password: ${INDEX_CACHE_AUTH_TOKEN}
+        db: 0
+        max_item_size: 12428800 # 10 MiB
+        ttl: 24h
+        max_ascent_ttl: 24h
+        max_size: 0 # Unlimited
+        tls_enabled: true
+  type: Opaque
+parameters:
+- name: INDEX_CACHE_ADDR
+- name: INDEX_CACHE_PORT
+- name: INDEX_CACHE_AUTH_TOKEN
+- name: BUCKET_CACHE_ADDR
+- name: BUCKET_CACHE_PORT
+- name: BUCKET_CACHE_AUTH_TOKEN

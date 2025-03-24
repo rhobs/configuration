@@ -11,17 +11,42 @@ import (
 )
 
 const (
-	secretsTemplateDir = "objstore"
+	objStoreSecretsTemplateDir = "objstore"
+	cacheTemplatesDir          = "redis"
 )
 
 // Secrets generates the secrets for the Production environment
 func (p Production) Secrets() {
-	secrets(p.generator(secretsTemplateDir), p.namespace())
+	secrets(p.generator(objStoreSecretsTemplateDir), p.namespace())
 }
 
 // Secrets generates the secrets for the Stage environment
 func (s Stage) Secrets() {
-	secrets(s.generator(secretsTemplateDir), s.namespace())
+	ns := s.namespace()
+	secrets(s.generator(objStoreSecretsTemplateDir), ns)
+	var cacheObjs []runtime.Object
+	for _, secret := range cacheSecretsStage(ns) {
+		cacheObjs = append(cacheObjs, secret)
+	}
+	cacheSecrets(s.generator(cacheTemplatesDir), cacheObjs)
+}
+
+func cacheSecrets(gen *mimic.Generator, secrets []runtime.Object) {
+	gen.Add("cache.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			secrets,
+			metav1.ObjectMeta{Name: "redis-cache-secret"},
+			[]templatev1.Parameter{
+				{Name: "INDEX_CACHE_ADDR"},
+				{Name: "INDEX_CACHE_PORT"},
+				{Name: "INDEX_CACHE_AUTH_TOKEN"},
+				{Name: "BUCKET_CACHE_ADDR"},
+				{Name: "BUCKET_CACHE_PORT"},
+				{Name: "BUCKET_CACHE_AUTH_TOKEN"},
+			},
+		),
+	))
+	gen.Generate()
 }
 
 func secrets(gen *mimic.Generator, ns string) {
@@ -71,6 +96,68 @@ func (l Local) Secrets() {
 	))
 
 	gen.Generate()
+}
+
+const (
+	indexCacheName  = "thanos-index-cache"
+	bucketCacheName = "thanos-bucket-cache"
+)
+
+func cacheSecretsStage(namespace string) []*corev1.Secret {
+	return []*corev1.Secret{
+		{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "v1",
+				Kind:       "Secret",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      indexCacheName,
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/name": indexCacheName,
+				},
+			},
+			Type: corev1.SecretTypeOpaque,
+			StringData: map[string]string{
+				"index-cache.yaml": `type: REDIS
+config:
+  addr: ${INDEX_CACHE_ADDR}:${INDEX_CACHE_PORT}
+  password: ${INDEX_CACHE_AUTH_TOKEN}
+  db: 0
+  max_item_size: 12428800 # 10 MiB
+  ttl: 24h
+  max_ascent_ttl: 24h
+  max_size: 0 # Unlimited
+  tls_enabled: true`,
+			},
+		},
+		{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "v1",
+				Kind:       "Secret",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      bucketCacheName,
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/name": bucketCacheName,
+				},
+			},
+			Type: corev1.SecretTypeOpaque,
+			StringData: map[string]string{
+				"bucket-cache.yaml": `type: REDIS
+config:
+  addr: ${BUCKET_CACHE_ADDR}:${BUCKET_CACHE_PORT}
+  password: ${BUCKET_CACHE_AUTH_TOKEN}
+  db: 0
+  max_item_size: 12428800 # 10 MiB
+  ttl: 24h
+  max_ascent_ttl: 24h
+  max_size: 0 # Unlimited
+  tls_enabled: true`,
+			},
+		},
+	}
 }
 
 // thanosObjectStoreTemplate creates a templated version for stage environment

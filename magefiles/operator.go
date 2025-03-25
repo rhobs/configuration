@@ -954,7 +954,8 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								"--metrics-bind-address=127.0.0.1:8080",
 								"--leader-elect",
 								"--zap-encoder=console",
-								"--zap-log-level=debug",
+								"--zap-log-level=info",
+								"--feature-gate.enable-prometheus-operator-crds=false",
 							},
 							LivenessProbe: &corev1.Probe{
 								ProbeHandler: corev1.ProbeHandler{

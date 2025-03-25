@@ -106,7 +106,8 @@ objects:
           - --metrics-bind-address=127.0.0.1:8080
           - --leader-elect
           - --zap-encoder=console
-          - --zap-log-level=debug
+          - --zap-log-level=info
+          - --feature-gate.enable-prometheus-operator-crds=false
           command:
           - /manager
           image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos-operator:2e19cebd4c056d661b2b0f6bd797bbe367e619fa

@@ -35,15 +35,16 @@ func TemplateFn[T any](param string, m ParamMap[T]) T {
 }
 
 const (
-	currentThanosImageStage   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
-	currentThanosVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
+	thanosImage        = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
+	thanosVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
+	thanosVersionProd  = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
 
-	currentThanosImageProd   = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
-	currentThanosVersionProd = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
+	thanosOperatorImage        = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos-operator"
+	thanosOperatorVersionStage = "9a9d855a9b292274114239ca9859b19fc5c83322"
+	thanosOperatorVersionProd  = "2e19cebd4c056d661b2b0f6bd797bbe367e619fa"
+)
 
-	thanosOperatorStage = "9a9d855a9b292274114239ca9859b19fc5c83322"
-	thanosOperatorProd  = "9a9d855a9b292274114239ca9859b19fc5c83322"
-
+const (
 	memcachedTag           = "1.5-316"
 	memcachedImage         = "registry.redhat.io/rhel8/memcached" + ":" + memcachedTag
 	memcachedExporterImage = "quay.io/prometheus/memcached-exporter:v0.15.0"
@@ -63,20 +64,20 @@ var logLevels = []string{"debug", "info", "warn", "error"}
 
 // Stage images.
 var StageImages = ParamMap[string]{
-	"STORE02W":                   currentThanosImageStage,
-	"STORE2W90D":                 currentThanosImageStage,
-	"STORE90D+":                  currentThanosImageStage,
-	"STORE_DEFAULT":              currentThanosImageStage,
-	"RECEIVE_ROUTER":             currentThanosImageStage,
-	"RECEIVE_INGESTOR_TELEMETER": currentThanosImageStage,
-	"RECEIVE_INGESTOR_DEFAULT":   currentThanosImageStage,
-	"RULER":                      currentThanosImageStage,
-	"COMPACT_DEFAULT":            currentThanosImageStage,
-	"COMPACT_TELEMETER":          currentThanosImageStage,
-	"QUERY":                      currentThanosImageStage,
-	"QUERY_FRONTEND":             currentThanosImageStage,
+	"STORE02W":                   thanosImage,
+	"STORE2W90D":                 thanosImage,
+	"STORE90D+":                  thanosImage,
+	"STORE_DEFAULT":              thanosImage,
+	"RECEIVE_ROUTER":             thanosImage,
+	"RECEIVE_INGESTOR_TELEMETER": thanosImage,
+	"RECEIVE_INGESTOR_DEFAULT":   thanosImage,
+	"RULER":                      thanosImage,
+	"COMPACT_DEFAULT":            thanosImage,
+	"COMPACT_TELEMETER":          thanosImage,
+	"QUERY":                      thanosImage,
+	"QUERY_FRONTEND":             thanosImage,
 	jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
-	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
+	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorVersionStage,
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 	apiCache:                     memcachedImage,
 	memcachedExporter:            memcachedExporterImage,
@@ -86,18 +87,18 @@ var StageImages = ParamMap[string]{
 
 // Stage images.
 var StageVersions = ParamMap[string]{
-	"STORE02W":                   currentThanosVersionStage,
-	"STORE2W90D":                 currentThanosVersionStage,
-	"STORE90D+":                  currentThanosVersionStage,
-	"STORE_DEFAULT":              currentThanosVersionStage,
-	"RECEIVE_ROUTER":             currentThanosVersionStage,
-	"RECEIVE_INGESTOR_TELEMETER": currentThanosVersionStage,
-	"RECEIVE_INGESTOR_DEFAULT":   currentThanosVersionStage,
-	"RULER":                      currentThanosVersionStage,
-	"COMPACT_DEFAULT":            currentThanosVersionStage,
-	"COMPACT_TELEMETER":          currentThanosVersionStage,
-	"QUERY":                      currentThanosVersionStage,
-	"QUERY_FRONTEND":             currentThanosVersionStage,
+	"STORE02W":                   thanosVersionStage,
+	"STORE2W90D":                 thanosVersionStage,
+	"STORE90D+":                  thanosVersionStage,
+	"STORE_DEFAULT":              thanosVersionStage,
+	"RECEIVE_ROUTER":             thanosVersionStage,
+	"RECEIVE_INGESTOR_TELEMETER": thanosVersionStage,
+	"RECEIVE_INGESTOR_DEFAULT":   thanosVersionStage,
+	"RULER":                      thanosVersionStage,
+	"COMPACT_DEFAULT":            thanosVersionStage,
+	"COMPACT_TELEMETER":          thanosVersionStage,
+	"QUERY":                      thanosVersionStage,
+	"QUERY_FRONTEND":             thanosVersionStage,
 	apiCache:                     memcachedTag,
 	observatoriumAPI:             "9aada65247a07782465beb500323a0e18d7e3d05",
 }
@@ -341,13 +342,13 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 
 // ProductionImages is a map of production images.
 var ProductionImages = ParamMap[string]{
-	"STORE02W":        currentThanosImageProd,
-	"STORE2W90D":      currentThanosImageProd,
-	"STORE90D+":       currentThanosImageProd,
-	"STORE_DEFAULT":   currentThanosImageProd,
-	"QUERY":           currentThanosImageProd,
-	"QUERY_FRONTEND":  currentThanosImageProd,
-	"THANOS_OPERATOR": "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorStage,
+	"STORE02W":        thanosImage,
+	"STORE2W90D":      thanosImage,
+	"STORE90D+":       thanosImage,
+	"STORE_DEFAULT":   thanosImage,
+	"QUERY":           thanosImage,
+	"QUERY_FRONTEND":  thanosImage,
+	"THANOS_OPERATOR": fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionProd),
 	"KUBE_RBAC_PROXY": "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 	apiCache:          memcachedImage,
 	memcachedExporter: memcachedExporterImage,
@@ -357,12 +358,12 @@ var ProductionImages = ParamMap[string]{
 
 // ProductionVersions is a map of production versions.
 var ProductionVersions = ParamMap[string]{
-	"STORE02W":       currentThanosVersionProd,
-	"STORE2W90D":     currentThanosVersionProd,
-	"STORE90D+":      currentThanosVersionProd,
-	"STORE_DEFAULT":  currentThanosVersionProd,
-	"QUERY":          currentThanosVersionProd,
-	"QUERY_FRONTEND": currentThanosVersionProd,
+	"STORE02W":       thanosVersionProd,
+	"STORE2W90D":     thanosVersionProd,
+	"STORE90D+":      thanosVersionProd,
+	"STORE_DEFAULT":  thanosVersionProd,
+	"QUERY":          thanosVersionProd,
+	"QUERY_FRONTEND": thanosVersionProd,
 	apiCache:         memcachedTag,
 	observatoriumAPI: "9aada65247a07782465beb500323a0e18d7e3d05",
 }
@@ -387,10 +388,10 @@ var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
 
 // ProductionReplicas is a map of production replicas.
 var ProductionReplicas = ParamMap[int32]{
-	"STORE02W":       3,
+	"STORE02W":       2,
 	"STORE2W90D":     2,
-	"STORE90D+":      3,
-	"STORE_DEFAULT":  3,
+	"STORE90D+":      2,
+	"STORE_DEFAULT":  2,
 	"QUERY":          6,
 	"QUERY_FRONTEND": 3,
 	apiCache:         1,

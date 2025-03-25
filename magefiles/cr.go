@@ -1,13 +1,14 @@
 package main
 
 import (
+	"sort"
+
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic/encoding"
 	"github.com/thanos-community/thanos-operator/api/v1alpha1"
-	"sort"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -818,8 +819,8 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 
 func compactTempProduction() []runtime.Object {
 	ns := "rhobs-production"
-	image := currentThanosImageProd
-	version := currentThanosVersionProd
+	image := thanosImage
+	version := thanosVersionProd
 	storageBucket := "TELEMETER"
 
 	m := ProductionMaps

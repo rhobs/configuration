@@ -83,7 +83,7 @@ objects:
       key: thanos.yaml
       name: observatorium-mst-thanos-objectstorage
       optional: false
-    replicas: 3
+    replicas: 2
     resourceRequirements:
       requests:
         cpu: 50m
@@ -389,7 +389,7 @@ objects:
       key: thanos.yaml
       name: thanos-objectstorage
       optional: false
-    replicas: 3
+    replicas: 2
     resourceRequirements:
       requests:
         cpu: 50m
@@ -578,7 +578,7 @@ objects:
       key: thanos.yaml
       name: thanos-objectstorage
       optional: false
-    replicas: 3
+    replicas: 2
     resourceRequirements:
       requests:
         cpu: 50m

@@ -109,7 +109,7 @@ objects:
           - --zap-log-level=debug
           command:
           - /manager
-          image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:9a9d855a9b292274114239ca9859b19fc5c83322
+          image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos-operator:2e19cebd4c056d661b2b0f6bd797bbe367e619fa
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3

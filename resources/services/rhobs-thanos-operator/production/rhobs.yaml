@@ -485,7 +485,7 @@ objects:
       key: thanos.yaml
       name: thanos-objectstorage
       optional: false
-    replicas: 3
+    replicas: 2
     resourceRequirements:
       requests:
         cpu: 50m
@@ -493,7 +493,7 @@ objects:
     shardingStrategy:
       shards: 1
       type: block
-    storageSize: 8Gi
+    storageSize: 100Gi
     storeLimitsOptions:
       storeLimitsRequestSamples: 627040000
       storeLimitsRequestSeries: 1000000

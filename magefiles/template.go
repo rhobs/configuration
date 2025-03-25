@@ -380,7 +380,7 @@ var ProductionLogLevels = ParamMap[string]{
 // ProductionStorageSize is a map of production PV storage sizes.
 var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
 	"STORE02W":      "8Gi",
-	"STORE2W90D":    "8Gi",
+	"STORE2W90D":    "100Gi",
 	"STORE90D+":     "8Gi",
 	"STORE_DEFAULT": "8Gi",
 }
@@ -388,7 +388,7 @@ var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
 // ProductionReplicas is a map of production replicas.
 var ProductionReplicas = ParamMap[int32]{
 	"STORE02W":       3,
-	"STORE2W90D":     3,
+	"STORE2W90D":     2,
 	"STORE90D+":      3,
 	"STORE_DEFAULT":  3,
 	"QUERY":          6,

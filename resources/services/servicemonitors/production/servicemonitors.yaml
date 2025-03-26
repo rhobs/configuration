@@ -40,11 +40,6 @@ objects:
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: thanos-compactor
-      app.kubernetes.io/instance: thanos-compact-telemeter
-      app.kubernetes.io/managed-by: thanos-operator
-      app.kubernetes.io/name: thanos-compact
-      app.kubernetes.io/part-of: thanos
-      operator.thanos.io/owner: telemeter
       prometheus: app-sre
     name: thanos-compact-telemeter
     namespace: openshift-customer-monitoring

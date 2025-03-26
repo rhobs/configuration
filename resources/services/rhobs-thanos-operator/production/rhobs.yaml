@@ -386,6 +386,69 @@ objects:
     webConfig:
       prefixHeader: X-Forwarded-Prefix
   status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-2wto90d
+    namespace: rhobs-production
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+              - query
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/instance
+              operator: In
+              values:
+              - telemeter-2wto90d
+          topologyKey: kubernetes.io/hostname
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    featureGates:
+      podDisruptionBudget:
+        enable: false
+      serviceMonitor:
+        enable: false
+    ignoreDeletionMarksDelay: 24h
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: info
+    maxTime: -2w
+    minTime: -90d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    replicas: 1
+    resourceRequirements:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+    shardingStrategy:
+      shards: 1
+      type: block
+    storageSize: 300Gi
+    storeLimitsOptions:
+      storeLimitsRequestSamples: 627040000
+      storeLimitsRequestSeries: 1000000
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:

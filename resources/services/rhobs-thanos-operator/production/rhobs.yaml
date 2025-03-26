@@ -106,13 +106,14 @@ objects:
     - --deduplication.replica-label=replica
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
-      compactConcurrency: 1
+      blockFetchConcurrency: 4
+      compactConcurrency: 4
     debugConfig:
       acceptMalformedIndex: true
       haltOnError: true
-      maxCompactionLevel: 1
+      maxCompactionLevel: 4
     downsamplingConfig:
-      downsamplingConcurrency: 1
+      downsamplingConcurrency: 4
       downsamplingEnabled: false
     featureGates:
       serviceMonitor:
@@ -144,13 +145,13 @@ objects:
     - --deduplication.replica-label=replica
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
-      compactConcurrency: 1
+      compactConcurrency: 4
     debugConfig:
       acceptMalformedIndex: true
       haltOnError: true
-      maxCompactionLevel: 1
+      maxCompactionLevel: 4
     downsamplingConfig:
-      downsamplingConcurrency: 1
+      downsamplingConcurrency: 4
       downsamplingEnabled: true
     featureGates:
       serviceMonitor:

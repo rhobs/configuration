@@ -1107,16 +1107,16 @@ func compactTempProduction() []runtime.Object {
 				OneHour:     v1alpha1.Duration("3650d"),
 			},
 			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(1)),
+				Concurrency: ptr.To(int32(4)),
 				Disable:     ptr.To(true),
 			},
 			CompactConfig: &v1alpha1.CompactConfig{
-				CompactConcurrency: ptr.To(int32(1)),
+				CompactConcurrency: ptr.To(int32(4)),
 			},
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
 				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(1)),
+				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
 			StorageSize: v1alpha1.StorageSize("50Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
@@ -1157,16 +1157,17 @@ func compactTempProduction() []runtime.Object {
 				OneHour:     v1alpha1.Duration("3650d"),
 			},
 			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(1)),
+				Concurrency: ptr.To(int32(4)),
 				Disable:     ptr.To(false),
 			},
 			CompactConfig: &v1alpha1.CompactConfig{
-				CompactConcurrency: ptr.To(int32(1)),
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
 			},
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
 				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(1)),
+				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
 			StorageSize: v1alpha1.StorageSize("500Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{

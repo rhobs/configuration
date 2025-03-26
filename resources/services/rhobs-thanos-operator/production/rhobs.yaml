@@ -11,6 +11,43 @@ objects:
     name: default
     namespace: rhobs-production
   spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -312,7 +349,7 @@ objects:
         "max_chunks_get_range_requests": 5
         "config":
           "addresses":
-            - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
           "dns_provider_update_interval": "30s"
           "max_async_buffer_size": 100000
           "max_async_concurrency": 100
@@ -379,6 +416,43 @@ objects:
     name: telemeter-2wto90d
     namespace: rhobs-production
   spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -440,6 +514,43 @@ objects:
     name: telemeter-90dplus
     namespace: rhobs-production
   spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

@@ -477,19 +477,9 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 }
 
 func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
-	store0to2w := &v1alpha1.ThanosStore{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosStore",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "telemeter-0to2w",
-			Namespace: namespace,
-		},
-		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--index-cache.config="config":
+	additionalCacheArgs := v1alpha1.Additional{
+		Args: []string{
+			`--index-cache.config="config":
   "addresses":
     - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
   "dns_provider_update_interval": "30s"
@@ -501,7 +491,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "max_item_size": "10MiB"
   "timeout": "5s"
 "type": "memcached"`,
-					`--store.caching-bucket.config=
+			`--store.caching-bucket.config=
   "type": "memcached"
   "blocks_iter_ttl": "10m"
   "chunk_object_attrs_ttl": "48h"
@@ -514,7 +504,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "max_chunks_get_range_requests": 5
   "config":
     "addresses":
-      - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+      - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
     "dns_provider_update_interval": "30s"
     "max_async_buffer_size": 100000
     "max_async_concurrency": 100
@@ -523,8 +513,20 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_idle_connections": 500
     "max_item_size": "5MiB"
     "timeout": "5s"`,
-				},
-			},
+		},
+	}
+
+	store0to2w := &v1alpha1.ThanosStore{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosStore",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "telemeter-0to2w",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -607,6 +609,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -693,6 +696,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -775,6 +779,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{

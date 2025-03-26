@@ -28,6 +28,7 @@ func (p Production) OperatorCR() {
 
 	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
 	objs = append(objs, storeCR(ns, ProductionMaps)...)
+	objs = append(objs, compactTempProduction()...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {

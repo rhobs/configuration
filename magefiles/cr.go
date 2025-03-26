@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
@@ -515,6 +516,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "timeout": "5s"`,
 		},
 	}
+	fmt.Println("additionalCacheArgs: ", additionalCacheArgs)
 
 	store0to2w := &v1alpha1.ThanosStore{
 		TypeMeta: metav1.TypeMeta{
@@ -526,7 +528,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -609,7 +610,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -696,7 +696,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -779,7 +778,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{

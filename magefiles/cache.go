@@ -174,7 +174,7 @@ func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
 			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas: 10,
+		Replicas: 0,
 	}
 }
 
@@ -197,7 +197,7 @@ func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
 			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas: 10,
+		Replicas: 0,
 	}
 }
 

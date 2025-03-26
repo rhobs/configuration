@@ -16,9 +16,12 @@ import (
 )
 
 const (
-	cacheTemplate               = "memcached-template.yaml"
-	cacheName                   = "memcached"
-	gatewayCacheName            = "api-memcached"
+	cacheTemplate    = "memcached-template.yaml"
+	cacheName        = "memcached"
+	gatewayCacheName = "api-memcached"
+	indexCacheName   = "thanos-index-cache"
+	bucketCacheName  = "thanos-bucket-cache"
+
 	defaultGatewayCacheReplicas = 1
 )
 
@@ -79,31 +82,40 @@ func (f *memcachedFlags) ToArgs() []string {
 	return args
 }
 
+// Cache creates the cache resources for the stage environment
 func (s Stage) Cache() {
 	gen := func() *mimic.Generator {
 		return s.generator(cacheName)
 	}
-	cache(gen, StageMaps, s.namespace())
+	caches := []*memcachedConfig{
+		gatewayCache(StageMaps, s.namespace()),
+	}
+	cache(gen, StageMaps, caches)
 }
 
+// Cache creates the cache resources for the production environment
 func (p Production) Cache() {
 	gen := func() *mimic.Generator {
 		return p.generator(cacheName)
 	}
-	cache(gen, ProductionMaps, p.namespace())
+	caches := []*memcachedConfig{
+		gatewayCache(ProductionMaps, p.namespace()),
+		indexCache(ProductionMaps, p.namespace()),
+		bucketCache(ProductionMaps, p.namespace()),
+	}
+	cache(gen, ProductionMaps, caches)
 }
 
-func cache(g func() *mimic.Generator, m TemplateMaps, namespace string) {
-	gwConf := gatewayCache(m, namespace)
+func cache(g func() *mimic.Generator, m TemplateMaps, confs []*memcachedConfig) {
 	var sms []runtime.Object
+	var objs []runtime.Object
 
-	objs := []runtime.Object{
-		memcachedStatefulSet(gwConf, m),
-		createServiceAccount(gwConf.ServiceAccount, gwConf.Namespace, gwConf.Labels),
-		createCacheHeadlessService(gwConf),
+	for _, c := range confs {
+		objs = append(objs, memcachedStatefulSet(c, m))
+		objs = append(objs, createServiceAccount(c.ServiceAccount, c.Namespace, c.Labels))
+		objs = append(objs, createCacheHeadlessService(c))
+		sms = append(sms, createCacheServiceMonitor(c))
 	}
-
-	sms = append(sms, createCacheServiceMonitor(gwConf))
 
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{
 		Name: cacheName,
@@ -141,6 +153,54 @@ func gatewayCache(m TemplateMaps, namespace string) *memcachedConfig {
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
 		Replicas:       defaultGatewayCacheReplicas,
+		ServiceAccount: gatewayCacheName,
+	}
+}
+
+func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
+	return &memcachedConfig{
+		Flags: &memcachedFlags{
+			Memory:         10000,
+			MaxConnections: 100000,
+			StatsInterval:  "5m",
+			Verbose:        true,
+		},
+		Name:           indexCacheName,
+		Namespace:      namespace,
+		MemcachedImage: m.Images[apiCache],
+		ExporterImage:  m.Images[memcachedExporter],
+		Labels: map[string]string{
+			"app.kubernetes.io/component": gatewayCacheName,
+			"app.kubernetes.io/instance":  "rhobs",
+			"app.kubernetes.io/name":      "memcached",
+			"app.kubernetes.io/part-of":   "rhobs",
+			"app.kubernetes.io/version":   m.Versions[apiCache],
+		},
+		Replicas:       10,
+		ServiceAccount: indexCacheName,
+	}
+}
+
+func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
+	return &memcachedConfig{
+		Flags: &memcachedFlags{
+			Memory:         8048,
+			MaxConnections: 100000,
+			StatsInterval:  "5m",
+			Verbose:        true,
+		},
+		Name:           bucketCacheName,
+		Namespace:      namespace,
+		MemcachedImage: m.Images[apiCache],
+		ExporterImage:  m.Images[memcachedExporter],
+		Labels: map[string]string{
+			"app.kubernetes.io/component": bucketCacheName,
+			"app.kubernetes.io/instance":  "rhobs",
+			"app.kubernetes.io/name":      "memcached",
+			"app.kubernetes.io/part-of":   "rhobs",
+			"app.kubernetes.io/version":   m.Versions[apiCache],
+		},
+		Replicas:       10,
 		ServiceAccount: gatewayCacheName,
 	}
 }

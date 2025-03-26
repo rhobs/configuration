@@ -98,11 +98,6 @@ func (l Local) Secrets() {
 	gen.Generate()
 }
 
-const (
-	indexCacheName  = "thanos-index-cache"
-	bucketCacheName = "thanos-bucket-cache"
-)
-
 func cacheSecretsStage(namespace string) []*corev1.Secret {
 	return []*corev1.Secret{
 		{

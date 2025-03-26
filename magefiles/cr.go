@@ -859,7 +859,7 @@ func compactTempProduction() []runtime.Object {
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
 				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(3)),
+				MaxCompactionLevel:   ptr.To(int32(1)),
 			},
 			StorageSize: v1alpha1.StorageSize("50Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
@@ -904,7 +904,7 @@ func compactTempProduction() []runtime.Object {
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
 				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
+				MaxCompactionLevel:   ptr.To(int32(1)),
 			},
 			StorageSize: v1alpha1.StorageSize("500Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{

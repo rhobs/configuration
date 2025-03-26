@@ -27,7 +27,7 @@ func (p Production) OperatorCR() {
 	var objs []runtime.Object
 
 	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
-	objs = append(objs, storeCR(ns, ProductionMaps)...)
+	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
 	objs = append(objs, compactTempProduction()...)
 
 	// Sort objects by Kind then Name
@@ -474,6 +474,258 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 	}
 
 	return []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
+}
+
+func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
+	//	store0to2w := &v1alpha1.ThanosStore{
+	//		TypeMeta: metav1.TypeMeta{
+	//			APIVersion: "monitoring.thanos.io/v1alpha1",
+	//			Kind:       "ThanosStore",
+	//		},
+	//		ObjectMeta: metav1.ObjectMeta{
+	//			Name:      "telemeter-0to2w",
+	//			Namespace: namespace,
+	//		},
+	//		Spec: v1alpha1.ThanosStoreSpec{
+	//			CommonFields: v1alpha1.CommonFields{
+	//				Image:                ptr.To(TemplateFn("STORE02W", m.Images)),
+	//				Version:              ptr.To(TemplateFn("STORE02W", m.Versions)),
+	//				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+	//				LogLevel:             ptr.To(TemplateFn("STORE02W", m.LogLevels)),
+	//				LogFormat:            ptr.To("logfmt"),
+	//				ResourceRequirements: ptr.To(TemplateFn("STORE02W", m.ResourceRequirements)),
+	//			},
+	//			Replicas:            TemplateFn("STORE02W", m.Replicas),
+	//			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+	//			ShardingStrategy: v1alpha1.ShardingStrategy{
+	//				Type:   v1alpha1.Block,
+	//				Shards: 1,
+	//			},
+	//			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+	//				EnableLazyReader:      ptr.To(true),
+	//				LazyDownloadStrategy:  ptr.To("lazy"),
+	//				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+	//			},
+	//			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+	//				StoreLimitsRequestSamples: 627040000,
+	//				StoreLimitsRequestSeries:  1000000,
+	//			},
+	//			BlockConfig: &v1alpha1.BlockConfig{
+	//				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+	//				BlockFilesConcurrency:     ptr.To(int32(1)),
+	//				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+	//			},
+	//			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+	//			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
+	//			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
+	//			Additional: v1alpha1.Additional{
+	//				Containers: []corev1.Container{
+	//					tracingSidecar(m),
+	//				},
+	//				Args: []string{
+	//					`--tracing.config="config":
+	//  "sampler_param": 2
+	//  "sampler_type": "ratelimiting"
+	//  "service_name": "thanos-store"
+	//"type": "JAEGER"`,
+	//				},
+	//			},
+	//			FeatureGates: &v1alpha1.FeatureGates{
+	//				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+	//					Enable: ptr.To(false),
+	//				},
+	//			},
+	//		},
+	//	}
+	//
+	//	store2wto90d := &v1alpha1.ThanosStore{
+	//		TypeMeta: metav1.TypeMeta{
+	//			APIVersion: "monitoring.thanos.io/v1alpha1",
+	//			Kind:       "ThanosStore",
+	//		},
+	//		ObjectMeta: metav1.ObjectMeta{
+	//			Name:      "telemeter-2wto90d",
+	//			Namespace: namespace,
+	//		},
+	//		Spec: v1alpha1.ThanosStoreSpec{
+	//			CommonFields: v1alpha1.CommonFields{
+	//				Image:                ptr.To(TemplateFn("STORE2W90D", m.Images)),
+	//				Version:              ptr.To(TemplateFn("STORE2W90D", m.Versions)),
+	//				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+	//				LogLevel:             ptr.To(TemplateFn("STORE2W90D", m.LogLevels)),
+	//				LogFormat:            ptr.To("logfmt"),
+	//				ResourceRequirements: ptr.To(TemplateFn("STORE2W90D", m.ResourceRequirements)),
+	//			},
+	//			Replicas:            TemplateFn("STORE2W90D", m.Replicas),
+	//			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+	//			ShardingStrategy: v1alpha1.ShardingStrategy{
+	//				Type:   v1alpha1.Block,
+	//				Shards: 1,
+	//			},
+	//			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+	//				EnableLazyReader:      ptr.To(true),
+	//				LazyDownloadStrategy:  ptr.To("lazy"),
+	//				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+	//			},
+	//			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+	//				StoreLimitsRequestSamples: 627040000,
+	//				StoreLimitsRequestSeries:  1000000,
+	//			},
+	//			BlockConfig: &v1alpha1.BlockConfig{
+	//				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+	//				BlockFilesConcurrency:     ptr.To(int32(1)),
+	//				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+	//			},
+	//			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+	//			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
+	//			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
+	//			StorageSize:              TemplateFn("STORE2W90D", m.StorageSize),
+	//			Additional: v1alpha1.Additional{
+	//				Containers: []corev1.Container{
+	//					tracingSidecar(m),
+	//				},
+	//				Args: []string{
+	//					`--tracing.config="config":
+	//  "sampler_param": 2
+	//  "sampler_type": "ratelimiting"
+	//  "service_name": "thanos-store"
+	//"type": "JAEGER"`,
+	//				},
+	//			},
+	//			FeatureGates: &v1alpha1.FeatureGates{
+	//				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+	//					Enable: ptr.To(false),
+	//				},
+	//				PodDisruptionBudgetConfig: &v1alpha1.PodDisruptionBudgetConfig{
+	//					Enable: ptr.To(false),
+	//				},
+	//			},
+	//		},
+	//	}
+	//
+	//	store90dplus := &v1alpha1.ThanosStore{
+	//		TypeMeta: metav1.TypeMeta{
+	//			APIVersion: "monitoring.thanos.io/v1alpha1",
+	//			Kind:       "ThanosStore",
+	//		},
+	//		ObjectMeta: metav1.ObjectMeta{
+	//			Name:      "telemeter-90dplus",
+	//			Namespace: namespace,
+	//		},
+	//		Spec: v1alpha1.ThanosStoreSpec{
+	//			CommonFields: v1alpha1.CommonFields{
+	//				Image:                ptr.To(TemplateFn("STORE90D+", m.Images)),
+	//				Version:              ptr.To(TemplateFn("STORE90D+", m.Versions)),
+	//				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+	//				LogLevel:             ptr.To(TemplateFn("STORE90D+", m.LogLevels)),
+	//				LogFormat:            ptr.To("logfmt"),
+	//				ResourceRequirements: ptr.To(TemplateFn("STORE90D+", m.ResourceRequirements)),
+	//			},
+	//			Replicas:            TemplateFn("STORE90D+", m.Replicas),
+	//			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+	//			ShardingStrategy: v1alpha1.ShardingStrategy{
+	//				Type:   v1alpha1.Block,
+	//				Shards: 1,
+	//			},
+	//			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+	//				EnableLazyReader:      ptr.To(true),
+	//				LazyDownloadStrategy:  ptr.To("lazy"),
+	//				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+	//			},
+	//			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+	//				StoreLimitsRequestSamples: 627040000,
+	//				StoreLimitsRequestSeries:  1000000,
+	//			},
+	//			BlockConfig: &v1alpha1.BlockConfig{
+	//				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+	//				BlockFilesConcurrency:     ptr.To(int32(1)),
+	//				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+	//			},
+	//			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+	//			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
+	//			StorageSize:              TemplateFn("STORE90D+", m.StorageSize),
+	//			Additional: v1alpha1.Additional{
+	//				Containers: []corev1.Container{
+	//					tracingSidecar(m),
+	//				},
+	//				Args: []string{
+	//					`--tracing.config="config":
+	//  "sampler_param": 2
+	//  "sampler_type": "ratelimiting"
+	//  "service_name": "thanos-store"
+	//"type": "JAEGER"`,
+	//				},
+	//			},
+	//			FeatureGates: &v1alpha1.FeatureGates{
+	//				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+	//					Enable: ptr.To(false),
+	//				},
+	//			},
+	//		},
+	//	}
+
+	storeDefault := &v1alpha1.ThanosStore{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosStore",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "default",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosStoreSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("STORE_DEFAULT", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE_DEFAULT", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("STORE_DEFAULT", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("STORE_DEFAULT", m.ResourceRequirements)),
+			},
+			Replicas:            TemplateFn("STORE_DEFAULT", m.Replicas),
+			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			ShardingStrategy: v1alpha1.ShardingStrategy{
+				Type:   v1alpha1.Block,
+				Shards: 1,
+			},
+			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+				EnableLazyReader:      ptr.To(true),
+				LazyDownloadStrategy:  ptr.To("lazy"),
+				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+			},
+			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+				StoreLimitsRequestSamples: 0,
+				StoreLimitsRequestSeries:  0,
+			},
+			BlockConfig: &v1alpha1.BlockConfig{
+				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+				BlockFilesConcurrency:     ptr.To(int32(1)),
+				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+			},
+			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+			MaxTime:                  ptr.To(v1alpha1.Duration("-22h")),
+			StorageSize:              TemplateFn("STORE_DEFAULT", m.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(m),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-store"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+	// return []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
+	return []runtime.Object{storeDefault}
 }
 
 func receiveCR(namespace string, m TemplateMaps) runtime.Object {

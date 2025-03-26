@@ -102,6 +102,8 @@ objects:
     name: historic
     namespace: rhobs-production
   spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
       compactConcurrency: 1
@@ -138,6 +140,8 @@ objects:
     name: recent
     namespace: rhobs-production
   spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
       compactConcurrency: 1

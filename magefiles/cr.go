@@ -1088,6 +1088,11 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1133,6 +1138,11 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),

@@ -24,8 +24,8 @@ const (
 	crdTemplateDir = "bundle"
 
 	CRDMain     = "refs/heads/main"
-	CRDRefProd  = "b58f3ec98a62b904950148bd5aea906a2c6a519e"
-	CRDRefStage = "b58f3ec98a62b904950148bd5aea906a2c6a519e"
+	CRDRefProd  = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
+	CRDRefStage = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
 )
 
 // CRDS Generates the CRDs for the Thanos operator.

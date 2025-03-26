@@ -34,7 +34,6 @@ type memcachedConfig struct {
 	Replicas       int32
 	MemcachedImage string
 	ExporterImage  string
-	ServiceAccount string
 }
 
 type memcachedFlags struct {
@@ -112,7 +111,7 @@ func cache(g func() *mimic.Generator, m TemplateMaps, confs []*memcachedConfig) 
 
 	for _, c := range confs {
 		objs = append(objs, memcachedStatefulSet(c, m))
-		objs = append(objs, createServiceAccount(c.ServiceAccount, c.Namespace, c.Labels))
+		objs = append(objs, createServiceAccount(c.Name, c.Namespace, c.Labels))
 		objs = append(objs, createCacheHeadlessService(c))
 		sms = append(sms, createCacheServiceMonitor(c))
 	}
@@ -146,14 +145,13 @@ func gatewayCache(m TemplateMaps, namespace string) *memcachedConfig {
 		MemcachedImage: m.Images[apiCache],
 		ExporterImage:  m.Images[memcachedExporter],
 		Labels: map[string]string{
-			"app.kubernetes.io/component": gatewayCacheName,
+			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
-			"app.kubernetes.io/name":      "memcached",
-			"app.kubernetes.io/part-of":   "observatorium",
+			"app.kubernetes.io/name":      gatewayCacheName,
+			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas:       defaultGatewayCacheReplicas,
-		ServiceAccount: gatewayCacheName,
+		Replicas: defaultGatewayCacheReplicas,
 	}
 }
 
@@ -170,14 +168,13 @@ func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
 		MemcachedImage: m.Images[apiCache],
 		ExporterImage:  m.Images[memcachedExporter],
 		Labels: map[string]string{
-			"app.kubernetes.io/component": gatewayCacheName,
+			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
-			"app.kubernetes.io/name":      "memcached",
+			"app.kubernetes.io/name":      indexCacheName,
 			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas:       10,
-		ServiceAccount: indexCacheName,
+		Replicas: 10,
 	}
 }
 
@@ -194,14 +191,13 @@ func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
 		MemcachedImage: m.Images[apiCache],
 		ExporterImage:  m.Images[memcachedExporter],
 		Labels: map[string]string{
-			"app.kubernetes.io/component": bucketCacheName,
+			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
-			"app.kubernetes.io/name":      "memcached",
+			"app.kubernetes.io/name":      bucketCacheName,
 			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas:       10,
-		ServiceAccount: gatewayCacheName,
+		Replicas: 10,
 	}
 }
 
@@ -263,7 +259,7 @@ func memcachedStatefulSet(config *memcachedConfig, m TemplateMaps) *appsv1.State
 					Labels: labels,
 				},
 				Spec: corev1.PodSpec{
-					ServiceAccountName: config.ServiceAccount,
+					ServiceAccountName: config.Name,
 					Containers: []corev1.Container{
 						memcachedContainer,
 						exporterContainer,

@@ -9,10 +9,10 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: api-memcached
     namespace: rhobs-production
@@ -28,10 +28,10 @@ objects:
       protocol: TCP
       targetPort: 9150
     selector:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
   status:
     loadBalancer: {}
@@ -40,21 +40,9 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
-      app.kubernetes.io/version: 1.5-316
-    name: api-memcached
-    namespace: rhobs-production
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    creationTimestamp: null
-    labels:
-      app.kubernetes.io/component: thanos-bucket-cache
-      app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: api-memcached
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: api-memcached
@@ -64,10 +52,10 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
-      app.kubernetes.io/part-of: observatorium
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: api-memcached
     namespace: rhobs-production
@@ -76,20 +64,20 @@ objects:
     replicas: 1
     selector:
       matchLabels:
-        app.kubernetes.io/component: api-memcached
+        app.kubernetes.io/component: memcached
         app.kubernetes.io/instance: rhobs
-        app.kubernetes.io/name: memcached
-        app.kubernetes.io/part-of: observatorium
+        app.kubernetes.io/name: api-memcached
+        app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
     serviceName: api-memcached
     template:
       metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: api-memcached
+          app.kubernetes.io/component: memcached
           app.kubernetes.io/instance: rhobs
-          app.kubernetes.io/name: memcached
-          app.kubernetes.io/part-of: observatorium
+          app.kubernetes.io/name: api-memcached
+          app.kubernetes.io/part-of: rhobs
           app.kubernetes.io/version: 1.5-316
       spec:
         containers:
@@ -141,9 +129,9 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: thanos-bucket-cache
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-bucket-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: thanos-bucket-cache
@@ -160,21 +148,33 @@ objects:
       protocol: TCP
       targetPort: 9150
     selector:
-      app.kubernetes.io/component: thanos-bucket-cache
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-bucket-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
   status:
     loadBalancer: {}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-bucket-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-bucket-cache
+    namespace: rhobs-production
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: thanos-bucket-cache
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-bucket-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: thanos-bucket-cache
@@ -184,9 +184,9 @@ objects:
     replicas: 10
     selector:
       matchLabels:
-        app.kubernetes.io/component: thanos-bucket-cache
+        app.kubernetes.io/component: memcached
         app.kubernetes.io/instance: rhobs
-        app.kubernetes.io/name: memcached
+        app.kubernetes.io/name: thanos-bucket-cache
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
     serviceName: thanos-bucket-cache
@@ -194,9 +194,9 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: thanos-bucket-cache
+          app.kubernetes.io/component: memcached
           app.kubernetes.io/instance: rhobs
-          app.kubernetes.io/name: memcached
+          app.kubernetes.io/name: thanos-bucket-cache
           app.kubernetes.io/part-of: rhobs
           app.kubernetes.io/version: 1.5-316
       spec:
@@ -239,7 +239,7 @@ objects:
               cpu: 100m
               memory: 100Mi
         securityContext: {}
-        serviceAccountName: api-memcached
+        serviceAccountName: thanos-bucket-cache
     updateStrategy: {}
   status:
     availableReplicas: 0
@@ -249,9 +249,9 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-index-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: thanos-index-cache
@@ -268,9 +268,9 @@ objects:
       protocol: TCP
       targetPort: 9150
     selector:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-index-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
   status:
@@ -280,9 +280,9 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-index-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: thanos-index-cache
@@ -292,9 +292,9 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: api-memcached
+      app.kubernetes.io/component: memcached
       app.kubernetes.io/instance: rhobs
-      app.kubernetes.io/name: memcached
+      app.kubernetes.io/name: thanos-index-cache
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: 1.5-316
     name: thanos-index-cache
@@ -304,9 +304,9 @@ objects:
     replicas: 10
     selector:
       matchLabels:
-        app.kubernetes.io/component: api-memcached
+        app.kubernetes.io/component: memcached
         app.kubernetes.io/instance: rhobs
-        app.kubernetes.io/name: memcached
+        app.kubernetes.io/name: thanos-index-cache
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
     serviceName: thanos-index-cache
@@ -314,9 +314,9 @@ objects:
       metadata:
         creationTimestamp: null
         labels:
-          app.kubernetes.io/component: api-memcached
+          app.kubernetes.io/component: memcached
           app.kubernetes.io/instance: rhobs
-          app.kubernetes.io/name: memcached
+          app.kubernetes.io/name: thanos-index-cache
           app.kubernetes.io/part-of: rhobs
           app.kubernetes.io/version: 1.5-316
       spec:

@@ -1023,21 +1023,9 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 					"0.1", "0.25", "0.75", "1.25", "1.75", "2.5", "3", "5", "10", "15", "30", "60", "120",
 				},
 			},
-			Additional: v1alpha1.Additional{
-				Containers: []corev1.Container{
-					tracingSidecar(m),
-				},
-				Args: []string{
-					`--tracing.config="config":
-  "sampler_param": 2
-  "sampler_type": "ratelimiting"
-  "service_name": "thanos-query"
-"type": "JAEGER"`,
-				},
-			},
 			QueryFrontend: &v1alpha1.QueryFrontendSpec{
 				Additional: v1alpha1.Additional{
-					Args: []string{`-query-range.response-cache-config=
+					Args: []string{`--query-range.response-cache-config=
   "type": "memcached"
   "blocks_iter_ttl": "10m"
   "chunk_object_attrs_ttl": "48h"

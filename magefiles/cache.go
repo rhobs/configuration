@@ -102,6 +102,7 @@ func (p Production) Cache() {
 		gatewayCache(ProductionMaps, p.namespace()),
 		indexCache(ProductionMaps, p.namespace()),
 		bucketCache(ProductionMaps, p.namespace()),
+		queryRangeCache(ProductionMaps, p.namespace()),
 	}
 	cache(gen, ProductionMaps, caches)
 }

@@ -488,7 +488,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "max_get_multi_batch_size": 1000
   "max_get_multi_concurrency": 100
   "max_idle_connections": 500
-  "max_item_size": "10MiB"
+  "max_item_size": "1000MiB"
   "timeout": "5s"
 "type": "memcached"`,
 			`--store.caching-bucket.config=
@@ -500,7 +500,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "metafile_content_ttl": "48h"
   "metafile_doesnt_exist_ttl": "30m"
   "metafile_exists_ttl": "24h"
-  "metafile_max_size": "2MiB"
+  "metafile_max_size": "20MiB"
   "max_chunks_get_range_requests": 5
   "config":
     "addresses":
@@ -511,7 +511,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_get_multi_batch_size": 500
     "max_get_multi_concurrency": 100
     "max_idle_connections": 500
-    "max_item_size": "5MiB"
+    "max_item_size": "500MiB"
     "timeout": "5s"`,
 		},
 	}

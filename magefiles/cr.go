@@ -1311,6 +1311,7 @@ func compactTempProduction() []runtime.Object {
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
+					`--delete-delay=10y`,
 				},
 			},
 			CommonFields: v1alpha1.CommonFields{

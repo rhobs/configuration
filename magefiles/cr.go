@@ -1027,15 +1027,6 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 				Additional: v1alpha1.Additional{
 					Args: []string{`--query-range.response-cache-config=
   "type": "memcached"
-  "blocks_iter_ttl": "10m"
-  "chunk_object_attrs_ttl": "48h"
-  "chunk_subrange_size": 16000
-  "chunk_subrange_ttl": "48h"
-  "metafile_content_ttl": "48h"
-  "metafile_doesnt_exist_ttl": "30m"
-  "metafile_exists_ttl": "24h"
-  "metafile_max_size": "2MiB"
-  "max_chunks_get_range_requests": 5
   "config":
     "addresses":
       - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"

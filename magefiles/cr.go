@@ -28,7 +28,7 @@ func (p Production) OperatorCR() {
 
 	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
 	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
-	//objs = append(objs, compactTempProduction()...)
+	objs = append(objs, compactTempProduction()...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {
@@ -1267,6 +1267,58 @@ func compactTempProduction() []runtime.Object {
 	//	},
 	//}
 
+	//historic := &v1alpha1.ThanosCompact{
+	//	TypeMeta: metav1.TypeMeta{
+	//		APIVersion: "monitoring.thanos.io/v1alpha1",
+	//		Kind:       "ThanosCompact",
+	//	},
+	//	ObjectMeta: metav1.ObjectMeta{
+	//		Name:      "historic",
+	//		Namespace: ns,
+	//	},
+	//	Spec: v1alpha1.ThanosCompactSpec{
+	//		Additional: v1alpha1.Additional{
+	//			Args: []string{
+	//				`--deduplication.replica-label=replica`,
+	//			},
+	//		},
+	//		CommonFields: v1alpha1.CommonFields{
+	//			Image:           ptr.To(image),
+	//			Version:         ptr.To(version),
+	//			ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+	//			LogLevel:        ptr.To("info"),
+	//			LogFormat:       ptr.To("logfmt"),
+	//		},
+	//		ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+	//		RetentionConfig: v1alpha1.RetentionResolutionConfig{
+	//			Raw:         v1alpha1.Duration("3650d"),
+	//			FiveMinutes: v1alpha1.Duration("3650d"),
+	//			OneHour:     v1alpha1.Duration("3650d"),
+	//		},
+	//		DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+	//			Concurrency: ptr.To(int32(4)),
+	//			Disable:     ptr.To(false),
+	//		},
+	//		CompactConfig: &v1alpha1.CompactConfig{
+	//			BlockFetchConcurrency: ptr.To(int32(4)),
+	//			CompactConcurrency:    ptr.To(int32(4)),
+	//		},
+	//		DebugConfig: &v1alpha1.DebugConfig{
+	//			AcceptMalformedIndex: ptr.To(true),
+	//			HaltOnError:          ptr.To(true),
+	//			MaxCompactionLevel:   ptr.To(int32(4)),
+	//		},
+	//		StorageSize: v1alpha1.StorageSize("500Gi"),
+	//		FeatureGates: &v1alpha1.FeatureGates{
+	//			ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+	//				Enable: ptr.To(false),
+	//			},
+	//		},
+	//		MinTime: ptr.To(v1alpha1.Duration("-3650d")),
+	//		MaxTime: ptr.To(v1alpha1.Duration("-2w")),
+	//	},
+	//}
+
 	historic := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1306,7 +1358,7 @@ func compactTempProduction() []runtime.Object {
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
 				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
+				MaxCompactionLevel:   ptr.To(int32(0)),
 			},
 			StorageSize: v1alpha1.StorageSize("500Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
@@ -1315,7 +1367,6 @@ func compactTempProduction() []runtime.Object {
 				},
 			},
 			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
-			MaxTime: ptr.To(v1alpha1.Duration("-2w")),
 		},
 	}
 

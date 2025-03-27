@@ -1,10 +1,14 @@
 package main
 
 import (
+	"os"
+
+	"github.com/go-kit/log"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -14,6 +18,32 @@ const (
 	objStoreSecretsTemplateDir = "objstore"
 	cacheTemplatesDir          = "redis"
 )
+
+// ObjectStorageSecretTemplate generates the Thanos object storage secret template
+func ObjectStorageSecretTemplate() {
+	gen := &mimic.Generator{}
+	gen = gen.With(templatePath, templateServicesPath, objStoreSecretsTemplateDir)
+	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+
+	gen.Add("thanos-object-store-secret.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			[]runtime.Object{thanosObjectStoreSecretTemplate()},
+			metav1.ObjectMeta{Name: "thanos-object-store-secret"},
+			[]templatev1.Parameter{
+				{Name: "SECRET_NAME"},
+				{Name: "NAMESPACE"},
+				{Name: "S3_BUCKET_NAME"},
+				{Name: "S3_BUCKET_REGION"},
+				{Name: "S3_BUCKET_ENDPOINT"},
+				{Name: "ACCESS_KEY_ID"},
+				{Name: "SECRET_ACCESS_KEY"},
+			},
+		),
+	))
+
+	gen.Generate()
+
+}
 
 // Secrets generates the secrets for the Production environment
 func (p Production) Secrets() {
@@ -151,6 +181,33 @@ config:
   max_size: 0 # Unlimited
   tls_enabled: true`,
 			},
+		},
+	}
+}
+
+// thanosObjectStoreSecretTemplate creates a templated version of the Thanos object store secret
+func thanosObjectStoreSecretTemplate() *corev1.Secret {
+	return &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Secret",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "${SECRET_NAME}",
+			Namespace: "${NAMESPACE}",
+			Labels: map[string]string{
+				"app.kubernetes.io/name": "${SECRET_NAME}",
+			},
+		},
+		Type: corev1.SecretTypeOpaque,
+		StringData: map[string]string{
+			"thanos.yaml": `type: S3
+config:
+  bucket: ${S3_BUCKET_NAME}
+  region: ${S3_BUCKET_REGION}
+  access_key: ${ACCESS_KEY_ID}
+  secret_key: ${SECRET_ACCESS_KEY}
+  endpoint: ${S3_BUCKET_ENDPOINT}`,
 		},
 	}
 }

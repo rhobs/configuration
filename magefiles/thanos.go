@@ -18,8 +18,8 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-// OperatorCR Generates the RHOBS-specific CRs for Thanos Operator.
-func (p Production) OperatorCR() {
+// Thanos Generates the RHOBS-specific CRs for Thanos Operator.
+func (p Production) Thanos() {
 	templateDir := "rhobs-thanos-operator"
 
 	gen := p.generator(templateDir)
@@ -27,7 +27,7 @@ func (p Production) OperatorCR() {
 	var objs []runtime.Object
 
 	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
-	//objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
+	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
 	objs = append(objs, compactTempProduction()...)
 
 	// Sort objects by Kind then Name
@@ -60,8 +60,8 @@ func (p Production) OperatorCR() {
 	gen.Generate()
 }
 
-// OperatorCR Generates the RHOBS-specific CRs for Thanos Operator.
-func (s Stage) OperatorCR() {
+// Thanos Generates the RHOBS-specific CRs for Thanos Operator.
+func (s Stage) Thanos() {
 	templateDir := "rhobs-thanos-operator"
 
 	gen := s.generator(templateDir)
@@ -105,8 +105,8 @@ func (s Stage) OperatorCR() {
 	gen.Generate()
 }
 
-// OperatorCR Generates the RHOBS-specific CRs for Thanos Operator for a local environment.
-func (l Local) OperatorCR() {
+// Thanos Generates the RHOBS-specific CRs for Thanos Operator for a local environment.
+func (l Local) Thanos() {
 	templateDir := "rhobs-thanos-operator"
 
 	gen := l.generator(templateDir)

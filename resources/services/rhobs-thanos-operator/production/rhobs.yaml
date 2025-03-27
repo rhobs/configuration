@@ -5,6 +5,101 @@ metadata:
   name: thanos-rhobs
 objects:
 - apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: default
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+              - query
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/instance
+              operator: In
+              values:
+              - default
+          topologyKey: kubernetes.io/hostname
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
+    ignoreDeletionMarksDelay: 24h
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: debug
+    maxTime: -22h
+    objectStorageConfig:
+      key: thanos.yaml
+      name: observatorium-mst-thanos-objectstorage
+      optional: false
+    replicas: 2
+    resourceRequirements:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+    shardingStrategy:
+      shards: 1
+      type: block
+    storageSize: 300Gi
+    storeLimitsOptions: {}
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosCompact
   metadata:
     creationTimestamp: null
@@ -171,6 +266,294 @@ objects:
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
     webConfig:
       prefixHeader: X-Forwarded-Prefix
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-0to2w
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+              - query
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/instance
+              operator: In
+              values:
+              - telemeter-0to2w
+          topologyKey: kubernetes.io/hostname
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
+    ignoreDeletionMarksDelay: 24h
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: debug
+    maxTime: -2w
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    replicas: 1
+    resourceRequirements:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+    shardingStrategy:
+      shards: 1
+      type: block
+    storageSize: 300Gi
+    storeLimitsOptions: {}
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-2wto90d
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+              - query
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/instance
+              operator: In
+              values:
+              - telemeter-2wto90d
+          topologyKey: kubernetes.io/hostname
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    featureGates:
+      podDisruptionBudget:
+        enable: false
+      serviceMonitor:
+        enable: false
+    ignoreDeletionMarksDelay: 24h
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: debug
+    maxTime: -2w
+    minTime: -90d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    replicas: 1
+    resourceRequirements:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+    shardingStrategy:
+      shards: 1
+      type: block
+    storageSize: 300Gi
+    storeLimitsOptions: {}
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosStore
+  metadata:
+    creationTimestamp: null
+    name: telemeter-90dplus
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - |-
+      --index-cache.config="config":
+        "addresses":
+          - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
+        "dns_provider_update_interval": "30s"
+        "max_async_buffer_size": 5000000
+        "max_async_concurrency": 1000
+        "max_get_multi_batch_size": 1000
+        "max_get_multi_concurrency": 100
+        "max_idle_connections": 500
+        "max_item_size": "10MiB"
+        "timeout": "5s"
+      "type": "memcached"
+    - |-
+      --store.caching-bucket.config=
+        "type": "memcached"
+        "blocks_iter_ttl": "10m"
+        "chunk_object_attrs_ttl": "48h"
+        "chunk_subrange_size": 16000
+        "chunk_subrange_ttl": "48h"
+        "metafile_content_ttl": "48h"
+        "metafile_doesnt_exist_ttl": "30m"
+        "metafile_exists_ttl": "24h"
+        "metafile_max_size": "2MiB"
+        "max_chunks_get_range_requests": 5
+        "config":
+          "addresses":
+            - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
+          "dns_provider_update_interval": "30s"
+          "max_async_buffer_size": 100000
+          "max_async_concurrency": 100
+          "max_get_multi_batch_size": 500
+          "max_get_multi_concurrency": 100
+          "max_idle_connections": 500
+          "max_item_size": "5MiB"
+          "timeout": "5s"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: workload-type
+              operator: In
+              values:
+              - query
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/instance
+              operator: In
+              values:
+              - telemeter-90dplus
+          topologyKey: kubernetes.io/hostname
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    blockConfig:
+      blockDiscoveryStrategy: concurrent
+      blockFilesConcurrency: 1
+      blockMetaFetchConcurrency: 32
+    featureGates:
+      serviceMonitor:
+        enable: false
+    ignoreDeletionMarksDelay: 24h
+    imagePullPolicy: IfNotPresent
+    indexHeaderConfig:
+      enableLazyReader: true
+      lazyDownloadStrategy: lazy
+      lazyReaderIdleTimeout: 5m
+    logFormat: logfmt
+    logLevel: debug
+    minTime: -90d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    replicas: 1
+    resourceRequirements:
+      requests:
+        cpu: 50m
+        memory: 512Mi
+    shardingStrategy:
+      shards: 1
+      type: block
+    storageSize: 300Gi
+    storeLimitsOptions: {}
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: route.openshift.io/v1
   kind: Route

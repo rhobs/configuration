@@ -108,6 +108,7 @@ objects:
   spec:
     additionalArgs:
     - --deduplication.replica-label=replica
+    - --delete-delay=10y
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
       blockFetchConcurrency: 4

@@ -16,11 +16,12 @@ import (
 )
 
 const (
-	cacheTemplate    = "memcached-template.yaml"
-	cacheName        = "memcached"
-	gatewayCacheName = "api-memcached"
-	indexCacheName   = "thanos-index-cache"
-	bucketCacheName  = "thanos-bucket-cache"
+	cacheTemplate       = "memcached-template.yaml"
+	cacheName           = "memcached"
+	gatewayCacheName    = "api-memcached"
+	indexCacheName      = "thanos-index-cache"
+	bucketCacheName     = "thanos-bucket-cache"
+	queryRangeCacheName = "thanos-query-range-cache"
 
 	defaultGatewayCacheReplicas = 1
 )
@@ -174,14 +175,14 @@ func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
 			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas: 0,
+		Replicas: 10,
 	}
 }
 
 func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
-			Memory:         8048,
+			Memory:         2048,
 			MaxConnections: 100000,
 			StatsInterval:  "5m",
 			Verbose:        true,
@@ -197,7 +198,30 @@ func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
 			"app.kubernetes.io/part-of":   "rhobs",
 			"app.kubernetes.io/version":   m.Versions[apiCache],
 		},
-		Replicas: 0,
+		Replicas: 10,
+	}
+}
+
+func queryRangeCache(m TemplateMaps, namespace string) *memcachedConfig {
+	return &memcachedConfig{
+		Flags: &memcachedFlags{
+			Memory:         8048,
+			MaxConnections: 100000,
+			StatsInterval:  "5m",
+			Verbose:        true,
+		},
+		Name:           queryRangeCacheName,
+		Namespace:      namespace,
+		MemcachedImage: m.Images[apiCache],
+		ExporterImage:  m.Images[memcachedExporter],
+		Labels: map[string]string{
+			"app.kubernetes.io/component": "memcached",
+			"app.kubernetes.io/instance":  "rhobs",
+			"app.kubernetes.io/name":      queryRangeCacheName,
+			"app.kubernetes.io/part-of":   "rhobs",
+			"app.kubernetes.io/version":   m.Versions[apiCache],
+		},
+		Replicas: 1,
 	}
 }
 

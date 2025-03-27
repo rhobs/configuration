@@ -370,12 +370,12 @@ var ProductionVersions = ParamMap[string]{
 
 // ProductionLogLevels is a map of production log levels.
 var ProductionLogLevels = ParamMap[string]{
-	"STORE02W":       logLevels[1],
-	"STORE2W90D":     logLevels[1],
-	"STORE90D+":      logLevels[1],
-	"STORE_DEFAULT":  logLevels[1],
-	"QUERY":          logLevels[1],
-	"QUERY_FRONTEND": logLevels[1],
+	"STORE02W":       logLevels[0],
+	"STORE2W90D":     logLevels[0],
+	"STORE90D+":      logLevels[0],
+	"STORE_DEFAULT":  logLevels[0],
+	"QUERY":          logLevels[0],
+	"QUERY_FRONTEND": logLevels[0],
 }
 
 // ProductionStorageSize is a map of production PV storage sizes.
@@ -392,8 +392,8 @@ var ProductionReplicas = ParamMap[int32]{
 	"STORE2W90D":     1,
 	"STORE90D+":      1,
 	"STORE_DEFAULT":  2,
-	"QUERY":          6,
-	"QUERY_FRONTEND": 3,
+	"QUERY":          1,
+	"QUERY_FRONTEND": 1,
 	apiCache:         1,
 	observatoriumAPI: 2,
 }

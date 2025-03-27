@@ -181,7 +181,7 @@ objects:
     namespace: rhobs-production
   spec:
     podManagementPolicy: OrderedReady
-    replicas: 0
+    replicas: 10
     selector:
       matchLabels:
         app.kubernetes.io/component: memcached
@@ -202,7 +202,7 @@ objects:
       spec:
         containers:
         - args:
-          - -m 8048
+          - -m 2048
           - -c 100000
           - -I 5m
           - -v
@@ -301,7 +301,7 @@ objects:
     namespace: rhobs-production
   spec:
     podManagementPolicy: OrderedReady
-    replicas: 0
+    replicas: 10
     selector:
       matchLabels:
         app.kubernetes.io/component: memcached

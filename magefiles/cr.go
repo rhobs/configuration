@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
@@ -516,7 +515,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "timeout": "5s"`,
 		},
 	}
-	fmt.Println("additionalCacheArgs: ", additionalCacheArgs)
 
 	store0to2w := &v1alpha1.ThanosStore{
 		TypeMeta: metav1.TypeMeta{
@@ -528,6 +526,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -610,6 +609,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -696,6 +696,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -778,6 +779,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
+			Additional: additionalCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -1034,6 +1036,31 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 				},
 			},
 			QueryFrontend: &v1alpha1.QueryFrontendSpec{
+				Additional: v1alpha1.Additional{
+					Args: []string{`-query-range.response-cache-config=
+  "type": "memcached"
+  "blocks_iter_ttl": "10m"
+  "chunk_object_attrs_ttl": "48h"
+  "chunk_subrange_size": 16000
+  "chunk_subrange_ttl": "48h"
+  "metafile_content_ttl": "48h"
+  "metafile_doesnt_exist_ttl": "30m"
+  "metafile_exists_ttl": "24h"
+  "metafile_max_size": "2MiB"
+  "max_chunks_get_range_requests": 5
+  "config":
+    "addresses":
+      - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
+    "dns_provider_update_interval": "30s"
+    "max_async_buffer_size": 100000
+    "max_async_concurrency": 100
+    "max_get_multi_batch_size": 500
+    "max_get_multi_concurrency": 100
+    "max_idle_connections": 500
+    "max_item_size": "100MiB"
+    "timeout": "5s"`,
+					},
+				},
 				CommonFields: v1alpha1.CommonFields{
 					Image:                ptr.To(TemplateFn("QUERY_FRONTEND", m.Images)),
 					Version:              ptr.To(TemplateFn("QUERY_FRONTEND", m.Versions)),
@@ -1055,18 +1082,6 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("48h")),
 				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("48h")),
 				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
-				Additional: v1alpha1.Additional{
-					Containers: []corev1.Container{
-						tracingSidecar(m),
-					},
-					Args: []string{
-						`--tracing.config="config":
-  "sampler_param": 2
-  "sampler_type": "ratelimiting"
-  "service_name": "thanos-query-frontend"
-"type": "JAEGER"`,
-					},
-				},
 			},
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{

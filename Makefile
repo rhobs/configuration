@@ -112,7 +112,8 @@ whitelisted_metrics: $(GOJSONTOYAML) $(GOJQ) configuration/telemeter/metrics.jso
 configuration/telemeter/metrics.json:
 	@echo ">>>>> Running whitelisted_metrics"
 	# Download the latest metrics file to extract the new added metrics.
-	# NOTE: Because old clusters could still send metrics the whitelisting is append only
+	# NOTE: Because old clusters could still send metrics the whitelisting is append only.
+	# This is also applicable to clusters using direct write requests instead of the telemeter client.
 	# (configuration/telemeter/metrics.json).
 	curl -q https://raw.githubusercontent.com/openshift/cluster-monitoring-operator/master/manifests/0000_50_cluster-monitoring-operator_04-config.yaml | \
 		$(GOJSONTOYAML) -yamltojson | \

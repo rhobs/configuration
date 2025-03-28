@@ -30,6 +30,8 @@ parameters:
     value: '500Mi'
   - name: MEMORY_LIMIT
     value: '3Gi'
+  - name: MAX_AGE
+    value: '4w'
   - name: OBJ_STORE_CONFIG_SECRET_NAME
   - name: RCLONE_CONFIG_MAP_NAME
   - name: SOURCE_ENDPOINT
@@ -73,6 +75,7 @@ objects:
                 - 'copy'
                 - ${SOURCE_ENDPOINT}:${SOURCE_BUCKET}
                 - ${TARGET_ENDPOINT}:${TARGET_BUCKET}
+                - '--max-age=${MAX_AGE}'
                 - '--rc'
                 - '--rc-enable-metrics'
                 - '--rc-addr=:10902'

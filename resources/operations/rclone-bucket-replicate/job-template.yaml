@@ -49,7 +49,7 @@ objects:
         app.kubernetes.io/part-of: observatorium
     spec:
       parallelism: 1
-      backoffLimit: 1
+      backoffLimit: 10
       template:
         spec:
           serviceAccountName: ${SERVICE_ACCOUNT_NAME}

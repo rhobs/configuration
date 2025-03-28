@@ -9,14 +9,8 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      app.kubernetes.io/component: thanos-compactor
-      app.kubernetes.io/instance: thanos-compact-rhobs
-      app.kubernetes.io/managed-by: thanos-operator
-      app.kubernetes.io/name: thanos-compact
-      app.kubernetes.io/part-of: thanos
-      operator.thanos.io/owner: rhobs
       prometheus: app-sre
-    name: thanos-compact-rhobs
+    name: catch-all-compactor
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
@@ -29,11 +23,6 @@ objects:
     selector:
       matchLabels:
         app.kubernetes.io/component: thanos-compactor
-        app.kubernetes.io/instance: thanos-compact-rhobs
-        app.kubernetes.io/managed-by: thanos-operator
-        app.kubernetes.io/name: thanos-compact
-        app.kubernetes.io/part-of: thanos
-        operator.thanos.io/owner: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:

@@ -112,7 +112,7 @@ objects:
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
     compactConfig:
       blockFetchConcurrency: 4
-      cleanupInterval: 3650d
+      cleanupInterval: 87600h
       compactConcurrency: 4
     debugConfig:
       acceptMalformedIndex: true

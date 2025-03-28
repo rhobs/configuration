@@ -1334,7 +1334,7 @@ func compactTempProduction() []runtime.Object {
 			CompactConfig: &v1alpha1.CompactConfig{
 				BlockFetchConcurrency: ptr.To(int32(4)),
 				CompactConcurrency:    ptr.To(int32(4)),
-				CleanupInterval:       ptr.To(v1alpha1.Duration("3650d")),
+				CleanupInterval:       ptr.To(v1alpha1.Duration("87600h")),
 			},
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),

@@ -192,5 +192,6 @@
   "{__name__=\"vendor_model:node_accelerator_cards:sum\",vendor=~\"NVIDIA|AMD|GAUDI|INTEL|QUALCOMM\"}",
   "{__name__=\"workload:cpu_usage_cores:sum\"}",
   "{__name__=\"workload:memory_usage_bytes:sum\"}",
-  "{__name__=~\"cluster:usage:.*\"}"
+  "{__name__=~\"cluster:usage:.*\"}",
+  "{__name__=\"microshift_version\"}"
 ]

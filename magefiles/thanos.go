@@ -1196,108 +1196,9 @@ func compactTempProduction() []runtime.Object {
 
 	m := ProductionMaps
 
-	//recentCompact := &v1alpha1.ThanosCompact{
-	//	TypeMeta: metav1.TypeMeta{
-	//		APIVersion: "monitoring.thanos.io/v1alpha1",
-	//		Kind:       "ThanosCompact",
-	//	},
-	//	ObjectMeta: metav1.ObjectMeta{
-	//		Name:      "recent",
-	//		Namespace: ns,
-	//	},
-	//	Spec: v1alpha1.ThanosCompactSpec{
-	//		Additional: v1alpha1.Additional{
-	//			Args: []string{
-	//				`--deduplication.replica-label=replica`,
-	//			},
-	//		},
-	//		CommonFields: v1alpha1.CommonFields{
-	//			Image:           ptr.To(image),
-	//			Version:         ptr.To(version),
-	//			ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-	//			LogLevel:        ptr.To("info"),
-	//			LogFormat:       ptr.To("logfmt"),
-	//		},
-	//		ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-	//		RetentionConfig: v1alpha1.RetentionResolutionConfig{
-	//			Raw:         v1alpha1.Duration("3650d"),
-	//			FiveMinutes: v1alpha1.Duration("3650d"),
-	//			OneHour:     v1alpha1.Duration("3650d"),
-	//		},
-	//		DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-	//			Concurrency: ptr.To(int32(4)),
-	//			Disable:     ptr.To(true),
-	//		},
-	//		CompactConfig: &v1alpha1.CompactConfig{
-	//			CompactConcurrency: ptr.To(int32(4)),
-	//		},
-	//		DebugConfig: &v1alpha1.DebugConfig{
-	//			AcceptMalformedIndex: ptr.To(true),
-	//			HaltOnError:          ptr.To(true),
-	//			MaxCompactionLevel:   ptr.To(int32(4)),
-	//		},
-	//		StorageSize: v1alpha1.StorageSize("50Gi"),
-	//		FeatureGates: &v1alpha1.FeatureGates{
-	//			ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-	//				Enable: ptr.To(false),
-	//			},
-	//		},
-	//		MaxTime: ptr.To(v1alpha1.Duration("-2w")),
-	//	},
-	//}
-
-	//historic := &v1alpha1.ThanosCompact{
-	//	TypeMeta: metav1.TypeMeta{
-	//		APIVersion: "monitoring.thanos.io/v1alpha1",
-	//		Kind:       "ThanosCompact",
-	//	},
-	//	ObjectMeta: metav1.ObjectMeta{
-	//		Name:      "historic",
-	//		Namespace: ns,
-	//	},
-	//	Spec: v1alpha1.ThanosCompactSpec{
-	//		Additional: v1alpha1.Additional{
-	//			Args: []string{
-	//				`--deduplication.replica-label=replica`,
-	//			},
-	//		},
-	//		CommonFields: v1alpha1.CommonFields{
-	//			Image:           ptr.To(image),
-	//			Version:         ptr.To(version),
-	//			ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-	//			LogLevel:        ptr.To("info"),
-	//			LogFormat:       ptr.To("logfmt"),
-	//		},
-	//		ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-	//		RetentionConfig: v1alpha1.RetentionResolutionConfig{
-	//			Raw:         v1alpha1.Duration("3650d"),
-	//			FiveMinutes: v1alpha1.Duration("3650d"),
-	//			OneHour:     v1alpha1.Duration("3650d"),
-	//		},
-	//		DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-	//			Concurrency: ptr.To(int32(4)),
-	//			Disable:     ptr.To(false),
-	//		},
-	//		CompactConfig: &v1alpha1.CompactConfig{
-	//			BlockFetchConcurrency: ptr.To(int32(4)),
-	//			CompactConcurrency:    ptr.To(int32(4)),
-	//		},
-	//		DebugConfig: &v1alpha1.DebugConfig{
-	//			AcceptMalformedIndex: ptr.To(true),
-	//			HaltOnError:          ptr.To(true),
-	//			MaxCompactionLevel:   ptr.To(int32(4)),
-	//		},
-	//		StorageSize: v1alpha1.StorageSize("500Gi"),
-	//		FeatureGates: &v1alpha1.FeatureGates{
-	//			ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-	//				Enable: ptr.To(false),
-	//			},
-	//		},
-	//		MinTime: ptr.To(v1alpha1.Duration("-3650d")),
-	//		MaxTime: ptr.To(v1alpha1.Duration("-2w")),
-	//	},
-	//}
-
+	// the historic compactor should mostly be in good shape. We can just let it run
+	// and ensure things are in a good state and that we have a global view of the data.
+	// At the time of deployment this takes us back as far as we had good compaction data.
 	historic := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1311,7 +1212,6 @@ func compactTempProduction() []runtime.Object {
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
-					`--delete-delay=10y`,
 				},
 			},
 			CommonFields: v1alpha1.CommonFields{
@@ -1334,12 +1234,10 @@ func compactTempProduction() []runtime.Object {
 			CompactConfig: &v1alpha1.CompactConfig{
 				BlockFetchConcurrency: ptr.To(int32(4)),
 				CompactConcurrency:    ptr.To(int32(4)),
-				CleanupInterval:       ptr.To(v1alpha1.Duration("87600h")),
 			},
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
 				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(0)),
 			},
 			StorageSize: v1alpha1.StorageSize("500Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
@@ -1347,11 +1245,117 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
+			MaxTime: ptr.To(v1alpha1.Duration("-243d")),
 			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
 		},
 	}
 
-	return []runtime.Object{historic}
+	// the mid compactor will start at around the time that compaction errors started
+	// and will run, at time of deployment up until end of 2024
+	mid := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "mid",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(4)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+			},
+			StorageSize: v1alpha1.StorageSize("100Gi"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+			MaxTime: ptr.To(v1alpha1.Duration("-90d")),
+			MinTime: ptr.To(v1alpha1.Duration("-243d")),
+		},
+	}
+
+	// the recent compactor should be in good shape. At the time of deployment
+	// this is compacting everything in 2025 onwards
+	recent := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "recent",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(4)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+			},
+			StorageSize: v1alpha1.StorageSize("100Gi"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+			MinTime: ptr.To(v1alpha1.Duration("-89d")),
+		},
+	}
+
+	return []runtime.Object{historic, mid, recent}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

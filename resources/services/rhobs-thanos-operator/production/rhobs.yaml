@@ -115,6 +115,7 @@ objects:
     debugConfig:
       acceptMalformedIndex: true
       haltOnError: true
+      maxCompactionLevel: 4
     downsamplingConfig:
       downsamplingConcurrency: 4
       downsamplingEnabled: false
@@ -153,6 +154,7 @@ objects:
     debugConfig:
       acceptMalformedIndex: true
       haltOnError: true
+      maxCompactionLevel: 4
     downsamplingConfig:
       downsamplingConcurrency: 4
       downsamplingEnabled: false
@@ -191,6 +193,7 @@ objects:
     debugConfig:
       acceptMalformedIndex: true
       haltOnError: true
+      maxCompactionLevel: 4
     downsamplingConfig:
       downsamplingConcurrency: 4
       downsamplingEnabled: false

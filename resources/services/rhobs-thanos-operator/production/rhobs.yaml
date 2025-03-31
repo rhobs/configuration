@@ -100,6 +100,119 @@ objects:
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: historic
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    compactConfig:
+      blockFetchConcurrency: 4
+      compactConcurrency: 4
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: true
+    downsamplingConfig:
+      downsamplingConcurrency: 4
+      downsamplingEnabled: false
+    featureGates:
+      serviceMonitor:
+        enable: false
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    maxTime: -243d
+    minTime: -3650d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 3650d
+      oneHour: 3650d
+      raw: 3650d
+    storageSize: 500Gi
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: mid
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    compactConfig:
+      blockFetchConcurrency: 4
+      compactConcurrency: 4
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: true
+    downsamplingConfig:
+      downsamplingConcurrency: 4
+      downsamplingEnabled: false
+    featureGates:
+      serviceMonitor:
+        enable: false
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    maxTime: -90d
+    minTime: -243d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 3650d
+      oneHour: 3650d
+      raw: 3650d
+    storageSize: 100Gi
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: recent
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos
+    compactConfig:
+      blockFetchConcurrency: 4
+      compactConcurrency: 4
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: true
+    downsamplingConfig:
+      downsamplingConcurrency: 4
+      downsamplingEnabled: false
+    featureGates:
+      serviceMonitor:
+        enable: false
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    minTime: -89d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 3650d
+      oneHour: 3650d
+      raw: 3650d
+    storageSize: 100Gi
+    version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosQuery
   metadata:
     annotations:

@@ -93,6 +93,7 @@ objects:
                     - '--single-run'
                     - '--min-time=${MIN_TIME}'
                     - '--max-time=${MAX_TIME}'
+                    - '--compaction=1'
               restartPolicy: Never
               volumes:
                 - name: obj-store-from-config

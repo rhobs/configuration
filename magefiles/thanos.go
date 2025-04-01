@@ -520,10 +520,11 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_item_size": "500MiB"
     "timeout": "5s"`
 
+	fmt.Println(bc)
+
 	additionalCacheArgs := v1alpha1.Additional{
 		Args: []string{
 			inMem,
-			bc,
 		},
 	}
 

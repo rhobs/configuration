@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
@@ -477,9 +478,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 }
 
 func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
-	additionalCacheArgs := v1alpha1.Additional{
-		Args: []string{
-			`--index-cache.config="config":
+	iC := `--index-cache.config="config":
   "addresses":
     - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
   "dns_provider_update_interval": "30s"
@@ -490,8 +489,15 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "max_idle_connections": 500
   "max_item_size": "1000MiB"
   "timeout": "5s"
-"type": "memcached"`,
-			`--store.caching-bucket.config=
+"type": "memcached"`
+	fmt.Println(iC)
+
+	inMem := `--index-cache.config="config":
+  "max_size": "10000MB"
+  "max_item_size": "1000MB"
+"type": "IN-MEMORY"`
+
+	bc := `--store.caching-bucket.config=
   "type": "memcached"
   "blocks_iter_ttl": "10m"
   "chunk_object_attrs_ttl": "48h"
@@ -512,7 +518,12 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_get_multi_concurrency": 100
     "max_idle_connections": 500
     "max_item_size": "500MiB"
-    "timeout": "5s"`,
+    "timeout": "5s"`
+
+	additionalCacheArgs := v1alpha1.Additional{
+		Args: []string{
+			inMem,
+			bc,
 		},
 	}
 

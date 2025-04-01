@@ -360,7 +360,7 @@ objects:
       lazyReaderIdleTimeout: 5m
     logFormat: logfmt
     logLevel: debug
-    maxTime: -2w
+    minTime: -2w
     objectStorageConfig:
       key: thanos.yaml
       name: thanos-objectstorage
@@ -491,7 +491,7 @@ objects:
       lazyReaderIdleTimeout: 5m
     logFormat: logfmt
     logLevel: debug
-    minTime: -90d
+    maxTime: -90d
     objectStorageConfig:
       key: thanos.yaml
       name: thanos-objectstorage

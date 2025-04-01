@@ -994,6 +994,25 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 }
 
 func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
+	// placeholder for prod caches - temp removed whilst debugging
+	qfeCacheTempProd := v1alpha1.Additional{
+		Args: []string{`--query-range.response-cache-config=
+  "type": "memcached"
+  "config":
+    "addresses":
+      - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
+    "dns_provider_update_interval": "30s"
+    "max_async_buffer_size": 100000
+    "max_async_concurrency": 100
+    "max_get_multi_batch_size": 500
+    "max_get_multi_concurrency": 100
+    "max_idle_connections": 500
+    "max_item_size": "100MiB"
+    "timeout": "5s"`,
+		},
+	}
+	fmt.Println(qfeCacheTempProd)
+
 	var objs []runtime.Object
 
 	query := &v1alpha1.ThanosQuery{
@@ -1036,22 +1055,6 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 				},
 			},
 			QueryFrontend: &v1alpha1.QueryFrontendSpec{
-				Additional: v1alpha1.Additional{
-					Args: []string{`--query-range.response-cache-config=
-  "type": "memcached"
-  "config":
-    "addresses":
-      - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
-    "dns_provider_update_interval": "30s"
-    "max_async_buffer_size": 100000
-    "max_async_concurrency": 100
-    "max_get_multi_batch_size": 500
-    "max_get_multi_concurrency": 100
-    "max_idle_connections": 500
-    "max_item_size": "100MiB"
-    "timeout": "5s"`,
-					},
-				},
 				CommonFields: v1alpha1.CommonFields{
 					Image:                ptr.To(TemplateFn("QUERY_FRONTEND", m.Images)),
 					Version:              ptr.To(TemplateFn("QUERY_FRONTEND", m.Versions)),

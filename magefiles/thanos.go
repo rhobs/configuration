@@ -601,7 +601,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
+			MinTime:                  ptr.To(v1alpha1.Duration("-2w")),
 			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
@@ -771,7 +771,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
+			MaxTime:                  ptr.To(v1alpha1.Duration("-90d")),
 			StorageSize:              TemplateFn("STORE90D+", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{

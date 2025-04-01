@@ -75,7 +75,8 @@ objects:
                 - 'copy'
                 - ${SOURCE_ENDPOINT}:${SOURCE_BUCKET}
                 - ${TARGET_ENDPOINT}:${TARGET_BUCKET}
-                - '--max-age=${MAX_AGE}'
+                - '--max-age=2025-03-21T00:01:00Z'
+                - '--min-age=2025-03-30T00:01:00Z'
                 - '--rc'
                 - '--rc-enable-metrics'
                 - '--rc-addr=:10902'

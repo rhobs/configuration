@@ -10,7 +10,7 @@ description: |
 parameters:
   - name: NAME
     description: The name of the Job.
-    value: 'rclone-bucket-replicate'
+    value: 'rclone-bucket-replicate-sync'
   - name: NAMESPACE
     description: The namespace where the Job should run.
     value: 'observatorium-operations'
@@ -24,14 +24,8 @@ parameters:
     value: 'info'
   - name: CPU_REQUEST
     value: '1'
-  - name: CPU_LIMIT
-    value: '2'
   - name: MEMORY_REQUEST
     value: '500Mi'
-  - name: MEMORY_LIMIT
-    value: '3Gi'
-  - name: MAX_AGE
-    value: '4w'
   - name: OBJ_STORE_CONFIG_SECRET_NAME
   - name: RCLONE_CONFIG_MAP_NAME
   - name: SOURCE_ENDPOINT
@@ -49,7 +43,7 @@ objects:
         app.kubernetes.io/part-of: observatorium
     spec:
       parallelism: 1
-      backoffLimit: 1
+      backoffLimit: 1000
       template:
         spec:
           serviceAccountName: ${SERVICE_ACCOUNT_NAME}
@@ -60,9 +54,6 @@ objects:
                 requests:
                   memory: ${MEMORY_REQUEST}
                   cpu: ${CPU_REQUEST}
-                limits:
-                  memory: ${MEMORY_LIMIT}
-                  cpu: ${CPU_LIMIT}
               ports:
                 - containerPort: 10902
                   name: metrics

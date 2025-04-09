@@ -1315,8 +1315,57 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MaxTime: ptr.To(v1alpha1.Duration("-90d")),
+			MaxTime: ptr.To(v1alpha1.Duration("-170d")),
 			MinTime: ptr.To(v1alpha1.Duration("-243d")),
+		},
+	}
+
+	midTwo := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "mid-two",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:   ptr.To(image),
+				Version: ptr.To(version),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(4)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(4)),
+			},
+			StorageSize: v1alpha1.StorageSize("100Gi"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+			MaxTime: ptr.To(v1alpha1.Duration("-90d")),
+			MinTime: ptr.To(v1alpha1.Duration("-169d")),
 		},
 	}
 
@@ -1373,7 +1422,7 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
-	return []runtime.Object{historic, mid, recent}
+	return []runtime.Object{historic, mid, midTwo, recent}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

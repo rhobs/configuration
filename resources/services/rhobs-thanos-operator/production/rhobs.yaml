@@ -104,7 +104,13 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
-    storageSize: 500Gi
+    shardingConfig:
+      externalLabelSharding:
+      - label: receive
+        shardName: receive
+        values:
+        - "true"
+    storageSize: 900Gi
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -140,6 +146,28 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
+    shardingConfig:
+      externalLabelSharding:
+      - label: receive
+        shardName: receive
+        values:
+        - "true"
+      - label: rule_replica
+        shardName: ruler-0
+        values:
+        - observatorium-thanos-rule-0
+      - label: rule_replica
+        shardName: ruler-1
+        values:
+        - observatorium-thanos-rule-1
+      - label: rule_replica
+        shardName: metrics-fed-0
+        values:
+        - observatorium-thanos-metric-federation-rule-0
+      - label: rule_replica
+        shardName: metric-fed-1
+        values:
+        - observatorium-thanos-metric-federation-rule-1
     storageSize: 100Gi
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}
@@ -239,6 +267,28 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
+    shardingConfig:
+      externalLabelSharding:
+      - label: receive
+        shardName: receive
+        values:
+        - "true"
+      - label: rule_replica
+        shardName: ruler-0
+        values:
+        - observatorium-thanos-rule-0
+      - label: rule_replica
+        shardName: ruler-1
+        values:
+        - observatorium-thanos-rule-1
+      - label: rule_replica
+        shardName: metrics-fed-0
+        values:
+        - observatorium-thanos-metric-federation-rule-0
+      - label: rule_replica
+        shardName: metric-fed-1
+        values:
+        - observatorium-thanos-metric-federation-rule-1
     storageSize: 100Gi
     version: c7c3ef94c51d518bb6056d3ad416d7b4f39559f3
   status: {}

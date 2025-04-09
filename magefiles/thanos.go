@@ -1224,6 +1224,17 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
+			ShardingConfig: &v1alpha1.ShardingConfig{
+				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+					{
+						ShardName: "receive",
+						Label:     "receive",
+						Values: []string{
+							"true",
+						},
+					},
+				},
+			},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
@@ -1255,7 +1266,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("500Gi"),
+			StorageSize: v1alpha1.StorageSize("900Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -1369,6 +1380,45 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
+			ShardingConfig: &v1alpha1.ShardingConfig{
+				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+					{
+						ShardName: "receive",
+						Label:     "receive",
+						Values: []string{
+							"true",
+						},
+					},
+					{
+						ShardName: "ruler-0",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-rule-0",
+						},
+					},
+					{
+						ShardName: "ruler-1",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-rule-1",
+						},
+					},
+					{
+						ShardName: "metrics-fed-0",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-metric-federation-rule-0",
+						},
+					},
+					{
+						ShardName: "metric-fed-1",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-metric-federation-rule-1",
+						},
+					},
+				},
+			},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
@@ -1420,6 +1470,45 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
+			ShardingConfig: &v1alpha1.ShardingConfig{
+				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+					{
+						ShardName: "receive",
+						Label:     "receive",
+						Values: []string{
+							"true",
+						},
+					},
+					{
+						ShardName: "ruler-0",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-rule-0",
+						},
+					},
+					{
+						ShardName: "ruler-1",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-rule-1",
+						},
+					},
+					{
+						ShardName: "metrics-fed-0",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-metric-federation-rule-0",
+						},
+					},
+					{
+						ShardName: "metric-fed-1",
+						Label:     "rule_replica",
+						Values: []string{
+							"observatorium-thanos-metric-federation-rule-1",
+						},
+					},
+				},
+			},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,

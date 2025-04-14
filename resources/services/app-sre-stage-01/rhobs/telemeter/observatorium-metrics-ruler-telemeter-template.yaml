@@ -162,6 +162,11 @@ objects:
                   tenant_id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
                 record: acm_capacity_effective_cpu_cores
               - expr: |
+                  sum by (_id) (acm_capacity_effective_cpu_cores)
+                labels:
+                  tenant_id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+                record: acm_capacity_effective_cpu_cores:sum
+              - expr: |
                   max by(_id) (sum_over_time(hostedcluster:hypershift_cluster_vcpus:max[1h:5m])) / scalar(steps:count1h)
                 labels:
                   tenant_id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43

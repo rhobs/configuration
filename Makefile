@@ -47,7 +47,7 @@ go-lint: $(FAILLINT) $(GOLANGCI_LINT) go-format go-deps
 	@echo ">> examining all of the Go files"
 	@go vet -stdmethods=false ./...
 	@echo ">> linting all of the Go files GOGC=${GOGC}"
-	@$(GOLANGCI_LINT) run
+	@$(GOLANGCI_LINT) run --timeout 5m
 
 .PHONY: go-deps
 go-deps: go.mod go.sum

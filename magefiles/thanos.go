@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"sort"
 
 	kghelpers "github.com/observatorium/observatorium/configuration_go/kubegen/helpers"
@@ -490,7 +490,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "max_item_size": "1000MiB"
   "timeout": "5s"
 "type": "memcached"`
-	log.Print(iC)
+	fmt.Println(iC)
 
 	inMem := `--index-cache.config="config":
   "max_size": "10000MB"
@@ -520,7 +520,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_item_size": "500MiB"
     "timeout": "5s"`
 
-	log.Println(bc)
+	fmt.Println(bc)
 
 	additionalCacheArgs := v1alpha1.Additional{
 		Args: []string{
@@ -1011,7 +1011,7 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
     "timeout": "5s"`,
 		},
 	}
-	log.Println(qfeCacheTempProd)
+	fmt.Println(qfeCacheTempProd)
 
 	var objs []runtime.Object
 

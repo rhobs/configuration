@@ -203,7 +203,7 @@ func GenerateRBAC() *observatoriumRBAC {
 		envs:    []env{stagingEnv, productionEnv},
 	})
 
-	// placeholder read only prod
+	// analytics read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116
 	attachBinding(&obsRBAC, bindingOpts{

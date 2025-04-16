@@ -1266,7 +1266,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("900Gi"),
+			StorageSize: v1alpha1.StorageSize("1500Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -1296,34 +1296,6 @@ func compactTempProduction() []runtime.Object {
 						Label:     "receive",
 						Values: []string{
 							"true",
-						},
-					},
-					{
-						ShardName: "ruler-0",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-rule-0",
-						},
-					},
-					{
-						ShardName: "ruler-1",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-rule-1",
-						},
-					},
-					{
-						ShardName: "metrics-fed-0",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-metric-federation-rule-0",
-						},
-					},
-					{
-						ShardName: "metric-fed-1",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-metric-federation-rule-1",
 						},
 					},
 				},
@@ -1389,34 +1361,6 @@ func compactTempProduction() []runtime.Object {
 							"true",
 						},
 					},
-					{
-						ShardName: "ruler-0",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-rule-0",
-						},
-					},
-					{
-						ShardName: "ruler-1",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-rule-1",
-						},
-					},
-					{
-						ShardName: "metrics-fed-0",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-metric-federation-rule-0",
-						},
-					},
-					{
-						ShardName: "metric-fed-1",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-metric-federation-rule-1",
-						},
-					},
 				},
 			},
 			Additional: v1alpha1.Additional{
@@ -1479,34 +1423,6 @@ func compactTempProduction() []runtime.Object {
 							"true",
 						},
 					},
-					{
-						ShardName: "ruler-0",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-rule-0",
-						},
-					},
-					{
-						ShardName: "ruler-1",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-rule-1",
-						},
-					},
-					{
-						ShardName: "metrics-fed-0",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-metric-federation-rule-0",
-						},
-					},
-					{
-						ShardName: "metric-fed-1",
-						Label:     "rule_replica",
-						Values: []string{
-							"observatorium-thanos-metric-federation-rule-1",
-						},
-					},
 				},
 			},
 			Additional: v1alpha1.Additional{
@@ -1549,8 +1465,8 @@ func compactTempProduction() []runtime.Object {
 			MinTime: ptr.To(v1alpha1.Duration("-89d")),
 		},
 	}
-
-	return []runtime.Object{historic, mid, midTwo, recent}
+	fmt.Println(historic)
+	return []runtime.Object{mid, midTwo, recent}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

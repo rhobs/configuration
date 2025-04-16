@@ -28,8 +28,8 @@ func (p Production) Thanos() {
 	var objs []runtime.Object
 
 	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
-	//objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
-	//objs = append(objs, compactTempProduction()...)
+	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
+	objs = append(objs, compactTempProduction()...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {

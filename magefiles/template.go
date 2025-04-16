@@ -35,9 +35,9 @@ func TemplateFn[T any](param string, m ParamMap[T]) T {
 }
 
 const (
-	thanosImage        = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos"
+	thanosImage        = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos"
 	thanosVersionStage = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
-	thanosVersionProd  = "c7c3ef94c51d518bb6056d3ad416d7b4f39559f3"
+	thanosVersionProd  = "03c9fefbda1b33830a950bd28484fa0a1e039555"
 
 	thanosOperatorImage        = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos-operator"
 	thanosOperatorVersionStage = "9a9d855a9b292274114239ca9859b19fc5c83322"

@@ -77,7 +77,7 @@ var StageImages = ParamMap[string]{
 	"QUERY":                      thanosImage,
 	"QUERY_FRONTEND":             thanosImage,
 	jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
-	"THANOS_OPERATOR":            "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-thanos-operator:" + thanosOperatorVersionStage,
+	"THANOS_OPERATOR":            fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionStage),
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 	apiCache:                     memcachedImage,
 	memcachedExporter:            memcachedExporterImage,

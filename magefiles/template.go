@@ -40,7 +40,7 @@ const (
 	thanosVersionProd  = "03c9fefbda1b33830a950bd28484fa0a1e039555"
 
 	thanosOperatorImage        = "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos-operator"
-	thanosOperatorVersionStage = "9a9d855a9b292274114239ca9859b19fc5c83322"
+	thanosOperatorVersionStage = "2e19cebd4c056d661b2b0f6bd797bbe367e619fa"
 	thanosOperatorVersionProd  = "2e19cebd4c056d661b2b0f6bd797bbe367e619fa"
 )
 

@@ -153,6 +153,18 @@ objects:
         subjects:
         - kind: user
           name: service-account-8f7aa5e1-aa08-493d-82eb-cf24834fc08f
+      - name: 4bfe1a9f-e875-4d37-9c6a-d2faff2a69dc
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-4bfe1a9f-e875-4d37-9c6a-d2faff2a69dc
+      - name: e7c2f772-e418-4ef3-9568-ea09b1acb929
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-e7c2f772-e418-4ef3-9568-ea09b1acb929
       - name: observatorium-rhtap
         roles:
         - rhtap-metrics-read

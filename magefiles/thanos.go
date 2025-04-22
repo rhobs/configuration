@@ -1266,7 +1266,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("1500Gi"),
+			StorageSize: v1alpha1.StorageSize("2000Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),

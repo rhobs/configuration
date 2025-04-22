@@ -1528,8 +1528,7 @@ func compactTempProduction() []runtime.Object {
 			MinTime: ptr.To(v1alpha1.Duration("-14d")),
 		},
 	}
-	log.Println(midTwo, recent)
-	return []runtime.Object{historic, mid, recentTwo}
+	return []runtime.Object{historic, mid, midTwo, recent, recentTwo}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

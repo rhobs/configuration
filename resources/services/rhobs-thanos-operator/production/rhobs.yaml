@@ -367,6 +367,23 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
+    shardingConfig:
+    - externalLabelSharding:
+      - label: receive
+        value: "true"
+      - label: tenant_id
+        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+      shardName: rhobs
+    - externalLabelSharding:
+      - label: receive
+        value: "true"
+      - label: tenant_id
+        value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+      shardName: telemeter
+    - externalLabelSharding:
+      - label: receive
+        value: '!true'
+      shardName: rules
     storageSize: 3000Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}

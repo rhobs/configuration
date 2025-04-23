@@ -1229,6 +1229,43 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
+			ShardingConfig: []v1alpha1.ShardingConfig{
+				{
+					ShardName: "rhobs",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
+						},
+					},
+				},
+				{
+					ShardName: "telemeter",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
+						},
+					},
+				},
+			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),

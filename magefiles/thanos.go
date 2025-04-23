@@ -1422,6 +1422,19 @@ func compactTempProduction() []runtime.Object {
 						},
 					},
 				},
+				{
+					ShardName: "telemeter",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
 			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),

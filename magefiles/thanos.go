@@ -1224,17 +1224,17 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			ShardingConfig: &v1alpha1.ShardingConfig{
-				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-					{
-						ShardName: "receive",
-						Label:     "receive",
-						Values: []string{
-							"true",
-						},
-					},
-				},
-			},
+			//ShardingConfig: &v1alpha1.ShardingConfig{
+			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+			//		{
+			//			ShardName: "receive",
+			//			Label:     "receive",
+			//			Values: []string{
+			//				"true",
+			//			},
+			//		},
+			//	},
+			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
@@ -1289,17 +1289,17 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			ShardingConfig: &v1alpha1.ShardingConfig{
-				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-					{
-						ShardName: "receive",
-						Label:     "receive",
-						Values: []string{
-							"true",
-						},
-					},
-				},
-			},
+			//ShardingConfig: &v1alpha1.ShardingConfig{
+			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+			//		{
+			//			ShardName: "receive",
+			//			Label:     "receive",
+			//			Values: []string{
+			//				"true",
+			//			},
+			//		},
+			//	},
+			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
@@ -1352,17 +1352,17 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			ShardingConfig: &v1alpha1.ShardingConfig{
-				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-					{
-						ShardName: "receive",
-						Label:     "receive",
-						Values: []string{
-							"true",
-						},
-					},
-				},
-			},
+			//ShardingConfig: &v1alpha1.ShardingConfig{
+			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+			//		{
+			//			ShardName: "receive",
+			//			Label:     "receive",
+			//			Values: []string{
+			//				"true",
+			//			},
+			//		},
+			//	},
+			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
@@ -1414,17 +1414,17 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			ShardingConfig: &v1alpha1.ShardingConfig{
-				ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-					{
-						ShardName: "receive",
-						Label:     "receive",
-						Values: []string{
-							"true",
-						},
-					},
-				},
-			},
+			//ShardingConfig: &v1alpha1.ShardingConfig{
+			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+			//		{
+			//			ShardName: "receive",
+			//			Label:     "receive",
+			//			Values: []string{
+			//				"true",
+			//			},
+			//		},
+			//	},
+			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,

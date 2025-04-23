@@ -1266,30 +1266,57 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
-	midTwo := &v1alpha1.ThanosCompact{
+	// next covers the gap upto the point where we start to have compaction issues
+	next := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "mid-two",
+			Name:      "older-90d",
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			//ShardingConfig: &v1alpha1.ShardingConfig{
-			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-			//		{
-			//			ShardName: "receive",
-			//			Label:     "receive",
-			//			Values: []string{
-			//				"true",
-			//			},
-			//		},
-			//	},
-			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
+				},
+			},
+			ShardingConfig: []v1alpha1.ShardingConfig{
+				{
+					ShardName: "rhobs",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
+						},
+					},
+				},
+				{
+					ShardName: "telemeter",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
+						},
+					},
 				},
 			},
 			CommonFields: v1alpha1.CommonFields{
@@ -1321,7 +1348,7 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MaxTime: ptr.To(v1alpha1.Duration("-90d")),
+			MaxTime: ptr.To(v1alpha1.Duration("-91d")),
 			MinTime: ptr.To(v1alpha1.Duration("-169d")),
 		},
 	}
@@ -1417,7 +1444,7 @@ func compactTempProduction() []runtime.Object {
 	}
 
 	// sharded compactor that looks at the last month of data
-	// this data shold be pulled into telemeter so in theory should be compacted without issues
+	// this data should be pulled into telemeter so in theory should be compacted without issues
 	oneMonthReceive := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1505,9 +1532,7 @@ func compactTempProduction() []runtime.Object {
 			MinTime: ptr.To(v1alpha1.Duration("-30d")),
 		},
 	}
-
-	log.Println(midTwo)
-	return []runtime.Object{historic, ninetyDays, oneMonthReceive}
+	return []runtime.Object{historic, next, ninetyDays, oneMonthReceive}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

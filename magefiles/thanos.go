@@ -1435,6 +1435,15 @@ func compactTempProduction() []runtime.Object {
 						},
 					},
 				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
+						},
+					},
+				},
 			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),

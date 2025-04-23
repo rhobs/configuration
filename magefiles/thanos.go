@@ -1326,32 +1326,57 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
-	// the recent compactor should be in good shape. At the time of deployment
-	// this is compacting everything in 2025 onwards
-	recent := &v1alpha1.ThanosCompact{
+	// this compactor looks at the last 30-90 days of data
+	ninetyDays := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "recent",
+			Name:      "90d",
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			//ShardingConfig: &v1alpha1.ShardingConfig{
-			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-			//		{
-			//			ShardName: "receive",
-			//			Label:     "receive",
-			//			Values: []string{
-			//				"true",
-			//			},
-			//		},
-			//	},
-			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
+				},
+			},
+			ShardingConfig: []v1alpha1.ShardingConfig{
+				{
+					ShardName: "rhobs",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
+						},
+					},
+				},
+				{
+					ShardName: "telemeter",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
+						},
+					},
 				},
 			},
 			CommonFields: v1alpha1.CommonFields{
@@ -1387,7 +1412,7 @@ func compactTempProduction() []runtime.Object {
 				},
 			},
 			MaxTime: ptr.To(v1alpha1.Duration("-31d")),
-			MinTime: ptr.To(v1alpha1.Duration("-89d")),
+			MinTime: ptr.To(v1alpha1.Duration("-90d")),
 		},
 	}
 
@@ -1481,8 +1506,8 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
-	log.Println(midTwo, recent)
-	return []runtime.Object{historic, oneMonthReceive}
+	log.Println(midTwo)
+	return []runtime.Object{historic, ninetyDays, oneMonthReceive}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

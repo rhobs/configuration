@@ -1224,17 +1224,6 @@ func compactTempProduction() []runtime.Object {
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
-			//ShardingConfig: &v1alpha1.ShardingConfig{
-			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-			//		{
-			//			ShardName: "receive",
-			//			Label:     "receive",
-			//			Values: []string{
-			//				"true",
-			//			},
-			//		},
-			//	},
-			//},
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
@@ -1266,79 +1255,14 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("2000Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-243d")),
-			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
-		},
-	}
-
-	// the mid compactor will start at around the time that compaction errors started
-	// and will run, at time of deployment up until end of 2024
-	mid := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "mid",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			//ShardingConfig: &v1alpha1.ShardingConfig{
-			//	ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-			//		{
-			//			ShardName: "receive",
-			//			Label:     "receive",
-			//			Values: []string{
-			//				"true",
-			//			},
-			//		},
-			//	},
-			//},
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("100Gi"),
+			StorageSize: v1alpha1.StorageSize("3000Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
 				},
 			},
 			MaxTime: ptr.To(v1alpha1.Duration("-170d")),
-			MinTime: ptr.To(v1alpha1.Duration("-243d")),
+			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
 		},
 	}
 
@@ -1518,8 +1442,8 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
-	log.Println(historic, mid, midTwo, recent, recentTwo)
-	return []runtime.Object{}
+	log.Println(midTwo, recent, recentTwo)
+	return []runtime.Object{historic}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

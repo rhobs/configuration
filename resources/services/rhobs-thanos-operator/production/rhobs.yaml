@@ -235,12 +235,6 @@ objects:
       fiveMinutes: 3650d
       oneHour: 3650d
       raw: 3650d
-    shardingConfig:
-      externalLabelSharding:
-      - label: receive
-        shardName: receive
-        values:
-        - "true"
     storageSize: 100Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}

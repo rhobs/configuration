@@ -1524,6 +1524,15 @@ func compactTempProduction() []runtime.Object {
 						},
 					},
 				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
+						},
+					},
+				},
 			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
@@ -1601,6 +1610,15 @@ func compactTempProduction() []runtime.Object {
 						{
 							Label: "tenant_id",
 							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
 						},
 					},
 				},
@@ -1684,6 +1702,15 @@ func compactTempProduction() []runtime.Object {
 						},
 					},
 				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
+						},
+					},
+				},
 			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
@@ -1761,6 +1788,15 @@ func compactTempProduction() []runtime.Object {
 						{
 							Label: "tenant_id",
 							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+				{
+					ShardName: "rules",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "!true",
 						},
 					},
 				},

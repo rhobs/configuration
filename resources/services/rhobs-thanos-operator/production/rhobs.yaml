@@ -340,6 +340,7 @@ objects:
   spec:
     additionalArgs:
     - --deduplication.replica-label=replica
+    - --debug.halt-on-error=false
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
     compactConfig:
       blockFetchConcurrency: 4

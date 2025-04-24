@@ -168,6 +168,7 @@ objects:
   spec:
     additionalArgs:
     - --deduplication.replica-label=replica
+    - --no-debug.halt-on-error
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
     compactConfig:
       blockFetchConcurrency: 4
@@ -343,8 +344,8 @@ objects:
     - --no-debug.halt-on-error
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
     compactConfig:
-      blockFetchConcurrency: 4
-      compactConcurrency: 4
+      blockFetchConcurrency: 8
+      compactConcurrency: 8
     debugConfig:
       acceptMalformedIndex: true
       haltOnError: false
@@ -357,7 +358,7 @@ objects:
         enable: false
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
-    logLevel: info
+    logLevel: warn
     maxTime: -126d
     minTime: -3650d
     objectStorageConfig:

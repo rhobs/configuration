@@ -1271,7 +1271,7 @@ func compactTempProduction() []runtime.Object {
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
+				LogLevel:        ptr.To("warn"),
 				LogFormat:       ptr.To("logfmt"),
 			},
 			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
@@ -1285,8 +1285,8 @@ func compactTempProduction() []runtime.Object {
 				Disable:     ptr.To(false),
 			},
 			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
+				BlockFetchConcurrency: ptr.To(int32(8)),
+				CompactConcurrency:    ptr.To(int32(8)),
 			},
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
@@ -1494,6 +1494,7 @@ func compactTempProduction() []runtime.Object {
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
+					`--no-debug.halt-on-error`,
 				},
 			},
 			ShardingConfig: []v1alpha1.ShardingConfig{

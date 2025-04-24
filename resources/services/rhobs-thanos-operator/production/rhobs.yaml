@@ -346,7 +346,7 @@ objects:
       compactConcurrency: 4
     debugConfig:
       acceptMalformedIndex: true
-      haltOnError: true
+      haltOnError: false
       maxCompactionLevel: 4
     downsamplingConfig:
       downsamplingConcurrency: 4

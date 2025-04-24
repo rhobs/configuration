@@ -1227,7 +1227,7 @@ func compactTempProduction() []runtime.Object {
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
-					`--debug.halt-on-error=false`,
+					`--debug.halt-on-error='false'`,
 				},
 			},
 			ShardingConfig: []v1alpha1.ShardingConfig{

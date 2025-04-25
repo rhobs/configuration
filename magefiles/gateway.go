@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/ghodss/yaml"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
@@ -11,7 +10,6 @@ import (
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
-
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -197,13 +195,14 @@ func gatewayDeployment(m TemplateMaps, namespace, amsURL string) *appsv1.Deploym
 }
 
 func createObservatoriumAPIContainer(m TemplateMaps, namespace string) corev1.Container {
+	logLevel := TemplateFn(observatoriumAPI, m.LogLevels)
 	return corev1.Container{
 		Name:  gatewayName,
 		Image: TemplateFn(observatoriumAPI, m.Images),
 		Args: []string{
 			"--web.listen=0.0.0.0:8080",
 			"--web.internal.listen=0.0.0.0:8081",
-			"--log.level=info",
+			fmt.Sprintf("--log.level=%s", logLevel),
 			fmt.Sprintf("--metrics.read.endpoint=http://%s.%s.svc.cluster.local:9090", qfeService, namespace),
 			fmt.Sprintf("--metrics.write.endpoint=http://%s.%s.svc.cluster.local:19291", routerService, namespace),
 			fmt.Sprintf("--metrics.alertmanager.endpoint=http://%s.%s.svc.cluster.local:9093", alertManagerName, namespace),

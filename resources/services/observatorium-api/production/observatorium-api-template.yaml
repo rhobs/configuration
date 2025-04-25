@@ -393,7 +393,7 @@ objects:
         - args:
           - --web.listen=0.0.0.0:8080
           - --web.internal.listen=0.0.0.0:8081
-          - --log.level=info
+          - --log.level=debug
           - --metrics.read.endpoint=http://thanos-query-frontend-rhobs.rhobs-production.svc.cluster.local:9090
           - --metrics.write.endpoint=http://thanos-receive-router-rhobs.rhobs-production.svc.cluster.local:19291
           - --metrics.alertmanager.endpoint=http://alertmanager.rhobs-production.svc.cluster.local:9093

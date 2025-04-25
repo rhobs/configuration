@@ -117,6 +117,7 @@ var StageLogLevels = ParamMap[string]{
 	"COMPACT_TELEMETER":          logLevels[1],
 	"QUERY":                      logLevels[1],
 	"QUERY_FRONTEND":             logLevels[1],
+	observatoriumAPI:             logLevels[0],
 }
 
 // Stage PV storage sizes.
@@ -376,6 +377,7 @@ var ProductionLogLevels = ParamMap[string]{
 	"STORE_DEFAULT":  logLevels[0],
 	"QUERY":          logLevels[0],
 	"QUERY_FRONTEND": logLevels[0],
+	observatoriumAPI: logLevels[0],
 }
 
 // ProductionStorageSize is a map of production PV storage sizes.

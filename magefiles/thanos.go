@@ -1299,7 +1299,7 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MaxTime: ptr.To(v1alpha1.Duration("-126d")),
+			MaxTime: ptr.To(v1alpha1.Duration("-145d")),
 			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
 		},
 	}
@@ -1387,7 +1387,7 @@ func compactTempProduction() []runtime.Object {
 				},
 			},
 			MaxTime: ptr.To(v1alpha1.Duration("-91d")),
-			MinTime: ptr.To(v1alpha1.Duration("-123d")),
+			MinTime: ptr.To(v1alpha1.Duration("-144d")),
 		},
 	}
 

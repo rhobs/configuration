@@ -1422,7 +1422,7 @@ func compactTempProduction() []runtime.Object {
 					},
 				},
 				{
-					ShardName: "telemeter",
+					ShardName: "telemeter-l",
 					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
 						{
 							Label: "receive",
@@ -1470,7 +1470,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("100Gi"),
+			StorageSize: v1alpha1.StorageSize("500Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),

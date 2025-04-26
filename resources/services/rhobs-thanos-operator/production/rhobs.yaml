@@ -276,12 +276,12 @@ objects:
         value: "true"
       - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter
+      shardName: telemeter-l
     - externalLabelSharding:
       - label: receive
         value: '!true'
       shardName: rules
-    storageSize: 100Gi
+    storageSize: 500Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1

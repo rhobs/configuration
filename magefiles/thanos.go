@@ -1690,10 +1690,10 @@ func compactTempProduction() []runtime.Object {
 					},
 				},
 				{
-					ShardName: "telemeter",
+					ShardName: "telemeter-l",
 					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
 						{
-							Label: "receive-l",
+							Label: "receive",
 							Value: "true",
 						},
 						{
@@ -1779,10 +1779,10 @@ func compactTempProduction() []runtime.Object {
 					},
 				},
 				{
-					ShardName: "telemeter",
+					ShardName: "telemeter-l",
 					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
 						{
-							Label: "receive-l",
+							Label: "receive",
 							Value: "true",
 						},
 						{

@@ -47,11 +47,11 @@ objects:
         value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
       shardName: rhobs
     - externalLabelSharding:
-      - label: receive-l
+      - label: receive
         value: "true"
       - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter
+      shardName: telemeter-l
     - externalLabelSharding:
       - label: receive
         value: '!true'
@@ -103,11 +103,11 @@ objects:
         value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
       shardName: rhobs
     - externalLabelSharding:
-      - label: receive-l
+      - label: receive
         value: "true"
       - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter
+      shardName: telemeter-l
     - externalLabelSharding:
       - label: receive
         value: '!true'

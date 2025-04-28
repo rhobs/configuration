@@ -1210,24 +1210,35 @@ func compactTempProduction() []runtime.Object {
 	storageBucket := "TELEMETER"
 
 	m := ProductionMaps
+	telemeterShard := []v1alpha1.ShardingConfig{
+		{
+			ShardName: "telemeter",
+			ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+				{
+					Label: "receive",
+					Value: "true",
+				},
+				{
+					Label: "tenant_id",
+					Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+				},
+			},
+		},
+	}
 
-	// the historic compactor should mostly be in good shape. We can just let it run
-	// and ensure things are in a good state and that we have a global view of the data.
-	// At the time of deployment this takes us back as far as we had good compaction data.
-	historic := &v1alpha1.ThanosCompact{
+	notTelemeter := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "historic",
+			Name:      "rules-and-rhobs",
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
-					`--no-debug.halt-on-error`,
 				},
 			},
 			ShardingConfig: []v1alpha1.ShardingConfig{
@@ -1245,19 +1256,6 @@ func compactTempProduction() []runtime.Object {
 					},
 				},
 				{
-					ShardName: "telemeter",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
 					ShardName: "rules",
 					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
 						{
@@ -1267,6 +1265,60 @@ func compactTempProduction() []runtime.Object {
 					},
 				},
 			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("warn"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(4)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				BlockFetchConcurrency: ptr.To(int32(8)),
+				CompactConcurrency:    ptr.To(int32(8)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(false),
+				MaxCompactionLevel:   ptr.To(int32(4)),
+			},
+			StorageSize: v1alpha1.StorageSize("500Gi"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+
+	// the historic compactor should mostly be in good shape. We can just let it run
+	// and ensure things are in a good state and that we have a global view of the data.
+	// At the time of deployment this takes us back as far as we had good compaction data.
+	historic := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "historic",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
+			ShardingConfig: telemeterShard,
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1320,136 +1372,10 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "rhobs",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
-						},
-					},
-				},
-				{
-					ShardName: "telemeter",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
-					ShardName: "rules",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "!true",
-						},
-					},
-				},
-			},
+			ShardingConfig: telemeterShard,
 			CommonFields: v1alpha1.CommonFields{
 				Image:   ptr.To(image),
 				Version: ptr.To(version),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("100Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-91d")),
-			MinTime: ptr.To(v1alpha1.Duration("-144d")),
-		},
-	}
-
-	// this compactor looks at the last 30-90 days of data
-	ninetyDays := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "90d",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "rhobs",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
-						},
-					},
-				},
-				{
-					ShardName: "telemeter-l",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
-					ShardName: "rules",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "!true",
-						},
-					},
-				},
-			},
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
 			},
 			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
@@ -1476,6 +1402,60 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
+			MaxTime: ptr.To(v1alpha1.Duration("-91d")),
+			MinTime: ptr.To(v1alpha1.Duration("-144d")),
+		},
+	}
+
+	// this compactor looks at the last 30-90 days of data
+	ninetyDays := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "90d",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
+			ShardingConfig: telemeterShard,
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(4)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(4)),
+			},
+			StorageSize: v1alpha1.StorageSize("1000Gi"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
 			MaxTime: ptr.To(v1alpha1.Duration("-57d")),
 			MinTime: ptr.To(v1alpha1.Duration("-90d")),
 		},
@@ -1494,46 +1474,9 @@ func compactTempProduction() []runtime.Object {
 			Additional: v1alpha1.Additional{
 				Args: []string{
 					`--deduplication.replica-label=replica`,
-					`--no-debug.halt-on-error`,
 				},
 			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "rhobs",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
-						},
-					},
-				},
-				{
-					ShardName: "telemeter",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
-					ShardName: "rules",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "!true",
-						},
-					},
-				},
-			},
+			ShardingConfig: telemeterShard,
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1586,43 +1529,7 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "rhobs",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
-						},
-					},
-				},
-				{
-					ShardName: "telemeter-l",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
-					ShardName: "rules",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "!true",
-						},
-					},
-				},
-			},
+			ShardingConfig: telemeterShard,
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1649,7 +1556,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("500Gi"),
+			StorageSize: v1alpha1.StorageSize("1000Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -1675,43 +1582,7 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "rhobs",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
-						},
-					},
-				},
-				{
-					ShardName: "telemeter-l",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
-					ShardName: "rules",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "!true",
-						},
-					},
-				},
-			},
+			ShardingConfig: telemeterShard,
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1738,7 +1609,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("500Gi"),
+			StorageSize: v1alpha1.StorageSize("1000Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -1764,43 +1635,7 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "rhobs",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "0fc2b00e-201b-4c17-b9f2-19d91adc4fd2",
-						},
-					},
-				},
-				{
-					ShardName: "telemeter-l",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-				{
-					ShardName: "rules",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "!true",
-						},
-					},
-				},
-			},
+			ShardingConfig: telemeterShard,
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1836,7 +1671,7 @@ func compactTempProduction() []runtime.Object {
 			MinTime: ptr.To(v1alpha1.Duration("-14d")),
 		},
 	}
-	return []runtime.Object{historic, next, ninetyDays, sixEightWeeks, fourSixWeeks, twoFourWeeks, zeroTwoWeeks}
+	return []runtime.Object{notTelemeter, historic, next, ninetyDays, sixEightWeeks, fourSixWeeks, twoFourWeeks, zeroTwoWeeks}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

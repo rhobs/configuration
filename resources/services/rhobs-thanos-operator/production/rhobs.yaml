@@ -639,7 +639,7 @@ objects:
         cpu: 50m
         memory: 512Mi
     shardingStrategy:
-      shards: 2
+      shards: 1
       type: block
     storageSize: 300Gi
     storeLimitsOptions: {}
@@ -706,7 +706,7 @@ objects:
         cpu: 50m
         memory: 512Mi
     shardingStrategy:
-      shards: 2
+      shards: 1
       type: block
     storageSize: 300Gi
     storeLimitsOptions: {}

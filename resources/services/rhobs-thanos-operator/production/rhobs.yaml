@@ -592,6 +592,8 @@ objects:
           "max_idle_connections": 500
           "max_item_size": "500MiB"
           "timeout": "5s"
+    - --rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.observatorium-metrics-production.svc.cluster.local
+    - --endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.observatorium-metrics-production.svc.cluster.local
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -630,13 +632,13 @@ objects:
       key: thanos.yaml
       name: thanos-objectstorage
       optional: false
-    replicas: 1
+    replicas: 2
     resourceRequirements:
       requests:
         cpu: 50m
         memory: 512Mi
     shardingStrategy:
-      shards: 3
+      shards: 2
       type: block
     storageSize: 300Gi
     storeLimitsOptions: {}
@@ -697,7 +699,7 @@ objects:
       key: thanos.yaml
       name: thanos-objectstorage
       optional: false
-    replicas: 1
+    replicas: 2
     resourceRequirements:
       requests:
         cpu: 50m

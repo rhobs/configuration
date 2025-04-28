@@ -1490,7 +1490,21 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
-			ShardingConfig: telemeterShard,
+			ShardingConfig: []v1alpha1.ShardingConfig{
+				{
+					ShardName: "telemeter-large",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
@@ -1517,7 +1531,7 @@ func compactTempProduction() []runtime.Object {
 				HaltOnError:          ptr.To(false),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
-			StorageSize: v1alpha1.StorageSize("100Gi"),
+			StorageSize: v1alpha1.StorageSize("1000Gi"),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),

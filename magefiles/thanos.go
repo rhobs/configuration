@@ -496,6 +496,8 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "timeout": "5s"
 "type": "memcached"`
 
+	log.Println(iC)
+
 	inMem := `--index-cache.config="config":
   "max_size": "10000MB"
   "max_item_size": "1000MB"
@@ -532,8 +534,8 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 
 	zero2wArgs := v1alpha1.Additional{
 		Args: []string{
-			iC,
 			bc,
+			inMem,
 		},
 	}
 

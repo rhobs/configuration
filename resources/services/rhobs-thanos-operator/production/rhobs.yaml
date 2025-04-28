@@ -44,18 +44,8 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter-l
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
+      shardName: telemeter
     storageSize: 500Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
@@ -100,19 +90,9 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter-l
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
-    storageSize: 500Gi
+      shardName: telemeter
+    storageSize: 1000Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -156,19 +136,9 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter-l
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
-    storageSize: 500Gi
+      shardName: telemeter
+    storageSize: 1000Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -180,7 +150,6 @@ objects:
   spec:
     additionalArgs:
     - --deduplication.replica-label=replica
-    - --no-debug.halt-on-error
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
     compactConfig:
       blockFetchConcurrency: 4
@@ -213,18 +182,8 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
       shardName: telemeter
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
     storageSize: 100Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
@@ -269,19 +228,9 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
-      shardName: telemeter-l
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
-    storageSize: 500Gi
+      shardName: telemeter
+    storageSize: 1000Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -357,7 +306,6 @@ objects:
   spec:
     additionalArgs:
     - --deduplication.replica-label=replica
-    - --no-debug.halt-on-error
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
     compactConfig:
       blockFetchConcurrency: 8
@@ -390,18 +338,8 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
       shardName: telemeter
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
     storageSize: 3000Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
@@ -443,19 +381,9 @@ objects:
       - label: receive
         value: "true"
       - label: tenant_id
-        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
-      shardName: rhobs
-    - externalLabelSharding:
-      - label: receive
-        value: "true"
-      - label: tenant_id
         value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
       shardName: telemeter
-    - externalLabelSharding:
-      - label: receive
-        value: '!true'
-      shardName: rules
-    storageSize: 100Gi
+    storageSize: 500Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
@@ -571,6 +499,54 @@ objects:
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
     webConfig:
       prefixHeader: X-Forwarded-Prefix
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: rules-and-rhobs
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
+    compactConfig:
+      blockFetchConcurrency: 8
+      compactConcurrency: 8
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: false
+      maxCompactionLevel: 4
+    downsamplingConfig:
+      downsamplingConcurrency: 4
+      downsamplingEnabled: false
+    featureGates:
+      serviceMonitor:
+        enable: false
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: warn
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 3650d
+      oneHour: 3650d
+      raw: 3650d
+    shardingConfig:
+    - externalLabelSharding:
+      - label: receive
+        value: "true"
+      - label: tenant_id
+        value: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+      shardName: rhobs
+    - externalLabelSharding:
+      - label: receive
+        value: '!true'
+      shardName: rules
+    storageSize: 500Gi
+    version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosStore

@@ -490,7 +490,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "max_item_size": "1000MiB"
   "timeout": "5s"
 "type": "memcached"`
-	log.Print(iC)
 
 	inMem := `--index-cache.config="config":
   "max_size": "10000MB"
@@ -520,11 +519,16 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_item_size": "500MiB"
     "timeout": "5s"`
 
-	log.Println(bc)
-
 	additionalCacheArgs := v1alpha1.Additional{
 		Args: []string{
 			inMem,
+		},
+	}
+
+	remoteCacheArgs := v1alpha1.Additional{
+		Args: []string{
+			iC,
+			bc,
 		},
 	}
 
@@ -538,7 +542,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: additionalCacheArgs,
+			Additional: remoteCacheArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -584,11 +588,10 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
-				Shards: 1,
+				Shards: 3,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
-				LazyDownloadStrategy:  ptr.To("lazy"),
 				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
 			},
 			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
@@ -601,7 +604,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-2w")),
+			MinTime:                  ptr.To(v1alpha1.Duration("-336h")),
 			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
@@ -667,7 +670,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
-				Shards: 1,
+				Shards: 2,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
@@ -684,8 +687,8 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
+			MinTime:                  ptr.To(v1alpha1.Duration("-2160h")),
+			MaxTime:                  ptr.To(v1alpha1.Duration("-336h")),
 			StorageSize:              TemplateFn("STORE2W90D", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
@@ -771,7 +774,8 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-90d")),
+			MinTime:                  ptr.To(v1alpha1.Duration("-8760h")),
+			MaxTime:                  ptr.To(v1alpha1.Duration("-2160h")),
 			StorageSize:              TemplateFn("STORE90D+", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{

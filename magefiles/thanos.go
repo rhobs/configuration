@@ -27,7 +27,12 @@ func (p Production) Thanos() {
 	ns := p.namespace()
 	var objs []runtime.Object
 
-	objs = append(objs, queryCR(ns, ProductionMaps, true)...)
+	tmpAdditionalQueryArgs := []string{
+		`--rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.observatorium-metrics-production.svc.cluster.local`,
+		`--endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.observatorium-metrics-production.svc.cluster.local`,
+	}
+
+	objs = append(objs, queryCR(ns, ProductionMaps, true, tmpAdditionalQueryArgs...)...)
 	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
 	objs = append(objs, compactTempProduction()...)
 
@@ -529,8 +534,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 		Args: []string{
 			iC,
 			bc,
-			`--rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.observatorium-metrics-production.svc.cluster.local`,
-			`--endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.observatorium-metrics-production.svc.cluster.local`,
 		},
 	}
 
@@ -999,7 +1002,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 	}
 }
 
-func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
+func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...string) []runtime.Object {
 	// placeholder for prod caches - temp removed whilst debugging
 	qfeCacheTempProd := v1alpha1.Additional{
 		Args: []string{`--query-range.response-cache-config=
@@ -1031,6 +1034,9 @@ func queryCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosQuerySpec{
+			Additional: v1alpha1.Additional{
+				Args: withAdditonalArgs,
+			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:                ptr.To(TemplateFn("QUERY", m.Images)),
 				Version:              ptr.To(TemplateFn("QUERY", m.Versions)),

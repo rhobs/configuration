@@ -525,10 +525,12 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 		},
 	}
 
-	remoteCacheArgs := v1alpha1.Additional{
+	zero2wArgs := v1alpha1.Additional{
 		Args: []string{
 			iC,
 			bc,
+			`--rule=dnssrv+_grpc._tcp.observatorium-thanos-rule.observatorium-metrics-production.svc.cluster.local`,
+			`--endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.observatorium-metrics-production.svc.cluster.local`,
 		},
 	}
 
@@ -542,7 +544,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
-			Additional: remoteCacheArgs,
+			Additional: zero2wArgs,
 			CommonFields: v1alpha1.CommonFields{
 				Affinity: &corev1.Affinity{
 					NodeAffinity: &corev1.NodeAffinity{
@@ -588,7 +590,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
-				Shards: 3,
+				Shards: 2,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),

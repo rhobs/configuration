@@ -390,8 +390,8 @@ var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
 
 // ProductionReplicas is a map of production replicas.
 var ProductionReplicas = ParamMap[int32]{
-	"STORE02W":       1,
-	"STORE2W90D":     1,
+	"STORE02W":       2,
+	"STORE2W90D":     2,
 	"STORE90D+":      1,
 	"STORE_DEFAULT":  2,
 	"QUERY":          1,

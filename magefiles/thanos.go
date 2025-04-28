@@ -487,7 +487,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
   "addresses":
     - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
   "dns_provider_update_interval": "30s"
-  "max_async_buffer_size": 5000000
+  "max_async_buffer_size": 50000000
   "max_async_concurrency": 1000
   "max_get_multi_batch_size": 1000
   "max_get_multi_concurrency": 100
@@ -516,7 +516,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "addresses":
       - "dnssrv+_client._tcp.thanos-bucket-cache.rhobs-production.svc"
     "dns_provider_update_interval": "30s"
-    "max_async_buffer_size": 100000
+    "max_async_buffer_size": 1000000
     "max_async_concurrency": 100
     "max_get_multi_batch_size": 500
     "max_get_multi_concurrency": 100
@@ -1011,7 +1011,7 @@ func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...
     "addresses":
       - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
     "dns_provider_update_interval": "30s"
-    "max_async_buffer_size": 100000
+    "max_async_buffer_size": 1000000
     "max_async_concurrency": 100
     "max_get_multi_batch_size": 500
     "max_get_multi_concurrency": 100

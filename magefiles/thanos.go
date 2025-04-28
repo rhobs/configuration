@@ -593,7 +593,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
-				Shards: 2,
+				Shards: 1,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),
@@ -675,7 +675,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
-				Shards: 2,
+				Shards: 1,
 			},
 			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
 				EnableLazyReader:      ptr.To(true),

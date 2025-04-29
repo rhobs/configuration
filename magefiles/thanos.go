@@ -525,6 +525,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
     "max_idle_connections": 500
     "max_item_size": "500MiB"
     "timeout": "5s"`
+	log.Println(bc)
 
 	additionalCacheArgs := v1alpha1.Additional{
 		Args: []string{
@@ -534,7 +535,6 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 
 	zero2wArgs := v1alpha1.Additional{
 		Args: []string{
-			bc,
 			inMem,
 		},
 	}

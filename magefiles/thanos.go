@@ -1224,21 +1224,6 @@ func compactTempProduction() []runtime.Object {
 	storageBucket := "TELEMETER"
 
 	m := ProductionMaps
-	telemeterShard := []v1alpha1.ShardingConfig{
-		{
-			ShardName: "telemeter",
-			ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-				{
-					Label: "receive",
-					Value: "true",
-				},
-				{
-					Label: "tenant_id",
-					Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-				},
-			},
-		},
-	}
 
 	notTelemeter := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
@@ -1314,16 +1299,13 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
-	// the historic compactor should mostly be in good shape. We can just let it run
-	// and ensure things are in a good state and that we have a global view of the data.
-	// At the time of deployment this takes us back as far as we had good compaction data.
-	historic := &v1alpha1.ThanosCompact{
+	telemeter := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "historic",
+			Name:      "receive",
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
@@ -1332,12 +1314,26 @@ func compactTempProduction() []runtime.Object {
 					`--deduplication.replica-label=replica`,
 				},
 			},
-			ShardingConfig: telemeterShard,
+			ShardingConfig: []v1alpha1.ShardingConfig{
+				{
+					ShardName: "telemeter",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+			},
 			CommonFields: v1alpha1.CommonFields{
 				Image:           ptr.To(image),
 				Version:         ptr.To(version),
 				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("warn"),
+				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
 			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
@@ -1351,12 +1347,12 @@ func compactTempProduction() []runtime.Object {
 				Disable:     ptr.To(false),
 			},
 			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(8)),
-				CompactConcurrency:    ptr.To(int32(8)),
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
 			},
 			DebugConfig: &v1alpha1.DebugConfig{
 				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(false),
+				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(4)),
 			},
 			StorageSize: v1alpha1.StorageSize("3000Gi"),
@@ -1365,369 +1361,9 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MaxTime: ptr.To(v1alpha1.Duration("-145d")),
-			MinTime: ptr.To(v1alpha1.Duration("-3650d")),
 		},
 	}
-
-	// next covers the gap upto the point where we start to have compaction issues
-	next := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "older-90d",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "telemeter-large",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-			},
-			CommonFields: v1alpha1.CommonFields{
-				Image:   ptr.To(image),
-				Version: ptr.To(version),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("500Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-91d")),
-			MinTime: ptr.To(v1alpha1.Duration("-144d")),
-		},
-	}
-
-	// this compactor looks at the last 30-90 days of data
-	ninetyDays := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "90d",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: telemeterShard,
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("1000Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-57d")),
-			MinTime: ptr.To(v1alpha1.Duration("-90d")),
-		},
-	}
-
-	sixEightWeeks := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "6w-8w-receive",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "telemeter-large",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-			},
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(false),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("1000Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-43d")),
-			MinTime: ptr.To(v1alpha1.Duration("-56d")),
-		},
-	}
-
-	fourSixWeeks := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "4w-6w-receive",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: telemeterShard,
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("1000Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-29d")),
-			MinTime: ptr.To(v1alpha1.Duration("-42d")),
-		},
-	}
-
-	twoFourWeeks := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "2w-4w-receive",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: telemeterShard,
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("1000Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MaxTime: ptr.To(v1alpha1.Duration("-15d")),
-			MinTime: ptr.To(v1alpha1.Duration("-28d")),
-		},
-	}
-
-	zeroTwoWeeks := &v1alpha1.ThanosCompact{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "monitoring.thanos.io/v1alpha1",
-			Kind:       "ThanosCompact",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "0-2w-receive",
-			Namespace: ns,
-		},
-		Spec: v1alpha1.ThanosCompactSpec{
-			Additional: v1alpha1.Additional{
-				Args: []string{
-					`--deduplication.replica-label=replica`,
-				},
-			},
-			ShardingConfig: []v1alpha1.ShardingConfig{
-				{
-					ShardName: "telemeter-large",
-					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
-						{
-							Label: "receive",
-							Value: "true",
-						},
-						{
-							Label: "tenant_id",
-							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
-						},
-					},
-				},
-			},
-			CommonFields: v1alpha1.CommonFields{
-				Image:           ptr.To(image),
-				Version:         ptr.To(version),
-				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
-				LogLevel:        ptr.To("info"),
-				LogFormat:       ptr.To("logfmt"),
-			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
-			RetentionConfig: v1alpha1.RetentionResolutionConfig{
-				Raw:         v1alpha1.Duration("3650d"),
-				FiveMinutes: v1alpha1.Duration("3650d"),
-				OneHour:     v1alpha1.Duration("3650d"),
-			},
-			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
-				Concurrency: ptr.To(int32(4)),
-				Disable:     ptr.To(false),
-			},
-			CompactConfig: &v1alpha1.CompactConfig{
-				BlockFetchConcurrency: ptr.To(int32(4)),
-				CompactConcurrency:    ptr.To(int32(4)),
-			},
-			DebugConfig: &v1alpha1.DebugConfig{
-				AcceptMalformedIndex: ptr.To(true),
-				HaltOnError:          ptr.To(true),
-				MaxCompactionLevel:   ptr.To(int32(4)),
-			},
-			StorageSize: v1alpha1.StorageSize("1000Gi"),
-			FeatureGates: &v1alpha1.FeatureGates{
-				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
-					Enable: ptr.To(false),
-				},
-			},
-			MinTime: ptr.To(v1alpha1.Duration("-14d")),
-		},
-	}
-	return []runtime.Object{notTelemeter, historic, next, ninetyDays, sixEightWeeks, fourSixWeeks, twoFourWeeks, zeroTwoWeeks}
+	return []runtime.Object{notTelemeter, telemeter}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

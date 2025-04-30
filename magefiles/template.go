@@ -394,8 +394,8 @@ var ProductionReplicas = ParamMap[int32]{
 	"STORE2W90D":     2,
 	"STORE90D+":      1,
 	"STORE_DEFAULT":  2,
-	"QUERY":          1,
-	"QUERY_FRONTEND": 1,
+	"QUERY":          3,
+	"QUERY_FRONTEND": 3,
 	apiCache:         1,
 	observatoriumAPI: 2,
 }

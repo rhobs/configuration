@@ -610,7 +610,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockFilesConcurrency:     ptr.To(int32(1)),
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
-			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+			IgnoreDeletionMarksDelay: v1alpha1.Duration("48h"),
 			MinTime:                  ptr.To(v1alpha1.Duration("-336h")),
 			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{

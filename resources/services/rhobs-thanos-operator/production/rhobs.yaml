@@ -316,7 +316,7 @@ objects:
     featureGates:
       serviceMonitor:
         enable: false
-    ignoreDeletionMarksDelay: 48h
+    ignoreDeletionMarksDelay: 12h
     imagePullPolicy: IfNotPresent
     indexHeaderConfig:
       enableLazyReader: true

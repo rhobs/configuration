@@ -1299,6 +1299,72 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 
+	telemeterHistoric := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "receive",
+			Namespace: ns,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			Additional: v1alpha1.Additional{
+				Args: []string{
+					`--deduplication.replica-label=replica`,
+				},
+			},
+			ShardingConfig: []v1alpha1.ShardingConfig{
+				{
+					ShardName: "telemeter",
+					ExternalLabelSharding: []v1alpha1.ExternalLabelShardingConfig{
+						{
+							Label: "receive",
+							Value: "true",
+						},
+						{
+							Label: "tenant_id",
+							Value: "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+						},
+					},
+				},
+			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:           ptr.To(image),
+				Version:         ptr.To(version),
+				ImagePullPolicy: ptr.To(corev1.PullIfNotPresent),
+				LogLevel:        ptr.To("info"),
+				LogFormat:       ptr.To("logfmt"),
+			},
+			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("3650d"),
+				FiveMinutes: v1alpha1.Duration("3650d"),
+				OneHour:     v1alpha1.Duration("3650d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(4)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				BlockFetchConcurrency: ptr.To(int32(4)),
+				CompactConcurrency:    ptr.To(int32(4)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(4)),
+			},
+			StorageSize: v1alpha1.StorageSize("3000Gi"),
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+			MaxTime: ptr.To(v1alpha1.Duration("-120d")),
+		},
+	}
+
 	telemeter := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1361,9 +1427,10 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
+			MinTime: ptr.To(v1alpha1.Duration("-61d")),
 		},
 	}
-	return []runtime.Object{notTelemeter, telemeter}
+	return []runtime.Object{notTelemeter, telemeterHistoric, telemeter}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

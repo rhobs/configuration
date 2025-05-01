@@ -94,6 +94,52 @@ objects:
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
+    maxTime: -120d
+    objectStorageConfig:
+      key: thanos.yaml
+      name: thanos-objectstorage
+      optional: false
+    retentionConfig:
+      fiveMinutes: 3650d
+      oneHour: 3650d
+      raw: 3650d
+    shardingConfig:
+    - externalLabelSharding:
+      - label: receive
+        value: "true"
+      - label: tenant_id
+        value: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+      shardName: telemeter
+    storageSize: 3000Gi
+    version: 03c9fefbda1b33830a950bd28484fa0a1e039555
+  status: {}
+- apiVersion: monitoring.thanos.io/v1alpha1
+  kind: ThanosCompact
+  metadata:
+    creationTimestamp: null
+    name: receive
+    namespace: rhobs-production
+  spec:
+    additionalArgs:
+    - --deduplication.replica-label=replica
+    baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
+    compactConfig:
+      blockFetchConcurrency: 4
+      compactConcurrency: 4
+    debugConfig:
+      acceptMalformedIndex: true
+      haltOnError: true
+      maxCompactionLevel: 4
+    downsamplingConfig:
+      downsamplingConcurrency: 4
+      downsamplingEnabled: false
+    featureGates:
+      serviceMonitor:
+        enable: false
+    imagePullPolicy: IfNotPresent
+    logFormat: logfmt
+    logLevel: info
+    minTime: -61d
     objectStorageConfig:
       key: thanos.yaml
       name: thanos-objectstorage

@@ -1305,7 +1305,7 @@ func compactTempProduction() []runtime.Object {
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "receive",
+			Name:      "receive-historic",
 			Namespace: ns,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{

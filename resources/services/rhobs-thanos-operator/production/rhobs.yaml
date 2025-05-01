@@ -72,7 +72,7 @@ objects:
   kind: ThanosCompact
   metadata:
     creationTimestamp: null
-    name: receive
+    name: receive-historic
     namespace: rhobs-production
   spec:
     additionalArgs:

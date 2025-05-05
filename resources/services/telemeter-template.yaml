@@ -296,6 +296,7 @@ objects:
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
+          - --whitelist={__name__="hostedcluster:hypershift_cluster_vcpus:max"}
           - --elide-label=prometheus_replica
           - --log-level=${TELEMETER_LOG_LEVEL}
           - --token-expire-seconds=${TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}
@@ -596,6 +597,7 @@ objects:
           - --whitelist={__name__="workload:cpu_usage_cores:sum"}
           - --whitelist={__name__="workload:memory_usage_bytes:sum"}
           - --whitelist={__name__=~"cluster:usage:.*"}
+          - --whitelist={__name__="hostedcluster:hypershift_cluster_vcpus:max"}
           - --elide-label=prometheus_replica
           - --log-level=${TELEMETER_LOG_LEVEL}
           - --token-expire-seconds=${TELEMETER_SERVER_TOKEN_EXPIRE_SECONDS}

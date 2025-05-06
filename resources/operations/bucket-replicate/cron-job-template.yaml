@@ -47,6 +47,9 @@ parameters:
     value: '500Mi'
   - name: MEMORY_LIMIT
     value: '3Gi'
+  - name: COMPACTION
+    description: The compaction level to use. Defaults to 1.
+    value: '1'
 objects:
   - apiVersion: batch/v1
     kind: CronJob
@@ -92,7 +95,7 @@ objects:
                     - '--objstore-to.config-file=/var/lib/thanos/bucket-replicate-config/to/${DESTINATION_OBJ_STORE_K8S_SECRET_KEY}'
                     - '--min-time=${MIN_TIME}'
                     - '--max-time=${MAX_TIME}'
-                    - '--compaction=1'
+                    - '--compaction=${COMPACTION}'
               restartPolicy: Never
               volumes:
                 - name: obj-store-from-config

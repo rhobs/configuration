@@ -139,6 +139,7 @@ objects:
     imagePullPolicy: IfNotPresent
     logFormat: logfmt
     logLevel: info
+    maxTime: -3d
     minTime: -61d
     objectStorageConfig:
       key: thanos.yaml

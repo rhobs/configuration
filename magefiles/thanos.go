@@ -1296,6 +1296,7 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
+			MaxTime: ptr.To(v1alpha1.Duration("-3d")),
 		},
 	}
 

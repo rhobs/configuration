@@ -1296,7 +1296,6 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MaxTime: ptr.To(v1alpha1.Duration("-3d")),
 		},
 	}
 
@@ -1429,7 +1428,6 @@ func compactTempProduction() []runtime.Object {
 				},
 			},
 			MinTime: ptr.To(v1alpha1.Duration("-61d")),
-			MaxTime: ptr.To(v1alpha1.Duration("-3d")),
 		},
 	}
 	return []runtime.Object{notTelemeter, telemeterHistoric, telemeter}

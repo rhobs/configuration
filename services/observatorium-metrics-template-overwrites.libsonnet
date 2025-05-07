@@ -190,6 +190,7 @@ local thanosRuleSyncer = import './sidecars/thanos-rule-syncer.libsonnet';
         spec+: {
           template+: {
             spec+: {
+              replicas: '${{THANOS_RECEIVE_CONTROLLER_REPLICAS}}',
               securityContext: {},
               containers: [
                 if c.name == 'thanos-receive-controller' then c {

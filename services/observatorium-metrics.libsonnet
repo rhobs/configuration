@@ -649,7 +649,7 @@ local oauthProxy = import './sidecars/oauth-proxy.libsonnet';
       connectionLimit: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_CONNECTION_LIMIT}',
       memoryLimitMb: '${THANOS_QUERY_FRONTEND_QUERY_CACHE_MEMORY_LIMIT_MB}',
       maxItemSize: '64m',
-      replicas: 1,  // overwritten in observatorium-metrics-template.libsonnet
+      replicas: '${{THANOS_QUERY_FRONTEND_QUERY_RANGE_CACHE_REPLICAS}}',  // overwritten in observatorium-metrics-template.libsonnet
       resources: {
         memcached: {
           requests: {

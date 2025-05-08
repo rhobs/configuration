@@ -270,8 +270,10 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
-			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MaxTime: ptr.To(v1alpha1.Duration("-2w")),
+			},
+			StorageSize: TemplateFn("STORE02W", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -331,9 +333,11 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-2w")),
-			StorageSize:              TemplateFn("STORE2W90D", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MinTime: ptr.To(v1alpha1.Duration("-90d")),
+				MaxTime: ptr.To(v1alpha1.Duration("-2w")),
+			},
+			StorageSize: TemplateFn("STORE2W90D", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -396,8 +400,10 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-90d")),
-			StorageSize:              TemplateFn("STORE90D+", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MinTime: ptr.To(v1alpha1.Duration("-90d")),
+			},
+			StorageSize: TemplateFn("STORE90D+", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -457,8 +463,10 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-22h")),
-			StorageSize:              TemplateFn("STORE_DEFAULT", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MaxTime: ptr.To(v1alpha1.Duration("-22h")),
+			},
+			StorageSize: TemplateFn("STORE_DEFAULT", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -609,8 +617,10 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("12h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-336h")),
-			StorageSize:              TemplateFn("STORE02W", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MinTime: ptr.To(v1alpha1.Duration("-336h")),
+			},
+			StorageSize: TemplateFn("STORE02W", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -692,9 +702,11 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-2160h")),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-336h")),
-			StorageSize:              TemplateFn("STORE2W90D", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MinTime: ptr.To(v1alpha1.Duration("-2160h")),
+				MaxTime: ptr.To(v1alpha1.Duration("-336h")),
+			},
+			StorageSize: TemplateFn("STORE2W90D", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -779,9 +791,11 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MinTime:                  ptr.To(v1alpha1.Duration("-8760h")),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-2160h")),
-			StorageSize:              TemplateFn("STORE90D+", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MinTime: ptr.To(v1alpha1.Duration("-8760h")),
+				MaxTime: ptr.To(v1alpha1.Duration("-2160h")),
+			},
+			StorageSize: TemplateFn("STORE90D+", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -863,8 +877,10 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			MaxTime:                  ptr.To(v1alpha1.Duration("-22h")),
-			StorageSize:              TemplateFn("STORE_DEFAULT", m.StorageSize),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MaxTime: ptr.To(v1alpha1.Duration("-22h")),
+			},
+			StorageSize: TemplateFn("STORE_DEFAULT", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -1359,7 +1375,9 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MaxTime: ptr.To(v1alpha1.Duration("-120d")),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MaxTime: ptr.To(v1alpha1.Duration("-120d")),
+			},
 		},
 	}
 
@@ -1425,7 +1443,9 @@ func compactTempProduction() []runtime.Object {
 					Enable: ptr.To(false),
 				},
 			},
-			MinTime: ptr.To(v1alpha1.Duration("-61d")),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MinTime: ptr.To(v1alpha1.Duration("-61d")),
+			},
 		},
 	}
 	return []runtime.Object{notTelemeter, telemeterHistoric, telemeter}

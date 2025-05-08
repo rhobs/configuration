@@ -17,7 +17,7 @@ require (
 	github.com/philipgough/mimic v0.0.0-20250112154247-23e51fe097ae
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.81.0
 	github.com/pyrra-dev/pyrra v0.7.2
-	github.com/thanos-community/thanos-operator v0.0.0-20250423074258-b51b4794d562
+	github.com/thanos-community/thanos-operator v0.0.0-20250505082510-dc27793644ad
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.32.3
 	k8s.io/apiextensions-apiserver v0.32.2
@@ -58,7 +58,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.22.0 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.62.0 // indirect
+	github.com/prometheus/common v0.63.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/prometheus/prometheus v1.8.2-0.20220211202545-56e14463bccf // indirect
 	github.com/rodaine/hclencoder v0.0.1 // indirect

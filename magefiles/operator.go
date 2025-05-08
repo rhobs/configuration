@@ -23,7 +23,7 @@ import (
 const (
 	crdTemplateDir = "bundle"
 
-	CRDRefProd  = "b51b4794d562f9db0db82d4f1a96ce93853d5f38"
+	CRDRefProd  = "dc27793644ad40fd92aeed9a0e366463d0e558a6"
 	CRDRefStage = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
 )
 

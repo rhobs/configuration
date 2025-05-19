@@ -209,6 +209,7 @@ func createObservatoriumAPIContainer(m TemplateMaps, namespace string) corev1.Co
 			fmt.Sprintf("--metrics.alertmanager.endpoint=http://%s.%s.svc.cluster.local:9093", alertManagerName, namespace),
 			"--rbac.config=/etc/observatorium/rbac.yaml",
 			"--tenants.config=/etc/observatorium/tenants.yaml",
+			"--server.read-timeout=5m",
 		},
 		Ports: []corev1.ContainerPort{
 			{Name: "grpc-public", ContainerPort: 8090},

@@ -399,6 +399,7 @@ objects:
           - --metrics.alertmanager.endpoint=http://alertmanager.rhobs-production.svc.cluster.local:9093
           - --rbac.config=/etc/observatorium/rbac.yaml
           - --tenants.config=/etc/observatorium/tenants.yaml
+          - --server.read-timeout=5m
           image: quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05
           livenessProbe:
             failureThreshold: 10

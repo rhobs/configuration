@@ -251,6 +251,18 @@ func GenerateRBAC() *observatoriumRBAC {
 		skipConventionCheck: true,
 	})
 
+	// dev-spaces read only prod
+	// Special request of extra read account.
+	// https://issues.redhat.com/browse/RHOBS-1116
+	attachBinding(&obsRBAC, bindingOpts{
+		name:                "e07f5b10-e62b-47a2-9698-e245d1198a3b",
+		tenant:              telemeterTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Read}, // Read only.
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
+	})
+
 	// RHTAP
 	// Reader and Writer serviceaccount
 	attachBinding(&obsRBAC, bindingOpts{

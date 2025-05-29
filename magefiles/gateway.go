@@ -482,7 +482,7 @@ func gatewayRBAC(m TemplateMaps, namespace, contents string) *corev1.ConfigMap {
 			Namespace: namespace,
 			Labels:    labels,
 			Annotations: map[string]string{
-				"qontract.recycle:": "true",
+				"qontract.recycle": "true",
 			},
 		},
 		TypeMeta: metav1.TypeMeta{

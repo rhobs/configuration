@@ -14,12 +14,12 @@ objects:
     namespace: openshift-customer-monitoring
   spec:
     endpoints:
-    - interval: 30s
-      path: /metrics
-      port: http
+      - interval: 30s
+        path: /metrics
+        port: http
     namespaceSelector:
       matchNames:
-      - rhobs-production
+        - rhobs-production
     selector:
       matchLabels:
         app.kubernetes.io/component: thanos-compactor
@@ -29,6 +29,41 @@ objects:
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: thanos-compactor
+      app.kubernetes.io/instance: thanos-compact-rhobs
+      app.kubernetes.io/managed-by: thanos-operator
+      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/part-of: thanos
+      operator.thanos.io/owner: rhobs
+      prometheus: app-sre
+    name: thanos-compact-rhobs
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: http
+    namespaceSelector:
+      matchNames:
+      - rhobs-production
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: thanos-compactor
+        app.kubernetes.io/instance: thanos-compact-rhobs
+        app.kubernetes.io/managed-by: thanos-operator
+        app.kubernetes.io/name: thanos-compact
+        app.kubernetes.io/part-of: thanos
+        operator.thanos.io/owner: rhobs
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: thanos-compactor
+      app.kubernetes.io/instance: thanos-compact-telemeter
+      app.kubernetes.io/managed-by: thanos-operator
+      app.kubernetes.io/name: thanos-compact
+      app.kubernetes.io/part-of: thanos
+      operator.thanos.io/owner: telemeter
       prometheus: app-sre
     name: thanos-compact-telemeter
     namespace: openshift-customer-monitoring
@@ -78,6 +113,37 @@ objects:
     selector:
       matchLabels:
         control-plane: controller-manager
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-frontend
+      app.kubernetes.io/instance: thanos-query-frontend-rhobs
+      app.kubernetes.io/managed-by: thanos-operator
+      app.kubernetes.io/name: thanos-query-frontend
+      app.kubernetes.io/part-of: thanos
+      operator.thanos.io/owner: rhobs
+      operator.thanos.io/query-api: "true"
+      prometheus: app-sre
+    name: thanos-query-frontend-rhobs
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: http
+    namespaceSelector:
+      matchNames:
+      - rhobs-production
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-frontend
+        app.kubernetes.io/instance: thanos-query-frontend-rhobs
+        app.kubernetes.io/managed-by: thanos-operator
+        app.kubernetes.io/name: thanos-query-frontend
+        app.kubernetes.io/part-of: thanos
+        operator.thanos.io/owner: rhobs
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:

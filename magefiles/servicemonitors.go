@@ -224,6 +224,47 @@ func createServiceMonitors(namespace string) []runtime.Object {
 				Kind:       "ServiceMonitor",
 			},
 			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-query-frontend-rhobs",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "query-frontend",
+					"app.kubernetes.io/instance":   "thanos-query-frontend-rhobs",
+					"app.kubernetes.io/managed-by": "thanos-operator",
+					"app.kubernetes.io/name":       "thanos-query-frontend",
+					"app.kubernetes.io/part-of":    "thanos",
+					"operator.thanos.io/owner":     "rhobs",
+					"operator.thanos.io/query-api": "true",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: "30s",
+						Path:     "/metrics",
+						Port:     "http",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "query-frontend",
+						"app.kubernetes.io/instance":   "thanos-query-frontend-rhobs",
+						"app.kubernetes.io/managed-by": "thanos-operator",
+						"app.kubernetes.io/name":       "thanos-query-frontend",
+						"app.kubernetes.io/part-of":    "thanos",
+						"operator.thanos.io/owner":     "rhobs",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
 				Name:      "thanos-receive-ingester-rhobs-default",
 				Namespace: openshiftCustomerMonitoringNamespace,
 				Labels: map[string]string{

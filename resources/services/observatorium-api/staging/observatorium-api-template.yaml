@@ -340,7 +340,7 @@ objects:
   kind: ConfigMap
   metadata:
     annotations:
-      'qontract.recycle:': "true"
+      qontract.recycle: "true"
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: api

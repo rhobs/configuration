@@ -36,7 +36,7 @@ func (p Production) Thanos() {
 	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
 	objs = append(objs, compactTempProduction()...)
 
-	// Sort objects by Kind then Name
+	// Sort objects by kind then Name
 	sort.Slice(objs, func(i, j int) bool {
 		iMeta := objs[i].(metav1.Object)
 		jMeta := objs[j].(metav1.Object)
@@ -81,7 +81,7 @@ func (s Stage) Thanos() {
 	// objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
 	objs = append(objs, storeCR(s.namespace(), StageMaps)...)
 
-	// Sort objects by Kind then Name
+	// Sort objects by kind then Name
 	sort.Slice(objs, func(i, j int) bool {
 		iMeta := objs[i].(metav1.Object)
 		jMeta := objs[j].(metav1.Object)
@@ -125,7 +125,7 @@ func (l Local) Thanos() {
 	objs = append(objs, compactCR(l.namespace(), LocalMaps, false)...)
 	objs = append(objs, storeCR(l.namespace(), LocalMaps)...)
 
-	// Sort objects by Kind then Name
+	// Sort objects by kind then Name
 	sort.Slice(objs, func(i, j int) bool {
 		iMeta := objs[i].(metav1.Object)
 		jMeta := objs[j].(metav1.Object)

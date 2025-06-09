@@ -1,0 +1,197 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: observatorium-api
+  namespace: rhobs-production
+data:
+  rbac.yaml: |-
+    roleBindings:
+      - name: read-only-metrics
+        roles:
+          - read-only-metrics
+        subjects:
+          - kind: user
+            name: test-tenant
+          - kind: group
+            name: test-tenant
+      - name: write-only-metrics
+        roles:
+          - write-only-metrics
+        subjects:
+          - kind: user
+            name: test-tenant
+    roles:
+      - name: read-only-metrics
+        permissions:
+          - read
+        resources:
+          - metrics
+        tenants:
+          - test-tenant
+      - name: write-only-metrics
+        permissions:
+          - write
+        resources:
+          - metrics
+        tenants:
+          - test-tenant
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: observatorium-api
+  namespace: rhobs-production
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/instance: rhobs
+    app.kubernetes.io/name: observatorium-api
+    app.kubernetes.io/part-of: rhobs
+    app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - observatorium-api
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      containers:
+        - args:
+            - --web.listen=0.0.0.0:8080
+            - --web.internal.listen=0.0.0.0:8081
+            - --log.level=debug
+            - --metrics.read.endpoint=http://thanos-query-frontend-rhobs.rhobs-production.svc.cluster.local:9090
+            - --metrics.write.endpoint=http://thanos-receive-router-rhobs.rhobs-production.svc.cluster.local:19291
+            - --metrics.alertmanager.endpoint=http://alertmanager.rhobs-production.svc.cluster.local:9093
+            - --rbac.config=/etc/observatorium/rbac.yaml
+            - --tenants.config=/etc/observatorium/tenants.yaml
+            - --server.read-timeout=5m
+            - --tls.server.cert-file=/var/run/tls/tls.crt
+            - --tls.server.key-file=/var/run/tls/tls.key
+          name: observatorium-api
+          image: quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05
+          volumeMounts:
+            - mountPath: /etc/observatorium/rbac.yaml
+              name: rbac
+              readOnly: true
+              subPath: rbac.yaml
+            - mountPath: /etc/observatorium/tenants.yaml
+              name: tenants
+              readOnly: true
+              subPath: tenants.yaml
+            - mountPath: /var/run/tls
+              name: tls-secret
+              readOnly: true
+            - mountPath: /var/run/mtls/test-tenant
+              name: mtls-client-ca
+              readOnly: true
+      volumes:
+        - configMap:
+            name: observatorium-api
+          name: rbac
+        - name: tenants
+          secret:
+            secretName: observatorium-api
+        - name: tls-secret
+          secret:
+            secretName: my-service-tls
+        - name: mtls-client-ca
+          secret:
+            secretName: test-tenant-client-ca
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: observatorium-api
+  namespace: rhobs-production
+stringData:
+  tenants.yaml: |
+    tenants:
+      - id: test-tenant
+        name: test-tenant
+        mTLS:
+          caPath: "/var/run/mtls/test-tenant/tls.crt"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/instance: rhobs
+    app.kubernetes.io/name: observatorium-api
+    app.kubernetes.io/part-of: rhobs
+    app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+  name: observatorium-api
+  namespace: rhobs-production
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - appProtocol: h2c
+      name: grpc-public
+      port: 8090
+      protocol: TCP
+      targetPort: 8090
+    - appProtocol: http
+      name: internal
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    - appProtocol: http
+      name: public
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/component: api
+    app.kubernetes.io/instance: rhobs
+    app.kubernetes.io/name: observatorium-api
+    app.kubernetes.io/part-of: rhobs
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: observatorium-api
+  namespace: rhobs-production
+spec:
+  to:
+    kind: Service
+    name: observatorium-api
+    weight: 100
+  port:
+    targetPort: public
+  tls:
+    termination: passthrough
+  wildcardPolicy: None

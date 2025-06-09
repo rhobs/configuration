@@ -239,7 +239,7 @@ config:
 	}
 }
 
-// localThanosObjectStore creates a non-templated version with Minio credentials for local environment
+// localThanosObjectStore creates a non-templated version with minio credentials for local environment
 func localThanosObjectStore(secretName, namespace string) *corev1.Secret {
 	return &corev1.Secret{
 		TypeMeta: metav1.TypeMeta{

@@ -67,12 +67,14 @@ var StageImages = ParamMap[string]{
 	"STORE02W":                   thanosImage,
 	"STORE2W90D":                 thanosImage,
 	"STORE90D+":                  thanosImage,
+	"STORE_ROS":                  thanosImage,
 	"STORE_DEFAULT":              thanosImage,
 	"RECEIVE_ROUTER":             thanosImage,
 	"RECEIVE_INGESTOR_TELEMETER": thanosImage,
 	"RECEIVE_INGESTOR_DEFAULT":   thanosImage,
 	"RULER":                      thanosImage,
 	"COMPACT_DEFAULT":            thanosImage,
+	"COMPACT_ROS":                thanosImage,
 	"COMPACT_TELEMETER":          thanosImage,
 	"QUERY":                      thanosImage,
 	"QUERY_FRONTEND":             thanosImage,
@@ -90,12 +92,14 @@ var StageVersions = ParamMap[string]{
 	"STORE02W":                   thanosVersionStage,
 	"STORE2W90D":                 thanosVersionStage,
 	"STORE90D+":                  thanosVersionStage,
+	"STORE_ROS":                  thanosVersionStage,
 	"STORE_DEFAULT":              thanosVersionStage,
 	"RECEIVE_ROUTER":             thanosVersionStage,
 	"RECEIVE_INGESTOR_TELEMETER": thanosVersionStage,
 	"RECEIVE_INGESTOR_DEFAULT":   thanosVersionStage,
 	"RULER":                      thanosVersionStage,
 	"COMPACT_DEFAULT":            thanosVersionStage,
+	"COMPACT_ROS":                thanosVersionStage,
 	"COMPACT_TELEMETER":          thanosVersionStage,
 	"QUERY":                      thanosVersionStage,
 	"QUERY_FRONTEND":             thanosVersionStage,
@@ -108,12 +112,14 @@ var StageLogLevels = ParamMap[string]{
 	"STORE02W":                   logLevels[1],
 	"STORE2W90D":                 logLevels[1],
 	"STORE90D+":                  logLevels[1],
+	"STORE_ROS":                  logLevels[1],
 	"STORE_DEFAULT":              logLevels[1],
 	"RECEIVE_ROUTER":             logLevels[1],
 	"RECEIVE_INGESTOR_TELEMETER": logLevels[1],
 	"RECEIVE_INGESTOR_DEFAULT":   logLevels[1],
 	"RULER":                      logLevels[1],
 	"COMPACT_DEFAULT":            logLevels[1],
+	"COMPACT_ROS":                logLevels[1],
 	"COMPACT_TELEMETER":          logLevels[1],
 	"QUERY":                      logLevels[1],
 	"QUERY_FRONTEND":             logLevels[1],
@@ -125,11 +131,13 @@ var StageStorageSize = ParamMap[v1alpha1.StorageSize]{
 	"STORE02W":          "512Mi",
 	"STORE2W90D":        "512Mi",
 	"STORE90D+":         "512Mi",
+	"STORE_ROS":         "512Mi",
 	"STORE_DEFAULT":     "512Mi",
 	"RECEIVE_TELEMETER": "3Gi",
 	"RECEIVE_DEFAULT":   "3Gi",
 	"RULER":             "512Mi",
 	"COMPACT_DEFAULT":   "512Mi",
+	"COMPACT_ROS":       "512Mi",
 	"COMPACT_TELEMETER": "512Mi",
 }
 
@@ -138,6 +146,7 @@ var StageReplicas = ParamMap[int32]{
 	"STORE02W":                   3,
 	"STORE2W90D":                 3,
 	"STORE90D+":                  3,
+	"STORE_ROS":                  3,
 	"STORE_DEFAULT":              3,
 	"RECEIVE_ROUTER":             3,
 	"RECEIVE_INGESTOR_TELEMETER": 6,
@@ -172,6 +181,16 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		},
 	},
 	"STORE90D+": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("250m"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+	},
+	"STORE_ROS": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("50m"),
 			corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -232,6 +251,16 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		},
 	},
 	"COMPACT_DEFAULT": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("1Gi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
+		},
+	},
+	"COMPACT_ROS": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("100m"),
 			corev1.ResourceMemory: resource.MustParse("1Gi"),
@@ -339,6 +368,13 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 		},
 		Optional: ptr.To(false),
 	},
+	"ROS": v1alpha1.ObjectStorageConfig{
+		Key: "thanos.yaml",
+		LocalObjectReference: corev1.LocalObjectReference{
+			Name: "observatorium-ros-objectstorage",
+		},
+		Optional: ptr.To(false),
+	},
 }
 
 // ProductionImages is a map of production images.
@@ -346,6 +382,7 @@ var ProductionImages = ParamMap[string]{
 	"STORE02W":        thanosImage,
 	"STORE2W90D":      thanosImage,
 	"STORE90D+":       thanosImage,
+	"STORE_ROS":       thanosImage,
 	"STORE_DEFAULT":   thanosImage,
 	"QUERY":           thanosImage,
 	"QUERY_FRONTEND":  thanosImage,
@@ -362,6 +399,7 @@ var ProductionVersions = ParamMap[string]{
 	"STORE02W":       thanosVersionProd,
 	"STORE2W90D":     thanosVersionProd,
 	"STORE90D+":      thanosVersionProd,
+	"STORE_ROS":      thanosVersionProd,
 	"STORE_DEFAULT":  thanosVersionProd,
 	"QUERY":          thanosVersionProd,
 	"QUERY_FRONTEND": thanosVersionProd,
@@ -374,6 +412,7 @@ var ProductionLogLevels = ParamMap[string]{
 	"STORE02W":       logLevels[0],
 	"STORE2W90D":     logLevels[0],
 	"STORE90D+":      logLevels[0],
+	"STORE_ROS":      logLevels[0],
 	"STORE_DEFAULT":  logLevels[0],
 	"QUERY":          logLevels[0],
 	"QUERY_FRONTEND": logLevels[0],
@@ -385,6 +424,7 @@ var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
 	"STORE02W":      "300Gi",
 	"STORE2W90D":    "300Gi",
 	"STORE90D+":     "300Gi",
+	"STORE_ROS":     "300Gi",
 	"STORE_DEFAULT": "300Gi",
 }
 
@@ -393,6 +433,7 @@ var ProductionReplicas = ParamMap[int32]{
 	"STORE02W":       2,
 	"STORE2W90D":     2,
 	"STORE90D+":      1,
+	"STORE_ROS":      0, //TODO @moadz RHOBS-904: Temporary stage-only configuration for ROS disabled in Production.
 	"STORE_DEFAULT":  2,
 	"QUERY":          3,
 	"QUERY_FRONTEND": 3,
@@ -415,6 +456,12 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		},
 	},
 	"STORE90D+": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("50m"),
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+		},
+	},
+	"STORE_ROS": corev1.ResourceRequirements{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("50m"),
 			corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -506,6 +553,13 @@ var ProductionObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 		},
 		Optional: ptr.To(false),
 	},
+	"ROS": v1alpha1.ObjectStorageConfig{
+		Key: "thanos.yaml",
+		LocalObjectReference: corev1.LocalObjectReference{
+			Name: "observatorium-ros-objectstorage",
+		},
+		Optional: ptr.To(false),
+	},
 }
 
 var StageMaps = TemplateMaps{
@@ -562,12 +616,14 @@ var LocalImages = ParamMap[string]{
 	"STORE02W":                   localThanosImage,
 	"STORE2W90D":                 localThanosImage,
 	"STORE90D+":                  localThanosImage,
+	"STORE_ROS":                  localThanosImage,
 	"STORE_DEFAULT":              localThanosImage,
 	"RECEIVE_ROUTER":             localThanosImage,
 	"RECEIVE_INGESTOR_TELEMETER": localThanosImage,
 	"RECEIVE_INGESTOR_DEFAULT":   localThanosImage,
 	"RULER":                      localThanosImage,
 	"COMPACT_DEFAULT":            localThanosImage,
+	"COMPACT_ROS":                localThanosImage,
 	"COMPACT_TELEMETER":          localThanosImage,
 	"QUERY":                      localThanosImage,
 	"QUERY_FRONTEND":             localThanosImage,
@@ -580,13 +636,14 @@ var LocalImages = ParamMap[string]{
 var LocalVersions = ParamMap[string]{
 	"STORE02W":                   localThanosVersion,
 	"STORE2W90D":                 localThanosVersion,
-	"STORE90D+":                  localThanosVersion,
+	"STORE_ROS":                  localThanosVersion,
 	"STORE_DEFAULT":              localThanosVersion,
 	"RECEIVE_ROUTER":             localThanosVersion,
 	"RECEIVE_INGESTOR_TELEMETER": localThanosVersion,
 	"RECEIVE_INGESTOR_DEFAULT":   localThanosVersion,
 	"RULER":                      localThanosVersion,
 	"COMPACT_DEFAULT":            localThanosVersion,
+	"COMPACT_ROS":                localThanosVersion,
 	"COMPACT_TELEMETER":          localThanosVersion,
 	"QUERY":                      localThanosVersion,
 	"QUERY_FRONTEND":             localThanosVersion,
@@ -597,11 +654,13 @@ var LocalStorageSize = ParamMap[v1alpha1.StorageSize]{
 	"STORE02W":          "1Gi",
 	"STORE2W90D":        "1Gi",
 	"STORE90D+":         "1Gi",
+	"STORE_ROS":         "1Gi",
 	"STORE_DEFAULT":     "1Gi",
 	"RECEIVE_TELEMETER": "1Gi",
 	"RECEIVE_DEFAULT":   "1Gi",
 	"RULER":             "1Gi",
 	"COMPACT_DEFAULT":   "1Gi",
+	"COMPACT_ROS":       "1Gi",
 	"COMPACT_TELEMETER": "1Gi",
 }
 
@@ -610,12 +669,14 @@ var LocalResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 	"STORE02W":                   getLocalResources(),
 	"STORE2W90D":                 getLocalResources(),
 	"STORE90D+":                  getLocalResources(),
+	"STORE_ROS":                  getLocalResources(),
 	"STORE_DEFAULT":              getLocalResources(),
 	"RECEIVE_ROUTER":             getLocalResources(),
 	"RECEIVE_INGESTOR_TELEMETER": getLocalResources(),
 	"RECEIVE_INGESTOR_DEFAULT":   getLocalResources(),
 	"RULER":                      getLocalResources(),
 	"COMPACT_DEFAULT":            getLocalResources(),
+	"COMPACT_ROS":                getLocalResources(),
 	"COMPACT_TELEMETER":          getLocalResources(),
 	"QUERY":                      getLocalResources(),
 	"QUERY_FRONTEND":             getLocalResources(),

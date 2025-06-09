@@ -630,6 +630,14 @@ func stageGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
           issuerURL: https://sso.redhat.com/auth/realms/redhat-external
           redirectURL: https://observatorium.api.stage.openshift.com/oidc/telemeter/callback
           usernameClaim: preferred_username
+      - id: B5B43A0A-3BC5-4D8D-BAAB-E424A835AA7D
+        name: ros
+        oidc:
+          clientID: ${CLIENT_ID}
+          clientSecret: ${CLIENT_SECRET}
+          issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+          redirectURL: https://observatorium.api.stage.openshift.com/oidc/telemeter/callback
+          usernameClaim: preferred_username
 `,
 		},
 	}

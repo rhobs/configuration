@@ -79,6 +79,7 @@ func (s Stage) Thanos() {
 	objs = append(objs, rulerCR(s.namespace(), StageMaps))
 	// TODO: Add compact CRs for stage once we shut down previous
 	// objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
+	objs = append(objs, stageCompactCR(s.namespace(), StageMaps)...)
 	objs = append(objs, storeCR(s.namespace(), StageMaps)...)
 
 	// Sort objects by Kind then Name
@@ -424,6 +425,67 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 	}
 
+	// RHOBS-904: Standalone Store for RH Resource Optimisation (ROS) Managed Service
+	storeRos := &v1alpha1.ThanosStore{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosStore",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "default",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosStoreSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("STORE_ROS", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE_ROS", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("STORE_ROS", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("STORE_ROS", m.ResourceRequirements)),
+			},
+			Replicas:            TemplateFn("STORE_ROS", m.Replicas),
+			ObjectStorageConfig: TemplateFn("ROS", m.ObjectStorageBucket),
+			ShardingStrategy: v1alpha1.ShardingStrategy{
+				Type:   v1alpha1.Block,
+				Shards: 1,
+			},
+			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+				EnableLazyReader:      ptr.To(true),
+				LazyDownloadStrategy:  ptr.To("lazy"),
+				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+			},
+			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+				StoreLimitsRequestSamples: 0,
+				StoreLimitsRequestSeries:  0,
+			},
+			BlockConfig: &v1alpha1.BlockConfig{
+				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+				BlockFilesConcurrency:     ptr.To(int32(1)),
+				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+			},
+			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+			StorageSize:              TemplateFn("STORE_ROS", m.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(m),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-store"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+
 	storeDefault := &v1alpha1.ThanosStore{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -487,7 +549,14 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 	}
 
-	return []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
+	objs := []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
+
+	//TODO @moadz RHOBS-904: Temporary block, only return in stage
+	if TemplateFn("STORE_ROS", m.Replicas) > 0 {
+		objs = append(objs, storeRos)
+	}
+
+	return objs
 }
 
 func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
@@ -1449,6 +1518,68 @@ func compactTempProduction() []runtime.Object {
 		},
 	}
 	return []runtime.Object{notTelemeter, telemeterHistoric, telemeter}
+}
+
+// RHOBS-904: Standalone Compact for RH Resource Optimisation (ROS) Managed Service
+func stageCompactCR(namespace string, m TemplateMaps) []runtime.Object {
+	rosCompact := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("COMPACT_ROS", m.Images)),
+				Version:              ptr.To(TemplateFn("COMPACT_ROS", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("COMPACT_ROS", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("COMPACT_ROS", m.ResourceRequirements)),
+			},
+			ObjectStorageConfig: TemplateFn("ROS", m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("14d"),
+				FiveMinutes: v1alpha1.Duration("14d"),
+				OneHour:     v1alpha1.Duration("14d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(1)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				CompactConcurrency: ptr.To(int32(1)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(3)),
+			},
+			StorageSize: TemplateFn("COMPACT_ROS", m.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(m),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-compact"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+
+	return []runtime.Object{rosCompact}
 }
 
 func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {

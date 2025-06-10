@@ -432,7 +432,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			Kind:       "ThanosStore",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "default",
+			Name:      "ros",
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
@@ -1528,7 +1528,7 @@ func stageCompactCR(namespace string, m TemplateMaps) []runtime.Object {
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "rhobs",
+			Name:      "ros",
 			Namespace: namespace,
 		},
 		Spec: v1alpha1.ThanosCompactSpec{

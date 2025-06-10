@@ -589,7 +589,7 @@ objects:
     logLevel: info
     objectStorageConfig:
       key: thanos.yaml
-      name: observatorium-ros-objectstorage
+      name: ros-thanos-objstore
       optional: false
     resourceRequirements:
       limits:
@@ -681,7 +681,7 @@ objects:
     logLevel: info
     objectStorageConfig:
       key: thanos.yaml
-      name: observatorium-ros-objectstorage
+      name: ros-thanos-objstore
       optional: false
     replicas: 3
     resourceRequirements:

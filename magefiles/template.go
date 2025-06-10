@@ -371,7 +371,7 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 	"ROS": v1alpha1.ObjectStorageConfig{
 		Key: "thanos.yaml",
 		LocalObjectReference: corev1.LocalObjectReference{
-			Name: "observatorium-ros-objectstorage",
+			Name: "ros-thanos-objstore",
 		},
 		Optional: ptr.To(false),
 	},
@@ -556,7 +556,7 @@ var ProductionObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 	"ROS": v1alpha1.ObjectStorageConfig{
 		Key: "thanos.yaml",
 		LocalObjectReference: corev1.LocalObjectReference{
-			Name: "observatorium-ros-objectstorage",
+			Name: "ros-thanos-objstore",
 		},
 		Optional: ptr.To(false),
 	},

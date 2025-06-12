@@ -1,8 +1,8 @@
 module github.com/rhobs/configuration
 
-go 1.23.0
+go 1.23.4
 
-toolchain go1.23.1
+toolchain go1.23.10
 
 require (
 	github.com/bwplotka/mimic v0.2.1-0.20230303101552-f705cca2f4a4
@@ -14,8 +14,10 @@ require (
 	github.com/observatorium/observatorium v0.0.0-20250205114057-5a240b5d0bec
 	github.com/observatorium/up v0.0.0-20240109115132-3a34c4c4fa24
 	github.com/openshift/api v3.9.0+incompatible
+	github.com/perses/promql-builder v0.1.1-0.20250612045318-c05d3fce5294
 	github.com/philipgough/mimic v0.0.0-20250112154247-23e51fe097ae
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.81.0
+	github.com/prometheus/prometheus v0.303.1
 	github.com/pyrra-dev/pyrra v0.7.2
 	github.com/thanos-community/thanos-operator v0.0.0-20250505082510-dc27793644ad
 	gopkg.in/yaml.v3 v3.0.1
@@ -46,27 +48,23 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/grafana/regexp v0.0.0-20240518133315-a468a5bfb3bc // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.22.0 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.63.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/prometheus/prometheus v1.8.2-0.20220211202545-56e14463bccf // indirect
 	github.com/rodaine/hclencoder v0.0.1 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	go.uber.org/goleak v1.3.0 // indirect
-	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
 	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect

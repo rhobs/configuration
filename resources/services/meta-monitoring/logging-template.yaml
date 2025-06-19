@@ -49,7 +49,7 @@ objects:
       access_key_id: ${ACCESS_KEY_ID}
       access_key_secret: ${SECRET_ACCESS_KEY}
       bucketnames: ${S3_BUCKET_NAME}
-      endpoint: ${S3_BUCKET_ENDPOINT}
+      endpoint: https://${S3_BUCKET_ENDPOINT}
       region: ${S3_BUCKET_REGION}
   - apiVersion: loki.grafana.com/v1
     kind: LokiStack

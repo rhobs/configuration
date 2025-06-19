@@ -61,8 +61,8 @@ objects:
       size: ${LOKI_SIZE}
       storage:
         schemas:
-          - effectiveDate: '2022-06-01'
-            version: v12
+          - effectiveDate: '2025-06-06'
+            version: v13
         secret:
           name: ${LOKI_STORAGE_SECRET_NAME}
           type: ${LOKI_STORAGE_SECRET_TYPE}

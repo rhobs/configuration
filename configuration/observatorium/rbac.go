@@ -239,6 +239,17 @@ func GenerateRBAC() *observatoriumRBAC {
 		skipConventionCheck: true,
 	})
 
+	// observability pms read only prod
+	// Special request of extra read account.
+	attachBinding(&obsRBAC, bindingOpts{
+		name:                "f6b3e12c-bb50-4bfc-89fe-330a28820fa9",
+		tenant:              telemeterTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Read}, // Read only.
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
+	})
+
 	// cnv read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116

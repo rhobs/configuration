@@ -22,6 +22,7 @@ const (
 	refAddonTenant  tenantID = "reference-addon"
 	rhtapTenant     tenantID = "rhtap"
 	rhelTenant      tenantID = "rhel"
+	rosTenant       tenantID = "ros"
 )
 
 type signal string
@@ -290,6 +291,16 @@ func GenerateRBAC() *observatoriumRBAC {
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write},
 		envs:    []env{stagingEnv, productionEnv},
+	})
+
+	// Resource Optimization on Open Shift (ROS)
+	// Reader serviceaccount
+	attachBinding(&obsRBAC, bindingOpts{
+		name:    "c6882aba-3eda-4fa7-be07-df5f4fc6e2ec",
+		tenant:  rosTenant,
+		signals: []signal{metricsSignal},
+		perms:   []rbac.Permission{rbac.Read},
+		envs:    []env{stagingEnv},
 	})
 
 	// Use JSON because we want to have jsonnet using that in configmaps/secrets.

@@ -944,6 +944,12 @@ objects:
           "name": "service-account-observatorium-rhel-write-staging"
         - "kind": "user"
           "name": "service-account-observatorium-rhel-write"
+      - "name": "c6882aba-3eda-4fa7-be07-df5f4fc6e2ec"
+        "roles":
+        - "ros-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-c6882aba-3eda-4fa7-be07-df5f4fc6e2ec-staging"
       "roles":
       - "name": "cnvqe-metrics-write"
         "permissions":
@@ -1085,6 +1091,13 @@ objects:
         - "metrics"
         "tenants":
         - "rhel"
+      - "name": "ros-metrics-read"
+        "permissions":
+        - "read"
+        "resources":
+        - "metrics"
+        "tenants":
+        - "ros"
   kind: ConfigMap
   metadata:
     annotations:

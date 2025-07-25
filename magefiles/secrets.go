@@ -112,6 +112,16 @@ func secrets(gen *mimic.Generator, ns string) {
 	gen.Generate()
 }
 
+func (b Build) Secrets(config ClusterConfig) {
+	gen := b.generator(config, "secrets")
+
+	gen.Add("thanos-default-secret.yaml", encoding.GhodssYAML(
+		localThanosObjectStore("observatorium-mst-thanos-objectstorage", config.Namespace),
+	))
+
+	gen.Generate()
+}
+
 // Secrets generates the secrets for the Local environment
 func (l Local) Secrets() {
 	templateDir := "objstore"

@@ -19,6 +19,46 @@ import (
 	"k8s.io/utils/ptr"
 )
 
+func (b Build) DefaultThanos(config ClusterConfig) {
+	gen := b.generator(config, "thanos-operator-default-cr")
+	var objs []runtime.Object
+
+	objs = append(objs, defaultQueryCR(config.Namespace, config.Templates, true)...)
+	objs = append(objs, defaultReceiveCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultCompactCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultRulerCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultStoreCR(config.Namespace, config.Templates))
+
+	// Sort objects by Kind then Name
+	sort.Slice(objs, func(i, j int) bool {
+		iMeta := objs[i].(metav1.Object)
+		jMeta := objs[j].(metav1.Object)
+		iType := objs[i].GetObjectKind().GroupVersionKind().Kind
+		jType := objs[j].GetObjectKind().GroupVersionKind().Kind
+
+		if iType != jType {
+			return iType < jType
+		}
+		return iMeta.GetName() < jMeta.GetName()
+	})
+
+	gen.Add("thanos-operator-default-cr.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			objs,
+			metav1.ObjectMeta{Name: "thanos-rhobs"},
+			[]templatev1.Parameter{
+				{
+					Name:     "OAUTH_PROXY_COOKIE_SECRET",
+					Generate: "expression",
+					From:     `[a-zA-Z0-9]{40}`,
+				},
+			},
+		),
+	))
+
+	gen.Generate()
+}
+
 // Thanos Generates the RHOBS-specific CRs for Thanos Operator.
 func (p Production) Thanos() {
 	templateDir := "rhobs-thanos-operator"
@@ -1076,6 +1116,444 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 						ObjectStorageConfig: ptr.To(TemplateFn("DEFAULT", m.ObjectStorageBucket)),
 						StorageSize:         TemplateFn("RECEIVE_DEFAULT", m.StorageSize),
 					},
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+}
+
+func defaultQueryCR(namespace string, m TemplateMaps, oauth bool, withAdditionalArgs ...string) []runtime.Object {
+	// placeholder for prod caches - temp removed whilst debugging
+	qfeCacheTempProd := v1alpha1.Additional{
+		Args: []string{`--query-range.response-cache-config=
+  "type": "memcached"
+  "config":
+    "addresses":
+      - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
+    "dns_provider_update_interval": "30s"
+    "max_async_buffer_size": 1000000
+    "max_async_concurrency": 100
+    "max_get_multi_batch_size": 500
+    "max_get_multi_concurrency": 100
+    "max_idle_connections": 500
+    "max_item_size": "100MiB"
+    "timeout": "5s"`,
+		},
+	}
+	log.Println(qfeCacheTempProd)
+
+	var objs []runtime.Object
+
+	query := &v1alpha1.ThanosQuery{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosQuery",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosQuerySpec{
+			Additional: v1alpha1.Additional{
+				Args: withAdditionalArgs,
+			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("QUERY", m.Images)),
+				Version:              ptr.To(TemplateFn("QUERY", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("QUERY", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("QUERY", m.ResourceRequirements)),
+			},
+			StoreLabelSelector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/store-api": "true",
+					"app.kubernetes.io/part-of":    "thanos",
+				},
+			},
+			Replicas: TemplateFn("QUERY", m.Replicas),
+			ReplicaLabels: []string{
+				"prometheus_replica",
+				"replica",
+				"rule_replica",
+			},
+			WebConfig: &v1alpha1.WebConfig{
+				PrefixHeader: ptr.To("X-Forwarded-Prefix"),
+			},
+			GRPCProxyStrategy: "lazy",
+			TelemetryQuantiles: &v1alpha1.TelemetryQuantiles{
+				Duration: []string{
+					"0.1", "0.25", "0.75", "1.25", "1.75", "2.5", "3", "5", "10", "15", "30", "60", "120",
+				},
+			},
+			QueryFrontend: &v1alpha1.QueryFrontendSpec{
+				CommonFields: v1alpha1.CommonFields{
+					Image:                ptr.To(TemplateFn("QUERY_FRONTEND", m.Images)),
+					Version:              ptr.To(TemplateFn("QUERY_FRONTEND", m.Versions)),
+					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+					LogLevel:             ptr.To(TemplateFn("QUERY_FRONTEND", m.LogLevels)),
+					LogFormat:            ptr.To("logfmt"),
+					ResourceRequirements: ptr.To(TemplateFn("QUERY_FRONTEND", m.ResourceRequirements)),
+				},
+				Replicas:             TemplateFn("QUERY_FRONTEND", m.Replicas),
+				CompressResponses:    true,
+				LogQueriesLongerThan: ptr.To(v1alpha1.Duration("10s")),
+				LabelsMaxRetries:     3,
+				QueryRangeMaxRetries: 3,
+				QueryLabelSelector: &metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"operator.thanos.io/query-api": "true",
+					},
+				},
+				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("48h")),
+				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("48h")),
+				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+				PodDisruptionBudgetConfig: &v1alpha1.PodDisruptionBudgetConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+	if oauth {
+		route := &routev1.Route{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "route.openshift.io/v1",
+				Kind:       "Route",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-query-frontend-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/part-of": "thanos",
+				},
+			},
+			Spec: routev1.RouteSpec{
+				To: routev1.RouteTargetReference{
+					Kind:   "Service",
+					Name:   "thanos-query-frontend-rhobs",
+					Weight: ptr.To(int32(100)),
+				},
+				Port: &routev1.RoutePort{
+					TargetPort: intstr.FromString("https"), // Assuming the oauth-proxy is exposing on https port
+				},
+				TLS: &routev1.TLSConfig{
+					Termination:                   routev1.TLSTerminationReencrypt,
+					InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+				},
+			},
+		}
+		objs = append(objs, route)
+		query.Annotations = map[string]string{
+			"service.beta.openshift.io/serving-cert-secret-name":               "query-frontend-tls",
+			"serviceaccounts.openshift.io/oauth-redirectreference.application": `{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-query-frontend-rhobs"}}`,
+		}
+		query.Spec.QueryFrontend.Additional.ServicePorts = append(query.Spec.QueryFrontend.Additional.ServicePorts, corev1.ServicePort{
+			Name: "https",
+			Port: 8443,
+			TargetPort: intstr.IntOrString{
+				Type:   intstr.Int,
+				IntVal: 8443,
+			},
+		})
+		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())
+		query.Spec.QueryFrontend.Additional.Volumes = append(query.Spec.QueryFrontend.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"))
+	}
+
+	objs = append(objs, query)
+	return objs
+}
+
+func defaultStoreCR(namespace string, m TemplateMaps) runtime.Object {
+	return &v1alpha1.ThanosStore{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosStore",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "default",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosStoreSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("STORE_DEFAULT", m.Images)),
+				Version:              ptr.To(TemplateFn("STORE_DEFAULT", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("STORE_DEFAULT", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("STORE_DEFAULT", m.ResourceRequirements)),
+			},
+			Replicas:            TemplateFn("STORE_DEFAULT", m.Replicas),
+			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			ShardingStrategy: v1alpha1.ShardingStrategy{
+				Type:   v1alpha1.Block,
+				Shards: 1,
+			},
+			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+				EnableLazyReader:      ptr.To(true),
+				LazyDownloadStrategy:  ptr.To("lazy"),
+				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+			},
+			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+				StoreLimitsRequestSamples: 0,
+				StoreLimitsRequestSeries:  0,
+			},
+			BlockConfig: &v1alpha1.BlockConfig{
+				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+				BlockFilesConcurrency:     ptr.To(int32(1)),
+				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+			},
+			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MaxTime: ptr.To(v1alpha1.Duration("-22h")),
+			},
+			StorageSize: TemplateFn("STORE_DEFAULT", m.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(m),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-store"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+}
+
+func defaultReceiveCR(namespace string, m TemplateMaps) runtime.Object {
+	return &v1alpha1.ThanosReceive{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosReceive",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosReceiveSpec{
+			Router: v1alpha1.RouterSpec{
+				CommonFields: v1alpha1.CommonFields{
+					Image:                ptr.To(TemplateFn("RECEIVE_ROUTER", m.Images)),
+					Version:              ptr.To(TemplateFn("RECEIVE_ROUTER", m.Versions)),
+					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+					LogLevel:             ptr.To(TemplateFn("RECEIVE_ROUTER", m.LogLevels)),
+					LogFormat:            ptr.To("logfmt"),
+					ResourceRequirements: ptr.To(TemplateFn("RECEIVE_ROUTER", m.ResourceRequirements)),
+				},
+				Replicas:          TemplateFn("RECEIVE_ROUTER", m.Replicas),
+				ReplicationFactor: 3,
+				ExternalLabels: map[string]string{
+					"receive": "true",
+				},
+				Additional: v1alpha1.Additional{
+					Containers: []corev1.Container{
+						tracingSidecar(m),
+					},
+					Args: []string{
+						`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-receive-router"
+"type": "JAEGER"`,
+					},
+				},
+			},
+			Ingester: v1alpha1.IngesterSpec{
+				DefaultObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+				Additional: v1alpha1.Additional{
+					Containers: []corev1.Container{
+						tracingSidecar(m),
+					},
+					Args: []string{
+						`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-receive-ingester"
+"type": "JAEGER"`,
+					},
+				},
+				Hashrings: []v1alpha1.IngesterHashringSpec{
+					{
+						Name: "default",
+						CommonFields: v1alpha1.CommonFields{
+							Image:                ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Images)),
+							Version:              ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Versions)),
+							ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+							LogLevel:             ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.LogLevels)),
+							LogFormat:            ptr.To("logfmt"),
+							ResourceRequirements: ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.ResourceRequirements)),
+						},
+						ExternalLabels: map[string]string{
+							"replica": "$(POD_NAME)",
+						},
+						Replicas: TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Replicas),
+						TSDBConfig: v1alpha1.TSDBConfig{
+							Retention: v1alpha1.Duration("1d"),
+						},
+						AsyncForwardWorkerCount:  ptr.To(uint64(5)),
+						TooFarInFutureTimeWindow: ptr.To(v1alpha1.Duration("5m")),
+						StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+							StoreLimitsRequestSamples: 0,
+							StoreLimitsRequestSeries:  0,
+						},
+						TenancyConfig: &v1alpha1.TenancyConfig{
+							TenantMatcherType: "exact",
+							DefaultTenantID:   "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+							TenantHeader:      "THANOS-TENANT",
+							TenantLabelName:   "tenant_id",
+						},
+						ObjectStorageConfig: ptr.To(TemplateFn("DEFAULT", m.ObjectStorageBucket)),
+						StorageSize:         TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.StorageSize),
+					},
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+}
+
+func defaultCompactCR(namespace string, m TemplateMaps) runtime.Object {
+	defaultCompact := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("COMPACT_DEFAULT", m.Images)),
+				Version:              ptr.To(TemplateFn("COMPACT_DEFAULT", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("COMPACT_DEFAULT", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("COMPACT_DEFAULT", m.ResourceRequirements)),
+			},
+			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("365d"),
+				FiveMinutes: v1alpha1.Duration("365d"),
+				OneHour:     v1alpha1.Duration("365d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(1)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				CompactConcurrency: ptr.To(int32(1)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(3)),
+			},
+			StorageSize: TemplateFn("COMPACT_DEFAULT", m.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(m),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-compact"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+
+	defaultCompact.Spec.Additional.Containers = append(defaultCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-rhobs", "compact-tls").GetContainer())
+	defaultCompact.Spec.Additional.Volumes = append(defaultCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
+
+	return defaultCompact
+}
+
+func defaultRulerCR(namespace string, m TemplateMaps) runtime.Object {
+	return &v1alpha1.ThanosRuler{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosRuler",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosRulerSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(TemplateFn("RULER", m.Images)),
+				Version:              ptr.To(TemplateFn("RULER", m.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(TemplateFn("RULER", m.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(TemplateFn("RULER", m.ResourceRequirements)),
+			},
+			Paused:   ptr.To(true),
+			Replicas: TemplateFn("RULER", m.Replicas),
+			RuleConfigSelector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/rule-file": "true",
+				},
+			},
+			PrometheusRuleSelector: metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/prometheus-rule": "true",
+				},
+			},
+			QueryLabelSelector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/query-api": "true",
+					"app.kubernetes.io/part-of":    "thanos",
+				},
+			},
+			ExternalLabels: map[string]string{
+				"rule_replica": "$(NAME)",
+			},
+			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			AlertmanagerURL:     "dnssrv+http://alertmanager-cluster." + namespace + ".svc.cluster.local:9093",
+			AlertLabelDrop:      []string{"rule_replica"},
+			Retention:           v1alpha1.Duration("48h"),
+			EvaluationInterval:  v1alpha1.Duration("1m"),
+			StorageSize:         string(TemplateFn("RULER", m.StorageSize)),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(m),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-ruler"
+"type": "JAEGER"`,
 				},
 			},
 			FeatureGates: &v1alpha1.FeatureGates{

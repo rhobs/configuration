@@ -41,6 +41,24 @@ const (
 	defaultAlertmanagerMemoryLimit   = "5Gi"
 )
 
+func (b Build) Alertmanager(config ClusterConfig) {
+	gen := b.generator(config, "alertmanager")
+
+	// TODO: @moadz Extract Alertmanager options to an envTemplate in template.go
+	k8s := alertmanagerKubernetes(alertManagerOptions(), manifestOptions{
+		namespace: config.Namespace,
+		image:     defaultAlertManagerImage,
+		imageTag:  defaultAlertManagerImageTag,
+		resourceRequirements: resourceRequirements{
+			cpuRequest:    defaultAlertmanagerCPURequest,
+			cpuLimit:      defaultAlertmanagerCPULimit,
+			memoryRequest: defaultAlertmanagerMemoryRequest,
+			memoryLimit:   defaultAlertmanagerMemoryLimit,
+		},
+	})
+	buildAlertmanager(k8s.Objects(), config.Namespace, gen)
+}
+
 // Alertmanager Generates the Alertmanager configuration for the stage environment.
 func (s Stage) Alertmanager() {
 	gen := s.generator(alertManagerName)

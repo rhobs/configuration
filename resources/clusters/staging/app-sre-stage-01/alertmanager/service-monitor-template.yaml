@@ -1,0 +1,37 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: alertmanager-service-monitor-rhobs-stage
+objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: alertmanager
+      app.kubernetes.io/instance: observatorium
+      app.kubernetes.io/name: alertmanager
+      app.kubernetes.io/part-of: observatorium
+      prometheus: app-sre
+    name: alertmanager
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - port: http
+      relabelings:
+      - action: replace
+        separator: /
+        sourceLabels:
+        - namespace
+        - pod
+        targetLabel: instance
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: alertmanager
+        app.kubernetes.io/instance: observatorium
+        app.kubernetes.io/name: alertmanager
+        app.kubernetes.io/part-of: observatorium

@@ -11,6 +11,21 @@ import (
 	"k8s.io/utils/ptr"
 )
 
+func (b Build) ServiceMonitors(config ClusterConfig) {
+	gen := b.generator(config, "servicemonitors")
+
+	objs := createServiceMonitors(config.Namespace)
+	objs = append(objs, operatorServiceMonitor(config.Namespace)...)
+	generateServiceMonitors(gen, objs)
+}
+
+func generateServiceMonitors(gen *mimic.Generator, objs []runtime.Object) {
+	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-servicemonitors"}, []templatev1.Parameter{})
+	encoder := encoding.GhodssYAML(template)
+	gen.Add("servicemonitors.yaml", encoder)
+	gen.Generate()
+}
+
 // ServiceMonitors generates ServiceMonitor resources for the Stage environment.
 func (s Stage) ServiceMonitors() {
 	objs := createServiceMonitors(s.namespace())

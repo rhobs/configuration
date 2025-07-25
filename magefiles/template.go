@@ -23,11 +23,104 @@ type TemplateMaps struct {
 	ObjectStorageBucket  ParamMap[v1alpha1.ObjectStorageConfig]
 }
 
+// Override applies overrides to a TemplateMaps and returns a new instance
+func (t TemplateMaps) Override(overrides ...TemplateOverride) TemplateMaps {
+	result := t
+	for _, override := range overrides {
+		result = override.Apply(result)
+	}
+	return result
+}
+
+// TemplateOverride represents a set of overrides to apply to a TemplateMaps
+type TemplateOverride interface {
+	Apply(TemplateMaps) TemplateMaps
+}
+
+// Images override
+type Images map[string]string
+
+func (i Images) Apply(t TemplateMaps) TemplateMaps {
+	if t.Images == nil {
+		t.Images = make(ParamMap[string])
+	}
+	for k, v := range i {
+		t.Images[k] = v
+	}
+	return t
+}
+
+// Replicas override
+type Replicas map[string]int32
+
+func (r Replicas) Apply(t TemplateMaps) TemplateMaps {
+	if t.Replicas == nil {
+		t.Replicas = make(ParamMap[int32])
+	}
+	for k, v := range r {
+		t.Replicas[k] = v
+	}
+	return t
+}
+
+// StorageSizes override
+type StorageSizes map[string]v1alpha1.StorageSize
+
+func (s StorageSizes) Apply(t TemplateMaps) TemplateMaps {
+	if t.StorageSize == nil {
+		t.StorageSize = make(ParamMap[v1alpha1.StorageSize])
+	}
+	for k, v := range s {
+		t.StorageSize[k] = v
+	}
+	return t
+}
+
+// Resources override
+type Resources map[string]corev1.ResourceRequirements
+
+func (r Resources) Apply(t TemplateMaps) TemplateMaps {
+	if t.ResourceRequirements == nil {
+		t.ResourceRequirements = make(ParamMap[corev1.ResourceRequirements])
+	}
+	for k, v := range r {
+		t.ResourceRequirements[k] = v
+	}
+	return t
+}
+
+// LogLevels override
+type LogLevels map[string]string
+
+func (l LogLevels) Apply(t TemplateMaps) TemplateMaps {
+	if t.LogLevels == nil {
+		t.LogLevels = make(ParamMap[string])
+	}
+	for k, v := range l {
+		t.LogLevels[k] = v
+	}
+	return t
+}
+
+// Versions override
+type Versions map[string]string
+
+func (v Versions) Apply(t TemplateMaps) TemplateMaps {
+	if t.Versions == nil {
+		t.Versions = make(ParamMap[string])
+	}
+	for k, val := range v {
+		t.Versions[k] = val
+	}
+	return t
+}
+
 // TemplateFn is a function that returns a value from a map.
 // It panics if the param is not found in the map.
 // It returns the value of the param.
 func TemplateFn[T any](param string, m ParamMap[T]) T {
 	v, ok := m[param]
+	// TODO moadz: We should surface the error, so that we can track the build chain for debug
 	if !ok {
 		panic(fmt.Sprintf("param %s not found", param))
 	}
@@ -61,6 +154,162 @@ const (
 )
 
 var logLevels = []string{"debug", "info", "warn", "error"}
+
+// DefaultBaseTemplate Base default template for all instances
+func DefaultBaseTemplate() TemplateMaps {
+	return TemplateMaps{
+		Images: ParamMap[string]{
+			"THANOS_OPERATOR":          fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionStage),
+			"KUBE_RBAC_PROXY":          thanosImage,
+			"STORE_DEFAULT":            thanosImage,
+			"RECEIVE_ROUTER":           thanosImage,
+			"RECEIVE_INGESTOR_DEFAULT": thanosImage,
+			"RULER":                    thanosImage,
+			"COMPACT_DEFAULT":          thanosImage,
+			"QUERY":                    thanosImage,
+			"QUERY_FRONTEND":           thanosImage,
+			jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+			"api_cache":                "docker.io/memcached:1.6.17-alpine",
+			"memcached_exporter":       memcachedExporterImage,
+		},
+		Versions: ParamMap[string]{
+			"STORE_DEFAULT":            thanosVersionProd,
+			"RECEIVE_ROUTER":           thanosVersionProd,
+			"RECEIVE_INGESTOR_DEFAULT": thanosVersionProd,
+			"RULER":                    thanosVersionProd,
+			"COMPACT_DEFAULT":          thanosVersionProd,
+			"QUERY":                    thanosVersionProd,
+			"QUERY_FRONTEND":           thanosVersionProd,
+			apiCache:                   memcachedTag,
+			observatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
+		},
+		LogLevels: ParamMap[string]{
+			"STORE_DEFAULT":            logLevels[1],
+			"RECEIVE_ROUTER":           logLevels[1],
+			"RECEIVE_INGESTOR_DEFAULT": logLevels[1],
+			"RULER":                    logLevels[1],
+			"COMPACT_DEFAULT":          logLevels[1],
+			"QUERY":                    logLevels[1],
+			"QUERY_FRONTEND":           logLevels[1],
+		},
+		ResourceRequirements: ParamMap[corev1.ResourceRequirements]{
+			"STORE_DEFAULT": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"RECEIVE_ROUTER": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"RECEIVE_INGESTOR_DEFAULT": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"RULER": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"COMPACT_DEFAULT": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"QUERY": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"QUERY_FRONTEND": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
+			"MANAGER": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("128Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("50m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+			},
+			"KUBE_RBAC_PROXY": {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("50m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("25m"),
+					corev1.ResourceMemory: resource.MustParse("32Mi"),
+				},
+			},
+		},
+		Replicas: ParamMap[int32]{
+			"STORE_DEFAULT":            1,
+			"RECEIVE_ROUTER":           1,
+			"RECEIVE_INGESTOR_DEFAULT": 1,
+			"RULER":                    1,
+			"QUERY":                    1,
+			"QUERY_FRONTEND":           1,
+			"COMPACT_DEFAULT":          1,
+		},
+		StorageSize: ParamMap[v1alpha1.StorageSize]{
+			"STORE_DEFAULT":            "10Gi",
+			"RECEIVE_INGESTOR_DEFAULT": "10Gi",
+			"COMPACT_DEFAULT":          "10Gi",
+			"RULER":                    "10Gi",
+		},
+		ObjectStorageBucket: ParamMap[v1alpha1.ObjectStorageConfig]{
+			"DEFAULT": v1alpha1.ObjectStorageConfig{
+				Key: "thanos.yaml",
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: "observatorium-mst-thanos-objectstorage",
+				},
+				Optional: ptr.To(false),
+			},
+		},
+	}
+}
 
 // Stage images.
 var StageImages = ParamMap[string]{
@@ -379,66 +628,75 @@ var StageObjectStorageBucket = ParamMap[v1alpha1.ObjectStorageConfig]{
 
 // ProductionImages is a map of production images.
 var ProductionImages = ParamMap[string]{
-	"STORE02W":        thanosImage,
-	"STORE2W90D":      thanosImage,
-	"STORE90D+":       thanosImage,
-	"STORE_ROS":       thanosImage,
-	"STORE_DEFAULT":   thanosImage,
-	"QUERY":           thanosImage,
-	"QUERY_FRONTEND":  thanosImage,
-	"THANOS_OPERATOR": fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionProd),
-	"KUBE_RBAC_PROXY": "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
-	apiCache:          memcachedImage,
-	memcachedExporter: memcachedExporterImage,
-	observatoriumAPI:  "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
-	jaeger:            "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+	"STORE02W":                 thanosImage,
+	"STORE2W90D":               thanosImage,
+	"STORE90D+":                thanosImage,
+	"STORE_ROS":                thanosImage,
+	"STORE_DEFAULT":            thanosImage,
+	"QUERY":                    thanosImage,
+	"QUERY_FRONTEND":           thanosImage,
+	"RECEIVE_ROUTER":           thanosImage,
+	"RECEIVE_INGESTOR_DEFAULT": thanosImage,
+	"THANOS_OPERATOR":          fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionProd),
+	"KUBE_RBAC_PROXY":          "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
+	apiCache:                   memcachedImage,
+	memcachedExporter:          memcachedExporterImage,
+	observatoriumAPI:           "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 }
 
 // ProductionVersions is a map of production versions.
 var ProductionVersions = ParamMap[string]{
-	"STORE02W":       thanosVersionProd,
-	"STORE2W90D":     thanosVersionProd,
-	"STORE90D+":      thanosVersionProd,
-	"STORE_ROS":      thanosVersionProd,
-	"STORE_DEFAULT":  thanosVersionProd,
-	"QUERY":          thanosVersionProd,
-	"QUERY_FRONTEND": thanosVersionProd,
-	apiCache:         memcachedTag,
-	observatoriumAPI: "9aada65247a07782465beb500323a0e18d7e3d05",
+	"STORE02W":                 thanosVersionProd,
+	"STORE2W90D":               thanosVersionProd,
+	"STORE90D+":                thanosVersionProd,
+	"STORE_ROS":                thanosVersionProd,
+	"STORE_DEFAULT":            thanosVersionProd,
+	"RECEIVE_ROUTER":           thanosVersionProd,
+	"RECEIVE_INGESTOR_DEFAULT": thanosVersionProd,
+	"QUERY":                    thanosVersionProd,
+	"QUERY_FRONTEND":           thanosVersionProd,
+	apiCache:                   memcachedTag,
+	observatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
 }
 
 // ProductionLogLevels is a map of production log levels.
 var ProductionLogLevels = ParamMap[string]{
-	"STORE02W":       logLevels[0],
-	"STORE2W90D":     logLevels[0],
-	"STORE90D+":      logLevels[0],
-	"STORE_ROS":      logLevels[0],
-	"STORE_DEFAULT":  logLevels[0],
-	"QUERY":          logLevels[0],
-	"QUERY_FRONTEND": logLevels[0],
-	observatoriumAPI: logLevels[0],
+	"STORE02W":                 logLevels[0],
+	"STORE2W90D":               logLevels[0],
+	"STORE90D+":                logLevels[0],
+	"STORE_ROS":                logLevels[0],
+	"STORE_DEFAULT":            logLevels[0],
+	"RECEIVE_ROUTER":           logLevels[0],
+	"RECEIVE_INGESTOR_DEFAULT": logLevels[0],
+	"QUERY":                    logLevels[0],
+	"QUERY_FRONTEND":           logLevels[0],
+	observatoriumAPI:           logLevels[0],
 }
 
 // ProductionStorageSize is a map of production PV storage sizes.
 var ProductionStorageSize = ParamMap[v1alpha1.StorageSize]{
-	"STORE02W":      "300Gi",
-	"STORE2W90D":    "300Gi",
-	"STORE90D+":     "300Gi",
-	"STORE_ROS":     "300Gi",
-	"STORE_DEFAULT": "300Gi",
+	"STORE02W":        "300Gi",
+	"STORE2W90D":      "300Gi",
+	"STORE90D+":       "300Gi",
+	"STORE_ROS":       "300Gi",
+	"STORE_DEFAULT":   "300Gi",
+	"RECEIVE_DEFAULT": "3Gi",
 }
 
 // ProductionReplicas is a map of production replicas.
 var ProductionReplicas = ParamMap[int32]{
-	"STORE02W":       2,
-	"STORE2W90D":     2,
-	"STORE90D+":      1,
-	"STORE_ROS":      0, //TODO @moadz RHOBS-904: Temporary stage-only configuration for ROS disabled in Production.
-	"STORE_DEFAULT":  2,
-	"QUERY":          3,
-	"QUERY_FRONTEND": 3,
-	apiCache:         1,
-	observatoriumAPI: 2,
+	"STORE02W":                 2,
+	"STORE2W90D":               2,
+	"STORE90D+":                1,
+	"STORE_ROS":                0, //TODO @moadz RHOBS-904: Temporary stage-only configuration for ROS disabled in Production.
+	"STORE_DEFAULT":            2,
+	"RECEIVE_ROUTER":           2,
+	"RECEIVE_INGESTOR_DEFAULT": 3,
+	"QUERY":                    3,
+	"QUERY_FRONTEND":           3,
+	apiCache:                   1,
+	observatoriumAPI:           2,
 }
 
 // ProductionResourceRequirements is a map of production resource requirements.
@@ -483,6 +741,26 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("100m"),
 			corev1.ResourceMemory: resource.MustParse("500Mi"),
+		},
+	},
+	"RECEIVE_ROUTER": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("700m"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
+		},
+	},
+	"RECEIVE_INGESTOR_DEFAULT": corev1.ResourceRequirements{
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("700m"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("2"),
+			corev1.ResourceMemory: resource.MustParse("5Gi"),
 		},
 	},
 	"MANAGER": corev1.ResourceRequirements{

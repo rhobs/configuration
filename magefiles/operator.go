@@ -30,6 +30,14 @@ const (
 // CRDS Generates the CRDs for the Thanos operator.
 // This is synced from the latest upstream ref at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
+func (b Build) CRDS(config ClusterConfig) error {
+	gen := b.generator(config, "thanos-operator-crds")
+	return crds(gen, CRDRefProd)
+}
+
+// CRDS Generates the CRDs for the Thanos operator.
+// This is synced from the latest upstream ref at:
+// https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (p Production) CRDS() error {
 	return crds(p.generator(crdTemplateDir), CRDRefProd)
 }
@@ -92,6 +100,18 @@ func crds(gen *mimic.Generator, ref string) error {
 	gen.Generate()
 
 	return nil
+}
+
+func (b Build) Operator(config ClusterConfig) {
+	gen := b.generator(config, "thanos-operator")
+
+	objs := operatorResources(config.Namespace, config.Templates)
+
+	gen.Add("operator.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-manager"}, []templatev1.Parameter{}),
+	))
+
+	gen.Generate()
 }
 
 // Operator Generates the Thanos Operator Manager resources.

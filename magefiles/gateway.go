@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/ghodss/yaml"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
@@ -35,6 +34,44 @@ type gatewayConfig struct {
 	tenants   *corev1.Secret
 	amsURL    string
 	m         TemplateMaps
+}
+
+func (b Build) Gateway(config ClusterConfig) error {
+	ns := config.Namespace
+	rbac, err := json.Marshal(cfgobservatorium.GenerateRBAC())
+	if err != nil {
+		return fmt.Errorf("failed to marshal RBAC configuration: %w", err)
+	}
+	rbacYAML, err := yaml.JSONToYAML(rbac)
+	if err != nil {
+		return fmt.Errorf("failed to convert RBAC configuration to YAML: %w", err)
+	}
+
+	objs := []runtime.Object{
+		gatewayRBAC(StageMaps, ns, string(rbacYAML)),
+		gatewayDeployment(StageMaps, ns, config.AMSUrl),
+		createGatewayService(StageMaps, ns),
+		prodGatewayTenants(config.Templates, ns),
+	}
+	gen := b.generator(config, gatewayName)
+	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{
+		Name: gatewayName,
+	}, gatewayTemplateParams)
+	enc := encoding.GhodssYAML(template)
+	gen.Add(gatewayTemplate, enc)
+	gen.Generate()
+
+	sms := []runtime.Object{
+		gatewayServiceMonitor(StageMaps, ns),
+	}
+	gen = b.generator(config, gatewayName)
+	template = openshift.WrapInTemplate(sms, metav1.ObjectMeta{
+		Name: gatewayName + "-service-monitor",
+	}, nil)
+	gen.Add("service-monitor-"+gatewayTemplate, encoding.GhodssYAML(template))
+	gen.Generate()
+
+	return nil
 }
 
 // Gateway Generates the Observatorium API Gateway configuration for the stage environment.

@@ -81,7 +81,7 @@ func (b Build) ExecuteSteps(steps []string, cfg ClusterConfig) error {
 	return nil
 }
 
-func (b Build) AllClusters() error {
+func (b Build) Clusters() error {
 	clusters := GetClusters()
 	if len(clusters) == 0 {
 		return fmt.Errorf("no clusters registered")
@@ -96,7 +96,7 @@ func (b Build) AllClusters() error {
 }
 
 // BuildCluster builds manifests for a specific cluster by name
-func (b Build) BuildCluster(clusterName string) error {
+func (b Build) Cluster(clusterName string) error {
 	cluster, err := GetClusterByName(ClusterName(clusterName))
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func (b Build) BuildCluster(clusterName string) error {
 }
 
 // BuildEnvironment builds manifests for all clusters in a specific environment
-func (b Build) BuildEnvironment(environment string) error {
+func (b Build) Environment(environment string) error {
 	env := ClusterEnvironment(environment)
 	if !env.IsValid() {
 		return fmt.Errorf("invalid environment: %s", environment)
@@ -126,7 +126,7 @@ func (b Build) BuildEnvironment(environment string) error {
 }
 
 // ListAvailableSteps lists all available build steps
-func (b Build) ListAvailableSteps() {
+func (b Build) List() {
 	fmt.Println("Available build steps:")
 	for step := range BuildStepFunctions {
 		fmt.Printf("  - %s\n", step)
@@ -134,7 +134,7 @@ func (b Build) ListAvailableSteps() {
 }
 
 // ListClusterSteps shows the build steps for each registered cluster
-func (b Build) ListClusterSteps() {
+func (b Build) ListClusters() {
 	clusters := GetClusters()
 	if len(clusters) == 0 {
 		fmt.Println("No clusters registered")

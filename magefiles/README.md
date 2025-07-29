@@ -68,6 +68,7 @@ The system provides modular build steps that can be composed per cluster:
 | **Service Monitors** | `StepServiceMonitors` | Prometheus ServiceMonitor resources |
 | **Alertmanager** | `StepAlertmanager` | Alertmanager configuration |
 | **Secrets** | `StepSecrets` | Required secrets and credentials |
+| **Gateway** | `StepGateway` | API Gateway configuration |
 
 ### Default Build Pipeline
 
@@ -80,6 +81,7 @@ func DefaultBuildSteps() []string {
         StepServiceMonitors, // Monitoring setup
         StepAlertmanager,    // Alerting configuration
         StepSecrets,         // Secrets last
+        StepGateway,         // Gateway configuration
     }
 }
 ```
@@ -187,7 +189,7 @@ func customMinimalSteps() []string {
         StepCRDS,     // CRDs first
         StepOperator, // Operator only
         StepSecrets,  // Basic secrets
-        // Skip Thanos, ServiceMonitors, Alertmanager for minimal setup
+        // Skip Thanos, ServiceMonitors, Alertmanager, Gateway for minimal setup
     }
 }
 ```
@@ -200,25 +202,25 @@ func customMinimalSteps() []string {
 
 ```bash
 # Build all registered clusters
-mage build:allClusters
+mage build:clusters
 
 # Build specific cluster by name
-mage build:buildCluster my-cluster-name
+mage build:cluster my-cluster-name
 
 # Build all clusters in an environment
-mage build:buildEnvironment staging
-mage build:buildEnvironment production
-mage build:buildEnvironment integration
+mage build:environment staging
+mage build:environment production
+mage build:environment integration
 ```
 
 #### Utility Commands
 
 ```bash
 # List all available build steps
-mage build:listAvailableSteps
+mage build:list
 
 # Show build steps for each cluster
-mage build:listClusterSteps
+mage build:listClusters
 
 # List all available mage targets
 mage -l
@@ -231,6 +233,14 @@ mage -l
 mage stage:build       # Builds staging environment
 mage production:build  # Builds production environment  
 mage local:build       # Builds local development environment
+
+# Additional legacy component builds
+mage stage:cache       # Builds memcached cache for staging
+mage production:cache  # Builds memcached cache for production
+mage stage:gateway     # Builds gateway for staging
+mage production:gateway # Builds gateway for production
+mage stage:telemeterRules    # Builds telemeter rules for staging
+mage local:telemeterRules    # Builds telemeter rules for local
 ```
 
 ### Output Structure
@@ -301,7 +311,7 @@ func newProductionTemplates() TemplateMaps {
 
 ```bash
 # Check that your cluster is registered
-mage build:listClusterSteps
+mage build:listClusters
 
 # Should show your new cluster in the output
 ```
@@ -310,10 +320,10 @@ mage build:listClusterSteps
 
 ```bash
 # Build your specific cluster
-mage build:buildCluster new-production
+mage build:cluster new-production
 
 # Or build entire environment
-mage build:buildEnvironment production
+mage build:environment production
 ```
 
 ### Step 4: Validate Output
@@ -416,7 +426,7 @@ func deploymentSpecificSteps() []string {
         StepCRDS,          // Then CRDs
         StepOperator,      // Operator
         StepThanos,        // Core components
-        // Skip ServiceMonitors and Alertmanager
+        // Skip ServiceMonitors, Alertmanager, and Gateway
     }
 }
 
@@ -466,5 +476,5 @@ mage -l
 mage -h build
 
 # Show cluster information
-mage build:listClusterSteps
+mage build:listClusters
 ```

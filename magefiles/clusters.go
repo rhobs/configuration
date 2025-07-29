@@ -77,6 +77,7 @@ func DefaultBuildSteps() []string {
 		StepServiceMonitors,
 		StepAlertmanager,
 		StepSecrets,
+		StepGateway,
 	}
 }
 

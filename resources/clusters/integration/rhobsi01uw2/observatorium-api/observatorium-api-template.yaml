@@ -1,0 +1,783 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: observatorium-api
+objects:
+- apiVersion: v1
+  data:
+    rbac.yaml: |
+      roleBindings:
+      - name: observatorium-cnv-qe
+        roles:
+        - cnvqe-metrics-write
+        - cnvqe-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-cnv-qe-staging
+        - kind: user
+          name: service-account-observatorium-cnv-qe
+      - name: observatorium-starburst-isv-write
+        roles:
+        - rhods-metrics-write
+        subjects:
+        - kind: user
+          name: service-account-observatorium-starburst-isv-write-staging
+      - name: observatorium-starburst-isv-read
+        roles:
+        - rhods-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-starburst-isv-read-staging
+      - name: observatorium-rhacs-metrics
+        roles:
+        - rhacs-metrics-write
+        - rhacs-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhacs-metrics-staging
+        - kind: user
+          name: service-account-observatorium-rhacs-metrics
+      - name: observatorium-rhacs-grafana
+        roles:
+        - rhacs-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhacs-grafana-staging
+        - kind: user
+          name: service-account-observatorium-rhacs-grafana
+      - name: observatorium-rhobs
+        roles:
+        - rhobs-metrics-write
+        - rhobs-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhobs-testing
+        - kind: user
+          name: service-account-observatorium-rhobs-staging
+        - kind: user
+          name: service-account-observatorium-rhobs
+      - name: observatorium-rhobs-mst
+        roles:
+        - rhobs-metrics-write
+        - rhobs-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhobs-mst-staging
+        - kind: user
+          name: service-account-observatorium-rhobs-mst
+      - name: rhobs-admin
+        roles:
+        - telemeter-metrics-read
+        - rhobs-metrics-read
+        subjects:
+        - kind: group
+          name: team-monitoring@redhat.com
+      - name: telemeter-service
+        roles:
+        - telemeter-metrics-write
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-telemeter-service-staging
+        - kind: user
+          name: service-account-telemeter-service
+      - name: observatorium-ccx-processing
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-ccx-processing-staging
+        - kind: user
+          name: service-account-observatorium-ccx-processing
+      - name: observatorium-sdtcs
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-sdtcs-staging
+        - kind: user
+          name: service-account-observatorium-sdtcs
+      - name: observatorium-subwatch
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-subwatch-staging
+        - kind: user
+          name: service-account-observatorium-subwatch
+      - name: observatorium-psiocp
+        roles:
+        - psiocp-metrics-write
+        - psiocp-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-psiocp-staging
+      - name: observatorium-odfms-write
+        roles:
+        - odfms-metrics-write
+        subjects:
+        - kind: user
+          name: service-account-observatorium-odfms-write
+      - name: observatorium-odfms-read
+        roles:
+        - odfms-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-odfms-read
+      - name: observatorium-odfms
+        roles:
+        - odfms-metrics-read
+        - odfms-metrics-write
+        subjects:
+        - kind: user
+          name: service-account-observatorium-odfms-staging
+      - name: observatorium-reference-addon
+        roles:
+        - reference-addon-metrics-write
+        - reference-addon-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-reference-addon-staging
+        - kind: user
+          name: service-account-observatorium-reference-addon
+      - name: 7f7f912e-0429-4639-8e70-609ecf65b280
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-7f7f912e-0429-4639-8e70-609ecf65b280
+      - name: 8f7aa5e1-aa08-493d-82eb-cf24834fc08f
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-8f7aa5e1-aa08-493d-82eb-cf24834fc08f
+      - name: 4bfe1a9f-e875-4d37-9c6a-d2faff2a69dc
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-4bfe1a9f-e875-4d37-9c6a-d2faff2a69dc
+      - name: f6b3e12c-bb50-4bfc-89fe-330a28820fa9
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-f6b3e12c-bb50-4bfc-89fe-330a28820fa9
+      - name: 1a45eb31-bcc6-4bb7-8a38-88f00aa718ee
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-1a45eb31-bcc6-4bb7-8a38-88f00aa718ee
+      - name: e7c2f772-e418-4ef3-9568-ea09b1acb929
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-e7c2f772-e418-4ef3-9568-ea09b1acb929
+      - name: e07f5b10-e62b-47a2-9698-e245d1198a3b
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-e07f5b10-e62b-47a2-9698-e245d1198a3b
+      - name: observatorium-rhtap
+        roles:
+        - rhtap-metrics-read
+        - rhtap-metrics-write
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhtap-staging
+        - kind: user
+          name: service-account-observatorium-rhtap
+      - name: observatorium-rhel-read
+        roles:
+        - rhel-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhel-read-staging
+        - kind: user
+          name: service-account-observatorium-rhel-read
+      - name: observatorium-rhel-write
+        roles:
+        - rhel-metrics-write
+        subjects:
+        - kind: user
+          name: service-account-observatorium-rhel-write-staging
+        - kind: user
+          name: service-account-observatorium-rhel-write
+      roles:
+      - name: cnvqe-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - cnvqe
+      - name: cnvqe-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - cnvqe
+      - name: rhods-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - rhods
+      - name: rhods-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - rhods
+      - name: rhacs-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - rhacs
+      - name: rhacs-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - rhacs
+      - name: rhobs-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - rhobs
+      - name: rhobs-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - rhobs
+      - name: telemeter-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - telemeter
+      - name: telemeter-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - telemeter
+      - name: psiocp-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - psiocp
+      - name: psiocp-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - psiocp
+      - name: odfms-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - odfms
+      - name: odfms-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - odfms
+      - name: reference-addon-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - reference-addon
+      - name: reference-addon-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - reference-addon
+      - name: rhtap-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - rhtap
+      - name: rhtap-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - rhtap
+      - name: rhel-metrics-read
+        permissions:
+        - read
+        resources:
+        - metrics
+        tenants:
+        - rhel
+      - name: rhel-metrics-write
+        permissions:
+        - write
+        resources:
+        - metrics
+        tenants:
+        - rhel
+  kind: ConfigMap
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+    name: observatorium-api
+    namespace: rhobs-int
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+    name: observatorium-api
+    namespace: rhobs-int
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: rhobs
+    strategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: api
+          app.kubernetes.io/instance: rhobs
+          app.kubernetes.io/name: observatorium-api
+          app.kubernetes.io/part-of: rhobs
+          app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                    - observatorium-api
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        containers:
+        - args:
+          - --web.listen=0.0.0.0:8080
+          - --web.internal.listen=0.0.0.0:8081
+          - --log.level=debug
+          - --metrics.read.endpoint=http://thanos-query-frontend-rhobs.rhobs-int.svc.cluster.local:9090
+          - --metrics.write.endpoint=http://thanos-receive-router-rhobs.rhobs-int.svc.cluster.local:19291
+          - --metrics.alertmanager.endpoint=http://alertmanager.rhobs-int.svc.cluster.local:9093
+          - --rbac.config=/etc/observatorium/rbac.yaml
+          - --tenants.config=/etc/observatorium/tenants.yaml
+          - --server.read-timeout=5m
+          image: quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 30
+          name: observatorium-api
+          ports:
+          - containerPort: 8090
+            name: grpc-public
+          - containerPort: 8081
+            name: internal
+          - containerPort: 8080
+            name: public
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8081
+              scheme: HTTP
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+          - mountPath: /etc/observatorium/rbac.yaml
+            name: rbac
+            readOnly: true
+            subPath: rbac.yaml
+          - mountPath: /etc/observatorium/tenants.yaml
+            name: tenants
+            readOnly: true
+            subPath: tenants.yaml
+        - args:
+          - --web.listen=127.0.0.1:8082
+          - --web.internal.listen=0.0.0.0:8083
+          - --web.healthchecks.url=http://127.0.0.1:8082
+          - --log.level=warn
+          - --ams.url=https://api.openshift.com
+          - --resource-type-prefix=observatorium
+          - --oidc.client-id=$(CLIENT_ID)
+          - --oidc.client-secret=$(CLIENT_SECRET)
+          - --oidc.issuer-url=$(ISSUER_URL)
+          - --opa.package=observatorium
+          - --memcached=api-memcached.rhobs-int.svc.cluster.local:11211
+          - --memcached.expire=300
+          - --ams.mappings=osd=${OSD_ORGANIZATION_ID}
+          - --ams.mappings=osd=${SD_OPS_ORGANIZATION_ID}
+          - --ams.mappings=cnvqe={CNVQE_ORGANIZATION_ID}
+          - --internal.tracing.endpoint=localhost:6831
+          env:
+          - name: ISSUER_URL
+            valueFrom:
+              secretKeyRef:
+                key: issuer-url
+                name: observatorium-api
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                key: client-id
+                name: observatorium-api
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: client-secret
+                name: observatorium-api
+          image: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-opa-ams:69db2e0545d9e04fd18f2230c1d59ad2766cf65c
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /live
+              port: 8083
+              scheme: HTTP
+            periodSeconds: 30
+          name: opa-ams
+          ports:
+          - containerPort: 8082
+            name: opa-ams-api
+          - containerPort: 8083
+            name: opa-ams-metrics
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /ready
+              port: 8083
+              scheme: HTTP
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: "3"
+              memory: 1844Mi
+            requests:
+              cpu: 500m
+              memory: 100Mi
+        - args:
+          - --reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250
+          - --reporter.type=grpc
+          - --agent.tags=pod.namespace=$(NAMESPACE),pod.name=$(POD)
+          env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: POD
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          image: registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: jaeger-agent
+          ports:
+          - containerPort: 5778
+            name: configs
+            protocol: TCP
+          - containerPort: 6831
+            name: jaeger-thrift
+            protocol: TCP
+          - containerPort: 14271
+            name: metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 14271
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: FallbackToLogsOnError
+        serviceAccountName: observatorium-api
+        volumes:
+        - configMap:
+            name: observatorium-api
+          name: rbac
+        - name: tenants
+          secret:
+            secretName: observatorium-api
+  status: {}
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      qontract.recycle: "true"
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+    name: observatorium-api
+    namespace: rhobs-int
+  stringData:
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIENT_SECRET}
+    issuer-url: https://sso.redhat.com/auth/realms/redhat-external
+    tenants.yaml: |
+      tenants:
+            - id: 0fc2b00e-201b-4c17-b9f2-19d91adc4fd2
+              name: rhobs
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium.api.openshift.com/oidc/rhobs/callback
+                usernameClaim: preferred_username
+                groupClaim: email
+            - id: 770c1124-6ae8-4324-a9d4-9ce08590094b
+              name: osd
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/osd/callback
+                usernameClaim: preferred_username
+              opa:
+                url: http://127.0.0.1:8082/v1/data/observatorium/allow
+              rateLimits:
+              - endpoint: /api/metrics/v1/.+/api/v1/receive
+                limit: 10000
+                window: 30s
+            - id: 1b9b6e43-9128-4bbf-bfff-3c120bbe6f11
+              name: rhacs
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhacs/callback
+                usernameClaim: preferred_username
+            - id: 9ca26972-4328-4fe3-92db-31302013d03f
+              name: cnvqe
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/cnvqe/callback
+                usernameClaim: preferred_username
+            - id: 37b8fd3f-56ff-4b64-8272-917c9b0d1623
+              name: psiocp
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/psiocp/callback
+                usernameClaim: preferred_username
+            - id: 8ace13a2-1c72-4559-b43d-ab43e32a255a
+              name: rhods
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhods/callback
+                usernameClaim: preferred_username
+            - id: 99c885bc-2d64-4c4d-b55e-8bf30d98c657
+              name: odfms
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/odfms/callback
+                usernameClaim: preferred_username
+            - id: d17ea8ce-d4c6-42ef-b259-7d10c9227e93
+              name: reference-addon
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/reference-addon/callback
+                usernameClaim: preferred_username
+            - id: AC879303-C60F-4D0D-A6D5-A485CFD638B8
+              name: dptp
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/dptp/callback
+                usernameClaim: preferred_username
+            - id: 3833951d-bede-4a53-85e5-f73f4913973f
+              name: appsre
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/appsre/callback
+                usernameClaim: preferred_username
+            - id: 0031e8d6-e50a-47ea-aecb-c7e0bd84b3f1
+              name: rhtap
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhtap/callback
+                usernameClaim: preferred_username
+            - id: 72e6f641-b2e2-47eb-bbc2-fee3c8fbda26
+              name: rhel
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium-mst.api.openshift.com/oidc/rhel/callback
+                usernameClaim: preferred_username
+              rateLimits:
+              - endpoint: '/api/metrics/v1/rhel/api/v1/receive'
+                limit: 10000
+                window: 30s
+            - id: FB870BF3-9F3A-44FF-9BF7-D7A047A52F43
+              name: telemeter
+              oidc:
+                clientID: ${CLIENT_ID}
+                clientSecret: ${CLIENT_SECRET}
+                issuerURL: https://sso.redhat.com/auth/realms/redhat-external
+                redirectURL: https://observatorium.api.openshift.com/oidc/telemeter/callback
+                usernameClaim: preferred_username
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+    name: observatorium-api
+    namespace: rhobs-int
+  spec:
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - appProtocol: h2c
+      name: grpc-public
+      port: 8090
+      protocol: TCP
+      targetPort: 8090
+    - appProtocol: http
+      name: internal
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    - appProtocol: http
+      name: public
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: opa-ams-api
+      port: 8082
+      protocol: TCP
+      targetPort: 8082
+    - name: opa-ams-metrics
+      port: 8083
+      protocol: TCP
+      targetPort: 8083
+    selector:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+parameters:
+- description: Organization ID for OSD
+  name: OSD_ORGANIZATION_ID
+- description: Organization ID for SD Ops
+  name: SD_OPS_ORGANIZATION_ID
+- description: Organization ID for CNVQE
+  name: CNVQE_ORGANIZATION_ID
+- description: Client ID for OIDC
+  name: CLIENT_ID
+- description: Client secret for OIDC
+  name: CLIENT_SECRET

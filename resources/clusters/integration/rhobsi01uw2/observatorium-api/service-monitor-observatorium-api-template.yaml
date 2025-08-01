@@ -1,0 +1,39 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: observatorium-api-service-monitor
+objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: observatorium-api
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 9aada65247a07782465beb500323a0e18d7e3d05
+      prometheus: app-sre
+    name: rhobs-gateway
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: internal
+    - interval: 30s
+      path: /metrics
+      port: opa-ams-metrics
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-int
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: api
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: observatorium-api
+        app.kubernetes.io/part-of: rhobs

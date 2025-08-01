@@ -49,13 +49,13 @@ func GenerateRBACFile(gen *mimic.Generator) {
 // against 'user' field in the incoming JWT token that contains service account.
 //
 // TODO(bwplotka): Generate tenants.yaml (without secrets) using the same tenant definitions.
-func GenerateRBAC() *observatoriumRBAC {
-	obsRBAC := observatoriumRBAC{
-		mappedRoleNames: map[roleMapKey]string{},
+func GenerateRBAC() *ObservatoriumRBAC {
+	obsRBAC := ObservatoriumRBAC{
+		mappedRoleNames: map[RoleMapKey]string{},
 	}
 
 	// CNV-QE
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-cnv-qe",
 		tenant:  cnvqeTenant,
 		signals: []signal{metricsSignal},
@@ -65,7 +65,7 @@ func GenerateRBAC() *observatoriumRBAC {
 
 	// RHODS
 	// Starbust write-only
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-starburst-isv-write",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
@@ -73,7 +73,7 @@ func GenerateRBAC() *observatoriumRBAC {
 		envs:    []env{stagingEnv},
 	})
 	// Starbust read-only
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-starburst-isv-read",
 		tenant:  rhodsTenant,
 		signals: []signal{metricsSignal},
@@ -82,14 +82,14 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// RHACS
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhacs-metrics",
 		tenant:  rhacsTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{stagingEnv, productionEnv},
 	})
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhacs-grafana",
 		tenant:  rhacsTenant,
 		signals: []signal{metricsSignal},
@@ -98,14 +98,14 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// RHOBS
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhobs",
 		tenant:  rhobsTenant,
 		signals: []signal{metricsSignal},
 		perms:   []rbac.Permission{rbac.Write, rbac.Read},
 		envs:    []env{testingEnv, stagingEnv, productionEnv},
 	})
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhobs-mst",
 		tenant:  rhobsTenant,
 		signals: []signal{metricsSignal},
@@ -123,7 +123,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// Telemeter
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "telemeter-service",
 		tenant:  telemeterTenant,
 		signals: []signal{metricsSignal},
@@ -132,7 +132,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// CCX Processing
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-ccx-processing",
 		tenant:  telemeterTenant,
 		signals: []signal{metricsSignal},
@@ -141,7 +141,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// SD TCS (App-interface progressive delivery feature)
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-sdtcs",
 		tenant:  telemeterTenant,
 		signals: []signal{metricsSignal},
@@ -150,7 +150,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// Subwatch
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-subwatch",
 		tenant:  telemeterTenant,
 		signals: []signal{metricsSignal},
@@ -159,7 +159,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// PSIOCP
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-psiocp",
 		tenant:  psiocpTenant,
 		signals: []signal{metricsSignal},
@@ -168,7 +168,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// ODFMS
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-odfms-write",
 		tenant:  odfmsTenant,
 		signals: []signal{metricsSignal},
@@ -177,7 +177,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 	// Special request of extra read account.
 	// Ref: https://issues.redhat.com/browse/MON-2536?focusedCommentId=20492830&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-20492830
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-odfms-read",
 		tenant:  odfmsTenant,
 		signals: []signal{metricsSignal},
@@ -186,7 +186,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// ODFMS has one set of staging credentials that has read & write permissions
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-odfms",
 		tenant:  odfmsTenant,
 		signals: []signal{metricsSignal},
@@ -195,7 +195,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 
 	// reference-addon
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-reference-addon",
 		tenant:  refAddonTenant,
 		signals: []signal{metricsSignal},
@@ -206,7 +206,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	// placeholder read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "7f7f912e-0429-4639-8e70-609ecf65b280",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -218,7 +218,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	// analytics read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "8f7aa5e1-aa08-493d-82eb-cf24834fc08f",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -230,7 +230,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	// data foundation pms read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "4bfe1a9f-e875-4d37-9c6a-d2faff2a69dc",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -241,7 +241,7 @@ func GenerateRBAC() *observatoriumRBAC {
 
 	// observability pms read only prod
 	// Special request of extra read account.
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "f6b3e12c-bb50-4bfc-89fe-330a28820fa9",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -252,7 +252,7 @@ func GenerateRBAC() *observatoriumRBAC {
 
 	// hybrid-platforms pms read only prod
 	// Special request of extra read account.
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "1a45eb31-bcc6-4bb7-8a38-88f00aa718ee",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -264,7 +264,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	// cnv read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "e7c2f772-e418-4ef3-9568-ea09b1acb929",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -276,7 +276,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	// dev-spaces read only prod
 	// Special request of extra read account.
 	// https://issues.redhat.com/browse/RHOBS-1116
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:                "e07f5b10-e62b-47a2-9698-e245d1198a3b",
 		tenant:              telemeterTenant,
 		signals:             []signal{metricsSignal},
@@ -287,7 +287,7 @@ func GenerateRBAC() *observatoriumRBAC {
 
 	// RHTAP
 	// Reader and Writer serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhtap",
 		tenant:  rhtapTenant,
 		signals: []signal{metricsSignal},
@@ -297,7 +297,7 @@ func GenerateRBAC() *observatoriumRBAC {
 
 	// RHEL
 	// Reader serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhel-read",
 		tenant:  rhelTenant,
 		signals: []signal{metricsSignal},
@@ -306,7 +306,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	})
 	// RHEL
 	// Writer serviceaccount
-	attachBinding(&obsRBAC, bindingOpts{
+	attachBinding(&obsRBAC, BindingOpts{
 		name:    "observatorium-rhel-write",
 		tenant:  rhelTenant,
 		signals: []signal{metricsSignal},
@@ -318,7 +318,7 @@ func GenerateRBAC() *observatoriumRBAC {
 	return &obsRBAC
 }
 
-type roleMapKey struct {
+type RoleMapKey struct {
 	tenant tenantID
 	signal signal
 	perm   rbac.Permission
@@ -326,15 +326,15 @@ type roleMapKey struct {
 
 // observatoriumRBAC represents the structure that is sued to parse RBAC configuration
 // in Observatorium API: https://github.com/observatorium/api/blob/078b7ce75837bb03984f5ed99d2b69a512b696b5/rbac/rbac.go#L181.
-type observatoriumRBAC struct {
+type ObservatoriumRBAC struct {
 	// mappedRoleNames is used for deduplication logic.
-	mappedRoleNames map[roleMapKey]string
+	mappedRoleNames map[RoleMapKey]string
 
 	Roles        []rbac.Role        `json:"roles"`
 	RoleBindings []rbac.RoleBinding `json:"roleBindings"`
 }
 
-type bindingOpts struct {
+type BindingOpts struct {
 	// NOTE(bwplotka): Name is strongly correlated to subject name that corresponds to the service account username (it has to match it)/
 	// Any change, require changes on tenant side, so be careful.
 	name                string
@@ -345,8 +345,8 @@ type bindingOpts struct {
 	skipConventionCheck bool
 }
 
-func getOrCreateRoleName(o *observatoriumRBAC, tenant tenantID, s signal, p rbac.Permission) string {
-	k := roleMapKey{tenant: tenant, signal: s, perm: p}
+func getOrCreateRoleName(o *ObservatoriumRBAC, tenant tenantID, s signal, p rbac.Permission) string {
+	k := RoleMapKey{tenant: tenant, signal: s, perm: p}
 
 	n, ok := o.mappedRoleNames[k]
 	if !ok {
@@ -379,7 +379,7 @@ func tenantNameFollowsConvention(name string) (string, bool) {
 	return "", true
 }
 
-func attachBinding(o *observatoriumRBAC, opts bindingOpts) {
+func attachBinding(o *ObservatoriumRBAC, opts BindingOpts) {
 	for _, b := range o.RoleBindings {
 		if b.Name == opts.name {
 			mimic.Panicf("found duplicate binding name", opts.name)

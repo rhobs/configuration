@@ -6,10 +6,26 @@ import (
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"github.com/rhobs/configuration/clusters"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/ptr"
 )
+
+func (b Build) ThanosOperatorServiceMonitors(config clusters.ClusterConfig) {
+	gen := b.generator(config, "servicemonitors")
+
+	objs := createServiceMonitors(config.Namespace)
+	objs = append(objs, operatorServiceMonitor(config.Namespace)...)
+	generateServiceMonitors(gen, objs)
+}
+
+func generateServiceMonitors(gen *mimic.Generator, objs []runtime.Object) {
+	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-servicemonitors"}, []templatev1.Parameter{})
+	encoder := encoding.GhodssYAML(template)
+	gen.Add("servicemonitors.yaml", encoder)
+	gen.Generate()
+}
 
 // ServiceMonitors generates ServiceMonitor resources for the Stage environment.
 func (s Stage) ServiceMonitors() {

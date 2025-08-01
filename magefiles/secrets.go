@@ -9,6 +9,7 @@ import (
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 
+	"github.com/rhobs/configuration/clusters"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -107,6 +108,16 @@ func secrets(gen *mimic.Generator, ns string) {
 				{Name: "SECRET_ACCESS_KEY"},
 			},
 		),
+	))
+
+	gen.Generate()
+}
+
+func (b Build) Secrets(config clusters.ClusterConfig) {
+	gen := b.generator(config, "secrets")
+
+	gen.Add("thanos-default-secret.yaml", encoding.GhodssYAML(
+		localThanosObjectStore("observatorium-mst-thanos-objectstorage", config.Namespace),
 	))
 
 	gen.Generate()

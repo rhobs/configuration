@@ -9,8 +9,8 @@ import (
 	routev1 "github.com/openshift/api/route/v1"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic/encoding"
+	"github.com/rhobs/configuration/clusters"
 	"github.com/thanos-community/thanos-operator/api/v1alpha1"
-
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -18,6 +18,46 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/ptr"
 )
+
+func (b Build) DefaultThanosStack(config clusters.ClusterConfig) {
+	gen := b.generator(config, "thanos-operator-default-cr")
+	var objs []runtime.Object
+
+	objs = append(objs, defaultQueryCR(config.Namespace, config.Templates, true)...)
+	objs = append(objs, defaultReceiveCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultCompactCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultRulerCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultStoreCR(config.Namespace, config.Templates))
+
+	// Sort objects by Kind then Name
+	sort.Slice(objs, func(i, j int) bool {
+		iMeta := objs[i].(metav1.Object)
+		jMeta := objs[j].(metav1.Object)
+		iType := objs[i].GetObjectKind().GroupVersionKind().Kind
+		jType := objs[j].GetObjectKind().GroupVersionKind().Kind
+
+		if iType != jType {
+			return iType < jType
+		}
+		return iMeta.GetName() < jMeta.GetName()
+	})
+
+	gen.Add("thanos-operator-default-cr.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(
+			objs,
+			metav1.ObjectMeta{Name: "thanos-rhobs"},
+			[]templatev1.Parameter{
+				{
+					Name:     "OAUTH_PROXY_COOKIE_SECRET",
+					Generate: "expression",
+					From:     `[a-zA-Z0-9]{40}`,
+				},
+			},
+		),
+	))
+
+	gen.Generate()
+}
 
 // Thanos Generates the RHOBS-specific CRs for Thanos Operator.
 func (p Production) Thanos() {
@@ -32,9 +72,9 @@ func (p Production) Thanos() {
 		`--endpoint=dnssrv+_grpc._tcp.observatorium-thanos-receive-default.observatorium-metrics-production.svc.cluster.local`,
 	}
 
-	objs = append(objs, queryCR(ns, ProductionMaps, true, tmpAdditionalQueryArgs...)...)
-	objs = append(objs, tmpStoreProduction(ns, ProductionMaps)...)
-	objs = append(objs, compactTempProduction()...)
+	objs = append(objs, queryCR(ns, clusters.ProductionMaps, true, tmpAdditionalQueryArgs...)...)
+	objs = append(objs, tmpStoreProduction(ns, clusters.ProductionMaps)...)
+	objs = append(objs, compactTempProduction(clusters.ProductionMaps)...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {
@@ -74,13 +114,13 @@ func (s Stage) Thanos() {
 
 	var objs []runtime.Object
 
-	objs = append(objs, receiveCR(s.namespace(), StageMaps))
-	objs = append(objs, queryCR(s.namespace(), StageMaps, true)...)
-	objs = append(objs, rulerCR(s.namespace(), StageMaps))
+	objs = append(objs, receiveCR(s.namespace(), clusters.StageMaps))
+	objs = append(objs, queryCR(s.namespace(), clusters.StageMaps, true)...)
+	objs = append(objs, rulerCR(s.namespace(), clusters.StageMaps))
 	// TODO: Add compact CRs for stage once we shut down previous
-	// objs = append(objs, compactCR(s.namespace(), StageMaps, true)...)
-	objs = append(objs, stageCompactCR(s.namespace(), StageMaps)...)
-	objs = append(objs, storeCR(s.namespace(), StageMaps)...)
+	// objs = append(objs, compactCR(s.namespace(), templates, true)...)
+	objs = append(objs, stageCompactCR(s.namespace(), clusters.StageMaps)...)
+	objs = append(objs, storeCR(s.namespace(), clusters.StageMaps)...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {
@@ -120,11 +160,11 @@ func (l Local) Thanos() {
 
 	var objs []runtime.Object
 
-	objs = append(objs, receiveCR(l.namespace(), LocalMaps))
-	objs = append(objs, queryCR(l.namespace(), LocalMaps, false)...)
-	objs = append(objs, rulerCR(l.namespace(), LocalMaps))
-	objs = append(objs, compactCR(l.namespace(), LocalMaps, false)...)
-	objs = append(objs, storeCR(l.namespace(), LocalMaps)...)
+	objs = append(objs, receiveCR(l.namespace(), clusters.LocalMaps))
+	objs = append(objs, queryCR(l.namespace(), clusters.LocalMaps, false)...)
+	objs = append(objs, rulerCR(l.namespace(), clusters.LocalMaps))
+	objs = append(objs, compactCR(l.namespace(), clusters.LocalMaps, false)...)
+	objs = append(objs, storeCR(l.namespace(), clusters.LocalMaps)...)
 
 	// Sort objects by Kind then Name
 	sort.Slice(objs, func(i, j int) bool {
@@ -155,10 +195,10 @@ func (l Local) Thanos() {
 }
 
 // tracingSidecar is the jaeger-agent sidecar container for tracing.
-func tracingSidecar(m TemplateMaps) corev1.Container {
+func tracingSidecar(m clusters.TemplateMaps) corev1.Container {
 	return corev1.Container{
 		Name:            "jaeger-agent",
-		Image:           TemplateFn("JAEGER_AGENT", m.Images),
+		Image:           clusters.TemplateFn(clusters.Jaeger, m.Images),
 		ImagePullPolicy: corev1.PullIfNotPresent,
 		Args: []string{
 			"--reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250",
@@ -231,7 +271,7 @@ func tracingSidecar(m TemplateMaps) corev1.Container {
 	}
 }
 
-func storeCR(namespace string, m TemplateMaps) []runtime.Object {
+func storeCR(namespace string, m clusters.TemplateMaps) []runtime.Object {
 	store0to2w := &v1alpha1.ThanosStore{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -243,15 +283,15 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("STORE02W", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE02W", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE02W", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE02W", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE02W", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE02W", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE02W", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE02W", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE02W", m.Replicas),
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE02W", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -274,7 +314,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
 				MaxTime: ptr.To(v1alpha1.Duration("-2w")),
 			},
-			StorageSize: TemplateFn("STORE02W", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE02W", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -306,15 +346,15 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("STORE2W90D", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE2W90D", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE2W90D", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE2W90D", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE2W90D", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE2W90D", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE2W90D", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE2W90D", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE2W90D", m.Replicas),
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE2W90D", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -338,7 +378,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				MinTime: ptr.To(v1alpha1.Duration("-90d")),
 				MaxTime: ptr.To(v1alpha1.Duration("-2w")),
 			},
-			StorageSize: TemplateFn("STORE2W90D", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE2W90D", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -373,15 +413,15 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("STORE90D+", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE90D+", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE90D+", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE90D+", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE90D+", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE90D+", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE90D+", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE90D+", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE90D+", m.Replicas),
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE90D+", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -404,7 +444,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
 				MinTime: ptr.To(v1alpha1.Duration("-90d")),
 			},
-			StorageSize: TemplateFn("STORE90D+", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE90D+", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -437,15 +477,15 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("STORE_ROS", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE_ROS", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE_ROS", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE_ROS", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE_ROS", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE_ROS", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE_ROS", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE_ROS", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE_ROS", m.Replicas),
-			ObjectStorageConfig: TemplateFn("ROS", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE_ROS", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("ROS", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -465,7 +505,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 				BlockMetaFetchConcurrency: ptr.To(int32(32)),
 			},
 			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
-			StorageSize:              TemplateFn("STORE_ROS", m.StorageSize),
+			StorageSize:              clusters.TemplateFn("STORE_ROS", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -497,15 +537,15 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosStoreSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("STORE_DEFAULT", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE_DEFAULT", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE_DEFAULT", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE_DEFAULT", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE_DEFAULT", m.Replicas),
-			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE_DEFAULT", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("DEFAULT", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -528,7 +568,7 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
 				MaxTime: ptr.To(v1alpha1.Duration("-22h")),
 			},
-			StorageSize: TemplateFn("STORE_DEFAULT", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE_DEFAULT", m.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
 					tracingSidecar(m),
@@ -552,14 +592,14 @@ func storeCR(namespace string, m TemplateMaps) []runtime.Object {
 	objs := []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
 
 	//TODO @moadz RHOBS-904: Temporary block, only return in stage
-	if TemplateFn("STORE_ROS", m.Replicas) > 0 {
+	if clusters.TemplateFn("STORE_ROS", m.Replicas) > 0 {
 		objs = append(objs, storeRos)
 	}
 
 	return objs
 }
 
-func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
+func tmpStoreProduction(namespace string, m clusters.TemplateMaps) []runtime.Object {
 	iC := `--index-cache.config="config":
   "addresses":
     - "dnssrv+_client._tcp.thanos-index-cache.rhobs-production.svc"
@@ -659,15 +699,15 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 						},
 					},
 				},
-				Image:                ptr.To(TemplateFn("STORE02W", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE02W", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE02W", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE02W", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE02W", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE02W", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE02W", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE02W", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE02W", m.Replicas),
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE02W", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -689,7 +729,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
 				MinTime: ptr.To(v1alpha1.Duration("-336h")),
 			},
-			StorageSize: TemplateFn("STORE02W", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE02W", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -743,15 +783,15 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 						},
 					},
 				},
-				Image:                ptr.To(TemplateFn("STORE2W90D", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE2W90D", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE2W90D", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE2W90D", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE2W90D", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE2W90D", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE2W90D", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE2W90D", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE2W90D", m.Replicas),
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE2W90D", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -775,7 +815,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				MinTime: ptr.To(v1alpha1.Duration("-2160h")),
 				MaxTime: ptr.To(v1alpha1.Duration("-336h")),
 			},
-			StorageSize: TemplateFn("STORE2W90D", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE2W90D", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -832,15 +872,15 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 						},
 					},
 				},
-				Image:                ptr.To(TemplateFn("STORE90D+", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE90D+", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE90D+", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE90D+", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE90D+", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE90D+", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE90D+", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE90D+", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE90D+", m.Replicas),
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE90D+", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -864,7 +904,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 				MinTime: ptr.To(v1alpha1.Duration("-8760h")),
 				MaxTime: ptr.To(v1alpha1.Duration("-2160h")),
 			},
-			StorageSize: TemplateFn("STORE90D+", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE90D+", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -918,15 +958,15 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 						},
 					},
 				},
-				Image:                ptr.To(TemplateFn("STORE_DEFAULT", m.Images)),
-				Version:              ptr.To(TemplateFn("STORE_DEFAULT", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("STORE_DEFAULT", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("STORE_DEFAULT", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("STORE_DEFAULT", m.ResourceRequirements)),
 			},
-			Replicas:            TemplateFn("STORE_DEFAULT", m.Replicas),
-			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			Replicas:            clusters.TemplateFn("STORE_DEFAULT", m.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn("DEFAULT", m.ObjectStorageBucket),
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,
@@ -949,7 +989,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
 				MaxTime: ptr.To(v1alpha1.Duration("-22h")),
 			},
-			StorageSize: TemplateFn("STORE_DEFAULT", m.StorageSize),
+			StorageSize: clusters.TemplateFn("STORE_DEFAULT", m.StorageSize),
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
 					Enable: ptr.To(false),
@@ -960,7 +1000,7 @@ func tmpStoreProduction(namespace string, m TemplateMaps) []runtime.Object {
 	return []runtime.Object{store0to2w, store2wto90d, store90dplus, storeDefault}
 }
 
-func receiveCR(namespace string, m TemplateMaps) runtime.Object {
+func receiveCR(namespace string, templates clusters.TemplateMaps) *v1alpha1.ThanosReceive {
 	return &v1alpha1.ThanosReceive{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -973,21 +1013,21 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 		Spec: v1alpha1.ThanosReceiveSpec{
 			Router: v1alpha1.RouterSpec{
 				CommonFields: v1alpha1.CommonFields{
-					Image:                ptr.To(TemplateFn("RECEIVE_ROUTER", m.Images)),
-					Version:              ptr.To(TemplateFn("RECEIVE_ROUTER", m.Versions)),
+					Image:                ptr.To(clusters.TemplateFn("RECEIVE_ROUTER", templates.Images)),
+					Version:              ptr.To(clusters.TemplateFn("RECEIVE_ROUTER", templates.Versions)),
 					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-					LogLevel:             ptr.To(TemplateFn("RECEIVE_ROUTER", m.LogLevels)),
+					LogLevel:             ptr.To(clusters.TemplateFn("RECEIVE_ROUTER", templates.LogLevels)),
 					LogFormat:            ptr.To("logfmt"),
-					ResourceRequirements: ptr.To(TemplateFn("RECEIVE_ROUTER", m.ResourceRequirements)),
+					ResourceRequirements: ptr.To(clusters.TemplateFn("RECEIVE_ROUTER", templates.ResourceRequirements)),
 				},
-				Replicas:          TemplateFn("RECEIVE_ROUTER", m.Replicas),
+				Replicas:          clusters.TemplateFn("RECEIVE_ROUTER", templates.Replicas),
 				ReplicationFactor: 3,
 				ExternalLabels: map[string]string{
 					"receive": "true",
 				},
 				Additional: v1alpha1.Additional{
 					Containers: []corev1.Container{
-						tracingSidecar(m),
+						tracingSidecar(templates),
 					},
 					Args: []string{
 						`--tracing.config="config":
@@ -999,10 +1039,10 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 				},
 			},
 			Ingester: v1alpha1.IngesterSpec{
-				DefaultObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+				DefaultObjectStorageConfig: clusters.TemplateFn("TELEMETER", templates.ObjectStorageBucket),
 				Additional: v1alpha1.Additional{
 					Containers: []corev1.Container{
-						tracingSidecar(m),
+						tracingSidecar(templates),
 					},
 					Args: []string{
 						`--tracing.config="config":
@@ -1016,17 +1056,17 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 					{
 						Name: "telemeter",
 						CommonFields: v1alpha1.CommonFields{
-							Image:                ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.Images)),
-							Version:              ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.Versions)),
+							Image:                ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_TELEMETER", templates.Images)),
+							Version:              ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_TELEMETER", templates.Versions)),
 							ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-							LogLevel:             ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.LogLevels)),
+							LogLevel:             ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_TELEMETER", templates.LogLevels)),
 							LogFormat:            ptr.To("logfmt"),
-							ResourceRequirements: ptr.To(TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.ResourceRequirements)),
+							ResourceRequirements: ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_TELEMETER", templates.ResourceRequirements)),
 						},
 						ExternalLabels: map[string]string{
 							"replica": "$(POD_NAME)",
 						},
-						Replicas: TemplateFn("RECEIVE_INGESTOR_TELEMETER", m.Replicas),
+						Replicas: clusters.TemplateFn("RECEIVE_INGESTOR_TELEMETER", templates.Replicas),
 						TSDBConfig: v1alpha1.TSDBConfig{
 							Retention: v1alpha1.Duration("4h"),
 						},
@@ -1042,22 +1082,22 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 							TenantHeader:      "THANOS-TENANT",
 							TenantLabelName:   "tenant_id",
 						},
-						StorageSize: TemplateFn("RECEIVE_TELEMETER", m.StorageSize),
+						StorageSize: clusters.TemplateFn("RECEIVE_TELEMETER", templates.StorageSize),
 					},
 					{
 						Name: "default",
 						CommonFields: v1alpha1.CommonFields{
-							Image:                ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Images)),
-							Version:              ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Versions)),
+							Image:                ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_DEFAULT", templates.Images)),
+							Version:              ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_DEFAULT", templates.Versions)),
 							ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-							LogLevel:             ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.LogLevels)),
+							LogLevel:             ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_DEFAULT", templates.LogLevels)),
 							LogFormat:            ptr.To("logfmt"),
-							ResourceRequirements: ptr.To(TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.ResourceRequirements)),
+							ResourceRequirements: ptr.To(clusters.TemplateFn("RECEIVE_INGESTOR_DEFAULT", templates.ResourceRequirements)),
 						},
 						ExternalLabels: map[string]string{
 							"replica": "$(POD_NAME)",
 						},
-						Replicas: TemplateFn("RECEIVE_INGESTOR_DEFAULT", m.Replicas),
+						Replicas: clusters.TemplateFn("RECEIVE_INGESTOR_DEFAULT", templates.Replicas),
 						TSDBConfig: v1alpha1.TSDBConfig{
 							Retention: v1alpha1.Duration("1d"),
 						},
@@ -1073,8 +1113,8 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 							TenantHeader:      "THANOS-TENANT",
 							TenantLabelName:   "tenant_id",
 						},
-						ObjectStorageConfig: ptr.To(TemplateFn("DEFAULT", m.ObjectStorageBucket)),
-						StorageSize:         TemplateFn("RECEIVE_DEFAULT", m.StorageSize),
+						ObjectStorageConfig: ptr.To(clusters.TemplateFn("DEFAULT", templates.ObjectStorageBucket)),
+						StorageSize:         clusters.TemplateFn("RECEIVE_DEFAULT", templates.StorageSize),
 					},
 				},
 			},
@@ -1087,7 +1127,7 @@ func receiveCR(namespace string, m TemplateMaps) runtime.Object {
 	}
 }
 
-func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...string) []runtime.Object {
+func defaultQueryCR(namespace string, templates clusters.TemplateMaps, oauth bool, withAdditionalArgs ...string) []runtime.Object {
 	// placeholder for prod caches - temp removed whilst debugging
 	qfeCacheTempProd := v1alpha1.Additional{
 		Args: []string{`--query-range.response-cache-config=
@@ -1120,15 +1160,15 @@ func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...
 		},
 		Spec: v1alpha1.ThanosQuerySpec{
 			Additional: v1alpha1.Additional{
-				Args: withAdditonalArgs,
+				Args: withAdditionalArgs,
 			},
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("QUERY", m.Images)),
-				Version:              ptr.To(TemplateFn("QUERY", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn(clusters.Query, templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn(clusters.Query, templates.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("QUERY", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn(clusters.Query, templates.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("QUERY", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn(clusters.Query, templates.ResourceRequirements)),
 			},
 			StoreLabelSelector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
@@ -1136,7 +1176,7 @@ func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...
 					"app.kubernetes.io/part-of":    "thanos",
 				},
 			},
-			Replicas: TemplateFn("QUERY", m.Replicas),
+			Replicas: clusters.TemplateFn(clusters.Query, templates.Replicas),
 			ReplicaLabels: []string{
 				"prometheus_replica",
 				"replica",
@@ -1153,14 +1193,14 @@ func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...
 			},
 			QueryFrontend: &v1alpha1.QueryFrontendSpec{
 				CommonFields: v1alpha1.CommonFields{
-					Image:                ptr.To(TemplateFn("QUERY_FRONTEND", m.Images)),
-					Version:              ptr.To(TemplateFn("QUERY_FRONTEND", m.Versions)),
+					Image:                ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.Images)),
+					Version:              ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.Versions)),
 					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-					LogLevel:             ptr.To(TemplateFn("QUERY_FRONTEND", m.LogLevels)),
+					LogLevel:             ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.LogLevels)),
 					LogFormat:            ptr.To("logfmt"),
-					ResourceRequirements: ptr.To(TemplateFn("QUERY_FRONTEND", m.ResourceRequirements)),
+					ResourceRequirements: ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.ResourceRequirements)),
 				},
-				Replicas:             TemplateFn("QUERY_FRONTEND", m.Replicas),
+				Replicas:             clusters.TemplateFn("QUERY_FRONTEND", templates.Replicas),
 				CompressResponses:    true,
 				LogQueriesLongerThan: ptr.To(v1alpha1.Duration("10s")),
 				LabelsMaxRetries:     3,
@@ -1233,7 +1273,232 @@ func queryCR(namespace string, m TemplateMaps, oauth bool, withAdditonalArgs ...
 	return objs
 }
 
-func rulerCR(namespace string, m TemplateMaps) runtime.Object {
+func defaultStoreCR(namespace string, templates clusters.TemplateMaps) runtime.Object {
+	return &v1alpha1.ThanosStore{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosStore",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "default",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosStoreSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(clusters.TemplateFn(clusters.StoreDefault, templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn(clusters.StoreDefault, templates.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(clusters.TemplateFn(clusters.StoreDefault, templates.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(clusters.TemplateFn(clusters.StoreDefault, templates.ResourceRequirements)),
+			},
+			Replicas:            clusters.TemplateFn(clusters.StoreDefault, templates.Replicas),
+			ObjectStorageConfig: clusters.TemplateFn(clusters.DefaultBucket, templates.ObjectStorageBucket),
+			ShardingStrategy: v1alpha1.ShardingStrategy{
+				Type:   v1alpha1.Block,
+				Shards: 1,
+			},
+			IndexHeaderConfig: &v1alpha1.IndexHeaderConfig{
+				EnableLazyReader:      ptr.To(true),
+				LazyDownloadStrategy:  ptr.To("lazy"),
+				LazyReaderIdleTimeout: ptr.To(v1alpha1.Duration("5m")),
+			},
+			StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+				StoreLimitsRequestSamples: 0,
+				StoreLimitsRequestSeries:  0,
+			},
+			BlockConfig: &v1alpha1.BlockConfig{
+				BlockDiscoveryStrategy:    v1alpha1.BlockDiscoveryStrategy("concurrent"),
+				BlockFilesConcurrency:     ptr.To(int32(1)),
+				BlockMetaFetchConcurrency: ptr.To(int32(32)),
+			},
+			IgnoreDeletionMarksDelay: v1alpha1.Duration("24h"),
+			TimeRangeConfig: &v1alpha1.TimeRangeConfig{
+				MaxTime: ptr.To(v1alpha1.Duration("-22h")),
+			},
+			StorageSize: clusters.TemplateFn(clusters.StoreDefault, templates.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(templates),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-store"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+}
+
+func defaultReceiveCR(namespace string, templates clusters.TemplateMaps) runtime.Object {
+	return &v1alpha1.ThanosReceive{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosReceive",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosReceiveSpec{
+			Router: v1alpha1.RouterSpec{
+				CommonFields: v1alpha1.CommonFields{
+					Image:                ptr.To(clusters.TemplateFn(clusters.ReceiveRouter, templates.Images)),
+					Version:              ptr.To(clusters.TemplateFn(clusters.ReceiveRouter, templates.Versions)),
+					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+					LogLevel:             ptr.To(clusters.TemplateFn(clusters.ReceiveRouter, templates.LogLevels)),
+					LogFormat:            ptr.To("logfmt"),
+					ResourceRequirements: ptr.To(clusters.TemplateFn(clusters.ReceiveRouter, templates.ResourceRequirements)),
+				},
+				Replicas:          clusters.TemplateFn(clusters.ReceiveRouter, templates.Replicas),
+				ReplicationFactor: 3,
+				ExternalLabels: map[string]string{
+					"receive": "true",
+				},
+				Additional: v1alpha1.Additional{
+					Containers: []corev1.Container{
+						tracingSidecar(templates),
+					},
+					Args: []string{
+						`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-receive-router"
+"type": "JAEGER"`,
+					},
+				},
+			},
+			Ingester: v1alpha1.IngesterSpec{
+				DefaultObjectStorageConfig: clusters.TemplateFn(clusters.DefaultBucket, templates.ObjectStorageBucket),
+				Additional: v1alpha1.Additional{
+					Containers: []corev1.Container{
+						tracingSidecar(templates),
+					},
+					Args: []string{
+						`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-receive-ingester"
+"type": "JAEGER"`,
+					},
+				},
+				Hashrings: []v1alpha1.IngesterHashringSpec{
+					{
+						Name: "default",
+						CommonFields: v1alpha1.CommonFields{
+							Image:                ptr.To(clusters.TemplateFn(clusters.ReceiveIngestorDefault, templates.Images)),
+							Version:              ptr.To(clusters.TemplateFn(clusters.ReceiveIngestorDefault, templates.Versions)),
+							ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+							LogLevel:             ptr.To(clusters.TemplateFn(clusters.ReceiveIngestorDefault, templates.LogLevels)),
+							LogFormat:            ptr.To("logfmt"),
+							ResourceRequirements: ptr.To(clusters.TemplateFn(clusters.ReceiveIngestorDefault, templates.ResourceRequirements)),
+						},
+						ExternalLabels: map[string]string{
+							"replica": "$(POD_NAME)",
+						},
+						Replicas: clusters.TemplateFn(clusters.ReceiveIngestorDefault, templates.Replicas),
+						TSDBConfig: v1alpha1.TSDBConfig{
+							Retention: v1alpha1.Duration("1d"),
+						},
+						AsyncForwardWorkerCount:  ptr.To(uint64(5)),
+						TooFarInFutureTimeWindow: ptr.To(v1alpha1.Duration("5m")),
+						StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
+							StoreLimitsRequestSamples: 0,
+							StoreLimitsRequestSeries:  0,
+						},
+						TenancyConfig: &v1alpha1.TenancyConfig{
+							TenantMatcherType: "exact",
+							DefaultTenantID:   "FB870BF3-9F3A-44FF-9BF7-D7A047A52F43",
+							TenantHeader:      "THANOS-TENANT",
+							TenantLabelName:   "tenant_id",
+						},
+						ObjectStorageConfig: ptr.To(clusters.TemplateFn(clusters.DefaultBucket, templates.ObjectStorageBucket)),
+						StorageSize:         clusters.TemplateFn(clusters.ReceiveIngestorDefault, templates.StorageSize),
+					},
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+}
+
+func defaultCompactCR(namespace string, templates clusters.TemplateMaps) runtime.Object {
+	defaultCompact := &v1alpha1.ThanosCompact{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosCompact",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosCompactSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(clusters.TemplateFn(clusters.CompactDefault, templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn(clusters.CompactDefault, templates.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(clusters.TemplateFn(clusters.CompactDefault, templates.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(clusters.TemplateFn(clusters.CompactDefault, templates.ResourceRequirements)),
+			},
+			ObjectStorageConfig: clusters.TemplateFn(clusters.DefaultBucket, templates.ObjectStorageBucket),
+			RetentionConfig: v1alpha1.RetentionResolutionConfig{
+				Raw:         v1alpha1.Duration("365d"),
+				FiveMinutes: v1alpha1.Duration("365d"),
+				OneHour:     v1alpha1.Duration("365d"),
+			},
+			DownsamplingConfig: &v1alpha1.DownsamplingConfig{
+				Concurrency: ptr.To(int32(1)),
+				Disable:     ptr.To(false),
+			},
+			CompactConfig: &v1alpha1.CompactConfig{
+				CompactConcurrency: ptr.To(int32(1)),
+			},
+			DebugConfig: &v1alpha1.DebugConfig{
+				AcceptMalformedIndex: ptr.To(true),
+				HaltOnError:          ptr.To(true),
+				MaxCompactionLevel:   ptr.To(int32(3)),
+			},
+			StorageSize: clusters.TemplateFn(clusters.CompactDefault, templates.StorageSize),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(templates),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-compact"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+
+	defaultCompact.Spec.Additional.Containers = append(defaultCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-rhobs", "compact-tls").GetContainer())
+	defaultCompact.Spec.Additional.Volumes = append(defaultCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
+
+	return defaultCompact
+}
+
+func defaultRulerCR(namespace string, templates clusters.TemplateMaps) runtime.Object {
 	return &v1alpha1.ThanosRuler{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1245,15 +1510,15 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 		},
 		Spec: v1alpha1.ThanosRulerSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("RULER", m.Images)),
-				Version:              ptr.To(TemplateFn("RULER", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn(clusters.Ruler, templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn(clusters.Ruler, templates.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("RULER", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn(clusters.Ruler, templates.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("RULER", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn(clusters.Ruler, templates.ResourceRequirements)),
 			},
 			Paused:   ptr.To(true),
-			Replicas: TemplateFn("RULER", m.Replicas),
+			Replicas: clusters.TemplateFn(clusters.Ruler, templates.Replicas),
 			RuleConfigSelector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					"operator.thanos.io/rule-file": "true",
@@ -1273,15 +1538,15 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 			ExternalLabels: map[string]string{
 				"rule_replica": "$(NAME)",
 			},
-			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn(clusters.DefaultBucket, templates.ObjectStorageBucket),
 			AlertmanagerURL:     "dnssrv+http://alertmanager-cluster." + namespace + ".svc.cluster.local:9093",
 			AlertLabelDrop:      []string{"rule_replica"},
 			Retention:           v1alpha1.Duration("48h"),
 			EvaluationInterval:  v1alpha1.Duration("1m"),
-			StorageSize:         string(TemplateFn("RULER", m.StorageSize)),
+			StorageSize:         string(clusters.TemplateFn(clusters.Ruler, templates.StorageSize)),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar(m),
+					tracingSidecar(templates),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -1300,13 +1565,226 @@ func rulerCR(namespace string, m TemplateMaps) runtime.Object {
 	}
 }
 
-func compactTempProduction() []runtime.Object {
+func queryCR(namespace string, templates clusters.TemplateMaps, oauth bool, withAdditonalArgs ...string) []runtime.Object {
+	// placeholder for prod caches - temp removed whilst debugging
+	qfeCacheTempProd := v1alpha1.Additional{
+		Args: []string{`--query-range.response-cache-config=
+  "type": "memcached"
+  "config":
+    "addresses":
+      - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
+    "dns_provider_update_interval": "30s"
+    "max_async_buffer_size": 1000000
+    "max_async_concurrency": 100
+    "max_get_multi_batch_size": 500
+    "max_get_multi_concurrency": 100
+    "max_idle_connections": 500
+    "max_item_size": "100MiB"
+    "timeout": "5s"`,
+		},
+	}
+	log.Println(qfeCacheTempProd)
+
+	var objs []runtime.Object
+
+	query := &v1alpha1.ThanosQuery{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosQuery",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosQuerySpec{
+			Additional: v1alpha1.Additional{
+				Args: withAdditonalArgs,
+			},
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(clusters.TemplateFn("QUERY", templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn("QUERY", templates.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(clusters.TemplateFn("QUERY", templates.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("QUERY", templates.ResourceRequirements)),
+			},
+			StoreLabelSelector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/store-api": "true",
+					"app.kubernetes.io/part-of":    "thanos",
+				},
+			},
+			Replicas: clusters.TemplateFn("QUERY", templates.Replicas),
+			ReplicaLabels: []string{
+				"prometheus_replica",
+				"replica",
+				"rule_replica",
+			},
+			WebConfig: &v1alpha1.WebConfig{
+				PrefixHeader: ptr.To("X-Forwarded-Prefix"),
+			},
+			GRPCProxyStrategy: "lazy",
+			TelemetryQuantiles: &v1alpha1.TelemetryQuantiles{
+				Duration: []string{
+					"0.1", "0.25", "0.75", "1.25", "1.75", "2.5", "3", "5", "10", "15", "30", "60", "120",
+				},
+			},
+			QueryFrontend: &v1alpha1.QueryFrontendSpec{
+				CommonFields: v1alpha1.CommonFields{
+					Image:                ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.Images)),
+					Version:              ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.Versions)),
+					ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+					LogLevel:             ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.LogLevels)),
+					LogFormat:            ptr.To("logfmt"),
+					ResourceRequirements: ptr.To(clusters.TemplateFn("QUERY_FRONTEND", templates.ResourceRequirements)),
+				},
+				Replicas:             clusters.TemplateFn("QUERY_FRONTEND", templates.Replicas),
+				CompressResponses:    true,
+				LogQueriesLongerThan: ptr.To(v1alpha1.Duration("10s")),
+				LabelsMaxRetries:     3,
+				QueryRangeMaxRetries: 3,
+				QueryLabelSelector: &metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"operator.thanos.io/query-api": "true",
+					},
+				},
+				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("48h")),
+				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("48h")),
+				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+				PodDisruptionBudgetConfig: &v1alpha1.PodDisruptionBudgetConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+	if oauth {
+		route := &routev1.Route{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "route.openshift.io/v1",
+				Kind:       "Route",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-query-frontend-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/part-of": "thanos",
+				},
+			},
+			Spec: routev1.RouteSpec{
+				To: routev1.RouteTargetReference{
+					Kind:   "Service",
+					Name:   "thanos-query-frontend-rhobs",
+					Weight: ptr.To(int32(100)),
+				},
+				Port: &routev1.RoutePort{
+					TargetPort: intstr.FromString("https"), // Assuming the oauth-proxy is exposing on https port
+				},
+				TLS: &routev1.TLSConfig{
+					Termination:                   routev1.TLSTerminationReencrypt,
+					InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+				},
+			},
+		}
+		objs = append(objs, route)
+		query.Annotations = map[string]string{
+			"service.beta.openshift.io/serving-cert-secret-name":               "query-frontend-tls",
+			"serviceaccounts.openshift.io/oauth-redirectreference.application": `{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-query-frontend-rhobs"}}`,
+		}
+		query.Spec.QueryFrontend.Additional.ServicePorts = append(query.Spec.QueryFrontend.Additional.ServicePorts, corev1.ServicePort{
+			Name: "https",
+			Port: 8443,
+			TargetPort: intstr.IntOrString{
+				Type:   intstr.Int,
+				IntVal: 8443,
+			},
+		})
+		query.Spec.QueryFrontend.Additional.Containers = append(query.Spec.QueryFrontend.Additional.Containers, makeOauthProxy(9090, namespace, "thanos-query-frontend-rhobs", "query-frontend-tls").GetContainer())
+		query.Spec.QueryFrontend.Additional.Volumes = append(query.Spec.QueryFrontend.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "query-frontend-tls"))
+	}
+
+	objs = append(objs, query)
+	return objs
+}
+
+func rulerCR(namespace string, templates clusters.TemplateMaps) runtime.Object {
+	return &v1alpha1.ThanosRuler{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "monitoring.thanos.io/v1alpha1",
+			Kind:       "ThanosRuler",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "rhobs",
+			Namespace: namespace,
+		},
+		Spec: v1alpha1.ThanosRulerSpec{
+			CommonFields: v1alpha1.CommonFields{
+				Image:                ptr.To(clusters.TemplateFn("RULER", templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn("RULER", templates.Versions)),
+				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
+				LogLevel:             ptr.To(clusters.TemplateFn("RULER", templates.LogLevels)),
+				LogFormat:            ptr.To("logfmt"),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("RULER", templates.ResourceRequirements)),
+			},
+			Paused:   ptr.To(true),
+			Replicas: clusters.TemplateFn("RULER", templates.Replicas),
+			RuleConfigSelector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/rule-file": "true",
+				},
+			},
+			PrometheusRuleSelector: metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/prometheus-rule": "true",
+				},
+			},
+			QueryLabelSelector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"operator.thanos.io/query-api": "true",
+					"app.kubernetes.io/part-of":    "thanos",
+				},
+			},
+			ExternalLabels: map[string]string{
+				"rule_replica": "$(NAME)",
+			},
+			ObjectStorageConfig: clusters.TemplateFn("DEFAULT", templates.ObjectStorageBucket),
+			AlertmanagerURL:     "dnssrv+http://alertmanager-cluster." + namespace + ".svc.cluster.local:9093",
+			AlertLabelDrop:      []string{"rule_replica"},
+			Retention:           v1alpha1.Duration("48h"),
+			EvaluationInterval:  v1alpha1.Duration("1m"),
+			StorageSize:         string(clusters.TemplateFn("RULER", templates.StorageSize)),
+			Additional: v1alpha1.Additional{
+				Containers: []corev1.Container{
+					tracingSidecar(templates),
+				},
+				Args: []string{
+					`--tracing.config="config":
+  "sampler_param": 2
+  "sampler_type": "ratelimiting"
+  "service_name": "thanos-ruler"
+"type": "JAEGER"`,
+				},
+			},
+			FeatureGates: &v1alpha1.FeatureGates{
+				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
+					Enable: ptr.To(false),
+				},
+			},
+		},
+	}
+}
+
+func compactTempProduction(templates clusters.TemplateMaps) []runtime.Object {
 	ns := "rhobs-production"
-	image := thanosImage
-	version := thanosVersionProd
+	image := string(clusters.TemplateFn("COMPACT", templates.Images))
+	version := string(clusters.TemplateFn("RULER", templates.Versions))
 	storageBucket := "TELEMETER"
 
-	m := ProductionMaps
+	m := clusters.ProductionMaps
 
 	notTelemeter := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
@@ -1354,7 +1832,7 @@ func compactTempProduction() []runtime.Object {
 				LogLevel:        ptr.To("warn"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn(storageBucket, m.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("3650d"),
 				FiveMinutes: v1alpha1.Duration("3650d"),
@@ -1419,7 +1897,7 @@ func compactTempProduction() []runtime.Object {
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn(storageBucket, m.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("3650d"),
 				FiveMinutes: v1alpha1.Duration("3650d"),
@@ -1487,7 +1965,7 @@ func compactTempProduction() []runtime.Object {
 				LogLevel:        ptr.To("info"),
 				LogFormat:       ptr.To("logfmt"),
 			},
-			ObjectStorageConfig: TemplateFn(storageBucket, m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn(storageBucket, m.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("3650d"),
 				FiveMinutes: v1alpha1.Duration("3650d"),
@@ -1521,7 +1999,7 @@ func compactTempProduction() []runtime.Object {
 }
 
 // RHOBS-904: Standalone Compact for RH Resource Optimisation (ROS) Managed Service
-func stageCompactCR(namespace string, m TemplateMaps) []runtime.Object {
+func stageCompactCR(namespace string, templates clusters.TemplateMaps) []runtime.Object {
 	rosCompact := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1533,14 +2011,14 @@ func stageCompactCR(namespace string, m TemplateMaps) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("COMPACT_ROS", m.Images)),
-				Version:              ptr.To(TemplateFn("COMPACT_ROS", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("COMPACT_ROS", templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn("COMPACT_ROS", templates.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("COMPACT_ROS", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("COMPACT_ROS", templates.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("COMPACT_ROS", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("COMPACT_ROS", templates.ResourceRequirements)),
 			},
-			ObjectStorageConfig: TemplateFn("ROS", m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn("ROS", templates.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("14d"),
 				FiveMinutes: v1alpha1.Duration("14d"),
@@ -1558,10 +2036,10 @@ func stageCompactCR(namespace string, m TemplateMaps) []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(3)),
 			},
-			StorageSize: TemplateFn("COMPACT_ROS", m.StorageSize),
+			StorageSize: clusters.TemplateFn("COMPACT_ROS", templates.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar(m),
+					tracingSidecar(templates),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -1582,7 +2060,7 @@ func stageCompactCR(namespace string, m TemplateMaps) []runtime.Object {
 	return []runtime.Object{rosCompact}
 }
 
-func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
+func compactCR(namespace string, templates clusters.TemplateMaps, oauth bool) []runtime.Object {
 	defaultCompact := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
@@ -1594,14 +2072,14 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Image:                ptr.To(TemplateFn("COMPACT_DEFAULT", m.Images)),
-				Version:              ptr.To(TemplateFn("COMPACT_DEFAULT", m.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("COMPACT_DEFAULT", templates.Images)),
+				Version:              ptr.To(clusters.TemplateFn("COMPACT_DEFAULT", templates.Versions)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("COMPACT_DEFAULT", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("COMPACT_DEFAULT", templates.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("COMPACT_DEFAULT", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("COMPACT_DEFAULT", templates.ResourceRequirements)),
 			},
-			ObjectStorageConfig: TemplateFn("DEFAULT", m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn("DEFAULT", templates.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("365d"),
 				FiveMinutes: v1alpha1.Duration("365d"),
@@ -1619,10 +2097,10 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(3)),
 			},
-			StorageSize: TemplateFn("COMPACT_DEFAULT", m.StorageSize),
+			StorageSize: clusters.TemplateFn("COMPACT_DEFAULT", templates.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar(m),
+					tracingSidecar(templates),
 				},
 				Args: []string{
 					`--tracing.config="config":
@@ -1656,14 +2134,14 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 		},
 		Spec: v1alpha1.ThanosCompactSpec{
 			CommonFields: v1alpha1.CommonFields{
-				Version:              ptr.To(TemplateFn("COMPACT_TELEMETER", m.Versions)),
-				Image:                ptr.To(TemplateFn("COMPACT_TELEMETER", m.Images)),
+				Version:              ptr.To(clusters.TemplateFn("COMPACT_TELEMETER", templates.Versions)),
+				Image:                ptr.To(clusters.TemplateFn("COMPACT_TELEMETER", templates.Images)),
 				ImagePullPolicy:      ptr.To(corev1.PullIfNotPresent),
-				LogLevel:             ptr.To(TemplateFn("COMPACT_TELEMETER", m.LogLevels)),
+				LogLevel:             ptr.To(clusters.TemplateFn("COMPACT_TELEMETER", templates.LogLevels)),
 				LogFormat:            ptr.To("logfmt"),
-				ResourceRequirements: ptr.To(TemplateFn("COMPACT_TELEMETER", m.ResourceRequirements)),
+				ResourceRequirements: ptr.To(clusters.TemplateFn("COMPACT_TELEMETER", templates.ResourceRequirements)),
 			},
-			ObjectStorageConfig: TemplateFn("TELEMETER", m.ObjectStorageBucket),
+			ObjectStorageConfig: clusters.TemplateFn("TELEMETER", templates.ObjectStorageBucket),
 			RetentionConfig: v1alpha1.RetentionResolutionConfig{
 				Raw:         v1alpha1.Duration("365d"),
 				FiveMinutes: v1alpha1.Duration("365d"),
@@ -1681,10 +2159,10 @@ func compactCR(namespace string, m TemplateMaps, oauth bool) []runtime.Object {
 				HaltOnError:          ptr.To(true),
 				MaxCompactionLevel:   ptr.To(int32(3)),
 			},
-			StorageSize: TemplateFn("COMPACT_TELEMETER", m.StorageSize),
+			StorageSize: clusters.TemplateFn("COMPACT_TELEMETER", templates.StorageSize),
 			Additional: v1alpha1.Additional{
 				Containers: []corev1.Container{
-					tracingSidecar(m),
+					tracingSidecar(templates),
 				},
 				Args: []string{
 					`--tracing.config="config":

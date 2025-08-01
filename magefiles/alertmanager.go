@@ -14,6 +14,7 @@ import (
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"github.com/rhobs/configuration/clusters"
 	"github.com/rhobs/configuration/services_go/observatorium"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -40,6 +41,24 @@ const (
 	defaultAlertmanagerMemoryRequest = "256Mi"
 	defaultAlertmanagerMemoryLimit   = "5Gi"
 )
+
+func (b Build) Alertmanager(config clusters.ClusterConfig) {
+	gen := b.generator(config, "alertmanager")
+
+	// TODO: @moadz Extract Alertmanager options to an envTemplate in template.go
+	k8s := alertmanagerKubernetes(alertManagerOptions(), manifestOptions{
+		namespace: config.Namespace,
+		image:     defaultAlertManagerImage,
+		imageTag:  defaultAlertManagerImageTag,
+		resourceRequirements: resourceRequirements{
+			cpuRequest:    defaultAlertmanagerCPURequest,
+			cpuLimit:      defaultAlertmanagerCPULimit,
+			memoryRequest: defaultAlertmanagerMemoryRequest,
+			memoryLimit:   defaultAlertmanagerMemoryLimit,
+		},
+	})
+	buildAlertmanager(k8s.Objects(), config.Namespace, gen)
+}
 
 // Alertmanager Generates the Alertmanager configuration for the stage environment.
 func (s Stage) Alertmanager() {

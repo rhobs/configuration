@@ -18,37 +18,48 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/utils/ptr"
+
+	"github.com/rhobs/configuration/clusters"
 )
 
 const (
 	crdTemplateDir = "bundle"
 
-	CRDRefProd  = "dc27793644ad40fd92aeed9a0e366463d0e558a6"
-	CRDRefStage = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
+	CRDRefProd        = "dc27793644ad40fd92aeed9a0e366463d0e558a6"
+	CRDRefStage       = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
+	CRDRefIntegration = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
 )
+
+// ThanosOperatorCRDS Generates the CRDs for the Thanos operator.
+// This is synced from the latest upstream ref at:
+// https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
+func (b Build) ThanosOperatorCRDS(config clusters.ClusterConfig) error {
+	gen := b.generator(config, "thanos-operator-crds")
+	return crds(gen, clusters.ProductionMaps)
+}
 
 // CRDS Generates the CRDs for the Thanos operator.
 // This is synced from the latest upstream ref at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (p Production) CRDS() error {
-	return crds(p.generator(crdTemplateDir), CRDRefProd)
+	return crds(p.generator(crdTemplateDir), clusters.ProductionMaps)
 }
 
 // CRDS Generates the CRDs for the Thanos operator.
 // This is synced from the latest upstream ref at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (s Stage) CRDS() error {
-	return crds(s.generator(crdTemplateDir), CRDRefStage)
+	return crds(s.generator(crdTemplateDir), clusters.StageMaps)
 }
 
 // CRDS Generates the CRDs for the Thanos operator for a local environment.
 // This is synced from the latest upstream main at:
 // https://github.com/thanos-community/thanos-operator/tree/main/config/crd/bases
 func (l Local) CRDS() error {
-	return crds(l.generator(crdTemplateDir), CRDRefStage)
+	return crds(l.generator(crdTemplateDir), clusters.StageMaps)
 }
 
-func crds(gen *mimic.Generator, ref string) error {
+func crds(gen *mimic.Generator, templates clusters.TemplateMaps) error {
 	const (
 		compact   = "thanoscompacts.yaml"
 		queries   = "thanosqueries.yaml"
@@ -57,7 +68,7 @@ func crds(gen *mimic.Generator, ref string) error {
 		stores    = "thanosstores.yaml"
 	)
 
-	base := "https://raw.githubusercontent.com/thanos-community/thanos-operator/" + ref + "/config/crd/bases/monitoring.thanos.io_"
+	base := "https://raw.githubusercontent.com/thanos-community/thanos-operator/" + CRDRefProd + "/config/crd/bases/monitoring.thanos.io_"
 
 	var objs []runtime.Object
 	for _, component := range []string{compact, queries, receivers, rulers, stores} {
@@ -94,17 +105,33 @@ func crds(gen *mimic.Generator, ref string) error {
 	return nil
 }
 
+func (b Build) ThanosOperator(config clusters.ClusterConfig) {
+	gen := b.generator(config, "thanos-operator")
+
+	objs := operatorResources(config.Namespace, config.Templates)
+
+	gen.Add("operator.yaml", encoding.GhodssYAML(
+		openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-manager"}, []templatev1.Parameter{}),
+	))
+
+	gen.Generate()
+}
+
 // Operator Generates the Thanos Operator Manager resources.
 func (p Production) Operator() {
-	operator(p.namespace(), p.generator(crdTemplateDir), ProductionMaps)
+	gen := p.generator("operator")
+	templates := clusters.ProductionMaps
+	operator(p.namespace(), gen, templates)
 }
 
 // Operator Generates the Thanos Operator Manager resources.
 func (s Stage) Operator() {
-	operator(s.namespace(), s.generator(crdTemplateDir), StageMaps)
+	gen := s.generator("operator")
+	templates := clusters.StageMaps
+	operator(s.namespace(), gen, templates)
 }
 
-func operator(namespace string, gen *mimic.Generator, m TemplateMaps) {
+func operator(namespace string, gen *mimic.Generator, m clusters.TemplateMaps) {
 	gen.Add("operator.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(
 			operatorResources(namespace, m),
@@ -118,36 +145,12 @@ func operator(namespace string, gen *mimic.Generator, m TemplateMaps) {
 
 // Operator Generates the Thanos Operator Manager resources for a local environment.
 func (l Local) Operator() {
-	templateDir := "bundle"
-
-	gen := l.generator(templateDir)
-
-	objs := operatorResources(l.namespace(), LocalMaps)
-
-	// Create namespace object
-	namespace := &corev1.Namespace{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: "v1",
-			Kind:       "Namespace",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name: l.namespace(),
-		},
-	}
-
-	// Add all resources to the generator
-	gen.Add("operator.yaml", encoding.GhodssYAML(
-		namespace,
-		objs[0], objs[1], objs[2], objs[3], objs[4], objs[5],
-		objs[6], objs[7], objs[8], objs[9], objs[10], objs[11],
-		objs[12], objs[13], objs[14], objs[15], objs[16], objs[17],
-		objs[18], objs[19],
-	))
-
-	gen.Generate()
+	gen := l.generator("operator")
+	templates := clusters.LocalMaps
+	operator(l.namespace(), gen, templates)
 }
 
-func operatorResources(namespace string, m TemplateMaps) []runtime.Object {
+func operatorResources(namespace string, m clusters.TemplateMaps) []runtime.Object {
 	objs := []runtime.Object{
 		&corev1.ServiceAccount{
 			TypeMeta: metav1.TypeMeta{
@@ -850,7 +853,7 @@ func operatorServingCertConfigMaps(namespace string) []*corev1.ConfigMap {
 	return []*corev1.ConfigMap{serviceCert, rbacConfig}
 }
 
-func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
+func operatorDeployment(namespace string, m clusters.TemplateMaps) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "apps/v1",
@@ -900,7 +903,7 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 					Containers: []corev1.Container{
 						{
 							Name:            "kube-rbac-proxy",
-							Image:           TemplateFn("KUBE_RBAC_PROXY", m.Images),
+							Image:           clusters.TemplateFn(clusters.KubeRbacProxy, m.Images),
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Args: []string{
 								"--secure-listen-address=0.0.0.0:8443",
@@ -935,7 +938,7 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 									Protocol:      corev1.ProtocolTCP,
 								},
 							},
-							Resources: TemplateFn("KUBE_RBAC_PROXY", m.ResourceRequirements),
+							Resources: clusters.TemplateFn(clusters.KubeRbacProxy, m.ResourceRequirements),
 							SecurityContext: &corev1.SecurityContext{
 								AllowPrivilegeEscalation: ptr.To(false),
 								Capabilities: &corev1.Capabilities{
@@ -945,7 +948,7 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 						},
 						{
 							Name:            "manager",
-							Image:           TemplateFn("THANOS_OPERATOR", m.Images),
+							Image:           clusters.TemplateFn(clusters.ThanosOperator, m.Images),
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Command:         []string{"/manager"},
 							Args: []string{
@@ -984,7 +987,7 @@ func operatorDeployment(namespace string, m TemplateMaps) *appsv1.Deployment {
 								FailureThreshold:    3,
 								SuccessThreshold:    1,
 							},
-							Resources: TemplateFn("MANAGER", m.ResourceRequirements),
+							Resources: clusters.TemplateFn(clusters.Manager, m.ResourceRequirements),
 							SecurityContext: &corev1.SecurityContext{
 								AllowPrivilegeEscalation: ptr.To(false),
 								Capabilities: &corev1.Capabilities{

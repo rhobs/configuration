@@ -6,12 +6,13 @@ import (
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"github.com/rhobs/configuration/clusters"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/ptr"
 )
 
-func (b Build) ServiceMonitors(config ClusterConfig) {
+func (b Build) ThanosOperatorServiceMonitors(config clusters.ClusterConfig) {
 	gen := b.generator(config, "servicemonitors")
 
 	objs := createServiceMonitors(config.Namespace)

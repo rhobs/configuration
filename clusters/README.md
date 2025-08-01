@@ -1,6 +1,6 @@
 # RHOBS Configuration Build System
 
-This repository contains the configuration management system for RHOBS (Red Hat Observability Service) clusters. The build system is implemented using [Mage](https://magefile.org/) and provides a flexible, code-driven approach to managing multiple cluster deployments.
+This directory contains the configuration management system for RHOBS (Red Hat Observability Service) clusters. The system generates Kubernetes manifests for Thanos-based observability infrastructure across multiple environments. Build orchestration is handled through [Mage](https://magefile.org/) build targets that process Go-based cluster definitions and templates.
 
 ## Table of Contents
 
@@ -13,29 +13,37 @@ This repository contains the configuration management system for RHOBS (Red Hat 
 - [Template Configuration](#template-configuration)
 - [Advanced Usage](#advanced-usage)
 
-### Key Design Principles
+### Architecture Overview
 
-1. **Self-Registering Clusters**: Each cluster auto-registers via `init()` functions
-2. **Inheritance-First**: Base templates with targeted overrides
-3. **Composable Build Steps**: Mix and match build components
-4. **Environment Awareness**: Integration, staging, and production variants
-5. **Type Safety**: Go's type system prevents configuration errors
+1. **Cluster Registration**: Clusters register themselves in a global registry during package initialization through `init()` functions
+2. **Template Inheritance**: Base templates define default values, with cluster-specific overrides applied through composition
+3. **Modular Build Pipeline**: Build steps can be combined and reordered per cluster through configurable pipelines
+4. **Environment Support**: Configurations support integration, staging, and production deployment targets
+5. **Type-Safe Configuration**: Go types enforce compile-time validation of configuration parameters
+6. **Centralized Constants**: Template parameter names are defined as exportable constants to prevent naming inconsistencies
+
+### Additional Notes
+
+- **Template Key Constants**: All template parameter names are defined as exportable constants in `template.go`
 
 ## Build System Components
 
 ### Core Files
 
 ```
+clusters/
+├── clusters.go         # Cluster registry, types, and build step constants
+├── template.go         # Template system with exportable constants
+└── cluster_*.go        # Individual cluster definitions
+
 magefiles/
 ├── magefile.go         # Main build orchestration
-├── clusters.go         # Cluster registry and types
-├── template.go         # Template system and inheritance
 ├── thanos.go           # Thanos component generation
 ├── operator.go         # Operator component generation
 ├── secrets.go          # Secrets management
 ├── alertmanager.go     # Alertmanager configuration
 ├── servicemonitors.go  # Service monitoring setup
-└── cluster_*.go        # Individual cluster definitions
+└── gateway.go          # Gateway configuration
 ```
 
 ### Cluster Registry
@@ -56,32 +64,34 @@ func init() {
 }
 ```
 
+The cluster registry is implemented in [`clusters.go`](clusters.go) with the [`RegisterCluster`](clusters.go#L45) function and [`ClusterConfig`](clusters.go#L18) type.
+
 ## Available Build Steps
 
-The system provides modular build steps that can be composed per cluster:
+Modular build steps can be composed per cluster:
 
-| Step | Constant | Description |
-|------|----------|-------------|
-| **CRDs** | `StepCRDS` | Thanos Operator Custom Resource Definitions |
-| **Operator** | `StepOperator` | Thanos Operator Manager and RBAC |
-| **Thanos** | `StepThanos` | Core Thanos components (Query, Store, Receive, etc.) |
-| **Service Monitors** | `StepServiceMonitors` | Prometheus ServiceMonitor resources |
-| **Alertmanager** | `StepAlertmanager` | Alertmanager configuration |
-| **Secrets** | `StepSecrets` | Required secrets and credentials |
-| **Gateway** | `StepGateway` | API Gateway configuration |
+| Step | Constant | Description | Implementation |
+|------|----------|-------------|----------------|
+| **Thanos Operator CRDs** | `StepThanosOperatorCRDS` | Thanos Operator Custom Resource Definitions | [`operator.go`](../magefiles/operator.go) |
+| **Thanos Operator** | `StepThanosOperator` | Thanos Operator Manager and RBAC | [`operator.go`](../magefiles/operator.go) |
+| **Default Thanos Stack** | `StepDefaultThanosStack` | Core Thanos components (Query, Store, Receive, etc.) | [`thanos.go`](../magefiles/thanos.go) |
+| **Service Monitors** | `StepThanosOperatorServiceMonitors` | Prometheus ServiceMonitor resources | [`servicemonitors.go`](../magefiles/servicemonitors.go) |
+| **Alertmanager** | `StepAlertmanager` | Alertmanager configuration | [`alertmanager.go`](../magefiles/alertmanager.go) |
+| **Secrets** | `StepSecrets` | Required secrets and credentials | [`secrets.go`](../magefiles/secrets.go) |
+| **Gateway** | `StepGateway` | API Gateway configuration | [`gateway.go`](../magefiles/gateway.go) |
 
 ### Default Build Pipeline
 
 ```go
 func DefaultBuildSteps() []string {
     return []string{
-        StepThanos,          // Core components first
-        StepCRDS,            // Custom Resource Definitions
-        StepOperator,        // Operator deployment
-        StepServiceMonitors, // Monitoring setup
-        StepAlertmanager,    // Alerting configuration
-        StepSecrets,         // Secrets last
-        StepGateway,         // Gateway configuration
+        StepThanosOperatorCRDS,            // Custom Resource Definitions first
+        StepThanosOperator,                // Thanos Operator Manager and RBAC
+        StepDefaultThanosStack,            // Core Thanos components
+        StepThanosOperatorServiceMonitors, // Monitoring setup
+        StepAlertmanager,                  // Alerting configuration
+        StepSecrets,                       // Secrets
+        StepGateway,                       // Gateway configuration
     }
 }
 ```
@@ -104,14 +114,63 @@ type TemplateMaps struct {
 }
 ```
 
+The [`TemplateMaps`](template.go#L16) type and [`ParamMap`](template.go#L13) are defined in [`template.go`](template.go).
+
+### Template Key Constants
+
+Exportable constants are available for all template keys to ensure type safety and consistency:
+
+```go
+// Service and component keys
+const (
+    MemcachedExporter = "MEMCACHED_EXPORTER"
+    ApiCache          = "API_CACHE"
+    Jaeger            = "JAEGER_AGENT"
+    ObservatoriumAPI  = "OBSERVATORIUM_API"
+    OpaAMS            = "OPA_AMS"
+    
+    // Thanos component keys
+    ThanosOperator         = "THANOS_OPERATOR"
+    KubeRbacProxy          = "KUBE_RBAC_PROXY"
+    StoreDefault           = "STORE_DEFAULT"
+    ReceiveRouter          = "RECEIVE_ROUTER"
+    ReceiveIngestorDefault = "RECEIVE_INGESTOR_DEFAULT"
+    Ruler                  = "RULER"
+    CompactDefault         = "COMPACT_DEFAULT"
+    Query                  = "QUERY"
+    QueryFrontend          = "QUERY_FRONTEND"
+    Manager                = "MANAGER"
+    
+    // Object storage keys
+    Default   = "DEFAULT"
+    Telemeter = "TELEMETER"
+    ROS       = "ROS"
+)
+```
+
 ### Override Types
 
-- **`Images`**: Container image overrides
-- **`Versions`**: Component version overrides  
-- **`LogLevels`**: Logging level configuration
-- **`Replicas`**: Replica count overrides
-- **`StorageSizes`**: Storage size configuration
-- **`Resources`**: CPU/Memory resource overrides
+The template system supports several override types, all implemented in [`template.go`](template.go):
+
+- **[`Images`](template.go#L41)**: Container image overrides
+- **[`Versions`](template.go#L106)**: Component version overrides  
+- **[`LogLevels`](template.go#L93)**: Logging level configuration
+- **[`Replicas`](template.go#L54)**: Replica count overrides
+- **[`StorageSizes`](template.go#L67)**: Storage size configuration
+- **[`Resources`](template.go#L80)**: CPU/Memory resource overrides
+
+### Using Template Functions
+
+When accessing template values in code, use the [`TemplateFn`](template.go#L121) function with the provided constants:
+
+```go
+// Preferred: Using constants
+replicas := clusters.TemplateFn(clusters.Query, templates.Replicas)
+image := clusters.TemplateFn(clusters.StoreDefault, templates.Images)
+
+// Avoid: Using string literals (error-prone)
+replicas := clusters.TemplateFn("QUERY", templates.Replicas)
+```
 
 ### Inheritance Example
 
@@ -120,25 +179,27 @@ func productionClusterTemplates() TemplateMaps {
     return DefaultBaseTemplate().Override(
         // High-traffic production needs more replicas
         Replicas{
-            "QUERY":                    3,
-            "RECEIVE_ROUTER":           2,
-            "RECEIVE_INGESTOR_DEFAULT": 3,
+            clusters.Query:                    3,
+            clusters.ReceiveRouter:           2,
+            clusters.ReceiveIngestorDefault: 3,
         },
         // Production-specific images
         Images{
-            "THANOS_OPERATOR": "quay.io/rhobs/thanos-operator:v1.0.0",
+            clusters.ThanosOperator: "quay.io/rhobs/thanos-operator:v1.0.0",
         },
         // Enhanced logging for debugging
         LogLevels{
-            "QUERY": "debug",
+            clusters.Query: "debug",
         },
         // Larger storage for high volume
         StorageSizes{
-            "RECEIVE_DEFAULT_STORAGE_SIZE": v1alpha1.StorageSize("100Gi"),
+            clusters.ReceiveIngestorDefault: v1alpha1.StorageSize("100Gi"),
         },
     )
 }
 ```
+
+This example uses [`DefaultBaseTemplate()`](template.go#L187) and the [`.Override()`](template.go#L27) method.
 
 ## Cluster Definitions
 
@@ -147,7 +208,7 @@ Each cluster is defined in its own file following the pattern `cluster_<name>.go
 ### Basic Cluster Definition
 
 ```go
-package main
+package clusters
 
 const (
     ClusterMyProduction ClusterName = "my-production"
@@ -165,11 +226,13 @@ func init() {
 
 func myProductionTemplates() TemplateMaps {
     return DefaultBaseTemplate().Override(
-        Replicas{"QUERY": 3},
-        LogLevels{"QUERY": "warn"},
+        Replicas{clusters.Query: 3},
+        LogLevels{clusters.Query: "warn"},
     )
 }
 ```
+
+This uses the [`ClusterName`](clusters.go#L11) type, [`EnvironmentProduction`](clusters.go#L14) constant, and [`DefaultBuildSteps()`](clusters.go#L91) function.
 
 ### Advanced Cluster with Custom Build Steps
 
@@ -186,10 +249,10 @@ func init() {
 
 func customMinimalSteps() []string {
     return []string{
-        StepCRDS,     // CRDs first
-        StepOperator, // Operator only
-        StepSecrets,  // Basic secrets
-        // Skip Thanos, ServiceMonitors, Alertmanager, Gateway for minimal setup
+        StepThanosOperatorCRDS, // CRDs first
+        StepThanosOperator,     // Operator only
+        StepSecrets,            // Basic secrets
+        // Skip DefaultThanosStack, ServiceMonitors, Alertmanager, Gateway for minimal setup
     }
 }
 ```
@@ -213,6 +276,8 @@ mage build:environment production
 mage build:environment integration
 ```
 
+These commands are implemented in [`../magefiles/magefile.go`](../magefiles/magefile.go): [`Clusters()`](../magefiles/magefile.go#L85), [`Cluster()`](../magefiles/magefile.go#L100), and [`Environment()`](../magefiles/magefile.go#L110).
+
 #### Utility Commands
 
 ```bash
@@ -225,6 +290,8 @@ mage build:listClusters
 # List all available mage targets
 mage -l
 ```
+
+The utility commands [`List()`](../magefiles/magefile.go#L130) and [`ListClusters()`](../magefiles/magefile.go#L138) are also in [`../magefiles/magefile.go`](../magefiles/magefile.go).
 
 #### Legacy Environment Builds
 
@@ -343,13 +410,13 @@ resources/clusters/production/new-production/
 func highTrafficProdTemplates() TemplateMaps {
     return DefaultBaseTemplate().Override(
         Replicas{
-            "QUERY":                    5,
-            "RECEIVE_ROUTER":           3,
-            "RECEIVE_INGESTOR_DEFAULT": 5,
-            "STORE_DEFAULT":            3,
+            clusters.Query:                    5,
+            clusters.ReceiveRouter:           3,
+            clusters.ReceiveIngestorDefault: 5,
+            clusters.StoreDefault:            3,
         },
         Resources{
-            "QUERY": {
+            clusters.Query: {
                 Limits: corev1.ResourceList{
                     corev1.ResourceCPU:    resource.MustParse("2"),
                     corev1.ResourceMemory: resource.MustParse("4Gi"),
@@ -361,7 +428,7 @@ func highTrafficProdTemplates() TemplateMaps {
             },
         },
         StorageSizes{
-            "RECEIVE_DEFAULT_STORAGE_SIZE": v1alpha1.StorageSize("500Gi"),
+            clusters.ReceiveIngestorDefault: v1alpha1.StorageSize("500Gi"),
         },
     )
 }
@@ -374,15 +441,15 @@ func testingTemplates() TemplateMaps {
     return DefaultBaseTemplate().Override(
         // Minimal resources for testing
         Replicas{
-            "QUERY":                    1,
-            "RECEIVE_ROUTER":           1,
-            "RECEIVE_INGESTOR_DEFAULT": 1,
+            clusters.Query:                    1,
+            clusters.ReceiveRouter:           1,
+            clusters.ReceiveIngestorDefault: 1,
         },
         LogLevels{
-            "QUERY": "debug", // More verbose for debugging
+            clusters.Query: "debug", // More verbose for debugging
         },
         StorageSizes{
-            "RECEIVE_DEFAULT_STORAGE_SIZE": v1alpha1.StorageSize("10Gi"),
+            clusters.ReceiveIngestorDefault: v1alpha1.StorageSize("10Gi"),
         },
     )
 }
@@ -394,11 +461,11 @@ func testingTemplates() TemplateMaps {
 func regionalProdTemplates() TemplateMaps {
     return DefaultBaseTemplate().Override(
         Images{
-            "THANOS_OPERATOR": "quay.io/rhobs/thanos-operator:v1.0.0-region-eu",
+            clusters.ThanosOperator: "quay.io/rhobs/thanos-operator:v1.0.0-region-eu",
         },
         // Regional-specific storage configuration
         ObjectStorageBucket{
-            "DEFAULT": v1alpha1.ObjectStorageConfig{
+            clusters.Default: v1alpha1.ObjectStorageConfig{
                 Key: "thanos-eu.yaml",
                 LocalObjectReference: corev1.LocalObjectReference{
                     Name: "observatorium-thanos-objectstorage-eu",
@@ -422,10 +489,10 @@ func deploymentSpecificSteps() []string {
     
     // Different ordering for special requirements
     return []string{
-        StepSecrets,        // Secrets first for this deployment
-        StepCRDS,          // Then CRDs
-        StepOperator,      // Operator
-        StepThanos,        // Core components
+        StepSecrets,               // Secrets first for this deployment
+        StepThanosOperatorCRDS,    // Then CRDs
+        StepThanosOperator,        // Operator
+        StepDefaultThanosStack,    // Core components
         // Skip ServiceMonitors, Alertmanager, and Gateway
     }
 }
@@ -433,8 +500,8 @@ func deploymentSpecificSteps() []string {
 // Or compose from existing steps
 func debugBuildSteps() []string {
     return []string{
-        StepCRDS,
-        StepOperator,
+        StepThanosOperatorCRDS,
+        StepThanosOperator,
         // Only basic components for debugging
     }
 }
@@ -446,12 +513,12 @@ Add debug prints to see resolved template values:
 ```go
 func debugTemplates() TemplateMaps {
     result := DefaultBaseTemplate().Override(
-        Replicas{"QUERY": 3},
+        Replicas{clusters.Query: 3},
     )
     
     // Debug output
-    fmt.Printf("QUERY Replicas: %d\n", TemplateFn("QUERY", result.Replicas))
-    fmt.Printf("QUERY Image: %s\n", TemplateFn("QUERY", result.Images))
+    fmt.Printf("QUERY Replicas: %d\n", TemplateFn(clusters.Query, result.Replicas))
+    fmt.Printf("QUERY Image: %s\n", TemplateFn(clusters.Query, result.Images))
     
     return result
 }

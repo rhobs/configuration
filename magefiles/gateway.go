@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ghodss/yaml"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"github.com/rhobs/configuration/clusters"
 	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -21,6 +23,9 @@ const (
 	gatewayName     = "observatorium-api"
 	gatewayTemplate = "observatorium-api-template.yaml"
 
+	observatoriumAPI     = "OBSERVATORIUM_API"
+	opaAMS               = "OPA_AMS"
+	apiCache             = "API_CACHE"
 	componentOPAAMS      = "opa-ams"
 	componentJaegerAgent = "jaeger-agent"
 
@@ -33,12 +38,12 @@ type gatewayConfig struct {
 	generator func(component string) *mimic.Generator
 	tenants   *corev1.Secret
 	amsURL    string
-	m         TemplateMaps
+	m         clusters.TemplateMaps
 }
 
-func (b Build) Gateway(config ClusterConfig) error {
+func (b Build) Gateway(config clusters.ClusterConfig) error {
 	ns := config.Namespace
-	rbac, err := json.Marshal(cfgobservatorium.GenerateRBAC())
+	rbac, err := json.Marshal(config.RBAC)
 	if err != nil {
 		return fmt.Errorf("failed to marshal RBAC configuration: %w", err)
 	}
@@ -48,10 +53,10 @@ func (b Build) Gateway(config ClusterConfig) error {
 	}
 
 	objs := []runtime.Object{
-		gatewayRBAC(StageMaps, ns, string(rbacYAML)),
-		gatewayDeployment(StageMaps, ns, config.AMSUrl),
-		createGatewayService(StageMaps, ns),
-		prodGatewayTenants(config.Templates, ns),
+		gatewayRBAC(clusters.StageMaps, ns, string(rbacYAML)),
+		gatewayDeployment(clusters.StageMaps, ns, config.AMSUrl),
+		createGatewayService(clusters.StageMaps, ns),
+		createTenantSecret(config, ns),
 	}
 	gen := b.generator(config, gatewayName)
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{
@@ -62,7 +67,7 @@ func (b Build) Gateway(config ClusterConfig) error {
 	gen.Generate()
 
 	sms := []runtime.Object{
-		gatewayServiceMonitor(StageMaps, ns),
+		gatewayServiceMonitor(clusters.StageMaps, ns),
 	}
 	gen = b.generator(config, gatewayName)
 	template = openshift.WrapInTemplate(sms, metav1.ObjectMeta{
@@ -76,24 +81,26 @@ func (b Build) Gateway(config ClusterConfig) error {
 
 // Gateway Generates the Observatorium API Gateway configuration for the stage environment.
 func (s Stage) Gateway() error {
+	templates := clusters.StageMaps
 	conf := gatewayConfig{
 		namespace: s.namespace(),
 		generator: s.generator,
 		amsURL:    "https://api.stage.openshift.com",
-		m:         StageMaps,
-		tenants:   stageGatewayTenants(StageMaps, s.namespace()),
+		m:         templates,
+		tenants:   stageGatewayTenants(templates, s.namespace()),
 	}
 	return gateway(conf)
 }
 
 // Gateway Generates the Observatorium API Gateway configuration for the production environment.
 func (p Production) Gateway() error {
+	templates := clusters.ProductionMaps
 	conf := gatewayConfig{
 		namespace: p.namespace(),
 		generator: p.generator,
 		amsURL:    "https://api.openshift.com",
-		m:         ProductionMaps,
-		tenants:   prodGatewayTenants(ProductionMaps, p.namespace()),
+		m:         templates,
+		tenants:   prodGatewayTenants(templates, p.namespace()),
 	}
 	return gateway(conf)
 }
@@ -110,9 +117,9 @@ func gateway(c gatewayConfig) error {
 	}
 
 	objs := []runtime.Object{
-		gatewayRBAC(StageMaps, ns, string(rbacYAML)),
-		gatewayDeployment(StageMaps, ns, c.amsURL),
-		createGatewayService(StageMaps, ns),
+		gatewayRBAC(clusters.StageMaps, ns, string(rbacYAML)),
+		gatewayDeployment(clusters.StageMaps, ns, c.amsURL),
+		createGatewayService(clusters.StageMaps, ns),
 		c.tenants,
 	}
 	gen := c.generator(gatewayName)
@@ -124,7 +131,7 @@ func gateway(c gatewayConfig) error {
 	gen.Generate()
 
 	sms := []runtime.Object{
-		gatewayServiceMonitor(StageMaps, ns),
+		gatewayServiceMonitor(clusters.StageMaps, ns),
 	}
 	gen = c.generator(gatewayName)
 	template = openshift.WrapInTemplate(sms, metav1.ObjectMeta{
@@ -136,7 +143,7 @@ func gateway(c gatewayConfig) error {
 	return nil
 }
 
-func gatewayLabels(m TemplateMaps) (labels map[string]string, selectorLabels map[string]string) {
+func gatewayLabels(m clusters.TemplateMaps) (labels map[string]string, selectorLabels map[string]string) {
 	selectorLabels = map[string]string{
 		"app.kubernetes.io/component": "api",
 		"app.kubernetes.io/instance":  "rhobs",
@@ -149,7 +156,7 @@ func gatewayLabels(m TemplateMaps) (labels map[string]string, selectorLabels map
 	return metaLabels, selectorLabels
 }
 
-func gatewayDeployment(m TemplateMaps, namespace, amsURL string) *appsv1.Deployment {
+func gatewayDeployment(m clusters.TemplateMaps, namespace, amsURL string) *appsv1.Deployment {
 	metaLabels, selectorLabels := gatewayLabels(m)
 	replicas := m.Replicas[observatoriumAPI]
 	return &appsv1.Deployment{
@@ -232,11 +239,11 @@ func gatewayDeployment(m TemplateMaps, namespace, amsURL string) *appsv1.Deploym
 	}
 }
 
-func createObservatoriumAPIContainer(m TemplateMaps, namespace string) corev1.Container {
-	logLevel := TemplateFn(observatoriumAPI, m.LogLevels)
+func createObservatoriumAPIContainer(m clusters.TemplateMaps, namespace string) corev1.Container {
+	logLevel := clusters.TemplateFn(clusters.ObservatoriumAPI, m.LogLevels)
 	return corev1.Container{
-		Name:  gatewayName,
-		Image: TemplateFn(observatoriumAPI, m.Images),
+		Name:  "observatorium-api",
+		Image: clusters.TemplateFn(clusters.ObservatoriumAPI, m.Images),
 		Args: []string{
 			"--web.listen=0.0.0.0:8080",
 			"--web.internal.listen=0.0.0.0:8081",
@@ -293,10 +300,10 @@ func createObservatoriumAPIContainer(m TemplateMaps, namespace string) corev1.Co
 	}
 }
 
-func createOPAAMSContainer(m TemplateMaps, namespace, amsURL string) corev1.Container {
+func createOPAAMSContainer(m clusters.TemplateMaps, namespace, amsURL string) corev1.Container {
 	return corev1.Container{
 		Name:  componentOPAAMS,
-		Image: TemplateFn(opaAMS, m.Images),
+		Image: clusters.TemplateFn(clusters.OpaAMS, m.Images),
 		Args: []string{
 			"--web.listen=127.0.0.1:8082",
 			"--web.internal.listen=0.0.0.0:8083",
@@ -380,10 +387,10 @@ func createOPAAMSContainer(m TemplateMaps, namespace, amsURL string) corev1.Cont
 	}
 }
 
-func createJaegerAgentContainer(m TemplateMaps) corev1.Container {
+func createJaegerAgentContainer(m clusters.TemplateMaps) corev1.Container {
 	return corev1.Container{
 		Name:            componentJaegerAgent,
-		Image:           TemplateFn(jaeger, m.Images),
+		Image:           clusters.TemplateFn(clusters.Jaeger, m.Images),
 		ImagePullPolicy: corev1.PullIfNotPresent,
 		Args: []string{
 			"--reporter.grpc.host-port=dns:///otel-trace-writer-collector-headless.observatorium-tools.svc:14250",
@@ -448,7 +455,7 @@ func createJaegerAgentContainer(m TemplateMaps) corev1.Container {
 	}
 }
 
-func createGatewayService(m TemplateMaps, namespace string) *corev1.Service {
+func createGatewayService(m clusters.TemplateMaps, namespace string) *corev1.Service {
 	labels, selectorLabels := gatewayLabels(m)
 	return &corev1.Service{
 		TypeMeta: metav1.TypeMeta{
@@ -511,7 +518,7 @@ func stringPtr(s string) *string {
 	return &s
 }
 
-func gatewayRBAC(m TemplateMaps, namespace, contents string) *corev1.ConfigMap {
+func gatewayRBAC(m clusters.TemplateMaps, namespace, contents string) *corev1.ConfigMap {
 	labels, _ := gatewayLabels(m)
 	return &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
@@ -532,8 +539,34 @@ func gatewayRBAC(m TemplateMaps, namespace, contents string) *corev1.ConfigMap {
 	}
 }
 
-func stageGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
-	labels, _ := gatewayLabels(m)
+func createTenantSecret(config clusters.ClusterConfig, namespace string) *corev1.Secret {
+	labels, _ := gatewayLabels(config.Templates)
+	tenantsYaml, _ := yaml.Marshal(config.Tenants)
+
+	return &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      gatewayName,
+			Namespace: namespace,
+			Labels:    labels,
+			Annotations: map[string]string{
+				"qontract.recycle": "true",
+			},
+		},
+		StringData: map[string]string{
+			"client-id":     "${CLIENT_ID}",
+			"client-secret": "${CLIENT_SECRET}",
+			"issuer-url":    "https://sso.redhat.com/auth/realms/redhat-external",
+			"tenants.yaml":  string(tenantsYaml),
+		},
+	}
+}
+
+func stageGatewayTenants(templates clusters.TemplateMaps, namespace string) *corev1.Secret {
+	labels, _ := gatewayLabels(templates)
 	return &corev1.Secret{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Secret",
@@ -680,8 +713,8 @@ func stageGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
 	}
 }
 
-func prodGatewayTenants(m TemplateMaps, namespace string) *corev1.Secret {
-	labels, _ := gatewayLabels(m)
+func prodGatewayTenants(templates clusters.TemplateMaps, namespace string) *corev1.Secret {
+	labels, _ := gatewayLabels(templates)
 	return &corev1.Secret{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Secret",
@@ -843,7 +876,7 @@ var gatewayTemplateParams = []templatev1.Parameter{
 	},
 }
 
-func gatewayServiceMonitor(m TemplateMaps, matchNS string) *monitoringv1.ServiceMonitor {
+func gatewayServiceMonitor(m clusters.TemplateMaps, matchNS string) *monitoringv1.ServiceMonitor {
 	labels, selectorLabels := gatewayLabels(m)
 	labels[openshiftCustomerMonitoringLabel] = openShiftClusterMonitoringLabelValue
 	return &monitoringv1.ServiceMonitor{

@@ -14,6 +14,7 @@ import (
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
+	"github.com/rhobs/configuration/clusters"
 	"github.com/rhobs/configuration/services_go/observatorium"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -41,7 +42,7 @@ const (
 	defaultAlertmanagerMemoryLimit   = "5Gi"
 )
 
-func (b Build) Alertmanager(config ClusterConfig) {
+func (b Build) Alertmanager(config clusters.ClusterConfig) {
 	gen := b.generator(config, "alertmanager")
 
 	// TODO: @moadz Extract Alertmanager options to an envTemplate in template.go

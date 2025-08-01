@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/rhobs/configuration/clusters"
+
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
@@ -88,9 +90,9 @@ func (s Stage) Cache() {
 		return s.generator(cacheName)
 	}
 	caches := []*memcachedConfig{
-		gatewayCache(StageMaps, s.namespace()),
+		gatewayCache(clusters.StageMaps, s.namespace()),
 	}
-	cache(gen, StageMaps, caches)
+	cache(gen, clusters.StageMaps, caches)
 }
 
 // Cache creates the cache resources for the production environment
@@ -99,15 +101,15 @@ func (p Production) Cache() {
 		return p.generator(cacheName)
 	}
 	caches := []*memcachedConfig{
-		gatewayCache(ProductionMaps, p.namespace()),
-		indexCache(ProductionMaps, p.namespace()),
-		bucketCache(ProductionMaps, p.namespace()),
-		queryRangeCache(ProductionMaps, p.namespace()),
+		gatewayCache(clusters.ProductionMaps, p.namespace()),
+		indexCache(clusters.ProductionMaps, p.namespace()),
+		bucketCache(clusters.ProductionMaps, p.namespace()),
+		queryRangeCache(clusters.ProductionMaps, p.namespace()),
 	}
-	cache(gen, ProductionMaps, caches)
+	cache(gen, clusters.ProductionMaps, caches)
 }
 
-func cache(g func() *mimic.Generator, m TemplateMaps, confs []*memcachedConfig) {
+func cache(g func() *mimic.Generator, m clusters.TemplateMaps, confs []*memcachedConfig) {
 	var sms []runtime.Object
 	var objs []runtime.Object
 
@@ -134,7 +136,7 @@ func cache(g func() *mimic.Generator, m TemplateMaps, confs []*memcachedConfig) 
 	gen.Generate()
 }
 
-func gatewayCache(m TemplateMaps, namespace string) *memcachedConfig {
+func gatewayCache(m clusters.TemplateMaps, namespace string) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
 			Memory:         2048,
@@ -145,7 +147,7 @@ func gatewayCache(m TemplateMaps, namespace string) *memcachedConfig {
 		Name:           gatewayCacheName,
 		Namespace:      namespace,
 		MemcachedImage: m.Images[apiCache],
-		ExporterImage:  m.Images[memcachedExporter],
+		ExporterImage:  m.Images[clusters.MemcachedExporter],
 		Labels: map[string]string{
 			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
@@ -157,7 +159,7 @@ func gatewayCache(m TemplateMaps, namespace string) *memcachedConfig {
 	}
 }
 
-func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
+func indexCache(m clusters.TemplateMaps, namespace string) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
 			Memory:         10000,
@@ -168,7 +170,7 @@ func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
 		Name:           indexCacheName,
 		Namespace:      namespace,
 		MemcachedImage: m.Images[apiCache],
-		ExporterImage:  m.Images[memcachedExporter],
+		ExporterImage:  m.Images[clusters.MemcachedExporter],
 		Labels: map[string]string{
 			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
@@ -180,7 +182,7 @@ func indexCache(m TemplateMaps, namespace string) *memcachedConfig {
 	}
 }
 
-func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
+func bucketCache(m clusters.TemplateMaps, namespace string) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
 			Memory:         2048,
@@ -191,7 +193,7 @@ func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
 		Name:           bucketCacheName,
 		Namespace:      namespace,
 		MemcachedImage: m.Images[apiCache],
-		ExporterImage:  m.Images[memcachedExporter],
+		ExporterImage:  m.Images[clusters.MemcachedExporter],
 		Labels: map[string]string{
 			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
@@ -203,7 +205,7 @@ func bucketCache(m TemplateMaps, namespace string) *memcachedConfig {
 	}
 }
 
-func queryRangeCache(m TemplateMaps, namespace string) *memcachedConfig {
+func queryRangeCache(m clusters.TemplateMaps, namespace string) *memcachedConfig {
 	return &memcachedConfig{
 		Flags: &memcachedFlags{
 			Memory:         8048,
@@ -214,7 +216,7 @@ func queryRangeCache(m TemplateMaps, namespace string) *memcachedConfig {
 		Name:           queryRangeCacheName,
 		Namespace:      namespace,
 		MemcachedImage: m.Images[apiCache],
-		ExporterImage:  m.Images[memcachedExporter],
+		ExporterImage:  m.Images[clusters.MemcachedExporter],
 		Labels: map[string]string{
 			"app.kubernetes.io/component": "memcached",
 			"app.kubernetes.io/instance":  "rhobs",
@@ -226,7 +228,7 @@ func queryRangeCache(m TemplateMaps, namespace string) *memcachedConfig {
 	}
 }
 
-func memcachedStatefulSet(config *memcachedConfig, m TemplateMaps) *appsv1.StatefulSet {
+func memcachedStatefulSet(config *memcachedConfig, m clusters.TemplateMaps) *appsv1.StatefulSet {
 	labels := config.Labels
 
 	memcachedContainer := corev1.Container{
@@ -259,7 +261,7 @@ func memcachedStatefulSet(config *memcachedConfig, m TemplateMaps) *appsv1.State
 				Protocol:      corev1.ProtocolTCP,
 			},
 		},
-		Resources:       m.ResourceRequirements[memcachedExporter],
+		Resources:       m.ResourceRequirements[clusters.MemcachedExporter],
 		ImagePullPolicy: corev1.PullIfNotPresent,
 	}
 

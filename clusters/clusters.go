@@ -1,7 +1,9 @@
-package main
+package clusters
 
 import (
 	"fmt"
+
+	cfgobservatorium "github.com/rhobs/configuration/configuration/observatorium"
 
 	observatoriumapi "github.com/observatorium/observatorium/configuration_go/abstr/kubernetes/observatorium/api"
 )
@@ -25,8 +27,8 @@ type ClusterConfig struct {
 	Environment ClusterEnvironment
 	Namespace   string
 	Templates   TemplateMaps
-	RBAC        observatoriumapi.RBAC
-	Tenant      observatoriumapi.Tenants
+	RBAC        cfgobservatorium.ObservatoriumRBAC
+	Tenants     observatoriumapi.Tenants
 	AMSUrl      string
 	BuildSteps  []string
 }
@@ -68,21 +70,35 @@ func (c ClusterConfig) Validate() error {
 	return nil
 }
 
-// DefaultBuildSteps returns the standard build pipeline
-func DefaultBuildSteps() []string {
-	return []string{
-		StepThanos,
-		StepCRDS,
-		StepOperator,
-		StepServiceMonitors,
-		StepAlertmanager,
-		StepSecrets,
-		StepGateway,
-	}
-}
-
 // ClusterRegistry holds all registered clusters
 var ClusterRegistry = make(map[ClusterName]ClusterConfig)
+
+// BuildStep represents a string key for each template generation step
+type BuildStep string
+
+// Available build steps
+const (
+	StepThanosOperatorCRDS            = "thanos-operator-crds"
+	StepThanosOperator                = "thanos-operator"
+	StepDefaultThanosStack            = "default-thanos-stack"
+	StepThanosOperatorServiceMonitors = "thanos-operator-servicemonitors"
+	StepAlertmanager                  = "alertmanager"
+	StepSecrets                       = "secrets"
+	StepGateway                       = "gateway"
+)
+
+// DefaultBuildSteps returns the default build pipeline for clusters
+func DefaultBuildSteps() []string {
+	return []string{
+		StepThanosOperatorCRDS,            // Core components first
+		StepThanosOperator,                // Custom Resource Definitions
+		StepDefaultThanosStack,            // ThanosOperator deployment
+		StepThanosOperatorServiceMonitors, // Monitoring setup
+		StepAlertmanager,                  // Alerting configuration
+		StepSecrets,                       // Secrets last
+		StepGateway,                       // Gateway configuration
+	}
+}
 
 // RegisterCluster registers a cluster configuration with validation
 func RegisterCluster(config ClusterConfig) {

@@ -1,4 +1,4 @@
-package main
+package clusters
 
 import (
 	"fmt"
@@ -143,14 +143,29 @@ const (
 	memcachedExporterImage = "quay.io/prometheus/memcached-exporter:v0.15.0"
 )
 
+// Template key constants - exportable template parameter names
 const (
-	apiCache          = "API_CACHE"
-	memcachedExporter = "MEMCACHED_EXPORTER"
+	// Service and component keys
+	MemcachedExporter = "MEMCACHED_EXPORTER"
+	ApiCache          = "API_CACHE"
+	Jaeger            = "JAEGER_AGENT"
+	ObservatoriumAPI  = "OBSERVATORIUM_API"
+	OpaAMS            = "OPA_AMS"
 
-	jaeger = "JAEGER_AGENT"
+	// Thanos component keys
+	ThanosOperator         = "THANOS_OPERATOR"
+	KubeRbacProxy          = "KUBE_RBAC_PROXY"
+	StoreDefault           = "STORE_DEFAULT"
+	ReceiveRouter          = "RECEIVE_ROUTER"
+	ReceiveIngestorDefault = "RECEIVE_INGESTOR_DEFAULT"
+	Ruler                  = "RULER"
+	CompactDefault         = "COMPACT_DEFAULT"
+	Query                  = "QUERY"
+	QueryFrontend          = "QUERY_FRONTEND"
+	Manager                = "MANAGER"
 
-	observatoriumAPI = "OBSERVATORIUM_API"
-	opaAMS           = "OPA_AMS"
+	// Object storage keys
+	DefaultBucket = "DEFAULT_BUCKET"
 )
 
 var logLevels = []string{"debug", "info", "warn", "error"}
@@ -159,41 +174,41 @@ var logLevels = []string{"debug", "info", "warn", "error"}
 func DefaultBaseTemplate() TemplateMaps {
 	return TemplateMaps{
 		Images: ParamMap[string]{
-			"THANOS_OPERATOR":          fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionStage),
-			"KUBE_RBAC_PROXY":          thanosImage,
-			"STORE_DEFAULT":            thanosImage,
-			"RECEIVE_ROUTER":           thanosImage,
-			"RECEIVE_INGESTOR_DEFAULT": thanosImage,
-			"RULER":                    thanosImage,
-			"COMPACT_DEFAULT":          thanosImage,
-			"QUERY":                    thanosImage,
-			"QUERY_FRONTEND":           thanosImage,
-			jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
-			"api_cache":                "docker.io/memcached:1.6.17-alpine",
-			"memcached_exporter":       memcachedExporterImage,
+			ThanosOperator:         fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionStage),
+			KubeRbacProxy:          thanosImage,
+			StoreDefault:           thanosImage,
+			ReceiveRouter:          thanosImage,
+			ReceiveIngestorDefault: thanosImage,
+			Ruler:                  thanosImage,
+			CompactDefault:         thanosImage,
+			Query:                  thanosImage,
+			QueryFrontend:          thanosImage,
+			Jaeger:                 "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+			ApiCache:               "docker.io/memcached:1.6.17-alpine",
+			MemcachedExporter:      memcachedExporterImage,
 		},
 		Versions: ParamMap[string]{
-			"STORE_DEFAULT":            thanosVersionProd,
-			"RECEIVE_ROUTER":           thanosVersionProd,
-			"RECEIVE_INGESTOR_DEFAULT": thanosVersionProd,
-			"RULER":                    thanosVersionProd,
-			"COMPACT_DEFAULT":          thanosVersionProd,
-			"QUERY":                    thanosVersionProd,
-			"QUERY_FRONTEND":           thanosVersionProd,
-			apiCache:                   memcachedTag,
-			observatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
+			StoreDefault:           thanosVersionProd,
+			ReceiveRouter:          thanosVersionProd,
+			ReceiveIngestorDefault: thanosVersionProd,
+			Ruler:                  thanosVersionProd,
+			CompactDefault:         thanosVersionProd,
+			Query:                  thanosVersionProd,
+			QueryFrontend:          thanosVersionProd,
+			ApiCache:               memcachedTag,
+			ObservatoriumAPI:       "9aada65247a07782465beb500323a0e18d7e3d05",
 		},
 		LogLevels: ParamMap[string]{
-			"STORE_DEFAULT":            logLevels[1],
-			"RECEIVE_ROUTER":           logLevels[1],
-			"RECEIVE_INGESTOR_DEFAULT": logLevels[1],
-			"RULER":                    logLevels[1],
-			"COMPACT_DEFAULT":          logLevels[1],
-			"QUERY":                    logLevels[1],
-			"QUERY_FRONTEND":           logLevels[1],
+			StoreDefault:           logLevels[1],
+			ReceiveRouter:          logLevels[1],
+			ReceiveIngestorDefault: logLevels[1],
+			Ruler:                  logLevels[1],
+			CompactDefault:         logLevels[1],
+			Query:                  logLevels[1],
+			QueryFrontend:          logLevels[1],
 		},
 		ResourceRequirements: ParamMap[corev1.ResourceRequirements]{
-			"STORE_DEFAULT": {
+			StoreDefault: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -203,7 +218,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"RECEIVE_ROUTER": {
+			ReceiveRouter: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -213,7 +228,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"RECEIVE_INGESTOR_DEFAULT": {
+			ReceiveIngestorDefault: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -223,7 +238,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"RULER": {
+			Ruler: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -233,7 +248,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"COMPACT_DEFAULT": {
+			CompactDefault: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -243,7 +258,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"QUERY": {
+			Query: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -253,7 +268,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"QUERY_FRONTEND": {
+			QueryFrontend: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
 					corev1.ResourceMemory: resource.MustParse("512Mi"),
@@ -263,7 +278,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("256Mi"),
 				},
 			},
-			"MANAGER": {
+			Manager: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("100m"),
 					corev1.ResourceMemory: resource.MustParse("128Mi"),
@@ -273,7 +288,7 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("64Mi"),
 				},
 			},
-			"KUBE_RBAC_PROXY": {
+			KubeRbacProxy: {
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("50m"),
 					corev1.ResourceMemory: resource.MustParse("64Mi"),
@@ -285,22 +300,22 @@ func DefaultBaseTemplate() TemplateMaps {
 			},
 		},
 		Replicas: ParamMap[int32]{
-			"STORE_DEFAULT":            1,
-			"RECEIVE_ROUTER":           1,
-			"RECEIVE_INGESTOR_DEFAULT": 1,
-			"RULER":                    1,
-			"QUERY":                    1,
-			"QUERY_FRONTEND":           1,
-			"COMPACT_DEFAULT":          1,
+			StoreDefault:           1,
+			ReceiveRouter:          1,
+			ReceiveIngestorDefault: 1,
+			Ruler:                  1,
+			Query:                  1,
+			QueryFrontend:          1,
+			CompactDefault:         1,
 		},
 		StorageSize: ParamMap[v1alpha1.StorageSize]{
-			"STORE_DEFAULT":            "10Gi",
-			"RECEIVE_INGESTOR_DEFAULT": "10Gi",
-			"COMPACT_DEFAULT":          "10Gi",
-			"RULER":                    "10Gi",
+			StoreDefault:           "10Gi",
+			ReceiveIngestorDefault: "10Gi",
+			CompactDefault:         "10Gi",
+			Ruler:                  "10Gi",
 		},
 		ObjectStorageBucket: ParamMap[v1alpha1.ObjectStorageConfig]{
-			"DEFAULT": v1alpha1.ObjectStorageConfig{
+			DefaultBucket: v1alpha1.ObjectStorageConfig{
 				Key: "thanos.yaml",
 				LocalObjectReference: corev1.LocalObjectReference{
 					Name: "observatorium-mst-thanos-objectstorage",
@@ -327,13 +342,13 @@ var StageImages = ParamMap[string]{
 	"COMPACT_TELEMETER":          thanosImage,
 	"QUERY":                      thanosImage,
 	"QUERY_FRONTEND":             thanosImage,
-	jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+	Jaeger:                       "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 	"THANOS_OPERATOR":            fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionStage),
 	"KUBE_RBAC_PROXY":            "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
-	apiCache:                     memcachedImage,
-	memcachedExporter:            memcachedExporterImage,
-	observatoriumAPI:             "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
-	opaAMS:                       "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-opa-ams:69db2e0545d9e04fd18f2230c1d59ad2766cf65c",
+	ApiCache:                     memcachedImage,
+	MemcachedExporter:            memcachedExporterImage,
+	ObservatoriumAPI:             "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	OpaAMS:                       "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-opa-ams:69db2e0545d9e04fd18f2230c1d59ad2766cf65c",
 }
 
 // Stage images.
@@ -352,8 +367,8 @@ var StageVersions = ParamMap[string]{
 	"COMPACT_TELEMETER":          thanosVersionStage,
 	"QUERY":                      thanosVersionStage,
 	"QUERY_FRONTEND":             thanosVersionStage,
-	apiCache:                     memcachedTag,
-	observatoriumAPI:             "9aada65247a07782465beb500323a0e18d7e3d05",
+	ApiCache:                     memcachedTag,
+	ObservatoriumAPI:             "9aada65247a07782465beb500323a0e18d7e3d05",
 }
 
 // Stage log levels.
@@ -372,7 +387,7 @@ var StageLogLevels = ParamMap[string]{
 	"COMPACT_TELEMETER":          logLevels[1],
 	"QUERY":                      logLevels[1],
 	"QUERY_FRONTEND":             logLevels[1],
-	observatoriumAPI:             logLevels[0],
+	ObservatoriumAPI:             logLevels[0],
 }
 
 // Stage PV storage sizes.
@@ -403,8 +418,8 @@ var StageReplicas = ParamMap[int32]{
 	"RULER":                      2,
 	"QUERY":                      6,
 	"QUERY_FRONTEND":             3,
-	apiCache:                     1,
-	observatoriumAPI:             2,
+	ApiCache:                     1,
+	ObservatoriumAPI:             2,
 }
 
 // Stage resource requirements.
@@ -569,7 +584,7 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("64Mi"),
 		},
 	},
-	apiCache: corev1.ResourceRequirements{
+	ApiCache: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("3"),
 			corev1.ResourceMemory: resource.MustParse("1844Mi"),
@@ -579,7 +594,7 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
-	memcachedExporter: corev1.ResourceRequirements{
+	MemcachedExporter: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("200m"),
 			corev1.ResourceMemory: resource.MustParse("200Mi"),
@@ -589,7 +604,7 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
-	observatoriumAPI: corev1.ResourceRequirements{
+	ObservatoriumAPI: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("1"),
 			corev1.ResourceMemory: resource.MustParse("2Gi"),
@@ -639,10 +654,10 @@ var ProductionImages = ParamMap[string]{
 	"RECEIVE_INGESTOR_DEFAULT": thanosImage,
 	"THANOS_OPERATOR":          fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionProd),
 	"KUBE_RBAC_PROXY":          "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
-	apiCache:                   memcachedImage,
-	memcachedExporter:          memcachedExporterImage,
-	observatoriumAPI:           "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
-	jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+	ApiCache:                   memcachedImage,
+	MemcachedExporter:          memcachedExporterImage,
+	ObservatoriumAPI:           "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	Jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 }
 
 // ProductionVersions is a map of production versions.
@@ -656,8 +671,8 @@ var ProductionVersions = ParamMap[string]{
 	"RECEIVE_INGESTOR_DEFAULT": thanosVersionProd,
 	"QUERY":                    thanosVersionProd,
 	"QUERY_FRONTEND":           thanosVersionProd,
-	apiCache:                   memcachedTag,
-	observatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
+	ApiCache:                   memcachedTag,
+	ObservatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
 }
 
 // ProductionLogLevels is a map of production log levels.
@@ -671,7 +686,7 @@ var ProductionLogLevels = ParamMap[string]{
 	"RECEIVE_INGESTOR_DEFAULT": logLevels[0],
 	"QUERY":                    logLevels[0],
 	"QUERY_FRONTEND":           logLevels[0],
-	observatoriumAPI:           logLevels[0],
+	ObservatoriumAPI:           logLevels[0],
 }
 
 // ProductionStorageSize is a map of production PV storage sizes.
@@ -695,8 +710,8 @@ var ProductionReplicas = ParamMap[int32]{
 	"RECEIVE_INGESTOR_DEFAULT": 3,
 	"QUERY":                    3,
 	"QUERY_FRONTEND":           3,
-	apiCache:                   1,
-	observatoriumAPI:           2,
+	ApiCache:                   1,
+	ObservatoriumAPI:           2,
 }
 
 // ProductionResourceRequirements is a map of production resource requirements.
@@ -783,7 +798,7 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("64Mi"),
 		},
 	},
-	apiCache: corev1.ResourceRequirements{
+	ApiCache: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("3"),
 			corev1.ResourceMemory: resource.MustParse("1844Mi"),
@@ -793,7 +808,7 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
-	memcachedExporter: corev1.ResourceRequirements{
+	MemcachedExporter: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("200m"),
 			corev1.ResourceMemory: resource.MustParse("200Mi"),
@@ -803,7 +818,7 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
-	observatoriumAPI: corev1.ResourceRequirements{
+	ObservatoriumAPI: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("1"),
 			corev1.ResourceMemory: resource.MustParse("2Gi"),
@@ -905,7 +920,7 @@ var LocalImages = ParamMap[string]{
 	"COMPACT_TELEMETER":          localThanosImage,
 	"QUERY":                      localThanosImage,
 	"QUERY_FRONTEND":             localThanosImage,
-	jaeger:                       "quay.io/jaegertracing/jaeger-agent:1.57.0",
+	Jaeger:                       "quay.io/jaegertracing/jaeger-agent:1.57.0",
 	"THANOS_OPERATOR":            "quay.io/thanos/thanos-operator:main-2025-02-07-f1e3fa9",
 	"KUBE_RBAC_PROXY":            "gcr.io/kubebuilder/kube-rbac-proxy:v0.16.0",
 }

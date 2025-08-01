@@ -7,6 +7,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/magefile/mage/mg"
 	"github.com/philipgough/mimic"
+	"github.com/rhobs/configuration/clusters"
 )
 
 type (
@@ -22,43 +23,32 @@ const (
 	templateClustersPath = "clusters"
 )
 
-// Available build steps
-const (
-	StepCRDS            = "crds"
-	StepOperator        = "operator"
-	StepThanos          = "thanos"
-	StepServiceMonitors = "servicemonitors"
-	StepAlertmanager    = "alertmanager"
-	StepSecrets         = "secrets"
-	StepGateway         = "gateway"
-)
-
 // BuildStepFunctions maps build step names to their implementation functions
-var BuildStepFunctions = map[string]func(Build, ClusterConfig) error{
-	StepCRDS: func(b Build, cfg ClusterConfig) error {
-		return b.CRDS(cfg)
+var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
+	clusters.StepThanosOperatorCRDS: func(b Build, cfg clusters.ClusterConfig) error {
+		return b.ThanosOperatorCRDS(cfg)
 	},
-	StepOperator: func(b Build, cfg ClusterConfig) error {
-		b.Operator(cfg)
+	clusters.StepThanosOperator: func(b Build, cfg clusters.ClusterConfig) error {
+		b.ThanosOperator(cfg)
 		return nil
 	},
-	StepThanos: func(b Build, cfg ClusterConfig) error {
-		b.DefaultThanos(cfg)
+	clusters.StepDefaultThanosStack: func(b Build, cfg clusters.ClusterConfig) error {
+		b.DefaultThanosStack(cfg)
 		return nil
 	},
-	StepServiceMonitors: func(b Build, cfg ClusterConfig) error {
-		b.ServiceMonitors(cfg)
+	clusters.StepThanosOperatorServiceMonitors: func(b Build, cfg clusters.ClusterConfig) error {
+		b.ThanosOperatorServiceMonitors(cfg)
 		return nil
 	},
-	StepAlertmanager: func(b Build, cfg ClusterConfig) error {
+	clusters.StepAlertmanager: func(b Build, cfg clusters.ClusterConfig) error {
 		b.Alertmanager(cfg)
 		return nil
 	},
-	StepSecrets: func(b Build, cfg ClusterConfig) error {
+	clusters.StepSecrets: func(b Build, cfg clusters.ClusterConfig) error {
 		b.Secrets(cfg)
 		return nil
 	},
-	StepGateway: func(b Build, cfg ClusterConfig) error {
+	clusters.StepGateway: func(b Build, cfg clusters.ClusterConfig) error {
 		err := b.Gateway(cfg)
 		if err != nil {
 			return err
@@ -68,7 +58,7 @@ var BuildStepFunctions = map[string]func(Build, ClusterConfig) error{
 }
 
 // ExecuteSteps executes a list of build steps for a cluster
-func (b Build) ExecuteSteps(steps []string, cfg ClusterConfig) error {
+func (b Build) executeSteps(steps []string, cfg clusters.ClusterConfig) error {
 	for _, step := range steps {
 		if fn, exists := BuildStepFunctions[step]; exists {
 			if err := fn(b, cfg); err != nil {
@@ -82,13 +72,13 @@ func (b Build) ExecuteSteps(steps []string, cfg ClusterConfig) error {
 }
 
 func (b Build) Clusters() error {
-	clusters := GetClusters()
-	if len(clusters) == 0 {
+	clusterConfigs := clusters.GetClusters()
+	if len(clusterConfigs) == 0 {
 		return fmt.Errorf("no clusters registered")
 	}
 
-	for _, cfg := range clusters {
-		if err := b.ExecuteSteps(cfg.BuildSteps, cfg); err != nil {
+	for _, cfg := range clusterConfigs {
+		if err := b.executeSteps(cfg.BuildSteps, cfg); err != nil {
 			return err
 		}
 	}
@@ -97,28 +87,28 @@ func (b Build) Clusters() error {
 
 // BuildCluster builds manifests for a specific cluster by name
 func (b Build) Cluster(clusterName string) error {
-	cluster, err := GetClusterByName(ClusterName(clusterName))
+	cluster, err := clusters.GetClusterByName(clusters.ClusterName(clusterName))
 	if err != nil {
 		return err
 	}
 
-	return b.ExecuteSteps(cluster.BuildSteps, *cluster)
+	return b.executeSteps(cluster.BuildSteps, *cluster)
 }
 
 // BuildEnvironment builds manifests for all clusters in a specific environment
 func (b Build) Environment(environment string) error {
-	env := ClusterEnvironment(environment)
+	env := clusters.ClusterEnvironment(environment)
 	if !env.IsValid() {
 		return fmt.Errorf("invalid environment: %s", environment)
 	}
 
-	clusters := GetClustersByEnvironment(env)
-	if len(clusters) == 0 {
+	clusterConfigs := clusters.GetClustersByEnvironment(env)
+	if len(clusterConfigs) == 0 {
 		return fmt.Errorf("no clusters found for environment: %s", environment)
 	}
 
-	for _, cfg := range clusters {
-		if err := b.ExecuteSteps(cfg.BuildSteps, cfg); err != nil {
+	for _, cfg := range clusterConfigs {
+		if err := b.executeSteps(cfg.BuildSteps, cfg); err != nil {
 			return err
 		}
 	}
@@ -127,24 +117,23 @@ func (b Build) Environment(environment string) error {
 
 // ListAvailableSteps lists all available build steps
 func (b Build) List() {
-	fmt.Println("Available build steps:")
+	fmt.Fprintln(os.Stdout, "Available build steps:")
 	for step := range BuildStepFunctions {
-		fmt.Printf("  - %s\n", step)
+		fmt.Fprintf(os.Stdout, "  - %s\n", step)
 	}
 }
 
 // ListClusterSteps shows the build steps for each registered cluster
 func (b Build) ListClusters() {
-	clusters := GetClusters()
-	if len(clusters) == 0 {
-		fmt.Println("No clusters registered")
+	clusterConfigs := clusters.GetClusters()
+	if len(clusterConfigs) == 0 {
+		fmt.Fprintln(os.Stdout, "No clusters registered")
 		return
 	}
 
-	for _, cluster := range clusters {
-		fmt.Printf("Cluster: %s (%s)\n", cluster.Name, cluster.Environment)
-		fmt.Printf("  Steps: %v\n", cluster.BuildSteps)
-		fmt.Println()
+	for _, cluster := range clusterConfigs {
+		fmt.Fprintf(os.Stdout, "Cluster: %s (%s)\n", cluster.Name, cluster.Environment)
+		fmt.Fprintf(os.Stdout, "  Steps: %v\n", cluster.BuildSteps)
 	}
 }
 
@@ -158,7 +147,7 @@ func (Local) Build() {
 	mg.SerialDeps(Local.CRDS, Local.Operator, Local.Thanos, Local.TelemeterRules, Local.ServiceMonitors, Local.Secrets)
 }
 
-func (Build) generator(config ClusterConfig, component string) *mimic.Generator {
+func (Build) generator(config clusters.ClusterConfig, component string) *mimic.Generator {
 	gen := &mimic.Generator{}
 	gen = gen.With(templatePath, templateClustersPath, string(config.Environment), string(config.Name), component)
 	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))

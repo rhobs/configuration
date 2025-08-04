@@ -1,0 +1,486 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: memcached
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: api-memcached
+    namespace: rhobs-stage
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: api-memcached
+    namespace: rhobs-stage
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: api-memcached
+    namespace: rhobs-stage
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: api-memcached
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+    serviceName: api-memcached
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: memcached
+          app.kubernetes.io/instance: rhobs
+          app.kubernetes.io/name: api-memcached
+          app.kubernetes.io/part-of: rhobs
+          app.kubernetes.io/version: 1.5-316
+      spec:
+        containers:
+        - args:
+          - -m 2048
+          - -c 3072
+          - -I 5m
+          - -v
+          image: registry.redhat.io/rhel8/memcached:1.5-316
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "3"
+              memory: 1844Mi
+            requests:
+              cpu: 500m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: quay.io/prometheus/memcached-exporter:v0.15.0
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+        securityContext: {}
+        serviceAccountName: api-memcached
+    updateStrategy: {}
+  status:
+    availableReplicas: 0
+    replicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-bucket-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-bucket-cache
+    namespace: rhobs-stage
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-bucket-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-bucket-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-bucket-cache
+    namespace: rhobs-stage
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-bucket-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-bucket-cache
+    namespace: rhobs-stage
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: thanos-bucket-cache
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+    serviceName: thanos-bucket-cache
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: memcached
+          app.kubernetes.io/instance: rhobs
+          app.kubernetes.io/name: thanos-bucket-cache
+          app.kubernetes.io/part-of: rhobs
+          app.kubernetes.io/version: 1.5-316
+      spec:
+        containers:
+        - args:
+          - -m 2048
+          - -c 100000
+          - -I 5m
+          - -v
+          image: registry.redhat.io/rhel8/memcached:1.5-316
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "3"
+              memory: 1844Mi
+            requests:
+              cpu: 500m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: quay.io/prometheus/memcached-exporter:v0.15.0
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+        securityContext: {}
+        serviceAccountName: thanos-bucket-cache
+    updateStrategy: {}
+  status:
+    availableReplicas: 0
+    replicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-index-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-index-cache
+    namespace: rhobs-stage
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-index-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-index-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-index-cache
+    namespace: rhobs-stage
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-index-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-index-cache
+    namespace: rhobs-stage
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: thanos-index-cache
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+    serviceName: thanos-index-cache
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: memcached
+          app.kubernetes.io/instance: rhobs
+          app.kubernetes.io/name: thanos-index-cache
+          app.kubernetes.io/part-of: rhobs
+          app.kubernetes.io/version: 1.5-316
+      spec:
+        containers:
+        - args:
+          - -m 10000
+          - -c 100000
+          - -I 5m
+          - -v
+          image: registry.redhat.io/rhel8/memcached:1.5-316
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "3"
+              memory: 1844Mi
+            requests:
+              cpu: 500m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: quay.io/prometheus/memcached-exporter:v0.15.0
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+        securityContext: {}
+        serviceAccountName: thanos-index-cache
+    updateStrategy: {}
+  status:
+    availableReplicas: 0
+    replicas: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-query-range-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-query-range-cache
+    namespace: rhobs-stage
+  spec:
+    clusterIP: None
+    ports:
+    - name: client
+      port: 11211
+      protocol: TCP
+      targetPort: 11211
+    - name: metrics
+      port: 9150
+      protocol: TCP
+      targetPort: 9150
+    selector:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-query-range-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-query-range-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-query-range-cache
+    namespace: rhobs-stage
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-query-range-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+    name: thanos-query-range-cache
+    namespace: rhobs-stage
+  spec:
+    podManagementPolicy: OrderedReady
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: thanos-query-range-cache
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+    serviceName: thanos-query-range-cache
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app.kubernetes.io/component: memcached
+          app.kubernetes.io/instance: rhobs
+          app.kubernetes.io/name: thanos-query-range-cache
+          app.kubernetes.io/part-of: rhobs
+          app.kubernetes.io/version: 1.5-316
+      spec:
+        containers:
+        - args:
+          - -m 8048
+          - -c 100000
+          - -I 5m
+          - -v
+          image: registry.redhat.io/rhel8/memcached:1.5-316
+          imagePullPolicy: IfNotPresent
+          name: memcached
+          ports:
+          - containerPort: 11211
+            name: client
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "3"
+              memory: 1844Mi
+            requests:
+              cpu: 500m
+              memory: 100Mi
+          terminationMessagePolicy: FallbackToLogsOnError
+        - args:
+          - --memcached.address=localhost:11211
+          - --web.listen-address=0.0.0.0:9150
+          image: quay.io/prometheus/memcached-exporter:v0.15.0
+          imagePullPolicy: IfNotPresent
+          name: exporter
+          ports:
+          - containerPort: 9150
+            name: metrics
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+        securityContext: {}
+        serviceAccountName: thanos-query-range-cache
+    updateStrategy: {}
+  status:
+    availableReplicas: 0
+    replicas: 0

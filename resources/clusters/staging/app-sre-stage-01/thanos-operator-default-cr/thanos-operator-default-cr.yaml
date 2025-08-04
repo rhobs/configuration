@@ -426,7 +426,7 @@ objects:
           key: thanos.yaml
           name: observatorium-mst-thanos-objectstorage
           optional: false
-        replicas: 1
+        replicas: 3
         resourceRequirements:
           limits:
             cpu: 200m

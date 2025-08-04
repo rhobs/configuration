@@ -469,6 +469,7 @@ func createGatewayService(m clusters.TemplateMaps, namespace string) *corev1.Ser
 			Labels:    labels,
 			Annotations: map[string]string{
 				"service.beta.kubernetes.io/aws-load-balancer-internal": "false",
+				"service.beta.kubernetes.io/aws-load-balancer-scheme":   "internet-facing",
 			},
 		},
 		Spec: corev1.ServiceSpec{

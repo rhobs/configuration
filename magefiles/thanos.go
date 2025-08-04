@@ -1441,6 +1441,9 @@ func defaultCompactCR(namespace string, templates clusters.TemplateMaps) runtime
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
+			Labels: map[string]string{
+				"service.alpha.openshift.io/serving-cert-secret-name": "compact-tls",
+			},
 			Name:      "rhobs",
 			Namespace: namespace,
 		},

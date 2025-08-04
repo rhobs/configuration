@@ -473,7 +473,7 @@ func createGatewayService(m clusters.TemplateMaps, namespace string) *corev1.Ser
 			},
 		},
 		Spec: corev1.ServiceSpec{
-			Type:                  corev1.ServiceTypeClusterIP,
+			Type:                  corev1.ServiceTypeLoadBalancer,
 			SessionAffinity:       corev1.ServiceAffinityNone,
 			InternalTrafficPolicy: &[]corev1.ServiceInternalTrafficPolicyType{corev1.ServiceInternalTrafficPolicyCluster}[0],
 			IPFamilyPolicy:        &[]corev1.IPFamilyPolicyType{corev1.IPFamilyPolicySingleStack}[0],

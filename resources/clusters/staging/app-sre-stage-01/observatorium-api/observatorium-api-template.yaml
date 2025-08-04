@@ -626,6 +626,7 @@ objects:
   metadata:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-internal: "false"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     creationTimestamp: null
     labels:
       app.kubernetes.io/component: api

@@ -671,7 +671,7 @@ objects:
       app.kubernetes.io/name: observatorium-api
       app.kubernetes.io/part-of: rhobs
     sessionAffinity: None
-    type: ClusterIP
+    type: LoadBalancer
   status:
     loadBalancer: {}
 - apiVersion: v1

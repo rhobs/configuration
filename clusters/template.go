@@ -175,7 +175,7 @@ func DefaultBaseTemplate() TemplateMaps {
 	return TemplateMaps{
 		Images: ParamMap[string]{
 			ThanosOperator:         fmt.Sprintf("%s:%s", thanosOperatorImage, thanosOperatorVersionStage),
-			KubeRbacProxy:          thanosImage,
+			KubeRbacProxy:          "registry.redhat.io/openshift4/ose-kube-rbac-proxy@sha256:98455d503b797b6b02edcfd37045c8fab0796b95ee5cf4cfe73b221a07e805f0",
 			StoreDefault:           thanosImage,
 			ReceiveRouter:          thanosImage,
 			ReceiveIngestorDefault: thanosImage,

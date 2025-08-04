@@ -103,6 +103,8 @@ objects:
   kind: ThanosCompact
   metadata:
     creationTimestamp: null
+    labels:
+      service.alpha.openshift.io/serving-cert-secret-name: compact-tls
     name: rhobs
     namespace: rhobs-int
   spec:

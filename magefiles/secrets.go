@@ -117,7 +117,17 @@ func (b Build) Secrets(config clusters.ClusterConfig) {
 	gen := b.generator(config, "secrets")
 
 	gen.Add("thanos-default-secret.yaml", encoding.GhodssYAML(
-		localThanosObjectStore("observatorium-mst-thanos-objectstorage", config.Namespace),
+		openshift.WrapInTemplate(
+			[]runtime.Object{thanosObjectStoreSecret("observatorium-mst-thanos-objectstorage", config.Namespace)},
+			metav1.ObjectMeta{Name: "thanos-object-store-secret"},
+			[]templatev1.Parameter{
+				{Name: "S3_BUCKET_NAME"},
+				{Name: "S3_BUCKET_REGION"},
+				{Name: "S3_BUCKET_ENDPOINT"},
+				{Name: "ACCESS_KEY_ID"},
+				{Name: "SECRET_ACCESS_KEY"},
+			},
+		),
 	))
 
 	gen.Generate()

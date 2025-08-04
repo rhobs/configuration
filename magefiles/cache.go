@@ -364,3 +364,19 @@ func createCacheServiceMonitor(config *memcachedConfig) *monitoringv1.ServiceMon
 		},
 	}
 }
+
+func (b Build) Cache(config clusters.ClusterConfig) error {
+	ns := config.Namespace
+	gen := func() *mimic.Generator {
+		return b.generator(config, cacheName)
+	}
+	caches := []*memcachedConfig{
+		gatewayCache(clusters.ProductionMaps, ns),
+		indexCache(clusters.ProductionMaps, ns),
+		bucketCache(clusters.ProductionMaps, ns),
+		queryRangeCache(clusters.ProductionMaps, ns),
+	}
+	cache(gen, clusters.ProductionMaps, caches)
+
+	return nil
+}

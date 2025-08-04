@@ -1,0 +1,122 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: memcached-service-monitor
+objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: api-memcached
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+      prometheus: app-sre
+    name: api-memcached
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - honorLabels: true
+      interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: api-memcached
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-bucket-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+      prometheus: app-sre
+    name: thanos-bucket-cache
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - honorLabels: true
+      interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: thanos-bucket-cache
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-index-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+      prometheus: app-sre
+    name: thanos-index-cache
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - honorLabels: true
+      interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: thanos-index-cache
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: memcached
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: thanos-query-range-cache
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 1.5-316
+      prometheus: app-sre
+    name: thanos-query-range-cache
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - honorLabels: true
+      interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: memcached
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: thanos-query-range-cache
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 1.5-316

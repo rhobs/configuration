@@ -85,6 +85,7 @@ const (
 	StepAlertmanager                  = "alertmanager"
 	StepSecrets                       = "secrets"
 	StepGateway                       = "gateway"
+	StepMemcached                     = "memcached"
 )
 
 // DefaultBuildSteps returns the default build pipeline for clusters
@@ -96,6 +97,7 @@ func DefaultBuildSteps() []string {
 		StepThanosOperatorServiceMonitors, // Monitoring setup
 		StepAlertmanager,                  // Alerting configuration
 		StepSecrets,                       // Secrets last
+		StepMemcached,                     // Memcached configuration
 		StepGateway,                       // Gateway configuration
 	}
 }

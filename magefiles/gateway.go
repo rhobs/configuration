@@ -467,6 +467,9 @@ func createGatewayService(m clusters.TemplateMaps, namespace string) *corev1.Ser
 			Name:      gatewayName,
 			Namespace: namespace,
 			Labels:    labels,
+			Annotations: map[string]string{
+				"service.beta.kubernetes.io/aws-load-balancer-internal": "false",
+			},
 		},
 		Spec: corev1.ServiceSpec{
 			Type:                  corev1.ServiceTypeClusterIP,

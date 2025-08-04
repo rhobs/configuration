@@ -102,9 +102,10 @@ objects:
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosCompact
   metadata:
+    annotations:
+      service.beta.openshift.io/serving-cert-secret-name: compact-tls
+      serviceaccounts.openshift.io/oauth-redirectreference.application: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-compact-rhobs"}}'
     creationTimestamp: null
-    labels:
-      service.alpha.openshift.io/serving-cert-secret-name: compact-tls
     name: rhobs
     namespace: rhobs-stage
   spec:
@@ -191,6 +192,10 @@ objects:
       - mountPath: /etc/tls/private
         name: tls
         readOnly: true
+    additionalServicePorts:
+    - name: https
+      port: 8443
+      targetPort: 8443
     additionalVolumes:
     - name: tls
       secret:
@@ -614,6 +619,27 @@ objects:
     storageSize: 10Gi
     version: 03c9fefbda1b33830a950bd28484fa0a1e039555
   status: {}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/part-of: thanos
+    name: thanos-compact-rhobs
+    namespace: rhobs-stage
+  spec:
+    host: ""
+    port:
+      targetPort: https
+    tls:
+      insecureEdgeTerminationPolicy: Redirect
+      termination: reencrypt
+    to:
+      kind: Service
+      name: thanos-compact-rhobs
+      weight: 100
+  status:
+    ingress: null
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:

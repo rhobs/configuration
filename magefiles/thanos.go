@@ -25,7 +25,7 @@ func (b Build) DefaultThanosStack(config clusters.ClusterConfig) {
 
 	objs = append(objs, defaultQueryCR(config.Namespace, config.Templates, true)...)
 	objs = append(objs, defaultReceiveCR(config.Namespace, config.Templates))
-	objs = append(objs, defaultCompactCR(config.Namespace, config.Templates))
+	objs = append(objs, defaultCompactCR(config.Namespace, config.Templates, true)...)
 	objs = append(objs, defaultRulerCR(config.Namespace, config.Templates))
 	objs = append(objs, defaultStoreCR(config.Namespace, config.Templates))
 
@@ -1434,16 +1434,14 @@ func defaultReceiveCR(namespace string, templates clusters.TemplateMaps) runtime
 	}
 }
 
-func defaultCompactCR(namespace string, templates clusters.TemplateMaps) runtime.Object {
+func defaultCompactCR(namespace string, templates clusters.TemplateMaps, oauth bool) []runtime.Object {
+	var objs []runtime.Object
 	defaultCompact := &v1alpha1.ThanosCompact{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "monitoring.thanos.io/v1alpha1",
 			Kind:       "ThanosCompact",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Labels: map[string]string{
-				"service.alpha.openshift.io/serving-cert-secret-name": "compact-tls",
-			},
 			Name:      "rhobs",
 			Namespace: namespace,
 		},
@@ -1495,10 +1493,53 @@ func defaultCompactCR(namespace string, templates clusters.TemplateMaps) runtime
 		},
 	}
 
-	defaultCompact.Spec.Additional.Containers = append(defaultCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-rhobs", "compact-tls").GetContainer())
-	defaultCompact.Spec.Additional.Volumes = append(defaultCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
+	if oauth {
+		route := &routev1.Route{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "route.openshift.io/v1",
+				Kind:       "Route",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "thanos-compact-rhobs",
+				Namespace: namespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/part-of": "thanos",
+				},
+			},
+			Spec: routev1.RouteSpec{
+				To: routev1.RouteTargetReference{
+					Kind:   "Service",
+					Name:   "thanos-compact-rhobs",
+					Weight: ptr.To(int32(100)),
+				},
+				Port: &routev1.RoutePort{
+					TargetPort: intstr.FromString("https"), // Assuming the oauth-proxy is exposing on https port
+				},
+				TLS: &routev1.TLSConfig{
+					Termination:                   routev1.TLSTerminationReencrypt,
+					InsecureEdgeTerminationPolicy: routev1.InsecureEdgeTerminationPolicyRedirect,
+				},
+			},
+		}
+		objs = append(objs, route)
+		defaultCompact.Annotations = map[string]string{
+			"service.beta.openshift.io/serving-cert-secret-name":               "compact-tls",
+			"serviceaccounts.openshift.io/oauth-redirectreference.application": `{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"thanos-compact-rhobs"}}`,
+		}
+		defaultCompact.Spec.Additional.ServicePorts = append(defaultCompact.Spec.Additional.ServicePorts, corev1.ServicePort{
+			Name: "https",
+			Port: 8443,
+			TargetPort: intstr.IntOrString{
+				Type:   intstr.Int,
+				IntVal: 8443,
+			},
+		})
+		defaultCompact.Spec.Additional.Containers = append(defaultCompact.Spec.Additional.Containers, makeOauthProxy(10902, namespace, "thanos-compact-rhobs", "compact-tls").GetContainer())
+		defaultCompact.Spec.Additional.Volumes = append(defaultCompact.Spec.Additional.Volumes, kghelpers.NewPodVolumeFromSecret("tls", "compact-tls"))
+	}
 
-	return defaultCompact
+	objs = append(objs, defaultCompact)
+	return objs
 }
 
 func defaultRulerCR(namespace string, templates clusters.TemplateMaps) runtime.Object {

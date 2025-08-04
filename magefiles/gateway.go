@@ -57,6 +57,7 @@ func (b Build) Gateway(config clusters.ClusterConfig) error {
 		gatewayDeployment(clusters.StageMaps, ns, config.AMSUrl),
 		createGatewayService(clusters.StageMaps, ns),
 		createTenantSecret(config, ns),
+		createGatewayServiceAccount(clusters.StageMaps, ns),
 	}
 	gen := b.generator(config, gatewayName)
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{
@@ -509,6 +510,21 @@ func createGatewayService(m clusters.TemplateMaps, namespace string) *corev1.Ser
 				},
 			},
 			Selector: selectorLabels,
+		},
+	}
+}
+
+func createGatewayServiceAccount(m clusters.TemplateMaps, namespace string) *corev1.ServiceAccount {
+	labels, _ := gatewayLabels(m)
+	return &corev1.ServiceAccount{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceAccount",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      gatewayName,
+			Namespace: namespace,
+			Labels:    labels,
 		},
 	}
 }

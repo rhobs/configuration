@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/go-kit/log"
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
 	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic"
@@ -31,9 +33,11 @@ func (b Build) LokiOperatorCRDS(config clusters.ClusterConfig) error {
 }
 
 func lokiCRD(gen *mimic.Generator, templates clusters.TemplateMaps) error {
-	repoURL := "https://gitlab.cee.redhat.com/openshift-logging/konflux-log-storage"
-	submodulePath := "loki-operator"
-	yamlPATH := "operator/config/crd/bases"
+	const (
+		repoURL       = "https://gitlab.cee.redhat.com/openshift-logging/konflux-log-storage"
+		submodulePath = "loki-operator"
+		yamlPATH      = "operator/config/crd/bases"
+	)
 
 	// Use the Info struct and Parse method from fetch.go
 	info := submodule.Info{
@@ -48,7 +52,8 @@ func lokiCRD(gen *mimic.Generator, templates clusters.TemplateMaps) error {
 		return fmt.Errorf("Error fetching YAML files: %v\n", err)
 	}
 
-	fmt.Printf("Successfully fetched %d CRD objects\n", len(objs))
+	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+	_ = logger.Log("msg", "Successfully fetched CRD objects", "count", len(objs))
 
 	gen.Add("crds.yaml", encoding.GhodssYAML(
 		openshift.WrapInTemplate(

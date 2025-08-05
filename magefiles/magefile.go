@@ -42,8 +42,7 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 	},
 
 	clusters.StepLokiOperatorCRDS: func(b Build, cfg clusters.ClusterConfig) error {
-		b.LokiOperatorCRDS(cfg)
-		return nil
+		return b.LokiOperatorCRDS(cfg)
 	},
 	clusters.StepLokiOperator: func(b Build, cfg clusters.ClusterConfig) error {
 		b.LokiOperator(cfg)

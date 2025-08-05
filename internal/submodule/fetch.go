@@ -71,38 +71,38 @@ func (i Info) FetchYAMLs() ([]runtime.Object, error) {
 		return nil, fmt.Errorf("failed to get submodule commit: %w", err)
 	}
 	logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
-	logger.Log("msg", "Got submodule commit", "commit", commit)
+	_ = logger.Log("msg", "Got submodule commit", "commit", commit)
 
 	// Get the submodule URL from .gitmodules
 	submoduleURL, err := i.getSubmoduleURL()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get submodule URL: %w", err)
 	}
-	logger.Log("msg", "Got submodule URL", "url", submoduleURL)
+	_ = logger.Log("msg", "Got submodule URL", "url", submoduleURL)
 
 	// First check root directory to see what's in the repo
 	rootFiles, err := i.fetchDirectoryContents(submoduleURL, commit, "")
 	if err != nil {
-		logger.Log("msg", "Failed to fetch root directory", "error", err)
+		_ = logger.Log("msg", "Failed to fetch root directory", "error", err)
 	} else {
-		logger.Log("msg", "Found items in root directory", "count", len(rootFiles))
+		_ = logger.Log("msg", "Found items in root directory", "count", len(rootFiles))
 		limit := len(rootFiles)
 		if limit > 10 {
 			limit = 10
 		}
 		for _, f := range rootFiles[:limit] { // limit to first 10
-			logger.Log("msg", "Root directory item", "name", f.Name, "type", f.Type)
+			_ = logger.Log("msg", "Root directory item", "name", f.Name, "type", f.Type)
 		}
 	}
 
 	// First check if operator directory exists
 	operatorFiles, err := i.fetchDirectoryContents(submoduleURL, commit, "operator")
 	if err != nil {
-		logger.Log("msg", "Failed to fetch operator directory", "error", err)
+		_ = logger.Log("msg", "Failed to fetch operator directory", "error", err)
 	} else {
-		logger.Log("msg", "Found items in operator directory", "count", len(operatorFiles))
+		_ = logger.Log("msg", "Found items in operator directory", "count", len(operatorFiles))
 		for _, f := range operatorFiles {
-			logger.Log("msg", "Operator directory item", "name", f.Name, "type", f.Type)
+			_ = logger.Log("msg", "Operator directory item", "name", f.Name, "type", f.Type)
 		}
 	}
 
@@ -111,14 +111,14 @@ func (i Info) FetchYAMLs() ([]runtime.Object, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch directory contents: %w", err)
 	}
-	logger.Log("msg", "Found files in directory", "count", len(files), "directory", i.PathToYAMLS)
+	_ = logger.Log("msg", "Found files in directory", "count", len(files), "directory", i.PathToYAMLS)
 
 	var objs []runtime.Object
 	for _, file := range files {
 		if strings.HasSuffix(strings.ToLower(file.Name), ".yaml") || strings.HasSuffix(strings.ToLower(file.Name), ".yml") {
 			content, err := i.fetchFileContent(submoduleURL, commit, file.Path)
 			if err != nil {
-				logger.Log("msg", "Error fetching file", "file", file.Name, "error", err)
+				_ = logger.Log("msg", "Error fetching file", "file", file.Name, "error", err)
 				continue
 			}
 			// todo we can pass specific types and filenames if needed
@@ -280,7 +280,7 @@ func getSubmoduleCommits(repoURL, branch string) ([]info, error) {
 		commit, err := fetchSubmoduleCommit(repoType(rt), repoURL, branch, submodules[i].Path)
 		if err != nil {
 			logger := log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
-			logger.Log("msg", "Warning: failed to get commit for submodule", "path", submodules[i].Path, "error", err)
+			_ = logger.Log("msg", "Warning: failed to get commit for submodule", "path", submodules[i].Path, "error", err)
 			commit = "unknown"
 		}
 		submodules[i].Commit = commit

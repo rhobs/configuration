@@ -84,6 +84,7 @@ const (
 	StepThanosOperatorServiceMonitors = "thanos-operator-servicemonitors"
 
 	StepLokiOperatorCRDS = "loki-operator-crds"
+	StepLokiOperator     = "loki-operator"
 
 	StepAlertmanager = "alertmanager"
 	StepSecrets      = "secrets"
@@ -99,6 +100,7 @@ func DefaultBuildSteps() []string {
 		StepDefaultThanosStack,            // ThanosOperator deployment
 		StepThanosOperatorServiceMonitors, // Monitoring setup
 		StepLokiOperatorCRDS,
+		StepLokiOperator,
 		StepAlertmanager, // Alerting configuration
 		StepSecrets,      // Secrets last
 		StepMemcached,    // Memcached configuration

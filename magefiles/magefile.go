@@ -49,6 +49,10 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 		b.LokiOperator(cfg)
 		return nil
 	},
+	clusters.StepDefaultLokiStack: func(b Build, cfg clusters.ClusterConfig) error {
+		b.DefaultLokiStack(cfg)
+		return nil
+	},
 
 	clusters.StepAlertmanager: func(b Build, cfg clusters.ClusterConfig) error {
 		b.Alertmanager(cfg)

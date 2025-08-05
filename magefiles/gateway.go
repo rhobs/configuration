@@ -467,13 +467,9 @@ func createGatewayService(m clusters.TemplateMaps, namespace string) *corev1.Ser
 			Name:      gatewayName,
 			Namespace: namespace,
 			Labels:    labels,
-			Annotations: map[string]string{
-				"service.beta.kubernetes.io/aws-load-balancer-internal": "false",
-				"service.beta.kubernetes.io/aws-load-balancer-scheme":   "internet-facing",
-			},
 		},
 		Spec: corev1.ServiceSpec{
-			Type:                  corev1.ServiceTypeLoadBalancer,
+			Type:                  corev1.ServiceTypeClusterIP,
 			SessionAffinity:       corev1.ServiceAffinityNone,
 			InternalTrafficPolicy: &[]corev1.ServiceInternalTrafficPolicyType{corev1.ServiceInternalTrafficPolicyCluster}[0],
 			IPFamilyPolicy:        &[]corev1.IPFamilyPolicyType{corev1.IPFamilyPolicySingleStack}[0],

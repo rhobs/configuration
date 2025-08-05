@@ -40,6 +40,12 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 		b.ThanosOperatorServiceMonitors(cfg)
 		return nil
 	},
+
+	clusters.StepLokiOperatorCRDS: func(b Build, cfg clusters.ClusterConfig) error {
+		b.LokiOperatorCRDS(cfg)
+		return nil
+	},
+
 	clusters.StepAlertmanager: func(b Build, cfg clusters.ClusterConfig) error {
 		b.Alertmanager(cfg)
 		return nil

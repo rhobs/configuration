@@ -82,10 +82,15 @@ const (
 	StepThanosOperator                = "thanos-operator"
 	StepDefaultThanosStack            = "default-thanos-stack"
 	StepThanosOperatorServiceMonitors = "thanos-operator-servicemonitors"
-	StepAlertmanager                  = "alertmanager"
-	StepSecrets                       = "secrets"
-	StepGateway                       = "gateway"
-	StepMemcached                     = "memcached"
+
+	StepLokiOperatorCRDS = "loki-operator-crds"
+	StepLokiOperator     = "loki-operator"
+	StepDefaultLokiStack = "default-loki-stack"
+
+	StepAlertmanager = "alertmanager"
+	StepSecrets      = "secrets"
+	StepGateway      = "gateway"
+	StepMemcached    = "memcached"
 )
 
 // DefaultBuildSteps returns the default build pipeline for clusters
@@ -95,10 +100,13 @@ func DefaultBuildSteps() []string {
 		StepThanosOperator,                // Custom Resource Definitions
 		StepDefaultThanosStack,            // ThanosOperator deployment
 		StepThanosOperatorServiceMonitors, // Monitoring setup
-		StepAlertmanager,                  // Alerting configuration
-		StepSecrets,                       // Secrets last
-		StepMemcached,                     // Memcached configuration
-		StepGateway,                       // Gateway configuration
+		StepLokiOperatorCRDS,
+		StepLokiOperator,
+		StepDefaultLokiStack,
+		StepAlertmanager, // Alerting configuration
+		StepSecrets,      // Secrets last
+		StepMemcached,    // Memcached configuration
+		StepGateway,      // Gateway configuration
 	}
 }
 

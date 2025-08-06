@@ -1,0 +1,33 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: loki-rhobs
+objects:
+- apiVersion: loki.grafana.com/v1
+  kind: LokiStack
+  metadata:
+    creationTimestamp: null
+    name: observatorium-lokistack
+    namespace: rhobs-stage
+  spec:
+    managementState: Managed
+    size: ${LOKI_SIZE}
+    storage:
+      schemas:
+      - effectiveDate: "2025-06-06"
+        version: v13
+      secret:
+        name: ${LOKI_STORAGE_SECRET_NAME}
+        type: s3
+    storageClassName: ${LOKI_STORAGE_CLASS}
+  status:
+    components: {}
+    storage: {}
+parameters:
+- name: LOKI_SIZE
+  value: 1x.medium
+- name: LOKI_STORAGE_SECRET_NAME
+  value: loki-default-bucket
+- name: LOKI_STORAGE_CLASS
+  value: gp3-csi

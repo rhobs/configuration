@@ -91,6 +91,8 @@ const (
 	StepSecrets      = "secrets"
 	StepGateway      = "gateway"
 	StepMemcached    = "memcached"
+
+	StepSyntheticsApi = "synthetics-api"
 )
 
 // DefaultBuildSteps returns the default build pipeline for clusters
@@ -103,10 +105,11 @@ func DefaultBuildSteps() []string {
 		StepLokiOperatorCRDS,
 		StepLokiOperator,
 		StepDefaultLokiStack,
-		StepAlertmanager, // Alerting configuration
-		StepSecrets,      // Secrets last
-		StepMemcached,    // Memcached configuration
-		StepGateway,      // Gateway configuration
+		StepAlertmanager,  // Alerting configuration
+		StepSecrets,       // Secrets last
+		StepMemcached,     // Memcached configuration
+		StepGateway,       // Gateway configuration
+		StepSyntheticsApi, // Synthetics API configuration
 	}
 }
 

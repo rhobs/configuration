@@ -24,6 +24,7 @@ const (
 	gatewayTemplate = "observatorium-api-template.yaml"
 
 	observatoriumAPI     = "OBSERVATORIUM_API"
+	syntheticsAPI        = "SYNTHETICS_API"
 	opaAMS               = "OPA_AMS"
 	apiCache             = "API_CACHE"
 	componentOPAAMS      = "opa-ams"

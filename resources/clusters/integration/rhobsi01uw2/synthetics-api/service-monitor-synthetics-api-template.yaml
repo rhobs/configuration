@@ -1,0 +1,35 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: synthetics-api-service-monitor
+objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: synthetics-api
+      app.kubernetes.io/instance: rhobs
+      app.kubernetes.io/name: synthetics-api
+      app.kubernetes.io/part-of: rhobs
+      app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+      prometheus: app-sre
+    name: synthetics-api
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - honorLabels: true
+      interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-int
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: synthetics-api
+        app.kubernetes.io/instance: rhobs
+        app.kubernetes.io/name: synthetics-api
+        app.kubernetes.io/part-of: rhobs
+        app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910

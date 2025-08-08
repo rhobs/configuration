@@ -127,7 +127,7 @@ func (b Build) Secrets(config clusters.ClusterConfig) {
 	cacheSecrets := memcachedCacheSecrets(config.Namespace)
 
 	secrets := []runtime.Object{
-		thanosObjectStoreSecret("observatorium-mst-thanos-objectstorage", config.Namespace),
+		thanosObjectStoreSecret("default-thanos-bucket", config.Namespace),
 	}
 
 	for _, secret := range cacheSecrets {

@@ -65,6 +65,10 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 		b.Cache(cfg)
 		return nil
 	},
+	clusters.StepSyntheticsApi: func(b Build, cfg clusters.ClusterConfig) error {
+		b.SyntheticsApi(cfg)
+		return nil
+	},
 	clusters.StepGateway: func(b Build, cfg clusters.ClusterConfig) error {
 		err := b.Gateway(cfg)
 		if err != nil {

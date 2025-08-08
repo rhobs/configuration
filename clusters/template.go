@@ -143,6 +143,12 @@ const (
 	memcachedExporterImage = "quay.io/prometheus/memcached-exporter:v0.15.0"
 )
 
+const (
+	syntheticsApiImage        = "quay.io/redhat-user-workloads/rhobs-synthetics-tenant/rhobs-synthetics-api-main/rhobs-synthetics-api-main"
+	syntheticsApiVersionStage = "7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910"
+	syntheticsApiVersionProd  = "7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910"
+)
+
 // Template key constants - exportable template parameter names
 const (
 	// Service and component keys
@@ -151,6 +157,7 @@ const (
 	Jaeger            = "JAEGER_AGENT"
 	ObservatoriumAPI  = "OBSERVATORIUM_API"
 	OpaAMS            = "OPA_AMS"
+	SyntheticsAPI     = "SYNTHETICS_API"
 
 	// Thanos component keys
 	ThanosOperator         = "THANOS_OPERATOR"
@@ -186,6 +193,7 @@ func DefaultBaseTemplate() TemplateMaps {
 			Jaeger:                 "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 			ApiCache:               "docker.io/memcached:1.6.17-alpine",
 			MemcachedExporter:      memcachedExporterImage,
+			SyntheticsAPI:          syntheticsApiImage,
 		},
 		Versions: ParamMap[string]{
 			StoreDefault:           thanosVersionProd,
@@ -197,6 +205,7 @@ func DefaultBaseTemplate() TemplateMaps {
 			QueryFrontend:          thanosVersionProd,
 			ApiCache:               memcachedTag,
 			ObservatoriumAPI:       "9aada65247a07782465beb500323a0e18d7e3d05",
+			SyntheticsAPI:          syntheticsApiVersionProd,
 		},
 		LogLevels: ParamMap[string]{
 			StoreDefault:           logLevels[1],
@@ -206,6 +215,7 @@ func DefaultBaseTemplate() TemplateMaps {
 			CompactDefault:         logLevels[1],
 			Query:                  logLevels[1],
 			QueryFrontend:          logLevels[1],
+			SyntheticsAPI:          logLevels[1],
 		},
 		ResourceRequirements: ParamMap[corev1.ResourceRequirements]{
 			StoreDefault: {
@@ -348,6 +358,7 @@ var StageImages = ParamMap[string]{
 	ApiCache:                     memcachedImage,
 	MemcachedExporter:            memcachedExporterImage,
 	ObservatoriumAPI:             "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	SyntheticsAPI:                fmt.Sprintf("%s:%s", syntheticsApiImage, syntheticsApiVersionStage),
 	OpaAMS:                       "quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-opa-ams:69db2e0545d9e04fd18f2230c1d59ad2766cf65c",
 }
 
@@ -369,6 +380,7 @@ var StageVersions = ParamMap[string]{
 	"QUERY_FRONTEND":             thanosVersionStage,
 	ApiCache:                     memcachedTag,
 	ObservatoriumAPI:             "9aada65247a07782465beb500323a0e18d7e3d05",
+	SyntheticsAPI:                syntheticsApiVersionStage,
 }
 
 // Stage log levels.
@@ -388,6 +400,7 @@ var StageLogLevels = ParamMap[string]{
 	"QUERY":                      logLevels[1],
 	"QUERY_FRONTEND":             logLevels[1],
 	ObservatoriumAPI:             logLevels[0],
+	SyntheticsAPI:                logLevels[0],
 }
 
 // Stage PV storage sizes.
@@ -420,6 +433,7 @@ var StageReplicas = ParamMap[int32]{
 	"QUERY_FRONTEND":             3,
 	ApiCache:                     1,
 	ObservatoriumAPI:             2,
+	SyntheticsAPI:                2,
 }
 
 // Stage resource requirements.
@@ -614,6 +628,16 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
+	SyntheticsAPI: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
 }
 
 // Stage object storage bucket.
@@ -657,6 +681,7 @@ var ProductionImages = ParamMap[string]{
 	ApiCache:                   memcachedImage,
 	MemcachedExporter:          memcachedExporterImage,
 	ObservatoriumAPI:           "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
+	SyntheticsAPI:              fmt.Sprintf("%s:%s", syntheticsApiImage, syntheticsApiVersionProd),
 	Jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
 }
 
@@ -673,6 +698,7 @@ var ProductionVersions = ParamMap[string]{
 	"QUERY_FRONTEND":           thanosVersionProd,
 	ApiCache:                   memcachedTag,
 	ObservatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
+	SyntheticsAPI:              syntheticsApiVersionProd,
 }
 
 // ProductionLogLevels is a map of production log levels.
@@ -687,6 +713,7 @@ var ProductionLogLevels = ParamMap[string]{
 	"QUERY":                    logLevels[0],
 	"QUERY_FRONTEND":           logLevels[0],
 	ObservatoriumAPI:           logLevels[0],
+	SyntheticsAPI:              logLevels[0],
 }
 
 // ProductionStorageSize is a map of production PV storage sizes.
@@ -712,6 +739,7 @@ var ProductionReplicas = ParamMap[int32]{
 	"QUERY_FRONTEND":           3,
 	ApiCache:                   1,
 	ObservatoriumAPI:           2,
+	SyntheticsAPI:              2,
 }
 
 // ProductionResourceRequirements is a map of production resource requirements.
@@ -819,6 +847,16 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		},
 	},
 	ObservatoriumAPI: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("1"),
+			corev1.ResourceMemory: resource.MustParse("2Gi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("100m"),
+			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	SyntheticsAPI: corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("1"),
 			corev1.ResourceMemory: resource.MustParse("2Gi"),

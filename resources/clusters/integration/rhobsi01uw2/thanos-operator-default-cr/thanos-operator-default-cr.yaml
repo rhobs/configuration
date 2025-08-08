@@ -365,19 +365,7 @@ objects:
     version: a5a425269814420c179d51a69a2017ff197baa2e
     webConfig:
       prefixHeader: X-Forwarded-Prefix
-  status:
-    querierStatus:
-      availableReplicas: 0
-      readyReplicas: 0
-      replicas: 0
-      unavailableReplicas: 0
-      updatedReplicas: 0
-    queryFrontendStatus:
-      availableReplicas: 0
-      readyReplicas: 0
-      replicas: 0
-      unavailableReplicas: 0
-      updatedReplicas: 0
+  status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosReceive
   metadata:
@@ -544,13 +532,7 @@ objects:
           cpu: 100m
           memory: 256Mi
       version: a5a425269814420c179d51a69a2017ff197baa2e
-  status:
-    routerStatus:
-      availableReplicas: 0
-      readyReplicas: 0
-      replicas: 0
-      unavailableReplicas: 0
-      updatedReplicas: 0
+  status: {}
 - apiVersion: monitoring.thanos.io/v1alpha1
   kind: ThanosRuler
   metadata:

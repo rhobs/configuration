@@ -35,3 +35,4 @@ objects:
         app.kubernetes.io/instance: observatorium
         app.kubernetes.io/name: alertmanager
         app.kubernetes.io/part-of: observatorium
+  status: {}

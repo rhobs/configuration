@@ -25,7 +25,7 @@ import (
 const (
 	crdTemplateDir = "bundle"
 
-	CRDRefProd        = "dc27793644ad40fd92aeed9a0e366463d0e558a6"
+	CRDRefProd        = "71ea6c8b40cc5dc1fab7ac5b39f77472339bd845"
 	CRDRefStage       = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
 	CRDRefIntegration = "092aeb9a4571371a46f54556cfb861fa7df2b8fa"
 )

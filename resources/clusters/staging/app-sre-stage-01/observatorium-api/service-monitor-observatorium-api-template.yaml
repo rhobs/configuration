@@ -37,3 +37,4 @@ objects:
         app.kubernetes.io/instance: rhobs
         app.kubernetes.io/name: observatorium-api
         app.kubernetes.io/part-of: rhobs
+  status: {}

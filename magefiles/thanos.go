@@ -1413,7 +1413,7 @@ func defaultReceiveCR(namespace string, templates clusters.TemplateMaps) runtime
 						TSDBConfig: v1alpha1.TSDBConfig{
 							Retention: v1alpha1.Duration("1d"),
 						},
-						AsyncForwardWorkerCount:  ptr.To(uint64(5)),
+						AsyncForwardWorkerCount:  ptr.To(uint64(50)),
 						TooFarInFutureTimeWindow: ptr.To(v1alpha1.Duration("5m")),
 						StoreLimitsOptions: &v1alpha1.StoreLimitsOptions{
 							StoreLimitsRequestSamples: 0,

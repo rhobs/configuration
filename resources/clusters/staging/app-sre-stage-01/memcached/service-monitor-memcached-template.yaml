@@ -33,6 +33,7 @@ objects:
         app.kubernetes.io/name: api-memcached
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
+  status: {}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -62,6 +63,7 @@ objects:
         app.kubernetes.io/name: thanos-bucket-cache
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
+  status: {}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -91,6 +93,7 @@ objects:
         app.kubernetes.io/name: thanos-index-cache
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
+  status: {}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:
@@ -120,3 +123,4 @@ objects:
         app.kubernetes.io/name: thanos-query-range-cache
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 1.5-316
+  status: {}

@@ -15,7 +15,6 @@ import (
 	"github.com/thanos-io/objstore/client"
 	"github.com/thanos-io/objstore/providers/s3"
 	"github.com/thanos-io/thanos/pkg/cacheutil"
-	"github.com/thanos-io/thanos/pkg/model"
 	"github.com/thanos-io/thanos/pkg/queryfrontend"
 	storecache "github.com/thanos-io/thanos/pkg/store/cache"
 
@@ -194,10 +193,11 @@ func cacheSecretsStage(namespace string) []*corev1.Secret {
 		ChunkObjectAttrsTTL:       24 * time.Hour,
 		ChunkSubrangeTTL:          24 * time.Hour,
 		MaxChunksGetRangeRequests: 3,
-		MetafileMaxSize:           model.Bytes(1 * 1024 * 1024),
-		MetafileExistsTTL:         2 * time.Hour,
-		MetafileDoesntExistTTL:    15 * time.Minute,
-		MetafileContentTTL:        24 * time.Hour,
+		// TODO(saswatamcode): Figure out a way to pass units for gen.
+		// MetafileMaxSize:           model.Bytes(1 * 1024 * 1024),
+		MetafileExistsTTL:      2 * time.Hour,
+		MetafileDoesntExistTTL: 15 * time.Minute,
+		MetafileContentTTL:     24 * time.Hour,
 	}
 
 	bucketCacheConfigYaml, err := yaml.Marshal(bucketCacheConfig)
@@ -329,8 +329,9 @@ func memcachedCacheSecrets(namespace string) []*corev1.Secret {
 			MaxGetMultiBatchSize:      100000,
 			MaxGetMultiConcurrency:    1000,
 			MaxIdleConnections:        2500,
-			MaxItemSize:               model.Bytes(5 * 1024 * 1024),
-			Timeout:                   2 * time.Second,
+			// TODO(saswatamcode): Figure out a way to pass units for gen.
+			// MaxItemSize:               model.Bytes(5 * 1024 * 1024),
+			Timeout: 2 * time.Second,
 		},
 	}
 
@@ -351,17 +352,18 @@ func memcachedCacheSecrets(namespace string) []*corev1.Secret {
 			MaxGetMultiBatchSize:      100,
 			MaxGetMultiConcurrency:    1000,
 			MaxIdleConnections:        1100,
-			MaxItemSize:               model.Bytes(1 * 1024 * 1024),
-			Timeout:                   2 * time.Second,
+			// TODO(saswatamcode): Figure out a way to pass units for gen.
+			// MaxItemSize:               model.Bytes(1 * 1024 * 1024),
+			Timeout: 2 * time.Second,
 		},
 		ChunkSubrangeSize:         16000,
 		ChunkObjectAttrsTTL:       24 * time.Hour,
 		ChunkSubrangeTTL:          24 * time.Hour,
 		MaxChunksGetRangeRequests: 3,
-		MetafileMaxSize:           model.Bytes(1 * 1024 * 1024),
-		MetafileExistsTTL:         2 * time.Hour,
-		MetafileDoesntExistTTL:    15 * time.Minute,
-		MetafileContentTTL:        24 * time.Hour,
+		// MetafileMaxSize:           model.Bytes(1 * 1024 * 1024),
+		MetafileExistsTTL:      2 * time.Hour,
+		MetafileDoesntExistTTL: 15 * time.Minute,
+		MetafileContentTTL:     24 * time.Hour,
 	}
 
 	bucketCacheConfigYaml, err := yaml.Marshal(bucketCacheConfig)
@@ -382,8 +384,9 @@ func memcachedCacheSecrets(namespace string) []*corev1.Secret {
 				MaxGetMultiBatchSize:      500,
 				MaxGetMultiConcurrency:    100,
 				MaxIdleConnections:        500,
-				MaxItemSize:               model.Bytes(100 * 1024 * 1024),
-				Timeout:                   5 * time.Second,
+				// TODO(saswatamcode): Figure out a way to pass units for gen.
+				// MaxItemSize:               model.Bytes(100 * 1024 * 1024),
+				Timeout: 5 * time.Second,
 			},
 		},
 	}

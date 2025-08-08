@@ -1128,25 +1128,6 @@ func receiveCR(namespace string, templates clusters.TemplateMaps) *v1alpha1.Than
 }
 
 func defaultQueryCR(namespace string, templates clusters.TemplateMaps, oauth bool, withAdditionalArgs ...string) []runtime.Object {
-	// placeholder for prod caches - temp removed whilst debugging
-	qfeCacheTempProd := v1alpha1.Additional{
-		Args: []string{`--query-range.response-cache-config=
-  "type": "memcached"
-  "config":
-    "addresses":
-      - "dnssrv+_client._tcp.thanos-query-range-cache.rhobs-production.svc"
-    "dns_provider_update_interval": "30s"
-    "max_async_buffer_size": 1000000
-    "max_async_concurrency": 100
-    "max_get_multi_batch_size": 500
-    "max_get_multi_concurrency": 100
-    "max_idle_connections": 500
-    "max_item_size": "100MiB"
-    "timeout": "5s"`,
-		},
-	}
-	log.Println(qfeCacheTempProd)
-
 	var objs []runtime.Object
 
 	query := &v1alpha1.ThanosQuery{
@@ -1213,6 +1194,14 @@ func defaultQueryCR(namespace string, templates clusters.TemplateMaps, oauth boo
 				QueryRangeSplitInterval: ptr.To(v1alpha1.Duration("48h")),
 				LabelsSplitInterval:     ptr.To(v1alpha1.Duration("48h")),
 				LabelsDefaultTimeRange:  ptr.To(v1alpha1.Duration("336h")),
+				QueryRangeResponseCacheConfig: &v1alpha1.CacheConfig{
+					ExternalCacheConfig: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: "thanos-query-range-cache-memcached",
+						},
+						Key: "thanos.yaml",
+					},
+				},
 			},
 			FeatureGates: &v1alpha1.FeatureGates{
 				ServiceMonitorConfig: &v1alpha1.ServiceMonitorConfig{
@@ -1294,6 +1283,22 @@ func defaultStoreCR(namespace string, templates clusters.TemplateMaps) runtime.O
 			},
 			Replicas:            clusters.TemplateFn(clusters.StoreDefault, templates.Replicas),
 			ObjectStorageConfig: clusters.TemplateFn(clusters.DefaultBucket, templates.ObjectStorageBucket),
+			IndexCacheConfig: &v1alpha1.CacheConfig{
+				ExternalCacheConfig: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: "thanos-index-cache-memcached",
+					},
+					Key: "thanos.yaml",
+				},
+			},
+			CachingBucketConfig: &v1alpha1.CacheConfig{
+				ExternalCacheConfig: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: "thanos-bucket-cache-memcached",
+					},
+					Key: "thanos.yaml",
+				},
+			},
 			ShardingStrategy: v1alpha1.ShardingStrategy{
 				Type:   v1alpha1.Block,
 				Shards: 1,

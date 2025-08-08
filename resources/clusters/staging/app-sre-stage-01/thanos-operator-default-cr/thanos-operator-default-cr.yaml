@@ -67,11 +67,19 @@ objects:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
+    cachingBucketConfig:
+      externalCacheConfig:
+        key: thanos.yaml
+        name: thanos-bucket-cache-memcached
     featureGates:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
     imagePullPolicy: IfNotPresent
+    indexCacheConfig:
+      externalCacheConfig:
+        key: thanos.yaml
+        name: thanos-index-cache-memcached
     indexHeaderConfig:
       enableLazyReader: true
       lazyDownloadStrategy: lazy
@@ -313,6 +321,10 @@ objects:
         matchLabels:
           operator.thanos.io/query-api: "true"
       queryRangeMaxRetries: 3
+      queryRangeResponseCacheConfig:
+        externalCacheConfig:
+          key: thanos.yaml
+          name: thanos-query-range-cache-memcached
       queryRangeSplitInterval: 48h
       replicas: 1
       resourceRequirements:

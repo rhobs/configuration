@@ -102,7 +102,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -110,7 +110,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -176,14 +176,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"receive\",code!~\"4.+\"}[7d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -270,7 +270,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\"}[28d]) ))\n",
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\"}[7d]) ))\n",
                         "hide": false,
                         "instant": true,
                         "interval": "",
@@ -279,7 +279,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -345,14 +345,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\",le=\"5\"}[28d]))\n            /\n            sum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\",le=\"5\"}[7d]))\n            /\n            sum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"metricsv1\",handler=~\"receive\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -440,7 +440,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -448,7 +448,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -514,14 +514,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=\"query\",code!~\"4.+\"}[7d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -601,7 +601,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -609,7 +609,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -675,14 +675,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"query_range\",code!~\"4.+\"}[7d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -778,7 +778,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -844,14 +844,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\",le=\"10\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\",le=\"10\"}[7d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-1M-samples\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -939,7 +939,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -1005,14 +1005,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\",le=\"30\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\",le=\"30\"}[7d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-10M-samples\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -1100,7 +1100,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -1166,14 +1166,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\",le=\"120\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\",le=\"120\"}[7d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"query-path-sli-100M-samples\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -1261,7 +1261,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -1269,7 +1269,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -1335,14 +1335,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code!~\"4.+\"}[28d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-ruler-query\",handler=\"query\",code!~\"4.+\"}[7d]))\n    ) - 0.995\n)\n/\n(1 - 0.995), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -1438,7 +1438,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -1504,14 +1504,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-1M-samples\",le=\"10\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-1M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-1M-samples\",le=\"10\"}[7d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-1M-samples\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -1599,7 +1599,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -1665,14 +1665,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-10M-samples\",le=\"30\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-10M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-10M-samples\",le=\"30\"}[7d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-10M-samples\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -1760,7 +1760,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -1826,14 +1826,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-100M-samples\",le=\"120\"}[28d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-100M-samples\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(up_custom_query_duration_seconds_bucket{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-100M-samples\",le=\"120\"}[7d]))\n            /\n            sum(rate(up_custom_query_duration_seconds_count{namespace=\"observatorium-mst-production\",query=\"rule-query-path-sli-100M-samples\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -1921,7 +1921,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -1929,7 +1929,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -1995,14 +1995,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\",method=~\"PUT\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\",method=~\"PUT\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -2090,7 +2090,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -2098,7 +2098,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -2164,14 +2164,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(client_api_requests_total{client=\"reload\",container=\"thanos-rule-syncer\",namespace=\"observatorium-mst-production\",code!~\"4.+\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -2259,7 +2259,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -2267,7 +2267,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -2333,14 +2333,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code!~\"4.+\"}[28d]))\n    ) - 0.90000000000000002\n)\n/\n(1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules\",code!~\"4.+\"}[7d]))\n    ) - 0.90000000000000002\n)\n/\n(1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -2428,7 +2428,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -2436,7 +2436,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -2502,14 +2502,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\"}[28d]))\n    ) - 0.90000000000000002\n)\n/\n(1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"metricsv1\",handler=~\"rules-raw\",code!~\"4.+\"}[7d]))\n    ) - 0.90000000000000002\n)\n/\n(1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -2597,7 +2597,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[28d])) or vector(0))\n/\nsum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[7d])) or vector(0))\n/\nsum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -2605,7 +2605,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -2671,14 +2671,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[28d])) or vector(0))\n        /\n        sum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(thanos_alert_sender_alerts_dropped_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[7d])) or vector(0))\n        /\n        sum(rate(thanos_alert_sender_alerts_sent_total{container=\"thanos-rule\",namespace=\"observatorium-mst-production\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -2758,7 +2758,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[28d])) or vector(0))\n/\nsum(rate(alertmanager_notifications_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[7d])) or vector(0))\n/\nsum(rate(alertmanager_notifications_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -2766,7 +2766,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -2832,14 +2832,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[28d])) or vector(0))\n        /\n        sum(rate(alertmanager_notifications_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(alertmanager_notifications_failed_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[7d])) or vector(0))\n        /\n        sum(rate(alertmanager_notifications_total{service=\"observatorium-alertmanager\",namespace=\"observatorium-mst-production\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -2927,7 +2927,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -2935,7 +2935,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -3001,14 +3001,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"push\",code!~\"4.+\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -3095,7 +3095,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"logsv1\",handler=~\"push\"}[28d]) ))\n",
+                        "expr": "histogram_quantile( 0.90000000000000002, sum by (le) ( rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"logsv1\",handler=~\"push\"}[7d]) ))\n",
                         "hide": false,
                         "instant": true,
                         "interval": "",
@@ -3104,7 +3104,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "90th Percentile Request Latency (28d)",
+                "title": "90th Percentile Request Latency (7d)",
                 "type": "stat"
             },
             {
@@ -3170,14 +3170,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"logsv1\",handler=~\"push\",le=\"5\"}[28d]))\n            /\n            sum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"logsv1\",handler=~\"push\"}[28d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
+                        "expr": "clamp_min(\n    (\n        (\n            sum(rate(http_request_duration_seconds_bucket{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"logsv1\",handler=~\"push\",le=\"5\"}[7d]))\n            /\n            sum(rate(http_request_duration_seconds_count{job=\"observatorium-observatorium-mst-api\",code!~\"4..\",group=\"logsv1\",handler=~\"push\"}[7d]))\n        ) - 0.90000000000000002\n    )\n    /\n    (1 - 0.90000000000000002), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -3265,7 +3265,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -3273,7 +3273,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -3339,14 +3339,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=\"query\",code!~\"4.+\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             },
             {
@@ -3426,7 +3426,7 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n",
+                        "expr": "1-\n(sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code=~\"5.+\"}[7d])) or vector(0))\n/\nsum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code!~\"4.+\"}[7d]))\n",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "",
@@ -3434,7 +3434,7 @@ data:
                         "refId": "A"
                     }
                 ],
-                "title": "Availability (28d)",
+                "title": "Availability (7d)",
                 "type": "stat"
             },
             {
@@ -3500,14 +3500,14 @@ data:
                 "targets": [
                     {
                         "exemplar": true,
-                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code=~\"5.+\"}[28d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code!~\"4.+\"}[28d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
+                        "expr": "clamp_min(\n( 1 -\n    (\n        (sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code=~\"5.+\"}[7d])) or vector(0))\n        /\n        sum(rate(http_requests_total{job=\"observatorium-observatorium-mst-api\",group=\"logsv1\",handler=~\"query_range\",code!~\"4.+\"}[7d]))\n    ) - 0.98999999999999999\n)\n/\n(1 - 0.98999999999999999), 0)\n",
                         "hide": false,
                         "interval": "",
                         "legendFormat": "",
                         "refId": "B"
                     }
                 ],
-                "title": "Error Budget (28d)",
+                "title": "Error Budget (7d)",
                 "type": "stat"
             }
         ],

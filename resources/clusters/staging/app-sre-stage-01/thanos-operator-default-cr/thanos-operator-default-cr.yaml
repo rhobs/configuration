@@ -67,11 +67,19 @@ objects:
       blockDiscoveryStrategy: concurrent
       blockFilesConcurrency: 1
       blockMetaFetchConcurrency: 32
+    cachingBucketConfig:
+      externalCacheConfig:
+        key: thanos.yaml
+        name: thanos-bucket-cache-memcached
     featureGates:
       serviceMonitor:
         enable: false
     ignoreDeletionMarksDelay: 24h
     imagePullPolicy: IfNotPresent
+    indexCacheConfig:
+      externalCacheConfig:
+        key: thanos.yaml
+        name: thanos-index-cache-memcached
     indexHeaderConfig:
       enableLazyReader: true
       lazyDownloadStrategy: lazy
@@ -80,7 +88,7 @@ objects:
     logLevel: info
     objectStorageConfig:
       key: thanos.yaml
-      name: observatorium-mst-thanos-objectstorage
+      name: default-thanos-bucket
       optional: false
     replicas: 1
     resourceRequirements:
@@ -218,7 +226,7 @@ objects:
     logLevel: info
     objectStorageConfig:
       key: thanos.yaml
-      name: observatorium-mst-thanos-objectstorage
+      name: default-thanos-bucket
       optional: false
     resourceRequirements:
       limits:
@@ -313,6 +321,10 @@ objects:
         matchLabels:
           operator.thanos.io/query-api: "true"
       queryRangeMaxRetries: 3
+      queryRangeResponseCacheConfig:
+        externalCacheConfig:
+          key: thanos.yaml
+          name: thanos-query-range-cache-memcached
       queryRangeSplitInterval: 48h
       replicas: 1
       resourceRequirements:
@@ -418,7 +430,7 @@ objects:
             memory: 64Mi
       defaultObjectStorageConfig:
         key: thanos.yaml
-        name: observatorium-mst-thanos-objectstorage
+        name: default-thanos-bucket
         optional: false
       hashrings:
       - asyncForwardWorkerCount: 5
@@ -431,7 +443,7 @@ objects:
         name: default
         objectStorageConfig:
           key: thanos.yaml
-          name: observatorium-mst-thanos-objectstorage
+          name: default-thanos-bucket
           optional: false
         replicas: 3
         resourceRequirements:
@@ -585,7 +597,7 @@ objects:
     baseImage: quay.io/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-thanos
     defaultObjectStorageConfig:
       key: thanos.yaml
-      name: observatorium-mst-thanos-objectstorage
+      name: default-thanos-bucket
       optional: false
     evaluationInterval: 1m
     externalLabels:

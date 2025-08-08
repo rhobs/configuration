@@ -318,7 +318,7 @@ func DefaultBaseTemplate() TemplateMaps {
 			DefaultBucket: v1alpha1.ObjectStorageConfig{
 				Key: "thanos.yaml",
 				LocalObjectReference: corev1.LocalObjectReference{
-					Name: "observatorium-mst-thanos-objectstorage",
+					Name: "default-thanos-bucket",
 				},
 				Optional: ptr.To(false),
 			},

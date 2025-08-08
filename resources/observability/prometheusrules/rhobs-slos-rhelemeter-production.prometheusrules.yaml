@@ -13,7 +13,7 @@ spec:
   - interval: 2m30s
     name: rhobs-rhelemeter-server-metrics-receive-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[4w]))
+    - expr: sum by (code) (increase(haproxy_server_http_responses_total{route="rhelemeter-server-metrics-v1-receive"}[4w]))
       labels:
         route: rhelemeter-server-metrics-v1-receive
         service: telemeter
@@ -190,14 +190,14 @@ spec:
   - interval: 2m30s
     name: rhobs-rhelemeter-server-metrics-receive-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="rhelemeter-server"}[4w]))
       labels:
         handler: receive
         job: rhelemeter-server
         service: telemeter
         slo: rhobs-rhelemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:increase4w
-    - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="rhelemeter-server",le="5"}[4w]))
       labels:
         handler: receive
         job: rhelemeter-server

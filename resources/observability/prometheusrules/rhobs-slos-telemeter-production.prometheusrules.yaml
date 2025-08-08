@@ -13,7 +13,7 @@ spec:
   - interval: 2m30s
     name: rhobs-telemeter-server-metrics-upload-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(haproxy_server_http_responses_total{route="telemeter-server-upload"}[4w]))
+    - expr: sum by (code) (increase(haproxy_server_http_responses_total{route="telemeter-server-upload"}[4w]))
       labels:
         route: telemeter-server-upload
         service: telemeter
@@ -190,14 +190,14 @@ spec:
   - interval: 2m30s
     name: rhobs-telemeter-server-metrics-upload-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="upload",job="telemeter-server"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="upload",job="telemeter-server"}[4w]))
       labels:
         handler: upload
         job: telemeter-server
         service: telemeter
         slo: rhobs-telemeter-server-metrics-upload-latency-slo
       record: http_request_duration_seconds:increase4w
-    - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="upload",job="telemeter-server",le="5"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="upload",job="telemeter-server",le="5"}[4w]))
       labels:
         handler: upload
         job: telemeter-server
@@ -410,7 +410,7 @@ spec:
   - interval: 2m30s
     name: rhobs-telemeter-server-metrics-receive-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[4w]))
+    - expr: sum by (code) (increase(haproxy_server_http_responses_total{route="telemeter-server-metrics-v1-receive"}[4w]))
       labels:
         route: telemeter-server-metrics-v1-receive
         service: telemeter
@@ -587,14 +587,14 @@ spec:
   - interval: 2m30s
     name: rhobs-telemeter-server-metrics-receive-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="telemeter-server"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_count{code=~"^2..$",handler="receive",job="telemeter-server"}[4w]))
       labels:
         handler: receive
         job: telemeter-server
         service: telemeter
         slo: rhobs-telemeter-server-metrics-receive-latency-slo
       record: http_request_duration_seconds:increase4w
-    - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="telemeter-server",le="5"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",handler="receive",job="telemeter-server",le="5"}[4w]))
       labels:
         handler: receive
         job: telemeter-server
@@ -807,7 +807,7 @@ spec:
   - interval: 2m30s
     name: api-metrics-write-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[4w]))
+    - expr: sum by (code) (increase(http_requests_total{group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[4w]))
       labels:
         group: metricsv1
         handler: receive
@@ -1010,7 +1010,7 @@ spec:
   - interval: 2m30s
     name: api-metrics-rule-query-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{handler="query",job="observatorium-ruler-query"}[4w]))
+    - expr: sum by (code) (increase(http_requests_total{handler="query",job="observatorium-ruler-query"}[4w]))
       labels:
         handler: query
         job: observatorium-ruler-query
@@ -1200,7 +1200,7 @@ spec:
   - interval: 2m30s
     name: api-metrics-query-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{group="metricsv1",handler="query",job="observatorium-observatorium-api"}[4w]))
+    - expr: sum by (code) (increase(http_requests_total{group="metricsv1",handler="query",job="observatorium-observatorium-api"}[4w]))
       labels:
         group: metricsv1
         handler: query
@@ -1403,7 +1403,7 @@ spec:
   - interval: 2m30s
     name: api-metrics-query-range-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[4w]))
+    - expr: sum by (code) (increase(http_requests_total{group="metricsv1",handler="query_range",job="observatorium-observatorium-api"}[4w]))
       labels:
         group: metricsv1
         handler: query_range
@@ -1606,7 +1606,7 @@ spec:
   - interval: 2m30s
     name: api-rules-raw-write-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT"}[4w]))
+    - expr: sum by (code) (increase(http_requests_total{group="metricsv1",handler="rules-raw",job="observatorium-observatorium-api",method="PUT"}[4w]))
       labels:
         group: metricsv1
         handler: rules-raw
@@ -1822,7 +1822,7 @@ spec:
   - interval: 2m30s
     name: api-rules-read-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_requests_total{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET"}[4w]))
+    - expr: sum by (code) (increase(http_requests_total{group="metricsv1",handler="rules",job="observatorium-observatorium-api",method="GET"}[4w]))
       labels:
         group: metricsv1
         handler: rules
@@ -2038,7 +2038,7 @@ spec:
   - interval: 2m30s
     name: api-rules-sync-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-production"}[4w]))
+    - expr: sum by (code) (increase(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="observatorium-metrics-production"}[4w]))
       labels:
         client: reload
         container: thanos-rule-syncer
@@ -2231,7 +2231,7 @@ spec:
   - interval: 2m30s
     name: api-alerting-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-production"}[4w]))
+    - expr: sum by (code) (increase(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="observatorium-metrics-production"}[4w]))
       labels:
         container: thanos-rule
         namespace: observatorium-metrics-production
@@ -2416,7 +2416,7 @@ spec:
   - interval: 2m30s
     name: api-alerting-notif-availability-slo-increase
     rules:
-    - expr: sum by(code) (increase(alertmanager_notifications_failed_total{namespace="observatorium-metrics-production",service="observatorium-alertmanager"}[4w]))
+    - expr: sum by (code) (increase(alertmanager_notifications_failed_total{namespace="observatorium-metrics-production",service="observatorium-alertmanager"}[4w]))
       labels:
         namespace: observatorium-metrics-production
         service: observatorium-alertmanager
@@ -2588,7 +2588,7 @@ spec:
   - interval: 2m30s
     name: api-metrics-write-latency-slo-increase
     rules:
-    - expr: sum by(code) (increase(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_count{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api"}[4w]))
       labels:
         group: metricsv1
         handler: receive
@@ -2596,7 +2596,7 @@ spec:
         service: observatorium-api
         slo: api-metrics-write-latency-slo
       record: http_request_duration_seconds:increase4w
-    - expr: sum by(code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api",le="5"}[4w]))
+    - expr: sum by (code) (increase(http_request_duration_seconds_bucket{code=~"^2..$",group="metricsv1",handler="receive",job="observatorium-observatorium-api",le="5"}[4w]))
       labels:
         group: metricsv1
         handler: receive
@@ -2823,14 +2823,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-rule-read-1M-latency-slo-increase
     rules:
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-production
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-rule-read-1M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
       labels:
         le: "10"
         namespace: observatorium-production
@@ -3043,14 +3043,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-rule-read-10M-latency-slo-increase
     rules:
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="rule-query-path-sli-10M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="rule-query-path-sli-10M-samples"}[4w]))
       labels:
         namespace: observatorium-production
         query: rule-query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-rule-read-10M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-production",query="rule-query-path-sli-10M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-production",query="rule-query-path-sli-10M-samples"}[4w]))
       labels:
         le: "30"
         namespace: observatorium-production
@@ -3263,14 +3263,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-rule-read-100M-latency-slo-increase
     rules:
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-production
         query: rule-query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-rule-read-100M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-production",query="rule-query-path-sli-1M-samples"}[4w]))
       labels:
         le: "120"
         namespace: observatorium-production
@@ -3483,14 +3483,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-read-1M-latency-slo-increase
     rules:
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-production
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-1M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="10",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         le: "10"
         namespace: observatorium-production
@@ -3703,14 +3703,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-read-10M-latency-slo-increase
     rules:
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="query-path-sli-10M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="query-path-sli-10M-samples"}[4w]))
       labels:
         namespace: observatorium-production
         query: query-path-sli-10M-samples
         service: observatorium-api
         slo: api-metrics-read-10M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-production",query="query-path-sli-10M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="30",namespace="observatorium-production",query="query-path-sli-10M-samples"}[4w]))
       labels:
         le: "30"
         namespace: observatorium-production
@@ -3923,14 +3923,14 @@ spec:
   - interval: 2m30s
     name: api-metrics-read-100M-latency-slo-increase
     rules:
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_count{http_code=~"^2..$",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         namespace: observatorium-production
         query: query-path-sli-1M-samples
         service: observatorium-api
         slo: api-metrics-read-100M-latency-slo
       record: up_custom_query_duration_seconds:increase4w
-    - expr: sum by(http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
+    - expr: sum by (http_code) (increase(up_custom_query_duration_seconds_bucket{http_code=~"^2..$",le="120",namespace="observatorium-production",query="query-path-sli-1M-samples"}[4w]))
       labels:
         le: "120"
         namespace: observatorium-production

@@ -154,7 +154,7 @@ function(instanceName, environment, dashboardName) {
           refId: 'A',
         },
       ],
-      title: 'Availability (28d)',
+      title: 'Availability (7d)',
       type: 'stat',
       id: (rowIndex * panelsPerRow),
     },
@@ -232,7 +232,7 @@ function(instanceName, environment, dashboardName) {
           refId: 'B',
         },
       ],
-      title: 'Error Budget (28d)',
+      title: 'Error Budget (7d)',
       type: 'stat',
       id: (rowIndex * panelsPerRow) + 1,
     },
@@ -318,7 +318,7 @@ function(instanceName, environment, dashboardName) {
           refId: 'A',
         },
       ],
-      title: '90th Percentile Request Latency (28d)',
+      title: '90th Percentile Request Latency (7d)',
       type: 'stat',
       id: (rowIndex * panelsPerRow),
     },
@@ -396,7 +396,7 @@ function(instanceName, environment, dashboardName) {
           refId: 'B',
         },
       ],
-      title: 'Error Budget (28d)',
+      title: 'Error Budget (7d)',
       type: 'stat',
       id: (rowIndex * panelsPerRow) + 1,
     },
@@ -407,8 +407,8 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '99.5% of valid requests return successfully',
       0.995,
-      'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[28d]))',
-      'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[28d]))',
+      'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code="5xx"}[7d]))',
+      'sum(rate(haproxy_server_http_responses_total{route=~"telemeter-server-upload|telemeter-server-metrics-v1-receive",code!="4xx"}[7d]))',
       0
     ) +
     titleRow('Telemeter Server > Metrics Write > Latency') +
@@ -416,9 +416,9 @@ function(instanceName, environment, dashboardName) {
       '90% of valid requests return < 5s',
       0.9,
       5,
-      'sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code!~"4..",le="5"}[28d]))',
-      'rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[28d])',
-      'sum(rate(http_request_duration_seconds_count{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[28d]))',
+      'sum(rate(http_request_duration_seconds_bucket{job="telemeter-server",handler=~"upload|receive",code!~"4..",le="5"}[7d]))',
+      'rate(http_request_duration_seconds_bucket{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[7d])',
+      'sum(rate(http_request_duration_seconds_count{job="telemeter-server",code!~"4..",handler=~"upload|receive"}[7d]))',
       1
     ),
   local apiPanels =
@@ -426,8 +426,8 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '99.5% of valid requests return successfully',
       0.995,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"receive",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"receive",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"receive",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"receive",code!~"4.+"}[7d]))' % instance.apiJob,
       2
     ) +
     titleRow('API > Metrics Write > Latency') +
@@ -435,24 +435,24 @@ function(instanceName, environment, dashboardName) {
       '90% of valid requests return < 5s',
       0.9,
       5,
-      'sum(rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="metricsv1",handler=~"receive",le="5"}[28d]))' % instance.apiJob,
-      'rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="metricsv1",handler=~"receive"}[28d])' % instance.apiJob,
-      'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",group="metricsv1",handler=~"receive"}[28d]))' % instance.apiJob,
+      'sum(rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="metricsv1",handler=~"receive",le="5"}[7d]))' % instance.apiJob,
+      'rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="metricsv1",handler=~"receive"}[7d])' % instance.apiJob,
+      'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",group="metricsv1",handler=~"receive"}[7d]))' % instance.apiJob,
       3
     ) +
     titleRow('API > Metrics Read > Ad Hoc > Availability') +
     availabilityRow(
       '99.5% of valid /query requests return successfully',
       0.995,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler="query",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler="query",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler="query",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler="query",code!~"4.+"}[7d]))' % instance.apiJob,
       4
     ) +
     availabilityRow(
       '99.5% of valid /query_range requests return successfully',
       0.995,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"query_range",code!~"4.+"}[7d]))' % instance.apiJob,
       5
     ) +
     titleRow('API > Metrics Read > Ad Hoc > Latency') +
@@ -460,35 +460,35 @@ function(instanceName, environment, dashboardName) {
       '90% of valid requests that process 1M samples return < 10s',
       0.9,
       10,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples",le="10"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples",le="10"}[7d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-1M-samples"}[1d])' % instance.upNamespace,
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-1M-samples"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-1M-samples"}[7d]))' % instance.upNamespace,
       6
     ) +
     latencyRow(
       '90% of valid requests that process 10M samples return < 30s',
       0.9,
       30,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples",le="30"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples",le="30"}[7d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-10M-samples"}[1d])' % instance.upNamespace,
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-10M-samples"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-10M-samples"}[7d]))' % instance.upNamespace,
       7
     ) +
     latencyRow(
       '90% of valid requests that process 100M samples return < 120s',
       0.9,
       120,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples",le="120"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples",le="120"}[7d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="query-path-sli-100M-samples"}[1d])' % instance.upNamespace,
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="query-path-sli-100M-samples"}[7d]))' % instance.upNamespace,
       8
     ) +
     titleRow('API > Metrics Read > Rule > Availability') +
     availabilityRow(
       '99.5% of valid /query requests return successfully',
       0.995,
-      'sum(rate(http_requests_total{job="observatorium-ruler-query",handler="query",code=~"5.+"}[28d]))',
-      'sum(rate(http_requests_total{job="observatorium-ruler-query",handler="query",code!~"4.+"}[28d]))',
+      'sum(rate(http_requests_total{job="observatorium-ruler-query",handler="query",code=~"5.+"}[7d]))',
+      'sum(rate(http_requests_total{job="observatorium-ruler-query",handler="query",code!~"4.+"}[7d]))',
       4
     ) +
     titleRow('API > Metrics Read > Rule > Latency') +
@@ -496,74 +496,74 @@ function(instanceName, environment, dashboardName) {
       '90% of valid requests that process 1M samples return < 10s',
       0.9,
       10,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-1M-samples",le="10"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-1M-samples",le="10"}[7d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-1M-samples"}[1d])' % instance.upNamespace,
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-1M-samples"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-1M-samples"}[7d]))' % instance.upNamespace,
       6
     ) +
     latencyRow(
       '90% of valid requests that process 10M samples return < 30s',
       0.9,
       30,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-10M-samples",le="30"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-10M-samples",le="30"}[7d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-10M-samples"}[1d])' % instance.upNamespace,
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-10M-samples"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-10M-samples"}[7d]))' % instance.upNamespace,
       7
     ) +
     latencyRow(
       '90% of valid requests that process 100M samples return < 120s',
       0.9,
       120,
-      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-100M-samples",le="120"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-100M-samples",le="120"}[7d]))' % instance.upNamespace,
       'rate(up_custom_query_duration_seconds_bucket{namespace="%s",query="rule-query-path-sli-100M-samples"}[1d])' % instance.upNamespace,
-      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-100M-samples"}[28d]))' % instance.upNamespace,
+      'sum(rate(up_custom_query_duration_seconds_count{namespace="%s",query="rule-query-path-sli-100M-samples"}[7d]))' % instance.upNamespace,
       8
     ) +
     titleRow('API > Rules Write (/rules/raw) > Availability') +
     availabilityRow(
       '99% of valid write requests return successfully',
       0.99,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code=~"5.+",method=~"PUT"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code!~"4.+",method=~"PUT"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code=~"5.+",method=~"PUT"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code!~"4.+",method=~"PUT"}[7d]))' % instance.apiJob,
       9
     ) +
     titleRow('API > Rules Sync > Availability') +
     availabilityRow(
       '99% of rules are successfully synced to Thanos Ruler',
       0.99,
-      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code=~"5.+"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
-      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code!~"4.+"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code=~"5.+"}[7d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(client_api_requests_total{client="reload",container="thanos-rule-syncer",namespace="%s",code!~"4.+"}[7d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
       10
     ) +
     titleRow('API > Rules Read (/rules) > Availability') +
     availabilityRow(
       '90% of valid requests return successfully',
       0.9,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules",code!~"4.+"}[7d]))' % instance.apiJob,
       11
     ) +
     titleRow('API > Rules Read (/rules/raw) > Availability') +
     availabilityRow(
       '90% of valid requests return successfully',
       0.9,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="metricsv1",handler=~"rules-raw",code!~"4.+"}[7d]))' % instance.apiJob,
       12
     ) +
     titleRow('API > Alerting > Availability') +
     availabilityRow(
       '99% of alerts are successfully delivered to Alertmanager',
       0.99,
-      'sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
-      'sum(rate(thanos_alert_sender_alerts_sent_total{container="thanos-rule",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(thanos_alert_sender_alerts_dropped_total{container="thanos-rule",namespace="%s"}[7d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(thanos_alert_sender_alerts_sent_total{container="thanos-rule",namespace="%s"}[7d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
       13
     ) +
     availabilityRow(
       '99% of alerts are successfully delivered to upstream targets',
       0.99,
-      'sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
-      'sum(rate(alertmanager_notifications_total{service="observatorium-alertmanager",namespace="%s"}[28d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(alertmanager_notifications_failed_total{service="observatorium-alertmanager",namespace="%s"}[7d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
+      'sum(rate(alertmanager_notifications_total{service="observatorium-alertmanager",namespace="%s"}[7d]))' % utils.instanceNamespace(instanceName, instance.metricsNamespace, instance.upNamespace),
       14
     ),
   local apiLogsPanels =
@@ -571,8 +571,8 @@ function(instanceName, environment, dashboardName) {
     availabilityRow(
       '99% of valid requests return successfully',
       0.99,
-      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"push",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"push",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"push",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"push",code!~"4.+"}[7d]))' % instance.apiJob,
       2
     ) +
     titleRow('API > Logs Write > Latency') +
@@ -580,24 +580,24 @@ function(instanceName, environment, dashboardName) {
       '90% of valid requests return < 5s',
       0.9,
       5,
-      'sum(rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="logsv1",handler=~"push",le="5"}[28d]))' % instance.apiJob,
-      'rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="logsv1",handler=~"push"}[28d])' % instance.apiJob,
-      'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",group="logsv1",handler=~"push"}[28d]))' % instance.apiJob,
+      'sum(rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="logsv1",handler=~"push",le="5"}[7d]))' % instance.apiJob,
+      'rate(http_request_duration_seconds_bucket{job="%s",code!~"4..",group="logsv1",handler=~"push"}[7d])' % instance.apiJob,
+      'sum(rate(http_request_duration_seconds_count{job="%s",code!~"4..",group="logsv1",handler=~"push"}[7d]))' % instance.apiJob,
       3
     ) +
     titleRow('API > Logs Read > Availability') +
     availabilityRow(
       '99% of valid /query requests return successfully',
       0.99,
-      'sum(rate(http_requests_total{job="%s",group="logsv1",handler="query",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="logsv1",handler="query",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler="query",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler="query",code!~"4.+"}[7d]))' % instance.apiJob,
       4
     ) +
     availabilityRow(
       '99% of valid /query_range requests return successfully',
       0.99,
-      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"query_range",code=~"5.+"}[28d]))' % instance.apiJob,
-      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"query_range",code!~"4.+"}[28d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"query_range",code=~"5.+"}[7d]))' % instance.apiJob,
+      'sum(rate(http_requests_total{job="%s",group="logsv1",handler=~"query_range",code!~"4.+"}[7d]))' % instance.apiJob,
       5
     ),
 

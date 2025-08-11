@@ -219,7 +219,7 @@ objects:
                           Cannot be updated.
                         items:
                           description: EnvFromSource represents the source of a set
-                            of ConfigMaps
+                            of ConfigMaps or Secrets
                           properties:
                             configMapRef:
                               description: The ConfigMap to select from
@@ -240,8 +240,8 @@ objects:
                               type: object
                               x-kubernetes-map-type: atomic
                             prefix:
-                              description: An optional identifier to prepend to each
-                                key in the ConfigMap. Must be a C_IDENTIFIER.
+                              description: Optional text to prepend to the name of
+                                each environment variable. Must be a C_IDENTIFIER.
                               type: string
                             secretRef:
                               description: The Secret to select from
@@ -505,6 +505,12 @@ objects:
                                 - port
                                 type: object
                             type: object
+                          stopSignal:
+                            description: |-
+                              StopSignal defines which signal will be sent to a container when it is being stopped.
+                              If not specified, the default is defined by the container runtime in use.
+                              StopSignal can only be set for Pods with a non-empty .spec.os.name
+                            type: string
                         type: object
                       livenessProbe:
                         description: |-
@@ -2705,7 +2711,7 @@ objects:
                           The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                           The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                           The volume will be mounted read-only (ro) and non-executable files (noexec).
-                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                           The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                         properties:
                           pullPolicy:
@@ -3853,7 +3859,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -3868,7 +3873,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -4035,7 +4039,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -4050,7 +4053,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -4215,7 +4217,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -4230,7 +4231,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -4397,7 +4397,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -4412,7 +4411,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -4965,7 +4963,7 @@ objects:
               properties:
                 conditions:
                   description: Conditions represent the latest available observations
-                    of the state of the hashring.
+                    of the state of the Compactor.
                   items:
                     description: Condition contains details for one aspect of the
                       current state of this API Resource.
@@ -5022,6 +5020,40 @@ objects:
                     - type
                     type: object
                   type: array
+                paused:
+                  description: Paused is the flag to pause the Compactor.
+                  type: boolean
+                shardStatuses:
+                  additionalProperties:
+                    properties:
+                      availableReplicas:
+                        description: Total number of available pods (ready for at
+                          least minReadySeconds) targeted by this StatefulSet.
+                        format: int32
+                        type: integer
+                      currentReplicas:
+                        description: currentReplicas is the number of Pods created
+                          by the StatefulSet.
+                        format: int32
+                        type: integer
+                      readyReplicas:
+                        description: ReadyReplicas is the number of pods created for
+                          this StatefulSet with a Ready Condition.
+                        format: int32
+                        type: integer
+                      replicas:
+                        description: Replicas is the number of replicas of the StatefulSet.
+                        format: int32
+                        type: integer
+                      updatedReplicas:
+                        description: ' Total number of non-terminating pods targeted
+                          by StatefulSet that have the desired template spec..'
+                        format: int32
+                        type: integer
+                    type: object
+                  description: ShardStatuses is the status of the shards in the compact
+                    component.
+                  type: object
               type: object
           type: object
       served: true
@@ -5249,7 +5281,7 @@ objects:
                           Cannot be updated.
                         items:
                           description: EnvFromSource represents the source of a set
-                            of ConfigMaps
+                            of ConfigMaps or Secrets
                           properties:
                             configMapRef:
                               description: The ConfigMap to select from
@@ -5270,8 +5302,8 @@ objects:
                               type: object
                               x-kubernetes-map-type: atomic
                             prefix:
-                              description: An optional identifier to prepend to each
-                                key in the ConfigMap. Must be a C_IDENTIFIER.
+                              description: Optional text to prepend to the name of
+                                each environment variable. Must be a C_IDENTIFIER.
                               type: string
                             secretRef:
                               description: The Secret to select from
@@ -5535,6 +5567,12 @@ objects:
                                 - port
                                 type: object
                             type: object
+                          stopSignal:
+                            description: |-
+                              StopSignal defines which signal will be sent to a container when it is being stopped.
+                              If not specified, the default is defined by the container runtime in use.
+                              StopSignal can only be set for Pods with a non-empty .spec.os.name
+                            type: string
                         type: object
                       livenessProbe:
                         description: |-
@@ -7735,7 +7773,7 @@ objects:
                           The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                           The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                           The volume will be mounted read-only (ro) and non-executable files (noexec).
-                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                           The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                         properties:
                           pullPolicy:
@@ -8883,7 +8921,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -8898,7 +8935,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -9065,7 +9101,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -9080,7 +9115,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -9245,7 +9279,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -9260,7 +9293,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -9427,7 +9459,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -9442,7 +9473,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -9883,7 +9913,7 @@ objects:
                               Cannot be updated.
                             items:
                               description: EnvFromSource represents the source of
-                                a set of ConfigMaps
+                                a set of ConfigMaps or Secrets
                               properties:
                                 configMapRef:
                                   description: The ConfigMap to select from
@@ -9904,8 +9934,8 @@ objects:
                                   type: object
                                   x-kubernetes-map-type: atomic
                                 prefix:
-                                  description: An optional identifier to prepend to
-                                    each key in the ConfigMap. Must be a C_IDENTIFIER.
+                                  description: Optional text to prepend to the name
+                                    of each environment variable. Must be a C_IDENTIFIER.
                                   type: string
                                 secretRef:
                                   description: The Secret to select from
@@ -10169,6 +10199,12 @@ objects:
                                     - port
                                     type: object
                                 type: object
+                              stopSignal:
+                                description: |-
+                                  StopSignal defines which signal will be sent to a container when it is being stopped.
+                                  If not specified, the default is defined by the container runtime in use.
+                                  StopSignal can only be set for Pods with a non-empty .spec.os.name
+                                type: string
                             type: object
                           livenessProbe:
                             description: |-
@@ -12377,7 +12413,7 @@ objects:
                               The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                               The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                               The volume will be mounted read-only (ro) and non-executable files (noexec).
-                              Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                              Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                               The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                             properties:
                               pullPolicy:
@@ -13535,7 +13571,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                           Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -13550,7 +13585,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                           Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -13717,7 +13751,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -13732,7 +13765,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -13897,7 +13929,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                           Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -13912,7 +13943,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                           Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -14079,7 +14109,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -14094,7 +14123,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -14656,7 +14684,9 @@ objects:
               - replicas
               type: object
             status:
-              description: ThanosQueryStatus defines the observed state of ThanosQuery
+              description: |-
+                ThanosQueryStatus defines the observed state of ThanosQuery
+                Includes reconciliation state, deployment status, pod status, and last reconciled statistics.
               properties:
                 conditions:
                   description: Conditions represent the latest available observations
@@ -14717,6 +14747,77 @@ objects:
                     - type
                     type: object
                   type: array
+                paused:
+                  description: Paused is the flag to pause the Querier.
+                  type: boolean
+                querierStatus:
+                  description: Querier is the status of the Querier.
+                  properties:
+                    availableReplicas:
+                      description: Total number of available pods (ready for at least
+                        minReadySeconds) targeted by this Deployment.
+                      format: int32
+                      type: integer
+                    readyReplicas:
+                      description: ReadyReplicas is the number of pods created for
+                        this Deployment with a Ready Condition.
+                      format: int32
+                      type: integer
+                    replicas:
+                      description: Replicas is the number of replicas of the Deployment.
+                      format: int32
+                      type: integer
+                    unavailableReplicas:
+                      description: UnavailableReplicas is the number of pods that
+                        are needed for Deployment to have 100% capacity.
+                      format: int32
+                      type: integer
+                    updatedReplicas:
+                      description: UpdatedReplicas is the number of Pods created by
+                        the Deployment.
+                      format: int32
+                      type: integer
+                  required:
+                  - availableReplicas
+                  - readyReplicas
+                  - replicas
+                  - unavailableReplicas
+                  - updatedReplicas
+                  type: object
+                queryFrontendStatus:
+                  description: QueryFrontend is the status of the Query Frontend.
+                  properties:
+                    availableReplicas:
+                      description: Total number of available pods (ready for at least
+                        minReadySeconds) targeted by this Deployment.
+                      format: int32
+                      type: integer
+                    readyReplicas:
+                      description: ReadyReplicas is the number of pods created for
+                        this Deployment with a Ready Condition.
+                      format: int32
+                      type: integer
+                    replicas:
+                      description: Replicas is the number of replicas of the Deployment.
+                      format: int32
+                      type: integer
+                    unavailableReplicas:
+                      description: UnavailableReplicas is the number of pods that
+                        are needed for Deployment to have 100% capacity.
+                      format: int32
+                      type: integer
+                    updatedReplicas:
+                      description: UpdatedReplicas is the number of Pods created by
+                        the Deployment.
+                      format: int32
+                      type: integer
+                  required:
+                  - availableReplicas
+                  - readyReplicas
+                  - replicas
+                  - unavailableReplicas
+                  - updatedReplicas
+                  type: object
               type: object
           type: object
       served: true
@@ -15002,7 +15103,7 @@ objects:
                               Cannot be updated.
                             items:
                               description: EnvFromSource represents the source of
-                                a set of ConfigMaps
+                                a set of ConfigMaps or Secrets
                               properties:
                                 configMapRef:
                                   description: The ConfigMap to select from
@@ -15023,8 +15124,8 @@ objects:
                                   type: object
                                   x-kubernetes-map-type: atomic
                                 prefix:
-                                  description: An optional identifier to prepend to
-                                    each key in the ConfigMap. Must be a C_IDENTIFIER.
+                                  description: Optional text to prepend to the name
+                                    of each environment variable. Must be a C_IDENTIFIER.
                                   type: string
                                 secretRef:
                                   description: The Secret to select from
@@ -15288,6 +15389,12 @@ objects:
                                     - port
                                     type: object
                                 type: object
+                              stopSignal:
+                                description: |-
+                                  StopSignal defines which signal will be sent to a container when it is being stopped.
+                                  If not specified, the default is defined by the container runtime in use.
+                                  StopSignal can only be set for Pods with a non-empty .spec.os.name
+                                type: string
                             type: object
                           livenessProbe:
                             description: |-
@@ -17496,7 +17603,7 @@ objects:
                               The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                               The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                               The volume will be mounted read-only (ro) and non-executable files (noexec).
-                              Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                              Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                               The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                             properties:
                               pullPolicy:
@@ -18687,7 +18794,6 @@ objects:
                                                 pod labels will be ignored. The default value is empty.
                                                 The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                                 Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                                This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                               items:
                                                 type: string
                                               type: array
@@ -18702,7 +18808,6 @@ objects:
                                                 pod labels will be ignored. The default value is empty.
                                                 The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                                 Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                                This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                               items:
                                                 type: string
                                               type: array
@@ -18871,7 +18976,6 @@ objects:
                                             pod labels will be ignored. The default value is empty.
                                             The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                             Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                            This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                           items:
                                             type: string
                                           type: array
@@ -18886,7 +18990,6 @@ objects:
                                             pod labels will be ignored. The default value is empty.
                                             The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                             Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                            This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                           items:
                                             type: string
                                           type: array
@@ -19053,7 +19156,6 @@ objects:
                                                 pod labels will be ignored. The default value is empty.
                                                 The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                                 Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                                This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                               items:
                                                 type: string
                                               type: array
@@ -19068,7 +19170,6 @@ objects:
                                                 pod labels will be ignored. The default value is empty.
                                                 The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                                 Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                                This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                               items:
                                                 type: string
                                               type: array
@@ -19237,7 +19338,6 @@ objects:
                                             pod labels will be ignored. The default value is empty.
                                             The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                             Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                            This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                           items:
                                             type: string
                                           type: array
@@ -19252,7 +19352,6 @@ objects:
                                             pod labels will be ignored. The default value is empty.
                                             The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                             Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                            This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                           items:
                                             type: string
                                           type: array
@@ -19355,6 +19454,14 @@ objects:
                               blocks.
                             minProperties: 1
                             type: object
+                          grpcCompression:
+                            default: snappy
+                            description: GRPCCompression defines the compression algorithm
+                              for gRPC communication.
+                            enum:
+                            - none
+                            - snappy
+                            type: string
                           imagePullPolicy:
                             default: IfNotPresent
                             description: |-
@@ -19853,7 +19960,7 @@ objects:
                               Cannot be updated.
                             items:
                               description: EnvFromSource represents the source of
-                                a set of ConfigMaps
+                                a set of ConfigMaps or Secrets
                               properties:
                                 configMapRef:
                                   description: The ConfigMap to select from
@@ -19874,8 +19981,8 @@ objects:
                                   type: object
                                   x-kubernetes-map-type: atomic
                                 prefix:
-                                  description: An optional identifier to prepend to
-                                    each key in the ConfigMap. Must be a C_IDENTIFIER.
+                                  description: Optional text to prepend to the name
+                                    of each environment variable. Must be a C_IDENTIFIER.
                                   type: string
                                 secretRef:
                                   description: The Secret to select from
@@ -20139,6 +20246,12 @@ objects:
                                     - port
                                     type: object
                                 type: object
+                              stopSignal:
+                                description: |-
+                                  StopSignal defines which signal will be sent to a container when it is being stopped.
+                                  If not specified, the default is defined by the container runtime in use.
+                                  StopSignal can only be set for Pods with a non-empty .spec.os.name
+                                type: string
                             type: object
                           livenessProbe:
                             description: |-
@@ -22347,7 +22460,7 @@ objects:
                               The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                               The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                               The volume will be mounted read-only (ro) and non-executable files (noexec).
-                              Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                              Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                               The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                             properties:
                               pullPolicy:
@@ -23505,7 +23618,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                           Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -23520,7 +23632,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                           Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -23687,7 +23798,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -23702,7 +23812,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -23867,7 +23976,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                           Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -23882,7 +23990,6 @@ objects:
                                           pod labels will be ignored. The default value is empty.
                                           The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                           Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                          This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                         items:
                                           type: string
                                         type: array
@@ -24049,7 +24156,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -24064,7 +24170,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -24159,6 +24264,14 @@ objects:
                         to the ingesters.
                       minProperties: 1
                       type: object
+                    hashringPolicy:
+                      default: static
+                      description: HashringPolicy defines the policy for how the hashring
+                        is built and maintained at runtime.
+                      enum:
+                      - static
+                      - dynamic
+                      type: string
                     imagePullPolicy:
                       default: IfNotPresent
                       description: |-
@@ -24235,6 +24348,14 @@ objects:
                       - 5
                       format: int32
                       type: integer
+                    replicationProtocol:
+                      default: grpc
+                      description: ReplicationProtocol is the protocol for remote
+                        write replication.
+                      enum:
+                      - grpc
+                      - capnproto
+                      type: string
                     resourceRequirements:
                       description: ResourceRequirements for the Thanos component container.
                       properties:
@@ -24359,7 +24480,7 @@ objects:
               properties:
                 conditions:
                   description: Conditions represent the latest available observations
-                    of the state of the hashring.
+                    of the state of the ThanosReceive CRD.
                   items:
                     description: Condition contains details for one aspect of the
                       current state of this API Resource.
@@ -24416,6 +24537,75 @@ objects:
                     - type
                     type: object
                   type: array
+                hashringStatus:
+                  additionalProperties:
+                    properties:
+                      availableReplicas:
+                        description: Total number of available pods (ready for at
+                          least minReadySeconds) targeted by this StatefulSet.
+                        format: int32
+                        type: integer
+                      currentReplicas:
+                        description: currentReplicas is the number of Pods created
+                          by the StatefulSet.
+                        format: int32
+                        type: integer
+                      readyReplicas:
+                        description: ReadyReplicas is the number of pods created for
+                          this StatefulSet with a Ready Condition.
+                        format: int32
+                        type: integer
+                      replicas:
+                        description: Replicas is the number of replicas of the StatefulSet.
+                        format: int32
+                        type: integer
+                      updatedReplicas:
+                        description: ' Total number of non-terminating pods targeted
+                          by StatefulSet that have the desired template spec..'
+                        format: int32
+                        type: integer
+                    type: object
+                  description: HashringStatus is a map of ingester statuses to hashring
+                    names.
+                  type: object
+                paused:
+                  description: Paused is a flag that indicates if the ThanosReceive
+                    is paused.
+                  type: boolean
+                routerStatus:
+                  description: RouterStatus is the status of the Receive router.
+                  properties:
+                    availableReplicas:
+                      description: Total number of available pods (ready for at least
+                        minReadySeconds) targeted by this Deployment.
+                      format: int32
+                      type: integer
+                    readyReplicas:
+                      description: ReadyReplicas is the number of pods created for
+                        this Deployment with a Ready Condition.
+                      format: int32
+                      type: integer
+                    replicas:
+                      description: Replicas is the number of replicas of the Deployment.
+                      format: int32
+                      type: integer
+                    unavailableReplicas:
+                      description: UnavailableReplicas is the number of pods that
+                        are needed for Deployment to have 100% capacity.
+                      format: int32
+                      type: integer
+                    updatedReplicas:
+                      description: UpdatedReplicas is the number of Pods created by
+                        the Deployment.
+                      format: int32
+                      type: integer
+                  required:
+                  - availableReplicas
+                  - readyReplicas
+                  - replicas
+                  - unavailableReplicas
+                  - updatedReplicas
+                  type: object
               type: object
           type: object
       served: true
@@ -24643,7 +24833,7 @@ objects:
                           Cannot be updated.
                         items:
                           description: EnvFromSource represents the source of a set
-                            of ConfigMaps
+                            of ConfigMaps or Secrets
                           properties:
                             configMapRef:
                               description: The ConfigMap to select from
@@ -24664,8 +24854,8 @@ objects:
                               type: object
                               x-kubernetes-map-type: atomic
                             prefix:
-                              description: An optional identifier to prepend to each
-                                key in the ConfigMap. Must be a C_IDENTIFIER.
+                              description: Optional text to prepend to the name of
+                                each environment variable. Must be a C_IDENTIFIER.
                               type: string
                             secretRef:
                               description: The Secret to select from
@@ -24929,6 +25119,12 @@ objects:
                                 - port
                                 type: object
                             type: object
+                          stopSignal:
+                            description: |-
+                              StopSignal defines which signal will be sent to a container when it is being stopped.
+                              If not specified, the default is defined by the container runtime in use.
+                              StopSignal can only be set for Pods with a non-empty .spec.os.name
+                            type: string
                         type: object
                       livenessProbe:
                         description: |-
@@ -27129,7 +27325,7 @@ objects:
                           The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                           The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                           The volume will be mounted read-only (ro) and non-executable files (noexec).
-                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                           The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                         properties:
                           pullPolicy:
@@ -28277,7 +28473,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -28292,7 +28487,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -28459,7 +28653,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -28474,7 +28667,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -28639,7 +28831,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -28654,7 +28845,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -28821,7 +29011,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -28836,7 +29025,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -29316,6 +29504,26 @@ objects:
                       type: object
                   type: object
                   x-kubernetes-map-type: atomic
+                ruleTenancyConfig:
+                  description: RuleTenancyConfig is the configuration for the rule
+                    tenancy.
+                  properties:
+                    tenantLabel:
+                      description: |-
+                        TenantLabel is the label that will be used to identify the tenant.
+                        Setting this value will mean, that all rules configured on ThanosRuler will
+                        have this labelname (with value to set the tenant label value).
+                        effectively <tenantLabelName> = <value of tenantValueLabel key>
+                      type: string
+                    tenantValueLabel:
+                      description: |-
+                        TenantValueLabel is the key of the PrometheusRule label that will be used to set the value of the tenant label
+                        for particular rules configured on ThanosRuler.
+                      type: string
+                  required:
+                  - tenantLabel
+                  - tenantValueLabel
+                  type: object
                 storageSize:
                   description: StorageSize is the size of the storage to be used by
                     the Thanos Ruler StatefulSet.
@@ -29378,6 +29586,11 @@ objects:
             status:
               description: ThanosRulerStatus defines the observed state of ThanosRuler
               properties:
+                availableReplicas:
+                  description: Total number of available pods (ready for at least
+                    minReadySeconds) targeted by this StatefulSet.
+                  format: int32
+                  type: integer
                 conditions:
                   description: Conditions represent the latest available observations
                     of the state of the Ruler.
@@ -29437,6 +29650,28 @@ objects:
                     - type
                     type: object
                   type: array
+                currentReplicas:
+                  description: currentReplicas is the number of Pods created by the
+                    StatefulSet.
+                  format: int32
+                  type: integer
+                paused:
+                  description: Paused is a flag that indicates if the Ruler is paused.
+                  type: boolean
+                readyReplicas:
+                  description: ReadyReplicas is the number of pods created for this
+                    StatefulSet with a Ready Condition.
+                  format: int32
+                  type: integer
+                replicas:
+                  description: Replicas is the number of replicas of the StatefulSet.
+                  format: int32
+                  type: integer
+                updatedReplicas:
+                  description: ' Total number of non-terminating pods targeted by
+                    StatefulSet that have the desired template spec..'
+                  format: int32
+                  type: integer
               type: object
           type: object
       served: true
@@ -29664,7 +29899,7 @@ objects:
                           Cannot be updated.
                         items:
                           description: EnvFromSource represents the source of a set
-                            of ConfigMaps
+                            of ConfigMaps or Secrets
                           properties:
                             configMapRef:
                               description: The ConfigMap to select from
@@ -29685,8 +29920,8 @@ objects:
                               type: object
                               x-kubernetes-map-type: atomic
                             prefix:
-                              description: An optional identifier to prepend to each
-                                key in the ConfigMap. Must be a C_IDENTIFIER.
+                              description: Optional text to prepend to the name of
+                                each environment variable. Must be a C_IDENTIFIER.
                               type: string
                             secretRef:
                               description: The Secret to select from
@@ -29950,6 +30185,12 @@ objects:
                                 - port
                                 type: object
                             type: object
+                          stopSignal:
+                            description: |-
+                              StopSignal defines which signal will be sent to a container when it is being stopped.
+                              If not specified, the default is defined by the container runtime in use.
+                              StopSignal can only be set for Pods with a non-empty .spec.os.name
+                            type: string
                         type: object
                       livenessProbe:
                         description: |-
@@ -32150,7 +32391,7 @@ objects:
                           The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
                           The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
                           The volume will be mounted read-only (ro) and non-executable files (noexec).
-                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+                          Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
                           The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
                         properties:
                           pullPolicy:
@@ -33298,7 +33539,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -33313,7 +33553,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -33480,7 +33719,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -33495,7 +33733,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -33660,7 +33897,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                       Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -33675,7 +33911,6 @@ objects:
                                       pod labels will be ignored. The default value is empty.
                                       The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                       Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                      This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                     items:
                                       type: string
                                     type: array
@@ -33842,7 +34077,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both matchLabelKeys and labelSelector.
                                   Also, matchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -33857,7 +34091,6 @@ objects:
                                   pod labels will be ignored. The default value is empty.
                                   The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
                                   Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-                                  This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
                                 items:
                                   type: string
                                 type: array
@@ -34420,7 +34653,7 @@ objects:
               properties:
                 conditions:
                   description: Conditions represent the latest available observations
-                    of the state of the Querier.
+                    of the state of the Store.
                   items:
                     description: Condition contains details for one aspect of the
                       current state of this API Resource.
@@ -34477,6 +34710,39 @@ objects:
                     - type
                     type: object
                   type: array
+                paused:
+                  description: Paused is a flag that indicates if the Store is paused.
+                  type: boolean
+                shardStatuses:
+                  additionalProperties:
+                    properties:
+                      availableReplicas:
+                        description: Total number of available pods (ready for at
+                          least minReadySeconds) targeted by this StatefulSet.
+                        format: int32
+                        type: integer
+                      currentReplicas:
+                        description: currentReplicas is the number of Pods created
+                          by the StatefulSet.
+                        format: int32
+                        type: integer
+                      readyReplicas:
+                        description: ReadyReplicas is the number of pods created for
+                          this StatefulSet with a Ready Condition.
+                        format: int32
+                        type: integer
+                      replicas:
+                        description: Replicas is the number of replicas of the StatefulSet.
+                        format: int32
+                        type: integer
+                      updatedReplicas:
+                        description: ' Total number of non-terminating pods targeted
+                          by StatefulSet that have the desired template spec..'
+                        format: int32
+                        type: integer
+                    type: object
+                  description: ShardStatuses is a map of shard statuses to shard numbers.
+                  type: object
               type: object
           type: object
       served: true

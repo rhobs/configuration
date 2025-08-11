@@ -144,6 +144,13 @@ const (
 )
 
 const (
+	persesOperatorImage   = "https://quay.io/repository/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-perses-operator"
+	persesOperatorVersion = "61d16ecf340f0d0ed79d89968ff59f11ade4bef6"
+	persesImage           = "https://quay.io/repository/redhat-user-workloads/rhobs-mco-tenant/rhobs-konflux-perses"
+	persesVersion         = "61d16ecf340f0d0ed79d89968ff59f11ade4bef6"
+)
+
+const (
 	syntheticsApiImage        = "quay.io/redhat-user-workloads/rhobs-synthetics-tenant/rhobs-synthetics-api-main/rhobs-synthetics-api-main"
 	syntheticsApiVersionStage = "7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910"
 	syntheticsApiVersionProd  = "7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910"
@@ -158,6 +165,9 @@ const (
 	ObservatoriumAPI  = "OBSERVATORIUM_API"
 	OpaAMS            = "OPA_AMS"
 	SyntheticsAPI     = "SYNTHETICS_API"
+
+	PersesOperator = "PERSES_OPERATOR"
+	Perses         = "PERSES"
 
 	// Thanos component keys
 	ThanosOperator         = "THANOS_OPERATOR"
@@ -194,6 +204,8 @@ func DefaultBaseTemplate() TemplateMaps {
 			ApiCache:               "docker.io/memcached:1.6.17-alpine",
 			MemcachedExporter:      memcachedExporterImage,
 			SyntheticsAPI:          syntheticsApiImage,
+			PersesOperator:         fmt.Sprintf("%s:%s", persesOperatorImage, persesOperatorVersion),
+			Perses:                 fmt.Sprintf("%s:%s", persesImage, persesVersion),
 		},
 		Versions: ParamMap[string]{
 			StoreDefault:           thanosVersionProd,
@@ -206,6 +218,8 @@ func DefaultBaseTemplate() TemplateMaps {
 			ApiCache:               memcachedTag,
 			ObservatoriumAPI:       "9aada65247a07782465beb500323a0e18d7e3d05",
 			SyntheticsAPI:          syntheticsApiVersionProd,
+			PersesOperator:         persesOperatorVersion,
+			Perses:                 persesVersion,
 		},
 		LogLevels: ParamMap[string]{
 			StoreDefault:           logLevels[1],
@@ -216,6 +230,8 @@ func DefaultBaseTemplate() TemplateMaps {
 			Query:                  logLevels[1],
 			QueryFrontend:          logLevels[1],
 			SyntheticsAPI:          logLevels[1],
+			PersesOperator:         logLevels[1],
+			Perses:                 logLevels[1],
 		},
 		ResourceRequirements: ParamMap[corev1.ResourceRequirements]{
 			StoreDefault: {
@@ -308,6 +324,16 @@ func DefaultBaseTemplate() TemplateMaps {
 					corev1.ResourceMemory: resource.MustParse("32Mi"),
 				},
 			},
+			PersesOperator: {
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("500m"),
+					corev1.ResourceMemory: resource.MustParse("128Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("10m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+			},
 		},
 		Replicas: ParamMap[int32]{
 			StoreDefault:           1,
@@ -317,6 +343,8 @@ func DefaultBaseTemplate() TemplateMaps {
 			Query:                  1,
 			QueryFrontend:          1,
 			CompactDefault:         1,
+			PersesOperator:         1,
+			Perses:                 1,
 		},
 		StorageSize: ParamMap[v1alpha1.StorageSize]{
 			StoreDefault:           "10Gi",
@@ -434,6 +462,8 @@ var StageReplicas = ParamMap[int32]{
 	ApiCache:                     1,
 	ObservatoriumAPI:             2,
 	SyntheticsAPI:                2,
+	PersesOperator:               1,
+	Perses:                       1,
 }
 
 // Stage resource requirements.
@@ -638,6 +668,16 @@ var StageResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
 		},
 	},
+	PersesOperator: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("500m"),
+			corev1.ResourceMemory: resource.MustParse("128Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("10m"),
+			corev1.ResourceMemory: resource.MustParse("64Mi"),
+		},
+	},
 }
 
 // Stage object storage bucket.
@@ -683,6 +723,8 @@ var ProductionImages = ParamMap[string]{
 	ObservatoriumAPI:           "quay.io/redhat-user-workloads/rhobs-mco-tenant/observatorium-api:9aada65247a07782465beb500323a0e18d7e3d05",
 	SyntheticsAPI:              fmt.Sprintf("%s:%s", syntheticsApiImage, syntheticsApiVersionProd),
 	Jaeger:                     "registry.redhat.io/rhosdt/jaeger-agent-rhel8:1.57.0-10",
+	PersesOperator:             fmt.Sprintf("%s:%s", persesOperatorImage, persesOperatorVersion),
+	Perses:                     fmt.Sprintf("%s:%s", persesImage, persesVersion),
 }
 
 // ProductionVersions is a map of production versions.
@@ -699,6 +741,8 @@ var ProductionVersions = ParamMap[string]{
 	ApiCache:                   memcachedTag,
 	ObservatoriumAPI:           "9aada65247a07782465beb500323a0e18d7e3d05",
 	SyntheticsAPI:              syntheticsApiVersionProd,
+	PersesOperator:             persesOperatorVersion,
+	Perses:                     persesVersion,
 }
 
 // ProductionLogLevels is a map of production log levels.
@@ -714,6 +758,8 @@ var ProductionLogLevels = ParamMap[string]{
 	"QUERY_FRONTEND":           logLevels[0],
 	ObservatoriumAPI:           logLevels[0],
 	SyntheticsAPI:              logLevels[0],
+	PersesOperator:             logLevels[0],
+	Perses:                     logLevels[0],
 }
 
 // ProductionStorageSize is a map of production PV storage sizes.
@@ -740,6 +786,8 @@ var ProductionReplicas = ParamMap[int32]{
 	ApiCache:                   1,
 	ObservatoriumAPI:           2,
 	SyntheticsAPI:              2,
+	PersesOperator:             1,
+	Perses:                     1,
 }
 
 // ProductionResourceRequirements is a map of production resource requirements.
@@ -864,6 +912,16 @@ var ProductionResourceRequirements = ParamMap[corev1.ResourceRequirements]{
 		Requests: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse("100m"),
 			corev1.ResourceMemory: resource.MustParse("100Mi"),
+		},
+	},
+	PersesOperator: corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("500m"),
+			corev1.ResourceMemory: resource.MustParse("128Mi"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse("10m"),
+			corev1.ResourceMemory: resource.MustParse("64Mi"),
 		},
 	},
 }

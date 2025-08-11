@@ -285,6 +285,17 @@ func GenerateRBAC() *ObservatoriumRBAC {
 		skipConventionCheck: true,
 	})
 
+	// plmshift read only prod
+	// Special request of extra read account.
+	attachBinding(&obsRBAC, BindingOpts{
+		name:                "8a5cc14c-570c-4106-9a3b-cb2fcf4e3de4",
+		tenant:              telemeterTenant,
+		signals:             []signal{metricsSignal},
+		perms:               []rbac.Permission{rbac.Read}, // Read only.
+		envs:                []env{productionEnv},
+		skipConventionCheck: true,
+	})
+
 	// RHTAP
 	// Reader and Writer serviceaccount
 	attachBinding(&obsRBAC, BindingOpts{

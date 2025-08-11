@@ -919,6 +919,12 @@ objects:
         "subjects":
         - "kind": "user"
           "name": "service-account-e07f5b10-e62b-47a2-9698-e245d1198a3b"
+      - "name": "8a5cc14c-570c-4106-9a3b-cb2fcf4e3de4"
+        "roles":
+        - "telemeter-metrics-read"
+        "subjects":
+        - "kind": "user"
+          "name": "service-account-8a5cc14c-570c-4106-9a3b-cb2fcf4e3de4"
       - "name": "observatorium-rhtap"
         "roles":
         - "rhtap-metrics-read"

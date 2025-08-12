@@ -8,6 +8,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: loki-alertingrule-editor-role
   rules:
   - apiGroups:
@@ -32,6 +34,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: loki-alertingrule-viewer-role
   rules:
   - apiGroups:
@@ -138,6 +142,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: loki-lokistack-editor-role
   rules:
   - apiGroups:
@@ -333,6 +339,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: loki-lokistack-viewer-role
   rules:
   - apiGroups:
@@ -469,6 +477,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: loki-recordingrule-editor-role
   rules:
   - apiGroups:
@@ -493,6 +503,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: loki-recordingrule-viewer-role
   rules:
   - apiGroups:
@@ -513,6 +525,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-edit: "true"
     name: loki-rulerconfig-editor-role
   rules:
   - apiGroups:
@@ -537,6 +551,8 @@ objects:
   kind: ClusterRole
   metadata:
     creationTimestamp: null
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-view: "true"
     name: loki-rulerconfig-viewer-role
   rules:
   - apiGroups:

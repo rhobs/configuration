@@ -2,8 +2,182 @@ apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: thanos-operator-servicemonitors
+  name: servicemonitors
 objects:
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: compactor
+      app.kubernetes.io/created-by: lokistack-controller
+      app.kubernetes.io/instance: observatorium-lokistack
+      app.kubernetes.io/managed-by: lokistack-controller
+      app.kubernetes.io/name: lokistack
+      prometheus: app-sre
+    name: loki-compactor-http
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: compactor
+        app.kubernetes.io/created-by: lokistack-controller
+        app.kubernetes.io/instance: observatorium-lokistack
+        app.kubernetes.io/managed-by: lokistack-controller
+        app.kubernetes.io/name: lokistack
+  status: {}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: distributor
+      app.kubernetes.io/created-by: lokistack-controller
+      app.kubernetes.io/instance: observatorium-lokistack
+      app.kubernetes.io/managed-by: lokistack-controller
+      app.kubernetes.io/name: lokistack
+      prometheus: app-sre
+    name: loki-distributor-http
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: distributor
+        app.kubernetes.io/created-by: lokistack-controller
+        app.kubernetes.io/instance: observatorium-lokistack
+        app.kubernetes.io/managed-by: lokistack-controller
+        app.kubernetes.io/name: lokistack
+  status: {}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: index-gateway
+      app.kubernetes.io/created-by: lokistack-controller
+      app.kubernetes.io/instance: observatorium-lokistack
+      app.kubernetes.io/managed-by: lokistack-controller
+      app.kubernetes.io/name: lokistack
+      prometheus: app-sre
+    name: loki-index-gateway-http
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: index-gateway
+        app.kubernetes.io/created-by: lokistack-controller
+        app.kubernetes.io/instance: observatorium-lokistack
+        app.kubernetes.io/managed-by: lokistack-controller
+        app.kubernetes.io/name: lokistack
+  status: {}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: ingester
+      app.kubernetes.io/created-by: lokistack-controller
+      app.kubernetes.io/instance: observatorium-lokistack
+      app.kubernetes.io/managed-by: lokistack-controller
+      app.kubernetes.io/name: lokistack
+      prometheus: app-sre
+    name: loki-ingester-http
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: ingester
+        app.kubernetes.io/created-by: lokistack-controller
+        app.kubernetes.io/instance: observatorium-lokistack
+        app.kubernetes.io/managed-by: lokistack-controller
+        app.kubernetes.io/name: lokistack
+  status: {}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: querier
+      app.kubernetes.io/created-by: lokistack-controller
+      app.kubernetes.io/instance: observatorium-lokistack
+      app.kubernetes.io/managed-by: lokistack-controller
+      app.kubernetes.io/name: lokistack
+      prometheus: app-sre
+    name: loki-querier-http
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: querier
+        app.kubernetes.io/created-by: lokistack-controller
+        app.kubernetes.io/instance: observatorium-lokistack
+        app.kubernetes.io/managed-by: lokistack-controller
+        app.kubernetes.io/name: lokistack
+  status: {}
+- apiVersion: monitoring.coreos.com/v1
+  kind: ServiceMonitor
+  metadata:
+    creationTimestamp: null
+    labels:
+      app.kubernetes.io/component: query-frontend
+      app.kubernetes.io/created-by: lokistack-controller
+      app.kubernetes.io/instance: observatorium-lokistack
+      app.kubernetes.io/managed-by: lokistack-controller
+      app.kubernetes.io/name: lokistack
+      prometheus: app-sre
+    name: loki-query-frontend-http
+    namespace: openshift-customer-monitoring
+  spec:
+    endpoints:
+    - interval: 30s
+      path: /metrics
+      port: metrics
+    namespaceSelector:
+      matchNames:
+      - rhobs-stage
+    selector:
+      matchLabels:
+        app.kubernetes.io/component: query-frontend
+        app.kubernetes.io/created-by: lokistack-controller
+        app.kubernetes.io/instance: observatorium-lokistack
+        app.kubernetes.io/managed-by: lokistack-controller
+        app.kubernetes.io/name: lokistack
+  status: {}
 - apiVersion: monitoring.coreos.com/v1
   kind: ServiceMonitor
   metadata:

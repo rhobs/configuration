@@ -506,7 +506,7 @@ func NewAlertingRuleViewerClusterRole() *rbacv1.ClusterRole {
 // Corresponds to alertingrule_editor_role.yaml.
 func NewAlertingRuleEditorClusterRole() *rbacv1.ClusterRole {
 	return &rbacv1.ClusterRole{
-		TypeMeta:   metav1.TypeMeta{APIVersion: rbacv1.SchemeGroupVersion.String(), Kind: "ClusterRole"},
+		TypeMeta: metav1.TypeMeta{APIVersion: rbacv1.SchemeGroupVersion.String(), Kind: "ClusterRole"},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-alertingrule-editor-role",
 			Labels: map[string]string{

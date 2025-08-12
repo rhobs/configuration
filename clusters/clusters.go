@@ -78,14 +78,15 @@ type BuildStep string
 
 // Available build steps
 const (
-	StepThanosOperatorCRDS            = "thanos-operator-crds"
-	StepThanosOperator                = "thanos-operator"
-	StepDefaultThanosStack            = "default-thanos-stack"
-	StepThanosOperatorServiceMonitors = "thanos-operator-servicemonitors"
+	StepThanosOperatorCRDS = "thanos-operator-crds"
+	StepThanosOperator     = "thanos-operator"
+	StepDefaultThanosStack = "default-thanos-stack"
 
 	StepLokiOperatorCRDS = "loki-operator-crds"
 	StepLokiOperator     = "loki-operator"
 	StepDefaultLokiStack = "default-loki-stack"
+
+	StepServiceMonitors = "servicemonitors"
 
 	StepAlertmanager = "alertmanager"
 	StepSecrets      = "secrets"
@@ -98,10 +99,10 @@ const (
 // DefaultBuildSteps returns the default build pipeline for clusters
 func DefaultBuildSteps() []string {
 	return []string{
-		StepThanosOperatorCRDS,            // Core components first
-		StepThanosOperator,                // Custom Resource Definitions
-		StepDefaultThanosStack,            // ThanosOperator deployment
-		StepThanosOperatorServiceMonitors, // Monitoring setup
+		StepThanosOperatorCRDS, // Core components first
+		StepThanosOperator,     // Custom Resource Definitions
+		StepDefaultThanosStack, // ThanosOperator deployment
+		StepServiceMonitors,    // Monitoring setup
 		StepLokiOperatorCRDS,
 		StepLokiOperator,
 		StepDefaultLokiStack,

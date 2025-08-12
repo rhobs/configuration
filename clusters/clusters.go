@@ -87,6 +87,9 @@ const (
 	StepLokiOperator     = "loki-operator"
 	StepDefaultLokiStack = "default-loki-stack"
 
+	StepPersesOperatorCRDS = "perses-operator-crds"
+	StepPersesOperator     = "perses-operator"
+
 	StepAlertmanager = "alertmanager"
 	StepSecrets      = "secrets"
 	StepGateway      = "gateway"
@@ -104,6 +107,8 @@ func DefaultBuildSteps() []string {
 		StepThanosOperatorServiceMonitors, // Monitoring setup
 		StepLokiOperatorCRDS,
 		StepLokiOperator,
+		StepPersesOperatorCRDS,
+		StepPersesOperator,
 		StepDefaultLokiStack,
 		StepAlertmanager,  // Alerting configuration
 		StepSecrets,       // Secrets last

@@ -53,6 +53,14 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 		return nil
 	},
 
+	clusters.StepPersesOperatorCRDS: func(b Build, cfg clusters.ClusterConfig) error {
+		return b.PersesOperatorCRDS(cfg)
+	},
+	clusters.StepPersesOperator: func(b Build, cfg clusters.ClusterConfig) error {
+		b.PersesOperator(cfg)
+		return nil
+	},
+
 	clusters.StepAlertmanager: func(b Build, cfg clusters.ClusterConfig) error {
 		b.Alertmanager(cfg)
 		return nil

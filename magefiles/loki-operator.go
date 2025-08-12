@@ -319,6 +319,9 @@ func NewLokiStackEditorClusterRole() *rbacv1.ClusterRole {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-lokistack-editor-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-edit": "true",
+			},
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -345,6 +348,9 @@ func NewLokiStackViewerClusterRole() *rbacv1.ClusterRole {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-lokistack-viewer-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-view": "true",
+			},
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -371,6 +377,9 @@ func NewRulerConfigViewerClusterRole() *rbacv1.ClusterRole {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-rulerconfig-viewer-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-view": "true",
+			},
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -397,6 +406,9 @@ func NewRulerConfigEditorClusterRole() *rbacv1.ClusterRole {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-rulerconfig-editor-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-edit": "true",
+			},
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -423,6 +435,9 @@ func NewRecordingRuleViewerClusterRole() *rbacv1.ClusterRole {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-recordingrule-viewer-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-view": "true",
+			},
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -449,6 +464,9 @@ func NewRecordingRuleEditorClusterRole() *rbacv1.ClusterRole {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "loki-recordingrule-editor-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-edit": "true",
+			},
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -471,7 +489,12 @@ func NewAlertingRuleViewerClusterRole() *rbacv1.ClusterRole {
 	return &rbacv1.ClusterRole{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: rbacv1.SchemeGroupVersion.String(), Kind: "ClusterRole"},
-		ObjectMeta: metav1.ObjectMeta{Name: "loki-alertingrule-viewer-role"},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "loki-alertingrule-viewer-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-view": "true",
+			},
+		},
 		Rules: []rbacv1.PolicyRule{
 			{APIGroups: []string{"loki.grafana.com"}, Resources: []string{"alertingrules"}, Verbs: []string{"get", "list", "watch"}},
 			{APIGroups: []string{"loki.grafana.com"}, Resources: []string{"alertingrules/status"}, Verbs: []string{"get"}},
@@ -484,7 +507,12 @@ func NewAlertingRuleViewerClusterRole() *rbacv1.ClusterRole {
 func NewAlertingRuleEditorClusterRole() *rbacv1.ClusterRole {
 	return &rbacv1.ClusterRole{
 		TypeMeta:   metav1.TypeMeta{APIVersion: rbacv1.SchemeGroupVersion.String(), Kind: "ClusterRole"},
-		ObjectMeta: metav1.ObjectMeta{Name: "loki-alertingrule-editor-role"},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "loki-alertingrule-editor-role",
+			Labels: map[string]string{
+				"rbac.authorization.k8s.io/aggregate-to-edit": "true",
+			},
+		},
 		Rules: []rbacv1.PolicyRule{
 			{APIGroups: []string{"loki.grafana.com"}, Resources: []string{"alertingrules"}, Verbs: []string{"create", "delete", "get", "list", "patch", "update", "watch"}},
 			{APIGroups: []string{"loki.grafana.com"}, Resources: []string{"alertingrules/status"}, Verbs: []string{"get"}},

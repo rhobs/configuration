@@ -33,3 +33,4 @@ objects:
         app.kubernetes.io/name: synthetics-api
         app.kubernetes.io/part-of: rhobs
         app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+  status: {}

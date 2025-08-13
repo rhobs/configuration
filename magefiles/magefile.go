@@ -36,11 +36,6 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 		b.DefaultThanosStack(cfg)
 		return nil
 	},
-	clusters.StepThanosOperatorServiceMonitors: func(b Build, cfg clusters.ClusterConfig) error {
-		b.ThanosOperatorServiceMonitors(cfg)
-		return nil
-	},
-
 	clusters.StepLokiOperatorCRDS: func(b Build, cfg clusters.ClusterConfig) error {
 		return b.LokiOperatorCRDS(cfg)
 	},
@@ -52,7 +47,10 @@ var BuildStepFunctions = map[string]func(Build, clusters.ClusterConfig) error{
 		b.DefaultLokiStack(cfg)
 		return nil
 	},
-
+	clusters.StepServiceMonitors: func(b Build, cfg clusters.ClusterConfig) error {
+		b.ServiceMonitors(cfg)
+		return nil
+	},
 	clusters.StepAlertmanager: func(b Build, cfg clusters.ClusterConfig) error {
 		b.Alertmanager(cfg)
 		return nil

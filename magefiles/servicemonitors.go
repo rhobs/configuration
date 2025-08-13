@@ -12,16 +12,16 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func (b Build) ThanosOperatorServiceMonitors(config clusters.ClusterConfig) {
+func (b Build) ServiceMonitors(config clusters.ClusterConfig) {
 	gen := b.generator(config, "servicemonitors")
-
-	objs := createServiceMonitors(config.Namespace)
-	objs = append(objs, operatorServiceMonitor(config.Namespace)...)
+	objs := createThanosServiceMonitors(config.Namespace)
+	objs = append(objs, thanosOperatorServiceMonitor(config.Namespace)...)
+	objs = append(objs, createLokiServiceMonitors(config.Namespace)...)
 	generateServiceMonitors(gen, objs)
 }
 
 func generateServiceMonitors(gen *mimic.Generator, objs []runtime.Object) {
-	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "thanos-operator-servicemonitors"}, []templatev1.Parameter{})
+	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{Name: "servicemonitors"}, []templatev1.Parameter{})
 	encoder := encoding.GhodssYAML(template)
 	gen.Add("servicemonitors.yaml", encoder)
 	gen.Generate()
@@ -29,16 +29,16 @@ func generateServiceMonitors(gen *mimic.Generator, objs []runtime.Object) {
 
 // ServiceMonitors generates ServiceMonitor resources for the Stage environment.
 func (s Stage) ServiceMonitors() {
-	objs := createServiceMonitors(s.namespace())
-	objs = append(objs, operatorServiceMonitor(s.namespace())...)
+	objs := createThanosServiceMonitors(s.namespace())
+	objs = append(objs, thanosOperatorServiceMonitor(s.namespace())...)
 	serviceMonitorTemplateGen(s.generator("servicemonitors"), objs)
 }
 
 // ServiceMonitors generates ServiceMonitor resources for the Production environment.
 func (p Production) ServiceMonitors() {
 	ns := p.namespace()
-	objs := createServiceMonitors(ns)
-	objs = append(objs, operatorServiceMonitor(ns)...)
+	objs := createThanosServiceMonitors(ns)
+	objs = append(objs, thanosOperatorServiceMonitor(ns)...)
 	serviceMonitorTemplateGen(p.generator("servicemonitors"), objs)
 }
 
@@ -52,14 +52,14 @@ func serviceMonitorTemplateGen(gen *mimic.Generator, objs []runtime.Object) {
 func (l Local) ServiceMonitors() {
 	gen := l.generator("servicemonitors")
 
-	objs := operatorServiceMonitor(l.namespace())
+	objs := thanosOperatorServiceMonitor(l.namespace())
 
 	encoder := encoding.GhodssYAML(objs[0])
 	gen.Add("servicemonitors.yaml", encoder)
 	gen.Generate()
 }
 
-func operatorServiceMonitor(namespace string) []runtime.Object {
+func thanosOperatorServiceMonitor(namespace string) []runtime.Object {
 	return []runtime.Object{
 		&monitoringv1.ServiceMonitor{
 			TypeMeta: metav1.TypeMeta{
@@ -108,7 +108,7 @@ func operatorServiceMonitor(namespace string) []runtime.Object {
 	}
 }
 
-func createServiceMonitors(namespace string) []runtime.Object {
+func createThanosServiceMonitors(namespace string) []runtime.Object {
 	interval30s := monitoringv1.Duration("30s")
 	metricsPath := "/metrics"
 	objs := []runtime.Object{
@@ -567,6 +567,245 @@ func createServiceMonitors(namespace string) []runtime.Object {
 						"app.kubernetes.io/part-of":    "thanos",
 						"operator.thanos.io/owner":     "telemeter-90dplus",
 						"operator.thanos.io/store-api": "true",
+					},
+				},
+			},
+		},
+	}
+	for _, obj := range objs {
+		obj.(*monitoringv1.ServiceMonitor).ObjectMeta.Labels["prometheus"] = "app-sre"
+	}
+	return objs
+}
+
+func createLokiServiceMonitors(namespace string) []runtime.Object {
+	interval30s := monitoringv1.Duration("30s")
+	metricsPath := "/metrics"
+	objs := []runtime.Object{
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-compactor-http",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "compactor",
+					"app.kubernetes.io/created-by": "lokistack-controller",
+					"app.kubernetes.io/instance":   "observatorium-lokistack",
+					"app.kubernetes.io/managed-by": "lokistack-controller",
+					"app.kubernetes.io/name":       "lokistack",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "compactor",
+						"app.kubernetes.io/created-by": "lokistack-controller",
+						"app.kubernetes.io/instance":   "observatorium-lokistack",
+						"app.kubernetes.io/managed-by": "lokistack-controller",
+						"app.kubernetes.io/name":       "lokistack",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-distributor-http",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "distributor",
+					"app.kubernetes.io/created-by": "lokistack-controller",
+					"app.kubernetes.io/instance":   "observatorium-lokistack",
+					"app.kubernetes.io/managed-by": "lokistack-controller",
+					"app.kubernetes.io/name":       "lokistack",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "distributor",
+						"app.kubernetes.io/created-by": "lokistack-controller",
+						"app.kubernetes.io/instance":   "observatorium-lokistack",
+						"app.kubernetes.io/managed-by": "lokistack-controller",
+						"app.kubernetes.io/name":       "lokistack",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-index-gateway-http",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "index-gateway",
+					"app.kubernetes.io/created-by": "lokistack-controller",
+					"app.kubernetes.io/instance":   "observatorium-lokistack",
+					"app.kubernetes.io/managed-by": "lokistack-controller",
+					"app.kubernetes.io/name":       "lokistack",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "index-gateway",
+						"app.kubernetes.io/created-by": "lokistack-controller",
+						"app.kubernetes.io/instance":   "observatorium-lokistack",
+						"app.kubernetes.io/managed-by": "lokistack-controller",
+						"app.kubernetes.io/name":       "lokistack",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-ingester-http",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "ingester",
+					"app.kubernetes.io/created-by": "lokistack-controller",
+					"app.kubernetes.io/instance":   "observatorium-lokistack",
+					"app.kubernetes.io/managed-by": "lokistack-controller",
+					"app.kubernetes.io/name":       "lokistack",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "ingester",
+						"app.kubernetes.io/created-by": "lokistack-controller",
+						"app.kubernetes.io/instance":   "observatorium-lokistack",
+						"app.kubernetes.io/managed-by": "lokistack-controller",
+						"app.kubernetes.io/name":       "lokistack",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-querier-http",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "querier",
+					"app.kubernetes.io/created-by": "lokistack-controller",
+					"app.kubernetes.io/instance":   "observatorium-lokistack",
+					"app.kubernetes.io/managed-by": "lokistack-controller",
+					"app.kubernetes.io/name":       "lokistack",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "querier",
+						"app.kubernetes.io/created-by": "lokistack-controller",
+						"app.kubernetes.io/instance":   "observatorium-lokistack",
+						"app.kubernetes.io/managed-by": "lokistack-controller",
+						"app.kubernetes.io/name":       "lokistack",
+					},
+				},
+			},
+		},
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-query-frontend-http",
+				Namespace: openshiftCustomerMonitoringNamespace,
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "query-frontend",
+					"app.kubernetes.io/created-by": "lokistack-controller",
+					"app.kubernetes.io/instance":   "observatorium-lokistack",
+					"app.kubernetes.io/managed-by": "lokistack-controller",
+					"app.kubernetes.io/name":       "lokistack",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Interval: interval30s,
+						Path:     metricsPath,
+						Port:     "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{namespace},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component":  "query-frontend",
+						"app.kubernetes.io/created-by": "lokistack-controller",
+						"app.kubernetes.io/instance":   "observatorium-lokistack",
+						"app.kubernetes.io/managed-by": "lokistack-controller",
+						"app.kubernetes.io/name":       "lokistack",
 					},
 				},
 			},

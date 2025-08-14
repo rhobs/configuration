@@ -646,7 +646,7 @@ func NewAuthProxyService(namespace string) *corev1.Service {
 		Spec: corev1.ServiceSpec{
 			Selector: map[string]string{"name": "loki-operator-controller-manager"},
 			Ports: []corev1.ServicePort{
-				{Name: "https", Protocol: corev1.ProtocolTCP, Port: 8443, TargetPort: intstr.FromString("https")},
+				{Name: "metrics", Protocol: corev1.ProtocolTCP, Port: 8080, TargetPort: intstr.FromString("metrics")},
 			},
 		},
 	}

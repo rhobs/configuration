@@ -17,6 +17,7 @@ func (b Build) ServiceMonitors(config clusters.ClusterConfig) {
 	objs := createThanosServiceMonitors(config.Namespace)
 	objs = append(objs, thanosOperatorServiceMonitor(config.Namespace)...)
 	objs = append(objs, createLokiServiceMonitors(config.Namespace)...)
+	objs = append(objs, lokiOperatorServiceMonitor(config.Namespace)...)
 	generateServiceMonitors(gen, objs)
 }
 
@@ -576,6 +577,48 @@ func createThanosServiceMonitors(namespace string) []runtime.Object {
 		obj.(*monitoringv1.ServiceMonitor).ObjectMeta.Labels["prometheus"] = "app-sre"
 	}
 	return objs
+}
+
+func lokiOperatorServiceMonitor(namespace string) []runtime.Object {
+	return []runtime.Object{
+		&monitoringv1.ServiceMonitor{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "monitoring.coreos.com/v1",
+				Kind:       "ServiceMonitor",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "loki-operator-controller-manager-metrics",
+				Namespace: "openshift-customer-monitoring",
+				Labels: map[string]string{
+					"app.kubernetes.io/component":  "monitoring",
+					"app.kubernetes.io/created-by": "loki-operator",
+					"app.kubernetes.io/instance":   "controller-manager-metrics",
+					"app.kubernetes.io/managed-by": "rhobs",
+					"app.kubernetes.io/name":       "servicemonitor",
+					"app.kubernetes.io/part-of":    "loki-operator",
+					"prometheus":                   "app-sre",
+				},
+			},
+			Spec: monitoringv1.ServiceMonitorSpec{
+				Endpoints: []monitoringv1.Endpoint{
+					{
+						Path: "/metrics",
+						Port: "metrics",
+					},
+				},
+				Selector: metav1.LabelSelector{
+					MatchLabels: map[string]string{
+						"app.kubernetes.io/component": "metrics",
+					},
+				},
+				NamespaceSelector: monitoringv1.NamespaceSelector{
+					MatchNames: []string{
+						namespace,
+					},
+				},
+			},
+		},
+	}
 }
 
 func createLokiServiceMonitors(namespace string) []runtime.Object {

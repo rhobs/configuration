@@ -68,10 +68,10 @@ objects:
     namespace: rhobs-int
   spec:
     ports:
-    - name: https
-      port: 8443
+    - name: metrics
+      port: 8080
       protocol: TCP
-      targetPort: https
+      targetPort: metrics
     selector:
       name: loki-operator-controller-manager
   status:

@@ -13,7 +13,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     name: synthetics-api
     namespace: rhobs-stage
   spec:
@@ -28,7 +28,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
   status:
     loadBalancer: {}
 - apiVersion: v1
@@ -40,7 +40,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     name: synthetics-api
     namespace: rhobs-stage
 - apiVersion: apps/v1
@@ -52,7 +52,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     name: synthetics-api
     namespace: rhobs-stage
   spec:
@@ -64,7 +64,7 @@ objects:
         app.kubernetes.io/instance: rhobs
         app.kubernetes.io/name: synthetics-api
         app.kubernetes.io/part-of: rhobs
-        app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+        app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     serviceName: synthetics-api
     template:
       metadata:
@@ -74,10 +74,10 @@ objects:
           app.kubernetes.io/instance: rhobs
           app.kubernetes.io/name: synthetics-api
           app.kubernetes.io/part-of: rhobs
-          app.kubernetes.io/version: 7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+          app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
       spec:
         containers:
-        - image: quay.io/redhat-user-workloads/rhobs-synthetics-tenant/rhobs-synthetics-api-main/rhobs-synthetics-api-main:7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910
+        - image: quay.io/redhat-services-prod/openshift/rhobs-synthetics-api:cea7d4656cd0ad338e580cc6ba266264a9938e5c
           imagePullPolicy: IfNotPresent
           name: synthetics-api
           ports:

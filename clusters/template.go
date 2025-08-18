@@ -144,9 +144,9 @@ const (
 )
 
 const (
-	syntheticsApiImage        = "quay.io/redhat-user-workloads/rhobs-synthetics-tenant/rhobs-synthetics-api-main/rhobs-synthetics-api-main"
-	syntheticsApiVersionStage = "7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910"
-	syntheticsApiVersionProd  = "7b1c37783b4937b44ab878752df8390d5b9b0b1989e7a49e28f7c33ff9aee910"
+	syntheticsApiImage        = "quay.io/redhat-services-prod/openshift/rhobs-synthetics-api"
+	syntheticsApiVersionStage = "cea7d4656cd0ad338e580cc6ba266264a9938e5c"
+	syntheticsApiVersionProd  = "cea7d4656cd0ad338e580cc6ba266264a9938e5c"
 )
 
 // Template key constants - exportable template parameter names

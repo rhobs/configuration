@@ -79,6 +79,7 @@ Modular build steps can be composed per cluster:
 | **Alertmanager** | `StepAlertmanager` | Alertmanager configuration | [`alertmanager.go`](../magefiles/alertmanager.go) |
 | **Secrets** | `StepSecrets` | Required secrets and credentials | [`secrets.go`](../magefiles/secrets.go) |
 | **Gateway** | `StepGateway` | API Gateway configuration | [`gateway.go`](../magefiles/gateway.go) |
+| **Synthetics API** | `StepSyntheticsApi` | Synthetics API monitoring components | [`synthetics_api.go`](../magefiles/synthetics_api.go) |
 
 ### Default Build Pipeline
 
@@ -287,6 +288,9 @@ mage build:list
 # Show build steps for each cluster
 mage build:listClusters
 
+# List available unified templates
+mage unified:list
+
 # List all available mage targets
 mage -l
 ```
@@ -309,6 +313,23 @@ mage production:gateway # Builds gateway for production
 mage stage:telemeterRules    # Builds telemeter rules for staging
 mage local:telemeterRules    # Builds telemeter rules for local
 ```
+
+#### Unified Template Generation
+
+Some components provide unified, environment-agnostic templates that work across all clusters:
+
+```bash
+# Generate unified synthetics-api template
+mage unified:syntheticsApi
+
+# Generate all unified templates
+mage unified:all
+
+# List available unified templates
+mage unified:list
+```
+
+This creates unified templates in `resources/services/` that can be deployed to any environment using template parameters.
 
 ### Output Structure
 
@@ -335,6 +356,137 @@ resources/
             │   └── operator.yaml
             └── secrets/
                 └── thanos-default-secret.yaml
+```
+
+### Unified Templates
+
+For components that have minimal environment differences, unified templates are generated in `resources/services/`:
+
+```
+resources/
+└── services/
+    ├── synthetics-api-template.yaml           # Unified template
+    ├── service-monitor-synthetics-api-template.yaml
+    └── telemeter-template.yaml                # Other unified templates
+```
+
+These templates use OpenShift template parameters to handle environment differences:
+
+```yaml
+apiVersion: template.openshift.io/v1
+kind: Template
+parameters:
+- name: NAMESPACE
+  value: rhobs
+- name: IMAGE_TAG  
+  value: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+objects:
+- apiVersion: apps/v1
+  kind: StatefulSet
+  spec:
+    template:
+      spec:
+        containers:
+        - image: quay.io/example/app:${IMAGE_TAG}
+          # Namespace omitted from metadata - inherited from deployment context
+```
+
+## Creating Unified Templates
+
+For components with minimal environment differences, you can create unified templates that work across all environments:
+
+### Step 1: Create Template Generation Function
+
+Add to the appropriate magefile (e.g., `magefiles/my_component.go`):
+
+```go
+// generateUnifiedMyComponent generates a single, environment-agnostic template
+func generateUnifiedMyComponent() {
+    gen := func() *mimic.Generator {
+        g := &mimic.Generator{}
+        g = g.With("resources", "services")
+        g.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+        return g
+    }
+    
+    // Create config without environment-specific values
+    config := &myComponentConfig{
+        Name: "my-component",
+        // Namespace will be parameterized - don't set here
+        Labels: map[string]string{
+            "app.kubernetes.io/name": "my-component",
+        },
+    }
+    
+    myComponent(gen, clusters.TemplateMaps{}, []*myComponentConfig{config})
+}
+```
+
+### Step 2: Remove Hardcoded Namespaces
+
+Update your component generation to omit namespace from metadata:
+
+```go
+func createMyComponentStatefulSet(config *myComponentConfig) *appsv1.StatefulSet {
+    return &appsv1.StatefulSet{
+        ObjectMeta: metav1.ObjectMeta{
+            Name:   config.Name,
+            Labels: config.Labels,
+            // No Namespace field - will be inherited from deployment context
+        },
+        // ... rest of spec
+    }
+}
+```
+
+### Step 3: Add Template Parameters
+
+Include parameters for environment-specific values:
+
+```go
+// Set template params
+params := []templatev1.Parameter{
+    {
+        Name:  "NAMESPACE",
+        Value: "rhobs",
+    },
+    {
+        Name:  "IMAGE_TAG", 
+        Value: "latest",
+    },
+}
+```
+
+### Step 4: Add Mage Target
+
+In `magefiles/magefile.go`, add a method to the `Unified` namespace:
+
+```go
+// MyComponent generates environment-agnostic template
+func (Unified) MyComponent() {
+    generateUnifiedMyComponent()
+}
+```
+
+Then update the `Unified.All()` method to include your new component:
+
+```go
+// All generates all available unified templates
+func (Unified) All() {
+    mg.Deps(Unified.SyntheticsApi, Unified.MyComponent)
+}
+```
+
+### Step 5: Usage
+
+```bash
+# Generate unified template
+mage unified:myComponent
+
+# Deploy with parameters
+oc process -f resources/services/my-component-template.yaml \
+  -p NAMESPACE=rhobs-production \
+  -p IMAGE_TAG=v1.0.0 | oc apply -f -
 ```
 
 ## Adding New Clusters

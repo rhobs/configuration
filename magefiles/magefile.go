@@ -15,6 +15,7 @@ type (
 	Production mg.Namespace
 	Local      mg.Namespace
 	Build      mg.Namespace
+	Unified    mg.Namespace
 )
 
 const (
@@ -194,6 +195,13 @@ func (Local) generator(component string) *mimic.Generator {
 	return gen
 }
 
+func (Unified) generator(component string) *mimic.Generator {
+	gen := &mimic.Generator{}
+	gen = gen.With(templatePath, templateServicesPath)
+	gen.Logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
+	return gen
+}
+
 const (
 	stageNamespace = "rhobs-stage"
 	prodNamespace  = "rhobs-production"
@@ -215,4 +223,21 @@ func (Local) namespace() string {
 // Build Builds the manifests for the production environment.
 func (Production) Build() {
 	mg.Deps(Production.Alertmanager)
+}
+
+// SyntheticsApi generates a single, environment-agnostic synthetics-api template
+func (Unified) SyntheticsApi() {
+	generateUnifiedSyntheticsApi()
+}
+
+// All generates all available unified templates
+func (Unified) All() {
+	mg.Deps(Unified.SyntheticsApi)
+}
+
+// List shows all available unified template targets
+func (Unified) List() {
+	fmt.Fprintln(os.Stdout, "Available unified template targets:")
+	fmt.Fprintln(os.Stdout, "  unified:syntheticsApi - Generate synthetics-api template")
+	fmt.Fprintln(os.Stdout, "  unified:all           - Generate all unified templates")
 }

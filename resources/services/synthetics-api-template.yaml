@@ -13,9 +13,9 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+      app.kubernetes.io/version: ${IMAGE_TAG}
     name: synthetics-api
-    namespace: rhobs-stage
+    namespace: ${NAMESPACE}
   spec:
     clusterIP: None
     ports:
@@ -28,7 +28,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+      app.kubernetes.io/version: ${IMAGE_TAG}
   status:
     loadBalancer: {}
 - apiVersion: v1
@@ -40,9 +40,9 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+      app.kubernetes.io/version: ${IMAGE_TAG}
     name: synthetics-api
-    namespace: rhobs-stage
+    namespace: ${NAMESPACE}
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -52,9 +52,9 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+      app.kubernetes.io/version: ${IMAGE_TAG}
     name: synthetics-api
-    namespace: rhobs-stage
+    namespace: ${NAMESPACE}
   spec:
     podManagementPolicy: OrderedReady
     replicas: 1
@@ -64,7 +64,7 @@ objects:
         app.kubernetes.io/instance: rhobs
         app.kubernetes.io/name: synthetics-api
         app.kubernetes.io/part-of: rhobs
-        app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+        app.kubernetes.io/version: ${IMAGE_TAG}
     serviceName: synthetics-api
     template:
       metadata:
@@ -74,23 +74,17 @@ objects:
           app.kubernetes.io/instance: rhobs
           app.kubernetes.io/name: synthetics-api
           app.kubernetes.io/part-of: rhobs
-          app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+          app.kubernetes.io/version: ${IMAGE_TAG}
       spec:
         containers:
-        - image: quay.io/redhat-services-prod/openshift/rhobs-synthetics-api:cea7d4656cd0ad338e580cc6ba266264a9938e5c
+        - image: quay.io/redhat-services-prod/openshift/rhobs-synthetics-api:${IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: synthetics-api
           ports:
           - containerPort: 11211
             name: synthetics-api
             protocol: TCP
-          resources:
-            limits:
-              cpu: "1"
-              memory: 2Gi
-            requests:
-              cpu: 100m
-              memory: 100Mi
+          resources: {}
           terminationMessagePolicy: FallbackToLogsOnError
         securityContext: {}
         serviceAccountName: synthetics-api
@@ -98,3 +92,9 @@ objects:
   status:
     availableReplicas: 0
     replicas: 0
+parameters:
+- name: IMAGE_DIGEST
+- name: IMAGE_TAG
+  value: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+- name: NAMESPACE
+  value: rhobs

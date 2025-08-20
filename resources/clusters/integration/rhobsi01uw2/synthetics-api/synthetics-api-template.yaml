@@ -15,7 +15,6 @@ objects:
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     name: synthetics-api
-    namespace: rhobs-int
   spec:
     clusterIP: None
     ports:
@@ -42,7 +41,6 @@ objects:
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     name: synthetics-api
-    namespace: rhobs-int
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
@@ -54,7 +52,6 @@ objects:
       app.kubernetes.io/part-of: rhobs
       app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
     name: synthetics-api
-    namespace: rhobs-int
   spec:
     podManagementPolicy: OrderedReady
     replicas: 1
@@ -77,7 +74,7 @@ objects:
           app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
       spec:
         containers:
-        - image: quay.io/redhat-services-prod/openshift/rhobs-synthetics-api:cea7d4656cd0ad338e580cc6ba266264a9938e5c
+        - image: quay.io/redhat-services-prod/openshift/rhobs-synthetics-api:${IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           name: synthetics-api
           ports:
@@ -98,3 +95,9 @@ objects:
   status:
     availableReplicas: 0
     replicas: 0
+parameters:
+- name: IMAGE_DIGEST
+- name: IMAGE_TAG
+  value: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+- name: NAMESPACE
+  value: rhobs

@@ -13,7 +13,7 @@ objects:
       app.kubernetes.io/instance: rhobs
       app.kubernetes.io/name: synthetics-api
       app.kubernetes.io/part-of: rhobs
-      app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+      app.kubernetes.io/version: ${IMAGE_TAG}
       prometheus: app-sre
     name: synthetics-api
     namespace: openshift-customer-monitoring
@@ -32,5 +32,5 @@ objects:
         app.kubernetes.io/instance: rhobs
         app.kubernetes.io/name: synthetics-api
         app.kubernetes.io/part-of: rhobs
-        app.kubernetes.io/version: cea7d4656cd0ad338e580cc6ba266264a9938e5c
+        app.kubernetes.io/version: ${IMAGE_TAG}
   status: {}

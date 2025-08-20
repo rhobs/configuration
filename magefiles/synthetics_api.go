@@ -4,6 +4,7 @@ import (
 	"github.com/rhobs/configuration/clusters"
 
 	"github.com/observatorium/observatorium/configuration_go/kubegen/openshift"
+	templatev1 "github.com/openshift/api/template/v1"
 	"github.com/philipgough/mimic"
 	"github.com/philipgough/mimic/encoding"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -71,14 +72,27 @@ func syntheticsApi(g func() *mimic.Generator, m clusters.TemplateMaps, confs []*
 
 	for _, c := range confs {
 		objs = append(objs, syntheticsApiStatefulSet(c, m))
-		objs = append(objs, createServiceAccount(c.Name, c.Namespace, c.Labels))
+		objs = append(objs, createSyntheticsApiServiceAccount(c))
 		objs = append(objs, createSyntheticsApiHeadlessService(c))
 		sms = append(sms, createSyntheticsApiServiceMonitor(c))
 	}
 
+	// Set template params
+	params := []templatev1.Parameter{}
+	params = append(params, templatev1.Parameter{
+		Name:  "NAMESPACE",
+		Value: "rhobs",
+	}, templatev1.Parameter{
+		Name:  "IMAGE_TAG",
+		Value: "cea7d4656cd0ad338e580cc6ba266264a9938e5c",
+	}, templatev1.Parameter{
+		Name:  "IMAGE_DIGEST",
+		Value: "",
+	})
+
 	template := openshift.WrapInTemplate(objs, metav1.ObjectMeta{
 		Name: syntheticsApiName,
-	}, nil)
+	}, sortTemplateParams(params))
 	enc := encoding.GhodssYAML(template)
 	gen := g()
 	gen.Add(syntheticsApiTemplate, enc)
@@ -114,7 +128,7 @@ func syntheticsApiStatefulSet(config *syntheticsApiConfig, m clusters.TemplateMa
 
 	syntheticsApiContainer := corev1.Container{
 		Name:  syntheticsApiName,
-		Image: config.SyntheticsApiImage,
+		Image: "quay.io/redhat-services-prod/openshift/rhobs-synthetics-api:${IMAGE_TAG}",
 		Args:  config.Flags.ToArgs(),
 		Ports: []corev1.ContainerPort{
 			{
@@ -135,7 +149,7 @@ func syntheticsApiStatefulSet(config *syntheticsApiConfig, m clusters.TemplateMa
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      config.Name,
-			Namespace: config.Namespace,
+			Namespace: "${NAMESPACE}",
 			Labels:    labels,
 		},
 		Spec: appsv1.StatefulSetSpec{
@@ -162,6 +176,20 @@ func syntheticsApiStatefulSet(config *syntheticsApiConfig, m clusters.TemplateMa
 	return statefulSet
 }
 
+func createSyntheticsApiServiceAccount(config *syntheticsApiConfig) *corev1.ServiceAccount {
+	return &corev1.ServiceAccount{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ServiceAccount",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      config.Name,
+			Namespace: "${NAMESPACE}",
+			Labels:    config.Labels,
+		},
+	}
+}
+
 func createSyntheticsApiHeadlessService(config *syntheticsApiConfig) *corev1.Service {
 	return &corev1.Service{
 		TypeMeta: metav1.TypeMeta{
@@ -170,7 +198,7 @@ func createSyntheticsApiHeadlessService(config *syntheticsApiConfig) *corev1.Ser
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      config.Name,
-			Namespace: config.Namespace,
+			Namespace: "${NAMESPACE}",
 			Labels:    config.Labels,
 		},
 		Spec: corev1.ServiceSpec{
@@ -215,7 +243,7 @@ func createSyntheticsApiServiceMonitor(config *syntheticsApiConfig) *monitoringv
 				MatchLabels: config.Labels,
 			},
 			NamespaceSelector: monitoringv1.NamespaceSelector{
-				MatchNames: []string{config.Namespace},
+				MatchNames: []string{"${NAMESPACE}"},
 			},
 		},
 	}
@@ -230,4 +258,30 @@ func (b Build) SyntheticsApi(config clusters.ClusterConfig) {
 		newSyntheticsApiConfig(clusters.ProductionMaps, ns),
 	}
 	syntheticsApi(gen, clusters.ProductionMaps, syntheticsApis)
+}
+
+// generateUnifiedSyntheticsApi generates a single, environment-agnostic template
+func generateUnifiedSyntheticsApi() {
+	var u Unified
+	gen := func() *mimic.Generator {
+		return u.generator(syntheticsApiName)
+	}
+
+	// Create a single config without environment-specific values
+	config := &syntheticsApiConfig{
+		Flags:              &syntheticsApiFlags{},
+		Name:               syntheticsApiName,
+		Namespace:          "", // Will be parameterized
+		SyntheticsApiImage: "", // Not used since we use template parameter
+		Labels: map[string]string{
+			"app.kubernetes.io/component": syntheticsApiName,
+			"app.kubernetes.io/instance":  "rhobs",
+			"app.kubernetes.io/name":      syntheticsApiName,
+			"app.kubernetes.io/part-of":   "rhobs",
+			"app.kubernetes.io/version":   "${IMAGE_TAG}",
+		},
+		Replicas: defaultGatewaySyntheticsApiReplicas,
+	}
+
+	syntheticsApi(gen, clusters.TemplateMaps{}, []*syntheticsApiConfig{config})
 }

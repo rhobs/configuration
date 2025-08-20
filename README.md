@@ -29,6 +29,32 @@ Currently, RHOBS components are rendered as [OpenShift Templates](https://docs.o
 
 Running `make manifests` generates all required files into [resources/services](./resources/services) directory.
 
+### Unified Templates
+
+Some services use unified, environment-agnostic templates that can be deployed across all environments using template parameters. For example, the synthetics-api service provides a single template that works for all environments:
+
+```bash
+# Generate unified synthetics-api template
+mage unified:syntheticsApi
+
+# Generate all unified templates
+mage unified:all
+
+# List available unified templates
+mage unified:list
+
+# Deploy to different environments using parameters
+oc process -f resources/services/synthetics-api-template.yaml \
+  -p NAMESPACE=rhobs-stage \
+  -p IMAGE_TAG=latest | oc apply -f -
+
+oc process -f resources/services/synthetics-api-template.yaml \
+  -p NAMESPACE=rhobs-production \
+  -p IMAGE_TAG=v1.0.0 | oc apply -f -
+```
+
+This approach reduces template duplication and ensures consistency across environments while maintaining deployment flexibility.
+
 ### Observability
 
 Similarly, in order to have observability (alerts, recording rules, dashboards) for our service we import mixins from various projects and compose all together in [observability](./observability) directory.

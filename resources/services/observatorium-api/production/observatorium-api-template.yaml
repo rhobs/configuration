@@ -195,6 +195,12 @@ objects:
         subjects:
         - kind: user
           name: service-account-plmshift
+      - name: 9baf25c1-f61e-4b0d-b3a5-41802dbc061e
+        roles:
+        - telemeter-metrics-read
+        subjects:
+        - kind: user
+          name: service-account-9baf25c1-f61e-4b0d-b3a5-41802dbc061e
       - name: observatorium-rhtap
         roles:
         - rhtap-metrics-read
